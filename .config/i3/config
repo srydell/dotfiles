@@ -1,0 +1,185 @@
+# vim: filetype=i3
+
+# -- Basic Definitions --
+# Needed for i3-gaps
+hide_edge_borders both
+for_window [class="^.*"] border pixel 0
+gaps inner 15
+gaps outer 15
+font pango:iosevka 13
+
+# Set Defaults
+set $mod Mod4
+set $term urxvt
+set $browser qutebrowser --backend webkit
+
+
+# -- Start external scripts --
+# Composite manager
+exec_always --no-startup-id compton
+exec_always --no-startup-id ~/.config/polybar/launch.sh
+
+# Wallpaper
+exec_always feh --bg-scale ~/.config/wallpaper.png
+
+# Fade out mouse when not in use after 0.2 seconds
+exec_always  --no-startup-id unclutter -idle 0.2 -root
+
+# -- Basic bindings --
+bindsym $mod+Return		exec $term
+bindsym $mod+Shift+Return	exec $term -e tmux
+
+bindsym $mod+space		floating toggle
+bindsym $mod+Shift+space	focus mode_toggle
+
+# bindsym $mod+BackSpace
+bindsym $mod+Shift+BackSpace	exec sudo reboot
+
+# - Letter key bindings -
+bindsym $mod+q			kill
+bindsym $mod+Shift+q		kill
+
+bindsym $mod+w			exec --no-startup-id $browser
+# bindsym $mod+Shift+w
+
+# bindsym $mod+e
+# bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+
+# bindsym $mod+r		exec $term -e ranger
+bindsym $mod+Shift+r		restart
+
+bindsym $mod+t			split toggle
+bindsym $mod+Shift+t		gaps inner current set 15; gaps outer current set 15
+
+# bindsym $mod+y			exec $term -e calcurse
+bindsym $mod+Shift+y		resize shrink width 10 px or 10 ppt
+
+# bindsym $mod+u
+bindsym $mod+Shift+u		resize shrink height 10 px or 10 ppt
+
+# bindsym $mod+i
+bindsym $mod+Shift+i		resize grow height 10 px or 10 ppt
+
+# bindsym $mod+o
+bindsym $mod+Shift+o		resize grow width 10 px or 10 ppt
+
+# bindsym $mod+p
+# bindsym $mod+Shift+p
+
+# bindsym $mod+a
+# bindsym $mod+Shift+a
+
+bindsym $mod+s			gaps inner current plus 5
+bindsym $mod+Shift+s		gaps inner current minus 5
+
+bindsym $mod+d			exec rofi -show run
+bindsym $mod+Shift+d		gaps inner current set 0; gaps outer current set 0
+
+bindsym $mod+f			fullscreen toggle
+# bindsym $mod+Shift+f
+
+bindsym $mod+g			workspace prev
+# bindsym $mod+Shift+g		
+
+bindsym $mod+h			focus left
+bindsym $mod+Shift+h		move left 30
+
+bindsym $mod+j			focus down
+bindsym $mod+Shift+j		move down 30
+
+bindsym $mod+k			focus up
+bindsym $mod+Shift+k		move up 30
+
+bindsym $mod+l			focus right
+bindsym $mod+Shift+l		move right 30
+
+bindsym $mod+z			gaps outer current plus 5
+bindsym $mod+Shift+z		gaps outer current minus 5
+
+bindsym $mod+x			exec --no-startup-id i3lock
+bindsym $mod+Shift+x		exec sudo shutdown -h now
+
+# bindsym $mod+c
+# bindsym $mod+Shift+c
+
+# bindsym $mod+v
+# bindsym $mod+Shift+v
+
+# bindsym $mod+b
+# bindsym $mod+Shift+b
+
+# bindsym $mod+n
+# bindsym $mod+Shift+n
+
+# bindsym $mod+m
+# bindsym $mod+Shift+m
+
+# - Function Buttons -
+# bindsym F1
+# bindsym F2
+# bindsym F3
+# bindsym F4
+# bindsym F5
+# bindsym F6
+# bindsym F7
+# bindsym F8
+# bindsym F9
+bindsym F10 			pactl set-sink-volume @DEFAULT_SINK@ -3%
+bindsym F11			pactl set-sink-volume @DEFAULT_SINK@ +3%
+# bindsym F12
+
+# - Arrow keys -
+bindsym $mod+Left		focus left
+bindsym $mod+Right		focus right
+bindsym $mod+Up			focus up
+bindsym $mod+Down		focus down
+bindsym $mod+Shift+Left		move left
+bindsym $mod+Shift+Right	move right
+bindsym $mod+Shift+Up		move up
+bindsym $mod+Shift+Down		move down
+
+# -- Workspace bindings --
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# Switch to workspace
+bindsym $mod+1			workspace $ws1
+bindsym $mod+2			workspace $ws2
+bindsym $mod+3			workspace $ws3
+bindsym $mod+4			workspace $ws4
+bindsym $mod+5			workspace $ws5
+bindsym $mod+6			workspace $ws6
+bindsym $mod+7			workspace $ws7
+bindsym $mod+8			workspace $ws8
+bindsym $mod+9			workspace $ws9
+bindsym $mod+0			workspace $ws10
+
+# Move focused container to workspace
+bindsym $mod+Shift+1		move container to workspace $ws1
+bindsym $mod+Shift+2		move container to workspace $ws2
+bindsym $mod+Shift+3		move container to workspace $ws3
+bindsym $mod+Shift+4		move container to workspace $ws4
+bindsym $mod+Shift+5		move container to workspace $ws5
+bindsym $mod+Shift+6		move container to workspace $ws6
+bindsym $mod+Shift+7		move container to workspace $ws7
+bindsym $mod+Shift+8		move container to workspace $ws8
+bindsym $mod+Shift+9		move container to workspace $ws9
+bindsym $mod+Shift+0		move container to workspace $ws10
+
+# Special containers to their workspaces
+for_window [class="qutebrowser"] move to workspace $ws2
+
+# Start i3bar to display a workspace bar (plus the system information i3status
+# finds out, if available)
+# bar {
+#  	status_command i3status
+# }
