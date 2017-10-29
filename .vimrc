@@ -1,3 +1,6 @@
+" Package manager
+source ~/.vim/packages.vim
+
 " Enable filetype
 filetype on
 filetype plugin on
