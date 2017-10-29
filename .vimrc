@@ -1,15 +1,17 @@
 " Enable filetype
 filetype on
+filetype plugin on
+filetype indent on
 
 " Enable syntax
 syntax enable
 
-" Enable statusline
-set laststatus=2
-
 " Set mapleader
 let mapleader="-"
 let maplocalleader="-"
+
+" Enable statusline
+set laststatus=2
 
 " Define the statusline
 set statusline=%f	" Path to file
@@ -30,6 +32,9 @@ set wrap
 
 " Make vim search while typing
 set incsearch
+
+" Autoindent new lines
+set autoindent
 
 " Make vim exit visual mode without delay
 set timeoutlen=1000 ttimeoutlen=0
@@ -74,10 +79,19 @@ onoremap in( :<c-u>normal! f(vi(<cr>
 onoremap ilb :<c-u>normal! F)vi(<cr>
 onoremap il( :<c-u>normal! F)vi(<cr>
 
+" Set local make options
+" do not expand tabs to spaces
+augroup filetype_make
+	autocmd!
+	autocmd FileType make set noexpandtab shiftwidth=4 softtabstop=0
+augroup END
+
 " Set local python options
+" expand tabs to four spaces
 augroup filetype_python
 	autocmd!
 	autocmd FileType python nnoremap <buffer> <localleader>c mm^i# <esc>``l
+	autocmd FileType python set shiftwidth=4 softtabstop=4 expandtab
 augroup END
 
 " Setup folding for vimscript
