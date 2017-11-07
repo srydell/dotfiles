@@ -1,17 +1,33 @@
 " Package manager
 source ~/.vim/packages.vim
 
+let g:UltiSnipsSnippetDirectories=["~/.vim/UltiSnips", "UltiSnips"]
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+
+let g:UltisnipsEditSplit="vertical"
+let g:UltisnipsUsePythonVersion=3
+
 " Enable filetype
 filetype on
-filetype plugin on
-filetype indent on
+filetype plugin indent on
 
 " Enable syntax
 syntax enable
 
+" Colorscheme
+set background=dark
+let g:gruvbox_contrast_dark=1
+silent! colorscheme gruvbox
+
 " Set mapleader
 let mapleader="-"
 let maplocalleader="-"
+
+" Make it easier to see tabs and newlines
+set list
+set listchars=tab:▸\ ,eol:¬
 
 " Enable statusline
 set laststatus=2
@@ -29,6 +45,12 @@ set statusline+=%L	" Total lines
 " Show absolute current row and relative rows from that
 set number
 set relativenumber
+
+" No swap files
+set noswapfile
+
+" Show commands as they are being written
+set showcmd
 
 " Make vim always show all text
 set wrap
@@ -94,7 +116,8 @@ augroup END
 augroup filetype_python
 	autocmd!
 	autocmd FileType python nnoremap <buffer> <localleader>c mm^i# <esc>``l
-	autocmd FileType python set shiftwidth=4 softtabstop=4 expandtab
+	autocmd FileType python set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
+	" autocmd FileType python set shiftwidth=4 softtabstop=4 expandtab
 augroup END
 
 " Setup folding for vimscript
