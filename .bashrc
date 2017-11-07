@@ -2,6 +2,9 @@
 # ~/.bashrc
 #
 
+# Colorscheme
+source "$HOME/.vim/pack/minpac/opt/gruvbox/gruvbox_256palette.sh"
+
 # Aliases
 # Use fc to repeat last command
 # Alternatively add " 2>/dev/null" to not
