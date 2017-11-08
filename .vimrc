@@ -1,13 +1,8 @@
 " Package manager
 source ~/.vim/packages.vim
 
-let g:UltiSnipsSnippetDirectories=["~/.vim/UltiSnips", "UltiSnips"]
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-j>"
-let g:UltiSnipsJumpBackwardTrigger="<c-k>"
-
-let g:UltisnipsEditSplit="vertical"
-let g:UltisnipsUsePythonVersion=3
+" Autocompletion settings
+source ~/.vim/autocomplete.vim
 
 " Enable filetype
 filetype on
