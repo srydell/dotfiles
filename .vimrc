@@ -4,6 +4,9 @@ source ~/.vim/packages.vim
 " Autocompletion settings
 source ~/.vim/autocomplete.vim
 
+" Statusline settings
+source ~/.vim/statusline.vim
+
 " Enable filetype
 filetype on
 filetype plugin indent on
@@ -11,31 +14,18 @@ filetype plugin indent on
 " Enable syntax
 syntax enable
 
+" Set mapleader
+let mapleader="-"
+let maplocalleader="-"
+
 " Colorscheme
 set background=dark
 let g:gruvbox_contrast_dark=1
 silent! colorscheme gruvbox
 
-" Set mapleader
-let mapleader="-"
-let maplocalleader="-"
-
 " Make it easier to see tabs and newlines
 set list
 set listchars=tab:▸\ ,eol:¬
-
-" Enable statusline
-set laststatus=2
-
-" Define the statusline
-set statusline=%f	" Path to file
-set statusline+=\ -\ 	" Separator
-set statusline+=FileType:	" Label
-set statusline+=%y	" Filetype of the file
-set statusline+=%=	" Switch to the right side
-set statusline+=%l	" Current line
-set statusline+=/ 	" Separator
-set statusline+=%L	" Total lines
 
 " Show absolute current row and relative rows from that
 set number
@@ -86,12 +76,12 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 " Put single quotes in
 nnoremap <leader>' viw<esc>a'<esc>bi'<esc>lel
 
-" Put quotes on your current selection in Visual mode
-vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>
-
 " H moves to beginning of line and L to end of line
 nnoremap H ^
 nnoremap L $
+
+" Put quotes on your current selection in Visual mode
+vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>
 
 " Change next/last bracket
 onoremap inb :<c-u>normal! f(vi(<cr>
@@ -113,6 +103,16 @@ augroup filetype_python
 	autocmd FileType python nnoremap <buffer> <localleader>c mm^i# <esc>``l
 	autocmd FileType python set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
 	" autocmd FileType python set shiftwidth=4 softtabstop=4 expandtab
+	autocmd FileType python nnoremap <leader>v :echo hello<CR>
+augroup END
+
+" Latex autocompilation
+augroup filetype_latex
+	autocmd!
+	" Compile latex with rubber upon saving the file
+	autocmd FileType tex nnoremap <leader>c :w<CR>:silent !rubber --pdf --warn all %<CR>:redraw!<CR>
+	" View PDF. '%:r' is current file's root (base) name
+	autocmd FileType tex nnoremap <leader>v :silent !mupdf %:r.pdf &<CR><CR>
 augroup END
 
 " Setup folding for vimscript
