@@ -100,10 +100,7 @@ augroup END
 " expand tabs to four spaces
 augroup filetype_python
 	autocmd!
-	autocmd FileType python nnoremap <buffer> <localleader>c mm^i# <esc>``l
 	autocmd FileType python set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
-	" autocmd FileType python set shiftwidth=4 softtabstop=4 expandtab
-	autocmd FileType python nnoremap <leader>v :echo hello<CR>
 augroup END
 
 " Latex autocompilation
