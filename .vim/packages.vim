@@ -22,3 +22,6 @@ call minpac#add('morhetz/gruvbox', {'type': 'opt'})
 " Arch Linux specific: ncurses5-compat-libs
 " is needed from AUR for the completion menu
 call minpac#add('Valloric/YouCompleteMe', {'do': '!./install.py --clang-completer'})
+
+" Offline documentation browser
+call minpac#add('KabbAmine/zeavim.vim')
