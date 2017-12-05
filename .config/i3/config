@@ -17,7 +17,7 @@ set $browser qutebrowser --backend webkit
 # -- Start external scripts --
 # Composite manager, CG disables shadowing effects
 exec_always --no-startup-id compton -CG
-exec_always --no-startup-id redshift
+exec_always --no-startup-id redshift-gtk
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 
 # Wallpaper
