@@ -1,3 +1,6 @@
+! Enable 256 colors in other terminal applications
+URxvt*termName: rxvt-unicode-256color
+
 ! Fonts
 URxvt.font: xft:iosevka:size=16
 
@@ -8,13 +11,19 @@ URxvt.font: xft:iosevka:size=16
 *.dynamicColors:on
 *.letterSpace: 1
 
-URxvt.perl-ext-common: default,matcher,selection-to-clipboard,clipboard-osc
+URxvt.perl-ext-common: default,selection-to-clipboard,clipboard-osc,url-select,keyboard-select
 
-! Clickable urls
-URxvt.url-launcher: /usr/bin/qutebrowser
-URxvt.matcher.button: 1
-URxvt.keysym.C-Delete: perl:matcher:last
-URxvt.keysym.M-Delete: perl:matcher:list
+! Urls are opened with qutebrowser as
+! Alt+u : Select the url under cursor
+! y	: yank selected url
+! k, j	: select next, previous url
+! Return: Open selected url
+! Esc	: Cancel url selection mode
+URxvt.url-select.launcher: /usr/bin/qutebrowser
+URxvt.url-select.underline: true
+URxvt.keysym.M-u: perl:url-select:select_next
+URxvt.keysym.M-Escape: perl:keyboard-select:activate
+URxvt.keysym.M-s: perl:keyboard-select:search
 
 ! Make pasting and copying easier
 ! Paste from clipboard with CTRL+ALT+C
