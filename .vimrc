@@ -83,6 +83,20 @@ nnoremap L $
 " Put quotes on your current selection in Visual mode
 vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>
 
+function! OnlineDoc()
+	if &ft =~ "vim"
+		let s:urlTemplate = "https://duckduckgo.com/?q=<SEARCHTERM>"
+	else
+		return
+	endif
+	let s:browser = "qutebrowser"
+	let s:wordUnderCursor = expand("<cword>")
+	let s:url = substitute(s:urlTemplate, "<SEARCHTERM>", s:wordUnderCursor, "g")
+	let s:cmd = "silent !" . s:browser . " " . s:url . " &"
+	execute s:cmd
+	execute "redraw!"
+endfunction
+
 " Change next/last bracket
 onoremap inb :<c-u>normal! f(vi(<cr>
 onoremap in( :<c-u>normal! f(vi(<cr>
@@ -116,4 +130,5 @@ augroup END
 augroup filetype_vim
 	autocmd!
 	autocmd FileType vim setlocal foldmethod=marker
+	autocmd FileType vim set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
 augroup END
