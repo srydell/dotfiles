@@ -67,6 +67,10 @@ nnoremap <Right> :echo "why?"<cr>
 nnoremap <Up> :echo "why?"<cr>
 nnoremap <Down> :echo "why?"<cr>
 
+" Open qutebrowser with the word under the cursor as a 
+" search term. Filetype dependent
+noremap <leader>t :call OnlineDoc()<CR>
+
 " Open split window and edit .vimrc
 nnoremap <leader>ev :split$MYVIMRC<cr>
 
@@ -85,16 +89,19 @@ vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>
 
 function! OnlineDoc()
 	if &ft =~ "vim"
-		let s:urlTemplate = "https://duckduckgo.com/?q=<SEARCHTERM>"
+		let s:urlTemplate = "https://duckduckgo.com/?q=SEARCHTERM"
+	elseif &ft =~ "cpp"
+		" Don't forget to escape % characters
+		let s:urlTemplate = "http://en.cppreference.com/mwiki/index.php?title=Special\\%3ASearch&search=SEARCHTERM&button="
 	else
 		return
 	endif
 	let s:browser = "qutebrowser"
 	let s:wordUnderCursor = expand("<cword>")
-	let s:url = substitute(s:urlTemplate, "<SEARCHTERM>", s:wordUnderCursor, "g")
-	let s:cmd = "silent !" . s:browser . " " . s:url . " &"
-	execute s:cmd
-	execute "redraw!"
+	let s:url = substitute(s:urlTemplate, "SEARCHTERM", s:wordUnderCursor, "g")
+	let s:cmd = "silent !" . s:browser . " '" . s:url . "'"
+	execute(s:cmd)
+	redraw!
 endfunction
 
 " Change next/last bracket
@@ -110,8 +117,15 @@ augroup filetype_make
 	autocmd FileType make set noexpandtab shiftwidth=4 softtabstop=0
 augroup END
 
+" Set local cpp options
+" expand tabs to four columns
+augroup filetype_python
+	autocmd!
+	autocmd FileType cpp set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
+augroup END
+
 " Set local python options
-" expand tabs to four spaces
+" expand tabs to four columns
 augroup filetype_python
 	autocmd!
 	autocmd FileType python set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
@@ -121,6 +135,10 @@ augroup END
 augroup filetype_latex
 	autocmd!
 	" Compile latex with rubber upon saving the file
+	" TODO: put in sighup to update mupdf automatically using
+	"	$ pkill -HUP mupdf
+	"	Must check whether there is an open mupdf running though, maybe even
+	"	connected to the current buffer would be good
 	autocmd FileType tex nnoremap <leader>c :w<CR>:silent !rubber --pdf --warn all %<CR>:redraw!<CR>
 	" View PDF. '%:r' is current file's root (base) name
 	autocmd FileType tex nnoremap <leader>v :silent !mupdf %:r.pdf &<CR><CR>
