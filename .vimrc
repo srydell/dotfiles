@@ -37,18 +37,36 @@ set noswapfile
 " Show commands as they are being written
 set showcmd
 
-" Make vim always show all text
+" Softwrap text (without creating a newline)
 set wrap
 
-" Make vim search while typing
+" Make vim highlight search while typing
 set incsearch
 
-" Autoindent new lines
+" Autoindent new lines to match previous line
+" Smart autoindent when creating new lines
 set autoindent
+set smartindent
 
 " Make vim exit visual mode without delay
 set timeoutlen=1000 ttimeoutlen=0
 
+" Don't redraw buffer in all situations
+set lazyredraw
+
+" Ignore case if search is lowercase, otherwise case-sensitive
+set ignorecase
+set smartcase
+
+" Allow the visual block to not be restricted by EOL
+set virtualedit=block
+
+" If in an OS with a clipboard, let default (unnamed) register be clipboard
+if has('clipboard')
+	set clipboard=unnamed
+endif
+
+" ---- Insert mode ----
 " Abbreviations
 iabbrev @@ simonwrydell@gmail.com
 iabbrev ccopy Copyright 2017 Simon Rydell, all rights reserved
@@ -56,11 +74,7 @@ iabbrev ccopy Copyright 2017 Simon Rydell, all rights reserved
 " CTRL-u in insert mode makes the current word uppercase
 inoremap <c-u> <esc>mmviw~`ma
 
-" Make jk escape in insert mode
-" inoremap jk <esc>
-" Temporarily disable esc to train above keybinding (no operation)
-" inoremap <esc> <nop>
-
+" ---- Normal mode ----
 " Map away arrowkeys
 nnoremap <Left> :echo "why?"<cr>
 nnoremap <Right> :echo "why?"<cr>
@@ -84,9 +98,11 @@ nnoremap <leader>' viw<esc>a'<esc>bi'<esc>lel
 nnoremap H ^
 nnoremap L $
 
+" ---- Visual mode ----
 " Put quotes on your current selection in Visual mode
 vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>
 
+" ---- Custom objects ----
 " Change next/last bracket
 onoremap inb :<c-u>normal! f(vi(<cr>
 onoremap in( :<c-u>normal! f(vi(<cr>
