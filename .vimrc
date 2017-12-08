@@ -15,8 +15,8 @@ filetype plugin indent on
 syntax enable
 
 " Set mapleader
-let mapleader="-"
-let maplocalleader="-"
+let mapleader=" "
+let maplocalleader=" "
 
 " Colorscheme
 set background=dark
@@ -84,6 +84,9 @@ nnoremap <Down> :echo "why?"<cr>
 " Open qutebrowser with the word under the cursor as a 
 " search term. Filetype dependent
 noremap <leader>t :call OnlineDoc()<CR>
+
+" Open split window and edit .vimrc
+nnoremap <leader><Space> :write<cr>
 
 " Open split window and edit .vimrc
 nnoremap <leader>ev :split$MYVIMRC<cr>
