@@ -13,11 +13,11 @@ set $mod Mod4
 set $term urxvt
 set $browser qutebrowser --backend webkit
 
-
 # -- Start external scripts --
 # Composite manager, CG disables shadowing effects
 exec_always --no-startup-id compton -CG
 exec_always --no-startup-id ~/.config/polybar/launch.sh
+exec redshift
 
 # Wallpaper
 exec_always feh --bg-scale ~/.config/wallpaper.png
@@ -51,7 +51,7 @@ bindsym $mod+Shift+r		restart
 bindsym $mod+t			split toggle
 bindsym $mod+Shift+t		gaps inner current set 15; gaps outer current set 15
 
-# bindsym $mod+y			exec $term -e calcurse
+# bindsym $mod+y		exec $term -e calcurse
 bindsym $mod+Shift+y		resize shrink width 10 px or 10 ppt
 
 # bindsym $mod+u
