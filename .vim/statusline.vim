@@ -3,12 +3,27 @@
 " Enable statusline
 set laststatus=2
 
-" Define the statusline
-set statusline=%f	" Path to file
-set statusline+=\ -\ 	" Separator
-set statusline+=FileType:	" Label
-set statusline+=%y	" Filetype of the file
-set statusline+=%=	" Switch to the right side
-set statusline+=%l	" Current line
-set statusline+=/ 	" Separator
-set statusline+=%L	" Total lines
+" --- Statusline ---
+" Path to file
+set statusline=%f
+
+" Separator
+set statusline+=\ -\
+
+" Label
+set statusline+=FileType:
+" Filetype of the file
+set statusline+=%y
+
+" Switch to the right side
+set statusline+=%=
+
+" Check session tracking
+set statusline+=%{ObsessionStatus()}
+
+" Current line
+set statusline+=%l
+" Separator
+set statusline+=/
+" Total lines
+set statusline+=%L

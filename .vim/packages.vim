@@ -25,3 +25,7 @@ call minpac#add('Valloric/YouCompleteMe', {'do': '!./install.py --clang-complete
 
 " Offline documentation browser
 call minpac#add('KabbAmine/zeavim.vim')
+
+" Helps with keeping a session saved that can
+" be restored after a reboot
+call minpac#add('tpope/vim-obsession')
