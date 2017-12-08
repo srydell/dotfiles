@@ -87,28 +87,42 @@ nnoremap L $
 " Put quotes on your current selection in Visual mode
 vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>
 
-function! OnlineDoc()
-	if &ft =~ "vim"
-		let s:urlTemplate = "https://duckduckgo.com/?q=SEARCHTERM"
-	elseif &ft =~ "cpp"
-		" Don't forget to escape % characters
-		let s:urlTemplate = "http://en.cppreference.com/mwiki/index.php?title=Special\\%3ASearch&search=SEARCHTERM&button="
-	else
-		return
-	endif
-	let s:browser = "qutebrowser"
-	let s:wordUnderCursor = expand("<cword>")
-	let s:url = substitute(s:urlTemplate, "SEARCHTERM", s:wordUnderCursor, "g")
-	let s:cmd = "silent !" . s:browser . " '" . s:url . "'"
-	execute(s:cmd)
-	redraw!
-endfunction
-
 " Change next/last bracket
 onoremap inb :<c-u>normal! f(vi(<cr>
 onoremap in( :<c-u>normal! f(vi(<cr>
 onoremap ilb :<c-u>normal! F)vi(<cr>
 onoremap il( :<c-u>normal! F)vi(<cr>
+
+" Function to open a search for the word under the cursor.
+" Depending on which filetype is in the current buffer, different
+" search engines will be used
+function! OnlineDoc()
+	" Depending on which filetype, use different search engines
+	if &ft =~ "vim"
+		let s:urlTemplate = "https://duckduckgo.com/?q=SEARCHTERM"
+	elseif &ft =~ "cpp"
+		let s:urlTemplate = "http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=SEARCHTERM&button="
+	else
+		return
+	endif
+	" TODO: Put browser as user specific
+	" Requires s:browser to be in PATH
+	let s:browser = "qutebrowser"
+
+	let s:wordUnderCursor = expand("<cword>")
+
+	" Escape % character. % is the current filename
+	let s:url = substitute(s:urlTemplate, "%", "\\%", "g")
+
+	" Replace SEARCHTERM by the selected word
+	let s:url = substitute(s:urlTemplate, "SEARCHTERM", s:wordUnderCursor, "g")
+
+	" Same as running ": silent! browser 'url'"
+	let s:cmd = "silent !" . s:browser . " '" . s:url . "'"
+	execute(s:cmd)
+	" redraw necessary after silent since it wipes the buffer
+	redraw!
+endfunction
 
 " Set local make options
 " do not expand tabs to spaces
