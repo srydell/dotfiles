@@ -16,8 +16,12 @@ set $browser qutebrowser --backend webkit
 # -- Start external scripts --
 # Composite manager, CG disables shadowing effects
 exec_always --no-startup-id compton -CG
+# Launch polybar
 exec_always --no-startup-id ~/.config/polybar/launch.sh
+# redshift for better lighting
 exec redshift
+# Switch between us, se keymap with SHIFT+ALT, and swap capslock with ctrl
+exec setxkbmap us,se -option "lv3:ralt_alt,grp:alt_shift_toggle,ctrl:swapcaps"
 
 # Wallpaper
 exec_always feh --bg-scale ~/.config/wallpaper.png
