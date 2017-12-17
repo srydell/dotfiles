@@ -2,8 +2,9 @@
 # ~/.bashrc
 #
 
-# Colorscheme
-source "$HOME/.vim/pack/minpac/opt/gruvbox/gruvbox_256palette.sh"
+# Use vi keybindings command prompt
+# For zsh, the same command is: bindkey -v
+set -o vi
 
 # Aliases
 # Use fc to repeat last command
@@ -21,6 +22,9 @@ bind Space:magic-space
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
+
+# Colorscheme
+source "$HOME/.vim/pack/minpac/opt/gruvbox/gruvbox_256palette.sh"
 
 # Make vim default editor
 export VISUAL=vim
