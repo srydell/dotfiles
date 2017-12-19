@@ -66,6 +66,15 @@ if has('clipboard')
 	set clipboard=unnamed
 endif
 
+" Let vim store backup/swap/undo files in these directories
+" Have the benefit of being able to recover from crashes without being
+" bothered with swap files
+" The double // will create files with whole path expanded. This will
+" hopefully result in no name collisions
+set backupdir=~/.vim/backup//
+set directory=~/.vim/swap//
+set undodir=~/.vim/undo//
+
 " ---- Insert mode ----
 " Abbreviations
 iabbrev @@ simonwrydell@gmail.com
