@@ -1,0 +1,53 @@
+time 1513719069
+new [description:"Read Arabesque about OpenSSH" entry:"1513719069" modified:"1513719069" status:"pending" tags:"computer" uuid:"06b69ed3-dde7-4f18-9d0f-a5299d33150e"]
+---
+time 1513719090
+new [description:"Solve connection between main computer and mac via SSH" entry:"1513719090" modified:"1513719090" status:"pending" tags:"computer" uuid:"601c9e9d-1934-46bd-98cd-c44cec06948f"]
+---
+time 1513719127
+new [description:"Easier to login SSH via gpg keys and a ssh-agent" entry:"1513719127" modified:"1513719127" status:"pending" tags:"computer" uuid:"546e3c59-1a2b-4cab-bfb7-9e711015d575"]
+---
+time 1513719194
+new [description:"Write the rest of the Hamiltonians and commit them to repository" entry:"1513719194" modified:"1513719194" status:"pending" tags:"condmat" uuid:"8c094749-f165-448f-b837-2e304ece5b1f"]
+---
+time 1513719309
+new [description:"Read the first thing in the study guide in Analysens Grunder" entry:"1513719309" modified:"1513719309" project:"AnalysensGrunder" status:"pending" tags:"school" uuid:"3ce00ebf-f764-4098-976d-c6a95a5db795"]
+---
+time 1513719371
+old [description:"Write the rest of the Hamiltonians and commit them to repository" entry:"1513719194" modified:"1513719194" status:"pending" tags:"condmat" uuid:"8c094749-f165-448f-b837-2e304ece5b1f"]
+new [description:"Write the rest of the Hamiltonians and commit them to repository" entry:"1513719194" modified:"1513719371" project:"School" status:"pending" tags:"condmat" uuid:"8c094749-f165-448f-b837-2e304ece5b1f"]
+---
+time 1513719400
+old [description:"Read the first thing in the study guide in Analysens Grunder" entry:"1513719309" modified:"1513719309" project:"AnalysensGrunder" status:"pending" tags:"school" uuid:"3ce00ebf-f764-4098-976d-c6a95a5db795"]
+new [description:"Read the first thing in the study guide in Analysens Grunder" entry:"1513719309" modified:"1513719400" project:"School" status:"pending" tags:"school,Analys" uuid:"3ce00ebf-f764-4098-976d-c6a95a5db795"]
+---
+time 1513719444
+old [description:"Read the first thing in the study guide in Analysens Grunder" entry:"1513719309" modified:"1513719400" project:"School" status:"pending" tags:"school,Analys" uuid:"3ce00ebf-f764-4098-976d-c6a95a5db795"]
+new [description:"Read the first thing in the study guide in Analysens Grunder" entry:"1513719309" modified:"1513719444" project:"School" status:"pending" tags:"Analys" uuid:"3ce00ebf-f764-4098-976d-c6a95a5db795"]
+---
+time 1513719484
+old [description:"Write the rest of the Hamiltonians and commit them to repository" entry:"1513719194" modified:"1513719371" project:"School" status:"pending" tags:"condmat" uuid:"8c094749-f165-448f-b837-2e304ece5b1f"]
+new [description:"Write the rest of the Hamiltonians and commit them to repository" entry:"1513719194" modified:"1513719484" project:"School" status:"pending" tags:"Condmat" uuid:"8c094749-f165-448f-b837-2e304ece5b1f"]
+---
+time 1513719515
+old [description:"Read Arabesque about OpenSSH" entry:"1513719069" modified:"1513719069" status:"pending" tags:"computer" uuid:"06b69ed3-dde7-4f18-9d0f-a5299d33150e"]
+new [description:"Read Arabesque about OpenSSH" entry:"1513719069" modified:"1513719515" project:"SSH" status:"pending" tags:"computer" uuid:"06b69ed3-dde7-4f18-9d0f-a5299d33150e"]
+---
+time 1513719515
+old [description:"Solve connection between main computer and mac via SSH" entry:"1513719090" modified:"1513719090" status:"pending" tags:"computer" uuid:"601c9e9d-1934-46bd-98cd-c44cec06948f"]
+new [description:"Solve connection between main computer and mac via SSH" entry:"1513719090" modified:"1513719515" project:"SSH" status:"pending" tags:"computer" uuid:"601c9e9d-1934-46bd-98cd-c44cec06948f"]
+---
+time 1513719515
+old [description:"Easier to login SSH via gpg keys and a ssh-agent" entry:"1513719127" modified:"1513719127" status:"pending" tags:"computer" uuid:"546e3c59-1a2b-4cab-bfb7-9e711015d575"]
+new [description:"Easier to login SSH via gpg keys and a ssh-agent" entry:"1513719127" modified:"1513719515" project:"SSH" status:"pending" tags:"computer" uuid:"546e3c59-1a2b-4cab-bfb7-9e711015d575"]
+---
+time 1513719877
+new [description:"Pay the rent" due:"1515015877" entry:"1513719877" modified:"1513719877" recur:"monthly" status:"recurring" uuid:"d60ab09e-acd9-4c37-aeef-20b6a7c9fe57"]
+---
+time 1513719882
+new [description:"Pay the rent" due:"1515015877" entry:"1513719882" imask:"0" modified:"1513719877" parent:"d60ab09e-acd9-4c37-aeef-20b6a7c9fe57" recur:"monthly" status:"pending" uuid:"4b9a58c6-c794-4521-ba2c-511cbb4c9f2b"]
+---
+time 1513719882
+old [description:"Pay the rent" due:"1515015877" entry:"1513719877" modified:"1513719877" recur:"monthly" status:"recurring" uuid:"d60ab09e-acd9-4c37-aeef-20b6a7c9fe57"]
+new [description:"Pay the rent" due:"1515015877" entry:"1513719877" mask:"-" modified:"1513719882" recur:"monthly" status:"recurring" uuid:"d60ab09e-acd9-4c37-aeef-20b6a7c9fe57"]
+---
