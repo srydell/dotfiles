@@ -26,8 +26,7 @@ URxvt.keysym.M-Escape: perl:keyboard-select:activate
 URxvt.keysym.M-s: perl:keyboard-select:search
 
 ! Make pasting and copying easier
-! Paste from clipboard with CTRL+ALT+C
-! Paste from primary with middle button on a mouse
+! Paste from clipboard with CTRL+SHIFT+V
 URxvt.iso14755: False
 
 Xft.autohint: 0
