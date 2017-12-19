@@ -29,3 +29,6 @@ call minpac#add('KabbAmine/zeavim.vim')
 " Helps with keeping a session saved that can
 " be restored after a reboot
 call minpac#add('tpope/vim-obsession')
+
+" Add syntax highlighting for i3 config files
+call minpac#add('mboughaba/i3config.vim')

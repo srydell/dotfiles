@@ -15,8 +15,8 @@ filetype plugin indent on
 syntax enable
 
 " Set mapleader
-let mapleader=" "
-let maplocalleader=" "
+let mapleader="\<Space>"
+let maplocalleader="\<Space>"
 
 " Colorscheme
 set background=dark
@@ -183,3 +183,6 @@ augroup filetype_vim
 	autocmd FileType vim setlocal foldmethod=marker
 	autocmd FileType vim set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
 augroup END
+
+" Adding commentstyle # for filetype taskrc
+autocmd FileType taskrc setlocal commentstring=#\ %s
