@@ -126,12 +126,14 @@ onoremap il( :<c-u>normal! F)vi(<cr>
 " search engines will be used
 function! OnlineDoc()
 	" Depending on which filetype, use different search engines
+	" OBS: Use ' instead of " to tell vim to use the string AS IS. Therefore
+	" no substitutions to escaped characters are needed
 	if &ft =~ "vim"
-		let s:urlTemplate = "https://duckduckgo.com/?q=SEARCHTERM"
+		let s:urlTemplate = 'https://duckduckgo.com/?q=SEARCHTERM'
 	elseif &ft =~ "cpp"
-		let s:urlTemplate = "http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=SEARCHTERM&button="
+		let s:urlTemplate = 'http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=SEARCHTERM&button='
 	else
-		return
+		let s:urlTemplate = 'https://duckduckgo.com/?q=SEARCHTERM'
 	endif
 	" TODO: Put browser as user specific
 	" Requires s:browser to be in PATH
@@ -140,7 +142,7 @@ function! OnlineDoc()
 	let s:wordUnderCursor = expand("<cword>")
 
 	" Escape % character. % is the current filename
-	let s:url = substitute(s:urlTemplate, "%", "\\%", "g")
+	" let s:url = substitute(s:urlTemplate, "%", "\\%", "g")
 
 	" Replace SEARCHTERM by the selected word
 	let s:url = substitute(s:urlTemplate, "SEARCHTERM", s:wordUnderCursor, "g")
