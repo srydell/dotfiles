@@ -22,6 +22,9 @@ let maplocalleader="\<Space>"
 set background=dark
 let g:gruvbox_contrast_dark=1
 silent! colorscheme gruvbox
+" This overrides the current background in the colorscheme to NONE
+" Is used to get transparency in vim
+highlight Normal ctermbg=NONE
 
 " Make it easier to see tabs and newlines
 set list
@@ -195,5 +198,8 @@ augroup filetype_vim
 	autocmd FileType vim set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
 augroup END
 
-" Adding commentstyle # for filetype taskrc
+" New comment styles for filestypes
+" # - taskrc
 autocmd FileType taskrc setlocal commentstring=#\ %s
+" ! - xdefaults
+autocmd FileType xdefaults setlocal commentstring=!\ %s

@@ -27,18 +27,19 @@ URxvt.keysym.M-s: perl:keyboard-select:search
 
 ! Make pasting and copying easier
 ! Paste from clipboard with CTRL+SHIFT+V
-URxvt.iso14755: False
+URxvt.iso14755: false
+
+! Extra
+URxvt.intensityStyles: false
+URxvt.depth: 32
+! [value] value is the transparency in %
+URxvt.background: [75]#000000
 
 Xft.autohint: 0
 Xft.dpi: 96
 Xft.hintstyle: hintnone
 Xft.lcdfilter: lcddefault
 Xft.rgba: rgb
-
-! Extra
-
-urxvt*depth: 32
-!urxvt*background: rgba:0000/0000/0200/c800
 
 ! Rofi
 rofi.color-enabled:	true
@@ -107,6 +108,7 @@ URxvt.color250: #d5c4a1
 
 ! soft contrast: *background: #32302f
 *foreground: #ebdbb2
+*foreground_bold: #a8a19f
 
 ! Black + DarkGrey
 *color0:  #282828
