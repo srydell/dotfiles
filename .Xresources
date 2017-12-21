@@ -11,7 +11,7 @@ URxvt.font: xft:iosevka:size=16
 *.dynamicColors:on
 *.letterSpace: 1
 
-URxvt.perl-ext-common: default,selection-to-clipboard,clipboard-osc,url-select,keyboard-select
+URxvt.perl-ext-common: default,selection-to-clipboard,clipboard-osc,url-select,keyboard-select,resize-font
 
 ! Urls are opened with qutebrowser as
 ! Alt+u : Select the url under cursor
@@ -24,6 +24,8 @@ URxvt.url-select.underline: true
 URxvt.keysym.M-u: perl:url-select:select_next
 URxvt.keysym.M-Escape: perl:keyboard-select:activate
 URxvt.keysym.M-s: perl:keyboard-select:search
+URxvt.resize-font.smaller: C-Down
+URxvt.resize-font.bigger: C-Up
 
 ! Make pasting and copying easier
 ! Paste from clipboard with CTRL+SHIFT+V
