@@ -10,8 +10,28 @@ set -o vi
 # This is otherwise turned on with C-s and off with C-q
 stty -ixon
 
-# Disable beeps
-setterm -bfreq 0
+# History
+# Append history from terminal on closing.
+shopt -s histappend
+
+# Set historysize
+HISTFILESIZE=100000
+HISTSIZE=100000
+
+# Don't store commands starting with spaces and duplicates in history
+HISTCONTROL=ignoreboth
+
+# Ignore some uninteresting calls
+HISTIGNORE='ls:bg:fg:history'
+
+# Record history with timestamps (easier to sort with awk/cut)
+HISTTIMEFORMAT='%F %T '
+
+# Record multiline commands as one command in history
+shopt -s cmdhist
+
+# Store history after each command. Helps with recovering from crashes
+PROMPT_COMMAND='history -a'
 
 # Aliases
 # Use fc to repeat last command
