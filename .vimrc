@@ -26,6 +26,9 @@ silent! colorscheme gruvbox
 " Is used to get transparency in vim
 highlight Normal ctermbg=NONE
 
+" Encoding
+set encoding=utf-8
+
 " Make it easier to see tabs and newlines
 set list
 set listchars=tab:▸\ ,eol:¬
@@ -64,10 +67,50 @@ set smartcase
 " Allow the visual block to not be restricted by EOL
 set virtualedit=block
 
+" Disable error feedback via flashing screen
+set visualbell t_vb=
+
+" Default to splitting below and to the right with :split :vsplit
+set splitbelow
+set splitright
+
 " If in an OS with a clipboard, let default (unnamed) register be clipboard
 if has('clipboard')
 	set clipboard=unnamed
 endif
+" " Alternatively one could perhaps do
+" " Yank to system clipboard
+" nnoremap <leader>y "*y
+" " Paste from clipboard
+" nnoremap <leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
+" nnoremap <leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
+" " Yank to system clipboard from visual mode
+" vnoremap <leader>y "*ygv
+
+" Better autocomplete
+set completeopt=longest,menuone,preview
+
+" Completion with commands
+set wildmenu
+set wildmode=list:longest
+
+" Ignore git direcories
+set wildignore+=.git
+
+" Ignore latex compilation files
+set wildignore+=*.aux,*.out,*.toc
+
+" Ignore pictures
+set wildignore+=*.jpg,*.bmp,*.jpeg,*.gif,*.png
+
+" Ignore vim swap files
+set wildignore+=*.sw?
+
+" Ignore Mac directory information
+set wildignore+=*.DS_Store
+
+" Ignore python byte code
+set wildignore+=*.pyc
 
 " Let vim store backup/swap/undo files in these directories
 " Have the benefit of being able to recover from crashes without being
@@ -97,11 +140,14 @@ nnoremap <Down> :echo "why?"<cr>
 " search term. Filetype dependent
 noremap <leader>t :call OnlineDoc()<CR>
 
-" Open split window and edit .vimrc
+" Write document
 nnoremap <leader><Space> :write<cr>
 
 " Open split window and edit .vimrc
 nnoremap <leader>ev :split$MYVIMRC<cr>
+
+" Open split window and edit .tmux.conf
+nnoremap <leader>et :split ~/.tmux.conf<cr>
 
 " Source vimrc
 nnoremap <leader>sv :source $MYVIMRC<cr>
@@ -109,13 +155,28 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 " Put single quotes in
 nnoremap <leader>' viw<esc>a'<esc>bi'<esc>lel
 
+" ---- Visual mode ----
+" Put quotes on your current selection in Visual mode
+vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>
+
 " H moves to beginning of line and L to end of line
 nnoremap H ^
 nnoremap L $
 
-" ---- Visual mode ----
-" Put quotes on your current selection in Visual mode
-vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>
+" Make cursor still while joining lines. Using mark z
+nnoremap J mzJ`z
+
+" Center around search result
+nnoremap n nzz
+
+" Let vim treat virtual lines as real lines
+nnoremap j gj
+nnoremap k gk
+nnoremap gj j
+nnoremap gk k
+
+" Make Y more consistent with C and D
+nnoremap Y y$
 
 " ---- Custom objects ----
 " Change next/last bracket
