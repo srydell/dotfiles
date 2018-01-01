@@ -8,7 +8,6 @@ source ~/.vim/autocomplete.vim
 source ~/.vim/statusline.vim
 
 " Enable filetype
-filetype on
 filetype plugin indent on
 
 " Enable syntax
@@ -19,15 +18,22 @@ let mapleader="\<Space>"
 let maplocalleader="\<Space>"
 
 " Colorscheme
+function! CustomHighlights() abort
+	" This overrides the current background in the colorscheme to NONE
+	" Is used to get transparency in vim
+	highlight Normal ctermbg=NONE
+endfunction
+
+augroup customColorscheme
+	autocmd!
+	autocmd ColorScheme * call CustomHighlights()
+augroup END
+" Encoding
+set encoding=utf-8
+
 set background=dark
 let g:gruvbox_contrast_dark=1
 silent! colorscheme gruvbox
-" This overrides the current background in the colorscheme to NONE
-" Is used to get transparency in vim
-highlight Normal ctermbg=NONE
-
-" Encoding
-set encoding=utf-8
 
 " Make it easier to see tabs and newlines
 set list
@@ -50,9 +56,8 @@ set wrap
 set incsearch
 
 " Autoindent new lines to match previous line
-" Smart autoindent when creating new lines
+" Autoindent when creating new lines
 set autoindent
-set smartindent
 
 " Make vim exit visual mode without delay
 set timeoutlen=1000 ttimeoutlen=0
@@ -76,7 +81,7 @@ set splitright
 
 " If in an OS with a clipboard, let default (unnamed) register be clipboard
 if has('clipboard')
-	set clipboard=unnamed
+	set clipboard^=unnamed
 endif
 " " Alternatively one could perhaps do
 " " Yank to system clipboard
@@ -117,25 +122,15 @@ set wildignore+=*.pyc
 " bothered with swap files
 " The double // will create files with whole path expanded. This will
 " hopefully result in no name collisions
-set backupdir=~/.vim/backup//
-set directory=~/.vim/swap//
-set undodir=~/.vim/undo//
+set backupdir=~/.vim/tmp/backup//
+set directory=~/.vim/tmp/swap//
+set undodir=~/.vim/tmp/undo//
 
 " ---- Insert mode ----
-" Abbreviations
-iabbrev @@ simonwrydell@gmail.com
-iabbrev ccopy Copyright 2017 Simon Rydell, all rights reserved
-
 " CTRL-u in insert mode makes the current word uppercase
 inoremap <c-u> <esc>mmviw~`ma
 
 " ---- Normal mode ----
-" Map away arrowkeys
-nnoremap <Left> :echo "why?"<cr>
-nnoremap <Right> :echo "why?"<cr>
-nnoremap <Up> :echo "why?"<cr>
-nnoremap <Down> :echo "why?"<cr>
-
 " Open qutebrowser with the word under the cursor as a 
 " search term. Filetype dependent
 noremap <leader>t :call OnlineDoc()<CR>
@@ -152,9 +147,6 @@ nnoremap <leader>et :split ~/.tmux.conf<cr>
 " Source vimrc
 nnoremap <leader>sv :source $MYVIMRC<cr>
 
-" Put single quotes in
-nnoremap <leader>' viw<esc>a'<esc>bi'<esc>lel
-
 " ---- Visual mode ----
 " Put quotes on your current selection in Visual mode
 vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>
@@ -170,8 +162,9 @@ nnoremap J mzJ`z
 nnoremap n nzz
 
 " Let vim treat virtual lines as real lines
-nnoremap j gj
-nnoremap k gk
+" v:count works better with relativenumber
+nnoremap <expr> j v:count ? 'j' : 'gj'
+nnoremap <expr> k v:count ? 'k' : 'gk'
 nnoremap gj j
 nnoremap gk k
 
@@ -193,7 +186,8 @@ function! OnlineDoc()
 	" OBS: Use ' instead of " to tell vim to use the string AS IS. Therefore
 	" no substitutions to escaped characters are needed
 	if &ft =~ "vim"
-		let s:urlTemplate = 'https://duckduckgo.com/?q=SEARCHTERM'
+		execute(":help " . expand("<cword>"))
+		return
 	elseif &ft =~ "cpp"
 		let s:urlTemplate = 'http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=SEARCHTERM&button='
 	else
@@ -204,9 +198,6 @@ function! OnlineDoc()
 	let s:browser = "qutebrowser"
 
 	let s:wordUnderCursor = expand("<cword>")
-
-	" Escape % character. % is the current filename
-	" let s:url = substitute(s:urlTemplate, "%", "\\%", "g")
 
 	" Replace SEARCHTERM by the selected word
 	let s:url = substitute(s:urlTemplate, "SEARCHTERM", s:wordUnderCursor, "g")
@@ -220,27 +211,27 @@ endfunction
 
 " Set local make options
 " do not expand tabs to spaces
-augroup filetype_make
+augroup filetypeMake
 	autocmd!
 	autocmd FileType make set noexpandtab shiftwidth=4 softtabstop=0
 augroup END
 
 " Set local cpp options
 " expand tabs to four columns
-augroup filetype_python
+augroup filetypePython
 	autocmd!
 	autocmd FileType cpp set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
 augroup END
 
 " Set local python options
 " expand tabs to four columns
-augroup filetype_python
+augroup filetypePython
 	autocmd!
 	autocmd FileType python set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
 augroup END
 
 " Latex autocompilation
-augroup filetype_latex
+augroup filetypeLatex
 	autocmd!
 	" Compile latex with rubber upon saving the file
 	" TODO: put in sighup to update mupdf automatically using
@@ -253,14 +244,16 @@ augroup filetype_latex
 augroup END
 
 " Setup folding for vimscript
-augroup filetype_vim
+augroup filetypeVim
 	autocmd!
 	autocmd FileType vim setlocal foldmethod=marker
 	autocmd FileType vim set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
 augroup END
 
-" New comment styles for filestypes
-" # - taskrc
-autocmd FileType taskrc setlocal commentstring=#\ %s
-" ! - xdefaults
-autocmd FileType xdefaults setlocal commentstring=!\ %s
+augroup customComments
+	" New comment styles for filestypes
+	" # - taskrc
+	autocmd FileType taskrc setlocal commentstring=#\ %s
+	" ! - xdefaults
+	autocmd FileType xdefaults setlocal commentstring=!\ %s
+augroup END
