@@ -126,10 +126,10 @@ bindsym $mod+Shift+x		exec sudo shutdown -h now
 # bindsym F5
 # bindsym F6
 # bindsym F7
-# bindsym F8
+bindsym F8	exec maim ~/Documents/screenshots/$(date +%s).png
 # bindsym F9
-bindsym F10 			pactl set-sink-volume @DEFAULT_SINK@ -3%
-bindsym F11			pactl set-sink-volume @DEFAULT_SINK@ +3%
+# bindsym F10 			pactl set-sink-volume @DEFAULT_SINK@ -3%
+# bindsym F11			pactl set-sink-volume @DEFAULT_SINK@ +3%
 # bindsym F12
 
 # - Arrow keys -
