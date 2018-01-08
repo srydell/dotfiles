@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Use fc to repeat last command
+# Alternatively add " 2>/dev/null" to not
+# rewrite the last command in prompt
+alias sa="fc -e : -1"
+# Rerun the last two commands
+alias ssa="fc -e : -2 -1"
+
+# ls with colors
+alias ls='ls --color=auto'
