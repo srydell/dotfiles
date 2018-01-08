@@ -1,4 +1,6 @@
 # This is a config file for the program latemp.
+# Source code can be found at https://github.com/srydell/latemp
+#
 # Comments (lines starting with #) and empty lines are ignored.
 # You may change the default directory where .tex files are stored - DEFAULT = ~/Documents/latextemplates
 # If using a non-terminal based editor, latemp will ignore the pdfViewer and assume that your editor has one built-in.
