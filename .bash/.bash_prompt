@@ -95,7 +95,7 @@ fi;
 
 # Set the terminal title and prompt.
 PS1=""
-PS1+="\[${bold}\]\n"; # New line
+PS1+="\[${bold}\]"; # Apply bold
 PS1+="\[${userStyle}\]\u"; # Username
 PS1+="\[${white}\] at ";
 PS1+="\[${hostStyle}\]\h"; # Host
