@@ -8,6 +8,7 @@ URxvt.font: xft:iosevka:size=16
 *.scrollBar: false
 *.saveLines: 8192
 *.internalBorder: 10
+*.externalBorder: 10
 *.dynamicColors:on
 *.letterSpace: 1
 
