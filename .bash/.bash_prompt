@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+# vim: filetype=sh
 
 prompt_git() {
 	local s='';
