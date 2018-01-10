@@ -13,7 +13,6 @@ call minpac#add('k-takata/minpac', {'type': 'opt'})
 call minpac#add('tpope/vim-surround')
 call minpac#add('tpope/vim-commentary')
 call minpac#add('tpope/vim-repeat')
-call minpac#add('SirVer/ultisnips')
 
 " Colorschemes
 call minpac#add('morhetz/gruvbox', {'type': 'opt'})
@@ -22,6 +21,9 @@ call minpac#add('morhetz/gruvbox', {'type': 'opt'})
 " Arch Linux specific: ncurses5-compat-libs
 " is needed from AUR for the completion menu
 call minpac#add('Valloric/YouCompleteMe', {'do': '!./install.py --clang-completer'})
+call minpac#add('SirVer/ultisnips')
+" Takes input from YCM and completes function parameters etc
+call minpac#add('tenfyzhong/CompleteParameter.vim')
 
 " Offline documentation browser
 call minpac#add('KabbAmine/zeavim.vim')

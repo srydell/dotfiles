@@ -9,3 +9,6 @@ let g:UltisnipsUsePythonVersion=3
 let g:ycm_add_preview_to_completeopt=0
 let g:ycm_global_ycm_extra_conf = "~/.ycm_extra_conf.py"
 set completeopt-=preview
+
+" Let CompleteParameter.vim use UltiSnips keybindings
+let g:complete_parameter_use_ultisnips_mapping = 1
