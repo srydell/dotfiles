@@ -4,8 +4,8 @@
 # Needed for i3-gaps
 hide_edge_borders both
 for_window [class="^.*"] border pixel 0
-gaps inner 15
-gaps outer 15
+gaps inner 10
+gaps outer 10
 font pango:iosevka 13
 
 # Set Defaults

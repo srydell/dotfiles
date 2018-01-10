@@ -29,8 +29,8 @@ width = 100%
 height = 34
 ;offset-x = 1%
 ;offset-y = 1%
-;radius = 6.0
-fixed-center = false
+radius = 6.0
+fixed-center = true
 
 background = ${colors.background}
 foreground = ${colors.foreground}
@@ -38,7 +38,10 @@ foreground = ${colors.foreground}
 line-size = 3
 line-color = #f00
 
-border-size = 0
+; border-size = 0
+border-top = 0
+border-left = 20
+border-right = 20
 border-color = #00000000
 
 padding-left = 0
@@ -53,7 +56,8 @@ font-2 = siji:pixelsize=11;1
 
 modules-left = i3
 #modules-center = mpd
-modules-right = xkeyboard volume filesystem eth date
+modules-center = date
+modules-right = xkeyboard volume filesystem eth
 
 tray-position = right
 tray-padding = 0
@@ -277,7 +281,7 @@ format-disconnected =
 type = internal/date
 interval = 5
 
-date = " %a %d %b"
+date = "%a %d %b"
 ;date = " %a, %b %d, %Y at %I:%M%p"
 ;date-alt = " %Y-%m-%d"
 
@@ -290,7 +294,8 @@ format-prefix-foreground = ${colors.foreground-alt}
 ; format-underline = #407ee7
 ;format-underline = #0a6cf5
 
-label = %date% %time%
+; label = %date% %time%
+label = %time%
 
 [module/volume]
 type = internal/volume
