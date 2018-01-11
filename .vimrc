@@ -248,6 +248,7 @@ augroup filetypeVim
 augroup END
 
 augroup customComments
+	autocmd!
 	" New comment styles for filestypes
 	" # - taskrc
 	autocmd FileType taskrc setlocal commentstring=#\ %s
