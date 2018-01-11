@@ -43,9 +43,6 @@ set listchars=tab:▸\ ,eol:¬
 set number
 set relativenumber
 
-" No swap files
-set noswapfile
-
 " Show commands as they are being written
 set showcmd
 
