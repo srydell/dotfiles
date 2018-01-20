@@ -122,6 +122,9 @@ set wildignore+=*.pyc
 set backupdir=~/.vim/tmp/backup//
 set directory=~/.vim/tmp/swap//
 set undodir=~/.vim/tmp/undo//
+" delete old backup, backup current file
+set backup
+set writebackup
 
 " ---- Insert mode ----
 " CTRL-u in insert mode makes the current word uppercase
