@@ -8,4 +8,8 @@ alias sa="fc -e : -1"
 alias ssa="fc -e : -2 -1"
 
 # ls with colors
-alias ls='ls --color=auto'
+if [ "$(uname)" = "Linux" ]; then
+	alias ls='ls --color=auto'
+else
+	alias ls='ls -G'
+fi

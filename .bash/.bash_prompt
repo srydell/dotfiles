@@ -101,7 +101,7 @@ PS1+="\[${white}\] at ";
 PS1+="\[${hostStyle}\]\h"; # Host
 PS1+="\[${white}\] in ";
 PS1+="\[${green}\]\W"; # Working directory base name
-PS1+="\$(prompt_git \"\[${white}\] on \[${violet}\]\" \"\[${blue}\]\")"; # Git repository details
+# PS1+="\$(prompt_git \"\[${white}\] on \[${violet}\]\" \"\[${blue}\]\")"; # Git repository details
 PS1+="\[${reset}\]\n";
 PS1+="\[${white}\]\$ \[${reset}\]"; # `$` (and reset color)
 export PS1;
