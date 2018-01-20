@@ -60,9 +60,15 @@ export EDITOR=$VISUAL
 # Counteracting a bug in systemd according to archlinux.org forum. Found in application "i3lock"
 export LC_ALL=en_US.UTF-8
 
-# Make bash compiling use ccache and all cores. Check #Cores by lscpu
-export PATH="/usr/lib/ccache/bin/:$PATH"
-export MAKEFLAGS="-j13 -l12"
+if [ "$(uname)" = "Linux" ]; then
+	# Make bash compiling use ccache and all cores. Check #Cores by lscpu
+	export PATH="/usr/lib/ccache/bin/:$PATH"
+	export MAKEFLAGS="-j13 -l12"
+elif [ "$(uname)" = "Darwin" ]; then
+	# Let brew programs come first
+	export PATH="/usr/local/sbin:$PATH"
+	export PATH="$HOME/.cargo/bin:$PATH"
+fi
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
