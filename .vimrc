@@ -13,6 +13,9 @@ filetype plugin indent on
 " Enable syntax
 syntax enable
 
+" Always use filetype latex for .tex files
+let g:tex_flavor = "latex"
+
 " Set mapleader
 let mapleader="\<Space>"
 let maplocalleader="\<Space>"
