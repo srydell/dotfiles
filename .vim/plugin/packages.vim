@@ -2,6 +2,9 @@ command! PackUpdate packadd minpac | source $MYVIMRC | redraw | call minpac#upda
 command! PackClean packadd minpac | source $MYVIMRC | call minpac#clean()
 
 if !exists('*minpac#init')
+	if !isdirectory('~/.vim/pack')
+		execute('!git clone https://github.com/k-takata/minpac.git ~/.vim/pack/minpac/opt/minpac')
+	endif
 	finish
 endif
 

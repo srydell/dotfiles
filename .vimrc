@@ -108,17 +108,23 @@ set wildignore+=*.DS_Store
 " Ignore python byte code
 set wildignore+=*.pyc
 
-" Let vim store backup/swap/undo files in these directories
-" Have the benefit of being able to recover from crashes without being
-" bothered with swap files
-" The double // will create files with whole path expanded. This will
-" hopefully result in no name collisions
-set backupdir=~/.vim/tmp/backup//
-set directory=~/.vim/tmp/swap//
-set undodir=~/.vim/tmp/undo//
-" Delete old backup, backup current file
-set backup
-set writebackup
+" Create directory structure for backup/swap/undo files
+if !isdirectory($HOME . "/.vim/tmp")
+	if exists("*mkdir")
+		call mkdir($HOME . "/.vim/tmp/backup", "p")
+		call mkdir($HOME . "/.vim/tmp/swap")
+		call mkdir($HOME . "/.vim/tmp/undo")
+
+		" Let vim store backup/swap/undo files in these directories
+		" The double // will create files with whole path expanded.
+		set backupdir=~/.vim/tmp/backup//
+		set directory=~/.vim/tmp/swap//
+		set undodir=~/.vim/tmp/undo//
+		" Delete old backup, backup current file
+		set backup
+		set writebackup
+	endif
+endif
 
 " ---- Insert mode ----
 " CTRL-u in insert mode makes the current word uppercase
