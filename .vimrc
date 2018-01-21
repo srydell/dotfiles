@@ -1,20 +1,8 @@
-" Package manager
-source ~/.vim/packages.vim
-
-" Autocompletion settings
-source ~/.vim/autocomplete.vim
-
-" Statusline settings
-source ~/.vim/statusline.vim
-
 " Enable filetype
 filetype plugin indent on
 
 " Enable syntax
 syntax enable
-
-" Always use filetype latex for .tex files
-let g:tex_flavor = "latex"
 
 " Set mapleader
 let mapleader="\<Space>"
@@ -37,6 +25,9 @@ set encoding=utf-8
 set background=dark
 let g:gruvbox_contrast_dark=1
 silent! colorscheme gruvbox
+
+" Always use filetype latex for .tex files
+let g:tex_flavor = "latex"
 
 " Make it easier to see tabs and newlines
 set list
@@ -125,7 +116,7 @@ set wildignore+=*.pyc
 set backupdir=~/.vim/tmp/backup//
 set directory=~/.vim/tmp/swap//
 set undodir=~/.vim/tmp/undo//
-" delete old backup, backup current file
+" Delete old backup, backup current file
 set backup
 set writebackup
 
@@ -136,7 +127,7 @@ inoremap <c-u> <esc>mmviw~`ma
 " ---- Normal mode ----
 " Open qutebrowser with the word under the cursor as a 
 " search term. Filetype dependent
-noremap <leader>t :call OnlineDoc()<CR>
+nnoremap <leader>t :call OnlineDoc()<CR>
 
 " Write document
 nnoremap <leader><Space> :write<cr>
@@ -146,6 +137,10 @@ nnoremap <leader>ev :split$MYVIMRC<cr>
 
 " Open split window and edit .tmux.conf
 nnoremap <leader>et :split ~/.tmux.conf<cr>
+
+" Open split window and edit filetype specific configs expand
+" TODO: wrap in a function and make work
+" nnoremap <leader>ef :split '~/.vim/ftplugin/' . expand("&filetype") . ".vim"
 
 " Source vimrc
 nnoremap <leader>sv :source $MYVIMRC<cr>
@@ -211,53 +206,3 @@ function! OnlineDoc()
 	" redraw necessary after silent since it wipes the buffer
 	redraw!
 endfunction
-
-" Set local make options
-" do not expand tabs to spaces
-augroup filetypeMake
-	autocmd!
-	autocmd FileType make set noexpandtab shiftwidth=4 softtabstop=0
-augroup END
-
-" Set local cpp options
-" expand tabs to four columns
-augroup filetypePython
-	autocmd!
-	autocmd FileType cpp set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
-augroup END
-
-" Set local python options
-" expand tabs to four columns
-augroup filetypePython
-	autocmd!
-	autocmd FileType python set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
-augroup END
-
-" Latex autocompilation
-augroup filetypeLatex
-	autocmd!
-	" Compile latex with rubber upon saving the file
-	" TODO: put in sighup to update mupdf automatically using
-	"	$ pkill -HUP mupdf
-	"	Must check whether there is an open mupdf running though, maybe even
-	"	connected to the current buffer would be good
-	autocmd FileType tex nnoremap <leader>c :w<CR>:silent !rubber --pdf --warn all %<CR>:redraw!<CR>
-	" View PDF. '%:r' is current file's root (base) name
-	autocmd FileType tex nnoremap <leader>v :silent !mupdf %:r.pdf &<CR><CR>
-augroup END
-
-" Setup folding for vimscript
-augroup filetypeVim
-	autocmd!
-	autocmd FileType vim setlocal foldmethod=marker
-	autocmd FileType vim set noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
-augroup END
-
-augroup customComments
-	autocmd!
-	" New comment styles for filestypes
-	" # - taskrc
-	autocmd FileType taskrc setlocal commentstring=#\ %s
-	" ! - xdefaults
-	autocmd FileType xdefaults setlocal commentstring=!\ %s
-augroup END
