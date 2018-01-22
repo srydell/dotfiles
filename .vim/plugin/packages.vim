@@ -1,10 +1,14 @@
-command! PackUpdate packadd minpac | source $MYVIMRC | redraw | call minpac#update()
-command! PackClean packadd minpac | source $MYVIMRC | call minpac#clean()
+command! PackUpdate packadd minpac | source ~/.vim/plugin/packages.vim | redraw | call minpac#update()
+command! PackClean packadd minpac | source ~/.vim/plugin/packages.vim | call minpac#clean()
 
+if !isdirectory($HOME . "/.vim/pack")
+	" Download minpac
+	execute('silent !git clone https://github.com/k-takata/minpac.git ~/.vim/pack/minpac/opt/minpac')
+	echom "You may now install the plugins listed in ~/.vim/plugin/packages.vim by typing :PackUpdate"
+endif
+
+" This will only happen if packadd minpac has been executed
 if !exists('*minpac#init')
-	if !isdirectory('~/.vim/pack')
-		execute('!git clone https://github.com/k-takata/minpac.git ~/.vim/pack/minpac/opt/minpac')
-	endif
 	finish
 endif
 
