@@ -114,16 +114,16 @@ if !isdirectory($HOME . "/.vim/tmp")
 		call mkdir($HOME . "/.vim/tmp/backup", "p")
 		call mkdir($HOME . "/.vim/tmp/swap")
 		call mkdir($HOME . "/.vim/tmp/undo")
-
-		" Let vim store backup/swap/undo files in these directories
-		" The double // will create files with whole path expanded.
-		set backupdir=~/.vim/tmp/backup//
-		set directory=~/.vim/tmp/swap//
-		set undodir=~/.vim/tmp/undo//
-		" Delete old backup, backup current file
-		set backup
-		set writebackup
 	endif
+else
+	" Let vim store backup/swap/undo files in these directories
+	" The double // will create files with whole path expanded.
+	set backupdir=~/.vim/tmp/backup//
+	set directory=~/.vim/tmp/swap//
+	set undodir=~/.vim/tmp/undo//
+	" Delete old backup, backup current file
+	set backup
+	set writebackup
 endif
 
 " ---- Insert mode ----
