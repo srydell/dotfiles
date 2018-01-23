@@ -14,6 +14,7 @@ endif
 
 call minpac#init()
 
+" Minpac updates itself
 call minpac#add('k-takata/minpac', {'type': 'opt'})
 
 " General enhancements
@@ -23,6 +24,9 @@ call minpac#add('tpope/vim-repeat')
 
 " Colorschemes
 call minpac#add('morhetz/gruvbox', {'type': 'opt'})
+
+" Add syntax highlighting for i3 config files
+call minpac#add('mboughaba/i3config.vim')
 
 " Autocompletion
 " Arch Linux specific: ncurses5-compat-libs
@@ -39,5 +43,6 @@ call minpac#add('KabbAmine/zeavim.vim')
 " be restored after a reboot
 call minpac#add('tpope/vim-obsession')
 
-" Add syntax highlighting for i3 config files
-call minpac#add('mboughaba/i3config.vim')
+" Emmet, intelligent snippets for html, css
+" Should only be available in .html and .css files
+call minpac#add('mattn/emmet-vim', {'type': 'opt'})
