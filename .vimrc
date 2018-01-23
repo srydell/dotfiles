@@ -37,6 +37,9 @@ set listchars=tab:▸\ ,eol:¬
 set number
 set relativenumber
 
+" Make backspace be able to delete indent and before starting position
+set backspace=indent,start
+
 " Show commands as they are being written
 set showcmd
 
@@ -114,6 +117,10 @@ if !isdirectory($HOME . "/.vim/tmp")
 		call mkdir($HOME . "/.vim/tmp/backup", "p")
 		call mkdir($HOME . "/.vim/tmp/swap")
 		call mkdir($HOME . "/.vim/tmp/undo")
+	else
+		" Don't litter the current working directory
+		set noswapfile
+		set nowritebackup
 	endif
 else
 	" Let vim store backup/swap/undo files in these directories
@@ -125,10 +132,6 @@ else
 	set backup
 	set writebackup
 endif
-
-" ---- Insert mode ----
-" CTRL-u in insert mode makes the current word uppercase
-inoremap <c-u> <esc>mmviw~`ma
 
 " ---- Normal mode ----
 " Open qutebrowser with the word under the cursor as a 
@@ -174,13 +177,6 @@ nnoremap gk k
 
 " Make Y more consistent with C and D
 nnoremap Y y$
-
-" ---- Custom objects ----
-" Change next/last bracket
-onoremap inb :<c-u>normal! f(vi(<cr>
-onoremap in( :<c-u>normal! f(vi(<cr>
-onoremap ilb :<c-u>normal! F)vi(<cr>
-onoremap il( :<c-u>normal! F)vi(<cr>
 
 " Function to open a search for the word under the cursor.
 " Depending on which filetype is in the current buffer, different
