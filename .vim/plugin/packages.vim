@@ -26,7 +26,7 @@ call minpac#add('tpope/vim-repeat')
 call minpac#add('morhetz/gruvbox', {'type': 'opt'})
 
 " Add syntax highlighting for i3 config files
-call minpac#add('mboughaba/i3config.vim')
+call minpac#add('mboughaba/i3config.vim', {'type': 'opt'})
 
 " Autocompletion
 " Arch Linux specific: ncurses5-compat-libs
@@ -35,9 +35,6 @@ call minpac#add('Valloric/YouCompleteMe', {'do': '!./install.py --clang-complete
 call minpac#add('SirVer/ultisnips')
 " Takes input from YCM and completes function parameters etc
 call minpac#add('tenfyzhong/CompleteParameter.vim')
-
-" Offline documentation browser
-call minpac#add('KabbAmine/zeavim.vim')
 
 " Helps with keeping a session saved that can
 " be restored after a reboot
