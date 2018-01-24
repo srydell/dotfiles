@@ -137,7 +137,7 @@ nnoremap <leader>et :split ~/.tmux.conf<CR>
 " Open split window and edit filetype specific configs expand
 " TODO: wrap in a function and make work
 " nnoremap <leader>ef :split '~/.vim/ftplugin/' . expand("&filetype") . ".vim"
-nnoremap <leader>ef :call getPaths#EditFtplugin()<CR>
+nnoremap <leader>ef :call functions#EditFtplugin()<CR>
 
 " Source vimrc
 nnoremap <leader>sv :source $MYVIMRC<CR>
