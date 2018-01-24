@@ -126,7 +126,7 @@ set writebackup
 nnoremap <leader>t :call OnlineDoc()<CR>
 
 " Write document
-nnoremap <leader><Space> :write<CR>
+nnoremap <leader>w :write<CR>
 
 " Open split window and edit .vimrc
 nnoremap <leader>ev :split$MYVIMRC<CR>
@@ -143,6 +143,23 @@ nnoremap <leader>sv :source $MYVIMRC<CR>
 
 " Generate a tags file
 nnoremap <leader>C :!ctags -R<CR>
+
+" -- Tpope fugitive commands --
+" Starting with <leader>g for harmless commands
+" Starting with <leader>G for potentially harmful commands
+
+" Run git commit -u
+nnoremap <leader>gu :silent! Git add -u<CR>:redraw!<CR>
+
+" Add file corresponding to current buffer
+nnoremap <leader>ga :Gwrite<CR>
+
+" Open commit message in a new buffer
+nnoremap <leader>gc :Gcommit<CR>
+
+" Revert current file to last checked in version
+" Same as running git checkout %
+nnoremap <leader>Gr :Gread<CR>
 
 " Populate the quickfix list with errors generated from make
 " The ! sign makes vim not automatically jump to the first quickfix

@@ -1,6 +1,7 @@
 command! PackUpdate packadd minpac | source ~/.vim/plugin/packages.vim | redraw | call minpac#update()
 command! PackClean packadd minpac | source ~/.vim/plugin/packages.vim | call minpac#clean()
 
+" If packages are not handled
 if !isdirectory($HOME . "/.vim/pack")
 	" Download minpac
 	execute('silent !git clone https://github.com/k-takata/minpac.git ~/.vim/pack/minpac/opt/minpac')
@@ -21,6 +22,7 @@ call minpac#add('k-takata/minpac', {'type': 'opt'})
 call minpac#add('tpope/vim-surround')
 call minpac#add('tpope/vim-commentary')
 call minpac#add('tpope/vim-repeat')
+call minpac#add('tpope/vim-fugitive')
 
 " Colorschemes
 call minpac#add('morhetz/gruvbox', {'type': 'opt'})
