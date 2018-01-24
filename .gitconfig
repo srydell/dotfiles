@@ -1,0 +1,9 @@
+[user]
+	name = srydell
+	email = simonwrydell@gmail.com
+[core]
+	editor = vim
+[init]
+	templatedir = ~/.git_template
+[alias]
+	ctags = !.git/hooks/ctags
