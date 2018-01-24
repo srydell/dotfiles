@@ -91,7 +91,7 @@ set completeopt=longest,menuone,preview
 
 " Completion with commands
 set wildmenu
-set wildmode=list:longest
+set wildmode=longest,full
 
 " Ignore git direcories
 set wildignore+=.git
@@ -111,27 +111,14 @@ set wildignore+=*.DS_Store
 " Ignore python byte code
 set wildignore+=*.pyc
 
-" Create directory structure for backup/swap/undo files
-if !isdirectory($HOME . "/.vim/tmp")
-	if exists("*mkdir")
-		call mkdir($HOME . "/.vim/tmp/backup", "p")
-		call mkdir($HOME . "/.vim/tmp/swap")
-		call mkdir($HOME . "/.vim/tmp/undo")
-	else
-		" Don't litter the current working directory
-		set noswapfile
-		set nowritebackup
-	endif
-else
-	" Let vim store backup/swap/undo files in these directories
-	" The double // will create files with whole path expanded.
-	set backupdir=~/.vim/tmp/backup//
-	set directory=~/.vim/tmp/swap//
-	set undodir=~/.vim/tmp/undo//
-	" Delete old backup, backup current file
-	set backup
-	set writebackup
-endif
+" Let vim store backup/swap/undo files in these directories
+" The double // will create files with whole path expanded.
+set backupdir=~/.vim/tmp/backup//
+set directory=~/.vim/tmp/swap//
+set undodir=~/.vim/tmp/undo//
+" Delete old backup, backup current file
+set backup
+set writebackup
 
 " ---- Normal mode ----
 " Open qutebrowser with the word under the cursor as a 
