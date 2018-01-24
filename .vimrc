@@ -139,20 +139,37 @@ endif
 nnoremap <leader>t :call OnlineDoc()<CR>
 
 " Write document
-nnoremap <leader><Space> :write<cr>
+nnoremap <leader><Space> :write<CR>
 
 " Open split window and edit .vimrc
-nnoremap <leader>ev :split$MYVIMRC<cr>
+nnoremap <leader>ev :split$MYVIMRC<CR>
 
 " Open split window and edit .tmux.conf
-nnoremap <leader>et :split ~/.tmux.conf<cr>
+nnoremap <leader>et :split ~/.tmux.conf<CR>
 
 " Open split window and edit filetype specific configs expand
 " TODO: wrap in a function and make work
 " nnoremap <leader>ef :split '~/.vim/ftplugin/' . expand("&filetype") . ".vim"
 
 " Source vimrc
-nnoremap <leader>sv :source $MYVIMRC<cr>
+nnoremap <leader>sv :source $MYVIMRC<CR>
+
+" Generate a tags file
+nnoremap <leader>C :!ctags -R<CR>
+
+" Populate the quickfix list with errors generated from make
+" The ! sign makes vim not automatically jump to the first quickfix
+" Works automatically with makefiles but may want to be setting
+" setlocal makeprg=COMPILER\ %
+" setlocal errorformat=...
+" To populate the quickfix list for other compilers
+nnoremap <leader>m :make!<CR>
+
+" Move through the quickfix list
+nnoremap <silent> [c :cprevious<CR>
+nnoremap <silent> ]c :cnext<CR>
+nnoremap <silent> [C :cfirst<CR>
+nnoremap <silent> ]C :clast<CR>
 
 " ---- Visual mode ----
 " Put quotes on your current selection in Visual mode
