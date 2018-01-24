@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Exit immediately if any command exits with a non-zero exit status
+set -e
+
+# Set PATH
+PATH="/usr/local/bin:$PATH"
+
+# Find the .git dir in the project root, the tags file will be .ctag/tags
+dir="`git rev-parse --git-dir`"
+
+# If anything fails or is interrupted, clean up
+trap 'rm -f "$dir/$$.tags"' EXIT
+
+# Run ctags hook, do not generate tags for --languages=-"language"
+git ls-files | \
+  ctags --tag-relative -L - -f"$dir/$$.tags" --languages=-javascript,sql
+mv "$dir/$$.tags" "$dir/tags"
