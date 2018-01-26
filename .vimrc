@@ -59,6 +59,9 @@ set timeoutlen=1000 ttimeoutlen=0
 " Don't redraw buffer in all situations
 set lazyredraw
 
+" Be able to hide unsaved buffers while editing new ones
+set hidden
+
 " Ignore case if search is lowercase, otherwise case-sensitive
 set ignorecase
 set smartcase
@@ -123,10 +126,15 @@ set writebackup
 " ---- Normal mode ----
 " Open qutebrowser with the word under the cursor as a 
 " search term. Filetype dependent
-nnoremap <leader>t :call OnlineDoc()<CR>
+nnoremap <leader>h :call OnlineDoc()<CR>
 
 " Write document
 nnoremap <leader>w :write<CR>
+
+" Write all buffers and exit
+" If there are buffers without a name,
+" or that are readonly, bring up a confirm prompt
+nnoremap <leader>W :confirm wqall<CR>
 
 " Open split window and edit .vimrc
 nnoremap <leader>ev :split$MYVIMRC<CR>
@@ -135,8 +143,6 @@ nnoremap <leader>ev :split$MYVIMRC<CR>
 nnoremap <leader>et :split ~/.tmux.conf<CR>
 
 " Open split window and edit filetype specific configs expand
-" TODO: wrap in a function and make work
-" nnoremap <leader>ef :split '~/.vim/ftplugin/' . expand("&filetype") . ".vim"
 nnoremap <leader>ef :call functions#EditFtplugin()<CR>
 
 " Source vimrc
