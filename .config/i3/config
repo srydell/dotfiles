@@ -27,7 +27,7 @@ exec setxkbmap us,se -option "lv3:ralt_alt,grp:alt_shift_toggle,ctrl:swapcaps"
 exec_always feh --bg-scale ~/.config/wallpaper.jpg
 
 # Fade out mouse when not in use after 0.2 seconds
-exec_always  --no-startup-id unclutter -idle 0.2 -root
+exec_always  --no-startup-id unclutter --timeout 0.2
 
 # -- Basic bindings --
 bindsym $mod+Return		exec $term
