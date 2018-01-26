@@ -176,6 +176,12 @@ nnoremap <silent> ]c :cnext<CR>
 nnoremap <silent> [C :cfirst<CR>
 nnoremap <silent> ]C :clast<CR>
 
+" Move through the buffer list
+nnoremap <silent> [b :bprevious<CR>
+nnoremap <silent> ]b :bnext<CR>
+nnoremap <silent> [B :bfirst<CR>
+nnoremap <silent> ]B :blast<CR>
+
 " ---- Visual mode ----
 " Put quotes on your current selection in Visual mode
 vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>
