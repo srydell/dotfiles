@@ -87,7 +87,7 @@ endif
 " vnoremap <leader>y "*ygv
 
 " Better autocomplete
-set completeopt=longest,menuone,preview
+set completeopt=longest,menuone
 
 " Completion with commands
 set wildmenu
