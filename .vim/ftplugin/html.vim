@@ -1,3 +1,4 @@
+packadd vim-javascript
 packadd emmet-vim 
 
 " Only install emmet in this buffer

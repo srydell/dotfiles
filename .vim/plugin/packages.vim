@@ -45,3 +45,6 @@ call minpac#add('tpope/vim-obsession')
 " Emmet, intelligent snippets for html, css
 " Should only be available in .html and .css files
 call minpac#add('mattn/emmet-vim', {'type': 'opt'})
+
+" Syntax highlighting for different Javascript frameworks
+call minpac#add('pangloss/vim-javascript', {'type': 'opt'})
