@@ -162,7 +162,9 @@ nnoremap <leader>gu :silent! Git add -u<CR>:redraw!<CR>
 nnoremap <leader>ga :Gwrite<CR>
 
 " Open commit message in a new buffer
-nnoremap <leader>gc :Gcommit<CR>
+" --verbose so that the changes are visible
+"  while in the commit message
+nnoremap <leader>gc :Gcommit --verbose<CR>
 
 " Revert current file to last checked in version
 " Same as running git checkout %
