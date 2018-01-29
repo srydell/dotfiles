@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Feed this script two arguments: $1 for a folder directory and $2 number of seconds per image.
 
