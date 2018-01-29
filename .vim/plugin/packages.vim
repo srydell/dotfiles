@@ -33,7 +33,9 @@ call minpac#add('mboughaba/i3config.vim', {'type': 'opt'})
 " Autocompletion
 " Arch Linux specific: ncurses5-compat-libs
 " is needed from AUR for the completion menu
-call minpac#add('Valloric/YouCompleteMe', {'do': '!./install.py --clang-completer'})
+" Note: In the future I might want to add --js-completer option for Javascript
+"		Need the Node.js and npm for this to work
+call minpac#add('Valloric/YouCompleteMe', {'do': '!./install.py --clang-completer --js-completer'})
 call minpac#add('SirVer/ultisnips')
 " Takes input from YCM and completes function parameters etc
 call minpac#add('tenfyzhong/CompleteParameter.vim')
