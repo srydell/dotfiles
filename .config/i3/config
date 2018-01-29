@@ -4,6 +4,7 @@
 # Needed for i3-gaps
 hide_edge_borders both
 for_window [class="^.*"] border pixel 0
+for_window [instance="scratch"] floating enable;
 gaps inner 10
 gaps outer 10
 font pango:iosevka 13
@@ -100,7 +101,7 @@ bindsym $mod+Shift+l		move right 30
 bindsym $mod+z			gaps outer current plus 5
 bindsym $mod+Shift+z		gaps outer current minus 5
 
-bindsym $mod+x			exec --no-startup-id i3lock
+# bindsym $mod+x			exec --no-startup-id i3lock
 bindsym $mod+Shift+x		exec sudo shutdown -h now
 
 # bindsym $mod+c
@@ -119,7 +120,7 @@ bindsym $mod+Shift+x		exec sudo shutdown -h now
 # bindsym $mod+Shift+m
 
 # - Function Buttons -
-# bindsym F1
+bindsym F1	exec --no-startup-id ~/.config/Scripts/scratch_vim.sh
 # bindsym F2
 # bindsym F3
 # bindsym F4
