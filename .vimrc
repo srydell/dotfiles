@@ -26,9 +26,6 @@ set background=dark
 let g:gruvbox_contrast_dark=1
 silent! colorscheme gruvbox
 
-" Always use filetype latex for .tex files
-let g:tex_flavor = "latex"
-
 " Make it easier to see tabs and newlines
 set list
 set listchars=tab:▸\ ,eol:¬
@@ -123,6 +120,12 @@ set undodir=~/.vim/tmp/undo//
 set backup
 set writebackup
 
+" Always use filetype latex for .tex files
+let g:tex_flavor = "latex"
+
+" Always use filetype latex for .tex files
+let g:editorconfig_Beautifier = "~/.vim/.jsBeautifierConfig"
+
 " ---- Normal mode ----
 " Open qutebrowser with the word under the cursor as a 
 " search term. Filetype dependent
@@ -162,7 +165,9 @@ nnoremap <leader>gu :silent! Git add -u<CR>:redraw!<CR>
 nnoremap <leader>ga :Gwrite<CR>
 
 " Open commit message in a new buffer
-nnoremap <leader>gc :Gcommit<CR>
+" --verbose so that the changes are visible
+"  while in the commit message
+nnoremap <leader>gc :Gcommit --verbose<CR>
 
 " Revert current file to last checked in version
 " Same as running git checkout %
