@@ -120,6 +120,12 @@ set undodir=~/.vim/tmp/undo//
 set backup
 set writebackup
 
+" Persistent undo tree after exiting vim
+set undofile
+
+" How many levels are saved in each file
+set undolevels=100
+
 " Always use filetype latex for .tex files
 let g:tex_flavor = "latex"
 
