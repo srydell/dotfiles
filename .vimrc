@@ -154,6 +154,9 @@ nnoremap <leader>et :split ~/.tmux.conf<CR>
 " Open split window and edit filetype specific configs expand
 nnoremap <leader>ef :call functions#EditFtplugin()<CR>
 
+" Open a split and edit snippets for this filetype
+nnoremap <leader>es :UltiSnipsEdit<CR>
+
 " Source vimrc
 nnoremap <leader>sv :source $MYVIMRC<CR>
 
