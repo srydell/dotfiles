@@ -22,6 +22,13 @@ augroup END
 " Encoding
 set encoding=utf-8
 
+" Check current operating system
+" Linux for Linux
+" Darwin for MacOS
+if !exists("g:currentOS")
+	let g:currentOS = substitute(system('uname'), '\n', '', '')
+endif
+
 set background=dark
 let g:gruvbox_contrast_dark=1
 silent! colorscheme gruvbox
@@ -133,9 +140,10 @@ let g:tex_flavor = "latex"
 let g:editorconfig_Beautifier = "~/.vim/.jsBeautifierConfig"
 
 " ---- Normal mode ----
-" Open qutebrowser with the word under the cursor as a 
-" search term. Filetype dependent
-nnoremap <leader>h :call functions#OnlineDoc()<CR>
+" Open appropriate help on the word under the cursor
+" Filetype dependent
+" Takes a browser and OS
+nnoremap <leader>h :call functions#GetHelpDocs("qutebrowser", g:currentOS)<CR>
 
 " Write document
 nnoremap <leader>w :write<CR>

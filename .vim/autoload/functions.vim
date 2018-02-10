@@ -5,12 +5,13 @@ function! functions#EditFtplugin() abort
 endfunction
 
 " Function to open a search for the word under the cursor.
-" Depending on which filetype is in the current buffer, different
-" search engines will be used
-function! functions#OnlineDoc()
+" Depending on which filetype is in the current buffer,
+" different search engines will be used
+function! functions#GetHelpDocs(browser, currentOS)
 	" Depending on which filetype, use different search engines
-	" OBS: Use ' instead of " to tell vim to use the string AS IS. Therefore
-	" no substitutions to escaped characters are needed
+	" OBS: Use ' instead of " to tell vim to use the string AS IS.
+	" Therefore no substitutions to escaped characters are needed
+	" TODO: Make this a dictionary
 	if &ft =~ "vim"
 		execute(":help " . expand("<cword>"))
 		return
@@ -19,18 +20,25 @@ function! functions#OnlineDoc()
 	else
 		let s:urlTemplate = 'https://duckduckgo.com/?q=SEARCHTERM'
 	endif
-	" TODO: Put browser as user specific
-	" Requires s:browser to be in PATH
-	let s:browser = "qutebrowser"
 
+	" Expand the word under the cursor and
+	" replace 'SEARCHTERM' by the expanded word in urlTemplate
 	let s:wordUnderCursor = expand("<cword>")
-
-	" Replace SEARCHTERM by the selected word
 	let s:url = substitute(s:urlTemplate, "SEARCHTERM", s:wordUnderCursor, "g")
 
-	" Same as running ": silent! browser 'url'"
-	let s:cmd = "silent !" . s:browser . " '" . s:url . "'"
-	execute(s:cmd)
+	" Build the command to be executed
+	" Shold look something like
+	" silent ! open -a Safari 'http://www.vim.org'
+	let s:cmd = [
+		\ 'silent !',
+		\ a:currentOS == 'Darwin' ? 'open -a' : '',
+		\ a:browser,
+		\ "'" . s:url . "'"
+		\]
+
+	" Same as :cmd
+	execute(join(s:cmd))
+
 	" redraw necessary after silent since it wipes the buffer
 	redraw!
 endfunction
