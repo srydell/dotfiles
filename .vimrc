@@ -35,7 +35,7 @@ set number
 set relativenumber
 
 " Make backspace be able to delete indent and before starting position
-set backspace=indent,start
+set backspace=indent,eol,start
 
 " Show commands as they are being written
 set showcmd
@@ -190,11 +190,11 @@ nnoremap <leader>Gr :Gread<CR>
 " To populate the quickfix list for other compilers
 nnoremap <leader>m :make!<CR>
 
-" Move through the quickfix list
-nnoremap <silent> [c :cprevious<CR>
-nnoremap <silent> ]c :cnext<CR>
-nnoremap <silent> [C :cfirst<CR>
-nnoremap <silent> ]C :clast<CR>
+" Move through the quiqkfix list
+nnoremap <silent> [q :cprevious<CR>
+nnoremap <silent> ]q :cnext<CR>
+nnoremap <silent> [q :cfirst<CR>
+nnoremap <silent> ]q :clast<CR>
 
 " Move through the buffer list
 nnoremap <silent> [b :bprevious<CR>
@@ -225,6 +225,10 @@ nnoremap gk k
 
 " Make Y more consistent with C and D
 nnoremap Y y$
+
+" Enable builtin matchit feature.
+" Hit '%' on 'if' to jump to 'else'.
+runtime macros/matchit.vim
 
 " Function to open a search for the word under the cursor.
 " Depending on which filetype is in the current buffer, different
