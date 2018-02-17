@@ -47,6 +47,9 @@ set backspace=indent,eol,start
 " Show commands as they are being written
 set showcmd
 
+" Do not show the current mode (insert, visual, ...)
+set noshowmode
+
 " Softwrap text (without creating a newline)
 set wrap
 
