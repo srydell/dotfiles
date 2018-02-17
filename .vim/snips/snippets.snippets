@@ -1,0 +1,22 @@
+snippet _skel "Snippet file" b
+# `!v expand("%:t")` - Snippets for `!v expand("%:t:r")` file type
+
+$0
+endsnippet
+
+# snip.rv trick is to ensure that snippets are expanded properly
+snippet snip "Snippet definition" b
+`!p snip.rv = "snippet"` ${1:TriggerWord} "${2:Description}" ${3:b}
+${0:${VISUAL}}
+`!p snip.rv = "endsnippet"`
+endsnippet
+
+snippet global "Global snippet" b
+`!p snip.rv = "global"` !p
+${0:${VISUAL}}
+`!p snip.rv = "endglobal"`
+endsnippet
+
+snippet vis "${VISUAL}" i
+\$\{0:\$\{VISUAL\}\}
+endsnippet
