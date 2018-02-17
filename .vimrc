@@ -189,6 +189,9 @@ nnoremap <leader>ga :Gwrite<CR>
 "  while in the commit message
 nnoremap <leader>gc :Gcommit --verbose<CR>
 
+" Push the changes
+nnoremap <leader>Gp :Gpush<CR>
+
 " Revert current file to last checked in version
 " Same as running git checkout %
 nnoremap <leader>Gr :Gread<CR>
