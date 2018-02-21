@@ -83,19 +83,6 @@ set visualbell t_vb=
 set splitbelow
 set splitright
 
-" If in an OS with a clipboard, let default (unnamed) register be clipboard
-if has('clipboard')
-	set clipboard^=unnamed
-endif
-" " Alternatively one could perhaps do
-" " Yank to system clipboard
-" nnoremap <leader>y "*y
-" " Paste from clipboard
-" nnoremap <leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
-" nnoremap <leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
-" " Yank to system clipboard from visual mode
-" vnoremap <leader>y "*ygv
-
 " Better autocomplete
 set completeopt=longest,menuone
 
@@ -239,6 +226,14 @@ nnoremap gk k
 
 " Make Y more consistent with C and D
 nnoremap Y y$
+
+" Yank to system clipboard
+nnoremap <leader>y "*y
+" Paste from clipboard
+nnoremap <silent><leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
+nnoremap <silent><leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
+" Yank to system clipboard from visual mode
+xnoremap <leader>y "*ygv<Esc>
 
 " Enable builtin matchit feature.
 " Hit '%' on 'if' to jump to 'else'.
