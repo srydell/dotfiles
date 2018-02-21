@@ -129,7 +129,7 @@ let g:tex_flavor = "latex"
 " Always use filetype latex for .tex files
 let g:editorconfig_Beautifier = "~/.vim/.jsBeautifierConfig"
 
-" ---- Normal mode ----
+" ---- Leader mappings ----
 " Open appropriate help on the word under the cursor
 " Filetype dependent
 " Takes a browser and OS
@@ -191,7 +191,7 @@ nnoremap <leader>Gr :Gread<CR>
 " To populate the quickfix list for other compilers
 nnoremap <leader>m :make!<CR>
 
-" Move through the quiqkfix list
+" Move through the quickfix list
 nnoremap <silent> [q :cprevious<CR>
 nnoremap <silent> ]q :cnext<CR>
 nnoremap <silent> [q :cfirst<CR>
@@ -203,9 +203,13 @@ nnoremap <silent> ]b :bnext<CR>
 nnoremap <silent> [B :bfirst<CR>
 nnoremap <silent> ]B :blast<CR>
 
-" ---- Visual mode ----
-" Put quotes on your current selection in Visual mode
-vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>
+" Yank to system clipboard
+nnoremap <leader>y "*y
+" Paste from clipboard
+nnoremap <silent><leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
+nnoremap <silent><leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
+" Yank to system clipboard from visual mode
+xnoremap <leader>y "*ygv<Esc>
 
 " H moves to beginning of line and L to end of line
 nnoremap H ^
@@ -226,14 +230,6 @@ nnoremap gk k
 
 " Make Y more consistent with C and D
 nnoremap Y y$
-
-" Yank to system clipboard
-nnoremap <leader>y "*y
-" Paste from clipboard
-nnoremap <silent><leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
-nnoremap <silent><leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
-" Yank to system clipboard from visual mode
-xnoremap <leader>y "*ygv<Esc>
 
 " Enable builtin matchit feature.
 " Hit '%' on 'if' to jump to 'else'.
