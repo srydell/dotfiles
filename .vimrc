@@ -131,7 +131,7 @@ let g:editorconfig_Beautifier = "~/.vim/.jsBeautifierConfig"
 
 " ---- Leader mappings ----
 " Open appropriate help on the word under the cursor
-" Filetype dependent
+" Filetype dependent.
 " Takes a browser and OS
 nnoremap <leader>h :call functions#GetHelpDocs("qutebrowser", g:currentOS)<CR>
 
@@ -230,6 +230,16 @@ nnoremap gk k
 
 " Make Y more consistent with C and D
 nnoremap Y y$
+
+" Fast substitutions for
+" Word under the cursor in normal mode
+" Visual selection in visual mode (Also copies selection into ")
+" <leader><Space> for the current line.
+" <leader>S for the whole file
+nnoremap <leader><Space> :'{,'}s/\<<C-r><C-w>\>//g<left><left>
+xnoremap <leader><Space> y:'{,'}s/<C-r><C-0>//g<left><left>
+nnoremap <leader>S :%s/\<<C-r><C-w>\>//g<left><left>
+xnoremap <leader>S y:%s/<C-r><C-0>//g<left><left>
 
 " Enable builtin matchit feature.
 " Hit '%' on 'if' to jump to 'else'.
