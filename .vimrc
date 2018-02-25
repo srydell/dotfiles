@@ -130,6 +130,9 @@ let g:tex_flavor = "latex"
 let g:editorconfig_Beautifier = "~/.vim/.jsBeautifierConfig"
 
 " ---- Leader mappings ----
+" <leader><lowerCaseLetter> for harmless commands
+" <leader><upperCaseLetter> for potentially harmful commands
+
 " Open appropriate help on the word under the cursor
 " Filetype dependent.
 " Takes a browser and OS
@@ -161,10 +164,6 @@ nnoremap <leader>sv :source $MYVIMRC<CR>
 " Generate a tags file
 nnoremap <leader>C :!ctags -R<CR>
 
-" -- Tpope fugitive commands --
-" Starting with <leader>g for harmless commands
-" Starting with <leader>G for potentially harmful commands
-
 " Run git commit -u
 nnoremap <leader>gu :silent! Git add -u<CR>:redraw!<CR>
 
@@ -182,6 +181,18 @@ nnoremap <leader>Gp :Gpush<CR>
 " Revert current file to last checked in version
 " Same as running git checkout %
 nnoremap <leader>Gr :Gread<CR>
+
+" Prompt for a command to run in the nearest tmux pane
+nnoremap <silent> <leader>tp :VimuxPromptCommand<CR>
+
+" Run last command executed by VimuxRunCommand
+nnoremap <silent> <leader>tr :VimuxRunLastCommand<CR>
+
+" Inspect runner pane
+nnoremap <silent> <leader>ti :VimuxInspectRunner<CR>
+
+" Zoom the tmux runner pane
+nnoremap <silent> <leader>tz :VimuxZoomRunner<CR>
 
 " Populate the quickfix list with errors generated from make
 " The ! sign makes vim not automatically jump to the first quickfix
@@ -211,6 +222,16 @@ nnoremap <silent><leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
 " Yank to system clipboard from visual mode
 xnoremap <leader>y "*ygv<Esc>
 
+" Fast substitutions for
+" Word under the cursor in normal mode
+" Visual selection in visual mode (Also copies selection into ")
+" <leader><Space> for the current line.
+" <leader>S for the whole file
+nnoremap <leader><Space> :'{,'}s/\<<C-r><C-w>\>//g<left><left>
+xnoremap <leader><Space> y:'{,'}s/<C-r><C-0>//g<left><left>
+nnoremap <leader>S :%s/\<<C-r><C-w>\>//g<left><left>
+xnoremap <leader>S y:%s/<C-r><C-0>//g<left><left>
+
 " H moves to beginning of line and L to end of line
 nnoremap H ^
 nnoremap L $
@@ -230,16 +251,6 @@ nnoremap gk k
 
 " Make Y more consistent with C and D
 nnoremap Y y$
-
-" Fast substitutions for
-" Word under the cursor in normal mode
-" Visual selection in visual mode (Also copies selection into ")
-" <leader><Space> for the current line.
-" <leader>S for the whole file
-nnoremap <leader><Space> :'{,'}s/\<<C-r><C-w>\>//g<left><left>
-xnoremap <leader><Space> y:'{,'}s/<C-r><C-0>//g<left><left>
-nnoremap <leader>S :%s/\<<C-r><C-w>\>//g<left><left>
-xnoremap <leader>S y:%s/<C-r><C-0>//g<left><left>
 
 " Enable builtin matchit feature.
 " Hit '%' on 'if' to jump to 'else'.

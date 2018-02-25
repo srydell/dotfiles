@@ -31,10 +31,8 @@ call minpac#add('morhetz/gruvbox', {'type': 'opt'})
 call minpac#add('mboughaba/i3config.vim', {'type': 'opt'})
 
 " Autocompletion
-" Arch Linux specific: ncurses5-compat-libs
-" is needed from AUR for the completion menu
-" Note: In the future I might want to add --js-completer option for Javascript
-"		Need the Node.js and npm for this to work
+" Note: Arch Linux specific: ncurses5-compat-libs
+"		is needed from AUR for the completion menu
 call minpac#add('Valloric/YouCompleteMe', {'do': '!./install.py --clang-completer --js-completer'})
 call minpac#add('SirVer/ultisnips')
 " Takes input from YCM and completes function parameters etc
@@ -43,6 +41,9 @@ call minpac#add('tenfyzhong/CompleteParameter.vim')
 " Helps with keeping a session saved that can
 " be restored after a reboot
 call minpac#add('tpope/vim-obsession')
+
+" Interact with tmux session
+call minpac#add('benmills/vimux')
 
 " Emmet, intelligent snippets for html, css
 " Should only be available in .html and .css files
