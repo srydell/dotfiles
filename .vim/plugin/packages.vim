@@ -42,11 +42,13 @@ call minpac#add('tenfyzhong/CompleteParameter.vim')
 " be restored after a reboot
 call minpac#add('tpope/vim-obsession')
 
-" Interact with tmux session
+" Interact with tmux sessions
 call minpac#add('benmills/vimux')
 
-" Emmet, intelligent snippets for html, css
-" Should only be available in .html and .css files
+" Move through tmux/vim panes with the same keybindings
+call minpac#add('christoomey/vim-tmux-navigator')
+
+" Emmet, snippets for html, css
 call minpac#add('mattn/emmet-vim', {'type': 'opt'})
 
 " Syntax highlighting for different Javascript frameworks
