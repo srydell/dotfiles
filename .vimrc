@@ -186,7 +186,7 @@ nnoremap <leader>Gr :Gread<CR>
 nnoremap <silent> <leader>tp :VimuxPromptCommand<CR>
 
 " Run last command executed by VimuxRunCommand
-nnoremap <silent> <leader>tr :VimuxRunLastCommand<CR>
+nnoremap <silent> <leader>tr :call tmux#vimuxRunLastCommandIfExists()<CR>
 
 " Inspect runner pane
 nnoremap <silent> <leader>ti :VimuxInspectRunner<CR>
