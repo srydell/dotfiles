@@ -35,11 +35,9 @@ call minpac#add('mboughaba/i3config.vim', {'type': 'opt'})
 "		is needed from AUR for the completion menu
 call minpac#add('Valloric/YouCompleteMe', {'do': '!./install.py --clang-completer --js-completer'})
 call minpac#add('SirVer/ultisnips')
-" Takes input from YCM and completes function parameters etc
-call minpac#add('tenfyzhong/CompleteParameter.vim')
 
-" Helps with keeping a session saved that can
-" be restored after a reboot
+" Helps with keeping a session saved that
+" can be restored after a reboot
 call minpac#add('tpope/vim-obsession')
 
 " Interact with tmux sessions

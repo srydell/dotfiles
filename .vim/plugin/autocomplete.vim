@@ -25,6 +25,3 @@ let g:ycm_collect_identifiers_from_tags_files=1
 " Cycle setting for completion
 let g:ycm_key_list_select_completion = ['<TAB>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<S-TAB>', '<Up>']
-
-" Let CompleteParameter.vim use UltiSnips keybindings
-let g:complete_parameter_use_ultisnips_mapping = 1
