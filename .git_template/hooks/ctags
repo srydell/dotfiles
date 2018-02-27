@@ -14,5 +14,5 @@ trap 'rm -f "$dir/$$.tags"' EXIT
 
 # Run ctags hook, do not generate tags for --languages=-"language"
 git ls-files | \
-  ctags --tag-relative -L - -f"$dir/$$.tags" --languages=-javascript,sql
+  ctags --tag-relative -L - -f"$dir/$$.tags" --languages=-sql
 mv "$dir/$$.tags" "$dir/tags"
