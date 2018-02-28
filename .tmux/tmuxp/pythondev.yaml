@@ -1,0 +1,22 @@
+session_name: pythondev
+start_directory: ${PWD}
+shell_command_before:
+  - command -v virtualenv >/dev/null 2>&1 || { pip3 install virtualenv; }
+  - '[ -d .env -a -f .env/bin/activate ] && source .env/bin/activate || virtualenv .env >/dev/null 2>&1 && source .env/bin/activate'
+windows:
+- window_name: dev
+  focus: True
+  layout: 6da5,239x56,0,0[239x34,0,0,65,239x21,0,35{119x21,0,35,66,119x21,120,35,67}]
+  options:
+    main-pane-height: 35
+  panes:
+  - shell_command:
+    - clear
+    - vim -c :e README.md
+- window_name: testing
+  layout: 6da5,239x56,0,0[239x34,0,0,65,239x21,0,35{119x21,0,35,66,119x21,120,35,67}]
+  options:
+    main-pane-height: 35
+  panes:
+  - clear
+  - clear
