@@ -7,7 +7,7 @@
 
 # Load the shell dotfiles if they exist.
 if [ -d ~/.bash ]; then
-	for file in ~/.bash/.{bash_prompt,aliases,functions};
+	for file in ~/.bash/{bash_prompt,aliases,functions};
 	do
 		[ -r "$file" ] && [ -f "$file" ] && source "$file";
 	done
@@ -59,7 +59,7 @@ export TMUXP_CONFIGDIR=$HOME/.tmux/tmuxp
 
 # Set history file out of the way. Default is ~/.bash_history
 if [ -d ~/.bash ]; then
-	HISTFILE=~/.bash/.bash_history
+	HISTFILE=~/.bash/bash_history
 fi
 
 # Make vim default editor
