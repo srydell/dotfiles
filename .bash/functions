@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
+# Load a new tmux session from template $2 called $1 via tmuxp
 function tp {
+	if [ $# -lt 2 ] || [ $# -gt 2 ]; then
+		echo "Create a new tmux session as"
+		echo "\$ tp sessionName tmuxpTemplate"
+		return
+	fi
+
+	# Open a new session via tmuxp
 	TMUXP_SESSION_NAME=$1 tmuxp load $2
 	unset TMUXP_SESSION_NAME
 }
