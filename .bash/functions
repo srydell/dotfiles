@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+function tp {
+	TMUXP_SESSION_NAME=$1 tmuxp load $2
+	unset TMUXP_SESSION_NAME
+}

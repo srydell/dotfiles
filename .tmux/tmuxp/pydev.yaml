@@ -1,4 +1,4 @@
-session_name: pythondev
+session_name: ${TMUXP_SESSION_NAME}
 start_directory: ${PWD}
 shell_command_before:
   - command -v virtualenv >/dev/null 2>&1 || { pip3 install virtualenv; }
