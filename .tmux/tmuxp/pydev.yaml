@@ -2,7 +2,7 @@ session_name: ${TMUXP_SESSION_NAME}
 start_directory: ${PWD}
 shell_command_before:
   - command -v virtualenv >/dev/null 2>&1 || { pip3 install virtualenv; }
-  - '[ -d .pyenv -a -f .pyenv/bin/activate ] && source .pyenv/bin/activate || virtualenv .pyenv && source .pyenv/bin/activate'
+  - '[ -d venv -a -f venv/bin/activate ] && source venv/bin/activate || virtualenv venv && source venv/bin/activate'
   - '[ -f requirements.txt ] && pip3 install -r requirements.txt'
   - clear
 windows:
