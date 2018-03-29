@@ -182,17 +182,17 @@ nnoremap <leader>Gp :Gpush<CR>
 " Same as running git checkout %
 nnoremap <leader>Gr :Gread<CR>
 
-" Prompt for a command to run in the nearest tmux pane
-nnoremap <silent> <leader>tp :VimuxPromptCommand<CR>
+" Prompt for a command to run in the nearest tmux pane ( [t]mux [c]ommand )
+nnoremap <silent> <leader>tc :VimuxPromptCommand<CR>
 
-" Run last command executed by VimuxRunCommand
+" Run last command executed by VimuxRunCommand ( [t]mux [r]un )
 nnoremap <silent> <leader>tr :call tmux#vimuxRunLastCommandIfExists()<CR>
 
-" Inspect runner pane
+" Inspect runner pane ( [t]mux [i]nspect )
 nnoremap <silent> <leader>ti :VimuxInspectRunner<CR>
 
-" Zoom the tmux runner pane
-nnoremap <silent> <leader>tz :VimuxZoomRunner<CR>
+" Zoom the tmux runner pane ( [t]mux [f]ullscreen )
+nnoremap <silent> <leader>tf :VimuxZoomRunner<CR>
 
 " Populate the quickfix list with errors generated from make
 " The ! sign makes vim not automatically jump to the first quickfix
