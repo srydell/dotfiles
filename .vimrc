@@ -22,6 +22,13 @@ augroup END
 " Encoding
 set encoding=utf-8
 
+" Check current operating system
+" Linux for Linux
+" Darwin for MacOS
+if !exists("g:currentOS")
+	let g:currentOS = substitute(system('uname'), '\n', '', '')
+endif
+
 set background=dark
 let g:gruvbox_contrast_dark=1
 silent! colorscheme gruvbox
@@ -35,10 +42,13 @@ set number
 set relativenumber
 
 " Make backspace be able to delete indent and before starting position
-set backspace=indent,start
+set backspace=indent,eol,start
 
 " Show commands as they are being written
 set showcmd
+
+" Do not show the current mode (insert, visual, ...)
+set noshowmode
 
 " Softwrap text (without creating a newline)
 set wrap
@@ -72,19 +82,6 @@ set visualbell t_vb=
 " Default to splitting below and to the right with :split :vsplit
 set splitbelow
 set splitright
-
-" If in an OS with a clipboard, let default (unnamed) register be clipboard
-if has('clipboard')
-	set clipboard^=unnamed
-endif
-" " Alternatively one could perhaps do
-" " Yank to system clipboard
-" nnoremap <leader>y "*y
-" " Paste from clipboard
-" nnoremap <leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
-" nnoremap <leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
-" " Yank to system clipboard from visual mode
-" vnoremap <leader>y "*ygv
 
 " Better autocomplete
 set completeopt=longest,menuone
@@ -132,10 +129,14 @@ let g:tex_flavor = "latex"
 " Always use filetype latex for .tex files
 let g:editorconfig_Beautifier = "~/.vim/.jsBeautifierConfig"
 
-" ---- Normal mode ----
-" Open qutebrowser with the word under the cursor as a 
-" search term. Filetype dependent
-nnoremap <leader>h :call OnlineDoc()<CR>
+" ---- Leader mappings ----
+" <leader><lowerCaseLetter> for harmless commands
+" <leader><upperCaseLetter> for potentially harmful commands
+
+" Open appropriate help on the word under the cursor
+" Filetype dependent.
+" Takes a browser and OS
+nnoremap <leader>h :call functions#GetHelpDocs("qutebrowser", g:currentOS)<CR>
 
 " Write document
 nnoremap <leader>w :write<CR>
@@ -163,10 +164,6 @@ nnoremap <leader>sv :source $MYVIMRC<CR>
 " Generate a tags file
 nnoremap <leader>C :!ctags -R<CR>
 
-" -- Tpope fugitive commands --
-" Starting with <leader>g for harmless commands
-" Starting with <leader>G for potentially harmful commands
-
 " Run git commit -u
 nnoremap <leader>gu :silent! Git add -u<CR>:redraw!<CR>
 
@@ -178,9 +175,24 @@ nnoremap <leader>ga :Gwrite<CR>
 "  while in the commit message
 nnoremap <leader>gc :Gcommit --verbose<CR>
 
+" Push the changes
+nnoremap <leader>Gp :Gpush<CR>
+
 " Revert current file to last checked in version
 " Same as running git checkout %
 nnoremap <leader>Gr :Gread<CR>
+
+" Prompt for a command to run in the nearest tmux pane ( [t]mux [c]ommand )
+nnoremap <silent> <leader>tc :VimuxPromptCommand<CR>
+
+" Run last command executed by VimuxRunCommand ( [t]mux [r]un )
+nnoremap <silent> <leader>tr :call tmux#vimuxRunLastCommandIfExists()<CR>
+
+" Inspect runner pane ( [t]mux [i]nspect )
+nnoremap <silent> <leader>ti :VimuxInspectRunner<CR>
+
+" Zoom the tmux runner pane ( [t]mux [f]ullscreen )
+nnoremap <silent> <leader>tf :VimuxZoomRunner<CR>
 
 " Populate the quickfix list with errors generated from make
 " The ! sign makes vim not automatically jump to the first quickfix
@@ -191,10 +203,10 @@ nnoremap <leader>Gr :Gread<CR>
 nnoremap <leader>m :make!<CR>
 
 " Move through the quickfix list
-nnoremap <silent> [c :cprevious<CR>
-nnoremap <silent> ]c :cnext<CR>
-nnoremap <silent> [C :cfirst<CR>
-nnoremap <silent> ]C :clast<CR>
+nnoremap <silent> [q :cprevious<CR>
+nnoremap <silent> ]q :cnext<CR>
+nnoremap <silent> [q :cfirst<CR>
+nnoremap <silent> ]q :clast<CR>
 
 " Move through the buffer list
 nnoremap <silent> [b :bprevious<CR>
@@ -202,9 +214,23 @@ nnoremap <silent> ]b :bnext<CR>
 nnoremap <silent> [B :bfirst<CR>
 nnoremap <silent> ]B :blast<CR>
 
-" ---- Visual mode ----
-" Put quotes on your current selection in Visual mode
-vnoremap <leader>' <esc>`<i'<esc>`>a'<esc>
+" Yank to system clipboard
+nnoremap <leader>y "*y
+" Paste from clipboard
+nnoremap <silent><leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
+nnoremap <silent><leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
+" Yank to system clipboard from visual mode
+xnoremap <leader>y "*ygv<Esc>
+
+" Fast substitutions for
+" Word under the cursor in normal mode
+" Visual selection in visual mode (Also copies selection into ")
+" <leader><Space> for the current line.
+" <leader>S for the whole file
+nnoremap <leader><Space> :'{,'}s/\<<C-r><C-w>\>//g<left><left>
+xnoremap <leader><Space> y:'{,'}s/<C-r><C-0>//g<left><left>
+nnoremap <leader>S :%s/\<<C-r><C-w>\>//g<left><left>
+xnoremap <leader>S y:%s/<C-r><C-0>//g<left><left>
 
 " H moves to beginning of line and L to end of line
 nnoremap H ^
@@ -226,33 +252,6 @@ nnoremap gk k
 " Make Y more consistent with C and D
 nnoremap Y y$
 
-" Function to open a search for the word under the cursor.
-" Depending on which filetype is in the current buffer, different
-" search engines will be used
-function! OnlineDoc()
-	" Depending on which filetype, use different search engines
-	" OBS: Use ' instead of " to tell vim to use the string AS IS. Therefore
-	" no substitutions to escaped characters are needed
-	if &ft =~ "vim"
-		execute(":help " . expand("<cword>"))
-		return
-	elseif &ft =~ "cpp"
-		let s:urlTemplate = 'http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=SEARCHTERM&button='
-	else
-		let s:urlTemplate = 'https://duckduckgo.com/?q=SEARCHTERM'
-	endif
-	" TODO: Put browser as user specific
-	" Requires s:browser to be in PATH
-	let s:browser = "qutebrowser"
-
-	let s:wordUnderCursor = expand("<cword>")
-
-	" Replace SEARCHTERM by the selected word
-	let s:url = substitute(s:urlTemplate, "SEARCHTERM", s:wordUnderCursor, "g")
-
-	" Same as running ": silent! browser 'url'"
-	let s:cmd = "silent !" . s:browser . " '" . s:url . "'"
-	execute(s:cmd)
-	" redraw necessary after silent since it wipes the buffer
-	redraw!
-endfunction
+" Enable builtin matchit feature.
+" Hit '%' on 'if' to jump to 'else'.
+runtime macros/matchit.vim

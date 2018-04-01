@@ -2,9 +2,12 @@
 # ~/.bashrc
 #
 
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
 # Load the shell dotfiles if they exist.
 if [ -d ~/.bash ]; then
-	for file in ~/.bash/.{bash_prompt,aliases,functions};
+	for file in ~/.bash/{bash_prompt,aliases,functions};
 	do
 		[ -r "$file" ] && [ -f "$file" ] && source "$file";
 	done
@@ -16,7 +19,7 @@ source "$HOME/.vim/pack/minpac/opt/gruvbox/gruvbox_256palette.sh"
 
 # Use vi keybindings command prompt
 # For zsh, the same command is: bindkey -v
-set -o vi
+# set -o vi
 
 # Auto expand history substitution on <Space>
 bind Space:magic-space
@@ -48,9 +51,15 @@ HISTTIMEFORMAT='%F %T '
 # Store history after each command. Helps with recovering from crashes
 PROMPT_COMMAND='history -a'
 
+# Get completion for tmuxp commands
+eval "$(_TMUXP_COMPLETE=source tmuxp)"
+
+# Save tmuxp project config files under .tmux directory
+export TMUXP_CONFIGDIR=$HOME/.tmux/tmuxp
+
 # Set history file out of the way. Default is ~/.bash_history
 if [ -d ~/.bash ]; then
-	HISTFILE=~/.bash/.bash_history
+	HISTFILE=~/.bash/bash_history
 fi
 
 # Make vim default editor
@@ -67,8 +76,7 @@ if [ "$(uname)" = "Linux" ]; then
 elif [ "$(uname)" = "Darwin" ]; then
 	# Let brew programs come first
 	export PATH="/usr/local/sbin:$PATH"
+	export PATH="/opt/local/bin:$PATH"
 	export PATH="$HOME/.cargo/bin:$PATH"
+	export PATH="~/bin:$PATH"
 fi
-
-# If not running interactively, don't do anything
-[[ $- != *i* ]] && return
