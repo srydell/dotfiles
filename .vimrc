@@ -222,13 +222,18 @@ nnoremap <silent><leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
 " Yank to system clipboard from visual mode
 xnoremap <leader>y "*ygv<Esc>
 
+" Unfold all folds under cursor
+nnoremap <leader><Space> za
+" Create fold for visually selected text
+vnoremap <leader><Space> zf
+
 " Fast substitutions for
 " Word under the cursor in normal mode
 " Visual selection in visual mode (Also copies selection into ")
-" <leader><Space> for the current line.
+" <leader>s for the current line.
 " <leader>S for the whole file
-nnoremap <leader><Space> :'{,'}s/\<<C-r><C-w>\>//g<left><left>
-xnoremap <leader><Space> y:'{,'}s/<C-r><C-0>//g<left><left>
+nnoremap <leader>s :'{,'}s/\<<C-r><C-w>\>//g<left><left>
+xnoremap <leader>s y:'{,'}s/<C-r><C-0>//g<left><left>
 nnoremap <leader>S :%s/\<<C-r><C-w>\>//g<left><left>
 xnoremap <leader>S y:%s/<C-r><C-0>//g<left><left>
 
