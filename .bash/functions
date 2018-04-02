@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# git init with a .gitignore from the template in ~/.git_template/info/exclude
+function gi {
+	git init
+
+	# git init hack to always have a .gitignore file since I forget to edit .git/info/exclude
+	cat ./.git/info/exclude >> ./.gitignore
+}
+
 # Load a new tmux session from template $2 called $1 via tmuxp
 function tp {
 	if [ $# -lt 2 ] || [ $# -gt 2 ]; then

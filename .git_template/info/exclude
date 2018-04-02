@@ -1,0 +1,10 @@
+# Ignore everything
+/*
+
+# Ignore all files named .DS_Store or ending with .log
+**/.DS_Store
+**.log
+
+# Except these
+# !exampleFile.txt
+# !exampleDir/
