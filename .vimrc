@@ -37,6 +37,25 @@ silent! colorscheme gruvbox
 set list
 set listchars=tab:▸\ ,eol:¬
 
+if has('folding')
+	if has('windows')
+		" BOX DRAWINGS HEAVY VERTICAL (U+2503, UTF-8: E2 94 83)
+		" Draw the vertical border between vim splits as a continuous line
+		set fillchars=vert:┃
+
+		" MIDDLE DOT (U+00B7, UTF-8: C2 B7)
+		" Draw the character used to fill out the fold
+		set fillchars+=fold:·
+	endif
+
+	" Not as cool as syntax, but faster
+	set foldmethod=indent
+
+	" Start unfolded
+	set foldlevelstart=99
+	set foldtext=folding#foldtext()
+endif
+
 " Show absolute current row and relative rows from that
 set number
 set relativenumber
@@ -226,6 +245,10 @@ xnoremap <leader>y "*ygv<Esc>
 nnoremap <leader><Space> za
 " Create fold for visually selected text
 vnoremap <leader><Space> zf
+
+" Normally zj/zk moves to folds even if they are open
+nnoremap <silent> <leader>zj :call folding#NextClosedFold('j')<cr>
+nnoremap <silent> <leader>zk :call folding#NextClosedFold('k')<cr>
 
 " Fast substitutions for
 " Word under the cursor in normal mode
