@@ -155,7 +155,7 @@ let g:editorconfig_Beautifier = "~/.vim/.jsBeautifierConfig"
 " Open appropriate help on the word under the cursor
 " Filetype dependent.
 " Takes a browser and OS
-nnoremap <leader>h :call functions#GetHelpDocs("qutebrowser", g:currentOS)<CR>
+nnoremap <leader>h :call utils#GetHelpDocs("qutebrowser", g:currentOS)<CR>
 
 " Write document
 nnoremap <leader>w :write<CR>
@@ -172,7 +172,7 @@ nnoremap <leader>ev :split$MYVIMRC<CR>
 nnoremap <leader>et :split ~/.tmux.conf<CR>
 
 " Open split window and edit filetype specific configs expand
-nnoremap <leader>ef :call functions#EditFtplugin()<CR>
+nnoremap <leader>ef :call utils#EditFtplugin()<CR>
 
 " Open a split and edit snippets for this filetype
 nnoremap <leader>es :UltiSnipsEdit<CR>
