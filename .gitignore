@@ -4,6 +4,8 @@
 # Ignore all files named .DS_Store or ending with .log
 **/.DS_Store
 **.log
+**.pyc
+**/__pycache__/
 
 .bash/bash_history
 .config/configstore/*
@@ -19,9 +21,13 @@
 
 # Directories
 !.bash/
-!.config/
+!.config/i3/
+!.config/polybar/
+!.config/qutebrowser/
+!.config/ranger/
+!.config/Scripts/
 !.git_template/
-!.tmux/
+!.tmux/tmuxp/
 !.vim/
 
 # Files
@@ -29,6 +35,9 @@
 !.bash_profile
 !.bashrc
 !.ctags
+!.config/compton.conf
+!.config/redshift.conf
+!.config/wallpaper.jpg
 !.git
 !.gitconfig
 !.gitignore
