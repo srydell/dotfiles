@@ -16,6 +16,10 @@ for_window [instance="scratch"] floating enable;
 for_window [instance="browserVideo"] floating enable;
 for_window [instance="browserVideo"] sticky enable;
 
+# webcam float and sticky
+for_window [title="video0 - mpv"] floating enable;
+for_window [title="video0 - mpv"] sticky enable;
+
 gaps inner 10
 gaps outer 10
 font pango:iosevka 13
