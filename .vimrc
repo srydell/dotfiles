@@ -37,6 +37,25 @@ silent! colorscheme gruvbox
 set list
 set listchars=tab:▸\ ,eol:¬
 
+if has('folding')
+	if has('windows')
+		" BOX DRAWINGS HEAVY VERTICAL (U+2503, UTF-8: E2 94 83)
+		" Draw the vertical border between vim splits as a continuous line
+		set fillchars=vert:┃
+
+		" MIDDLE DOT (U+00B7, UTF-8: C2 B7)
+		" Draw the character used to fill out the fold
+		set fillchars+=fold:·
+	endif
+
+	" Not as cool as syntax, but faster
+	set foldmethod=indent
+
+	" Start unfolded
+	set foldlevelstart=99
+	set foldtext=folding#foldtext()
+endif
+
 " Show absolute current row and relative rows from that
 set number
 set relativenumber
@@ -136,7 +155,7 @@ let g:editorconfig_Beautifier = "~/.vim/.jsBeautifierConfig"
 " Open appropriate help on the word under the cursor
 " Filetype dependent.
 " Takes a browser and OS
-nnoremap <leader>h :call functions#GetHelpDocs("qutebrowser", g:currentOS)<CR>
+nnoremap <leader>h :call utils#GetHelpDocs("qutebrowser", g:currentOS)<CR>
 
 " Write document
 nnoremap <leader>w :write<CR>
@@ -153,7 +172,7 @@ nnoremap <leader>ev :split$MYVIMRC<CR>
 nnoremap <leader>et :split ~/.tmux.conf<CR>
 
 " Open split window and edit filetype specific configs expand
-nnoremap <leader>ef :call functions#EditFtplugin()<CR>
+nnoremap <leader>ef :call utils#EditFtplugin()<CR>
 
 " Open a split and edit snippets for this filetype
 nnoremap <leader>es :UltiSnipsEdit<CR>
@@ -222,13 +241,22 @@ nnoremap <silent><leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
 " Yank to system clipboard from visual mode
 xnoremap <leader>y "*ygv<Esc>
 
+" Unfold all folds under cursor
+nnoremap <leader><Space> za
+" Create fold for visually selected text
+vnoremap <leader><Space> zf
+
+" Normally zj/zk moves to folds even if they are open
+nnoremap <silent> <leader>zj :call folding#NextClosedFold('j')<cr>
+nnoremap <silent> <leader>zk :call folding#NextClosedFold('k')<cr>
+
 " Fast substitutions for
 " Word under the cursor in normal mode
 " Visual selection in visual mode (Also copies selection into ")
-" <leader><Space> for the current line.
+" <leader>s for the current line.
 " <leader>S for the whole file
-nnoremap <leader><Space> :'{,'}s/\<<C-r><C-w>\>//g<left><left>
-xnoremap <leader><Space> y:'{,'}s/<C-r><C-0>//g<left><left>
+nnoremap <leader>s :'{,'}s/\<<C-r><C-w>\>//g<left><left>
+xnoremap <leader>s y:'{,'}s/<C-r><C-0>//g<left><left>
 nnoremap <leader>S :%s/\<<C-r><C-w>\>//g<left><left>
 xnoremap <leader>S y:%s/<C-r><C-0>//g<left><left>
 

@@ -1,0 +1,44 @@
+# Ignore everything
+/*
+
+# Ignore all files named .DS_Store or ending with .log
+**/.DS_Store
+**.log
+
+.bash/bash_history
+.config/configstore/*
+.config/systemd/*
+.config/yay/*
+.tmux/plugins/*
+.vim/.netrwhist
+.vim/pack/*
+
+# Except these
+# !exampleFile.txt
+# !exampleDir/
+
+# Directories
+!.bash/
+!.config/
+!.git_template/
+!.tmux/
+!.vim/
+
+# Files
+!.bash_history
+!.bash_profile
+!.bashrc
+!.ctags
+!.git
+!.gitconfig
+!.gitignore
+!.latemprc
+!.latexmkrc
+!README.md
+!.taskrc
+!.tmux.conf
+!.vimrc
+!.xinitrc
+!.Xmodmap
+!.Xresources
+!.ycm_extra_conf.py

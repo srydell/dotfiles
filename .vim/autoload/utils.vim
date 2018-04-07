@@ -18,7 +18,7 @@ function! functions#GetHelpDocs(browser, currentOS)
 	elseif &ft =~ "cpp"
 		let s:urlTemplate = 'http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=SEARCHTERM&button='
 	else
-		let s:urlTemplate = 'https://duckduckgo.com/?q=SEARCHTERM'
+		let s:urlTemplate = 'https://duckduckgo.com/?q=python+SEARCHTERM&ia=qa'
 	endif
 
 	" Expand the word under the cursor and
