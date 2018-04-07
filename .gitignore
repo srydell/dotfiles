@@ -24,7 +24,7 @@
 !.config/i3/config
 !.config/polybar/
 !.config/ranger/
-!.config/Scripts/
+!.config/Scripts/*
 !.git_template/
 !.tmux/tmuxp/
 !.vim/

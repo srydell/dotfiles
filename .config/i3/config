@@ -127,7 +127,7 @@ bindsym $mod+Shift+b exec --no-startup-id blender; workspace $ws6
 # bindsym $mod+Shift+n
 
 # bindsym $mod+m
-bindsym $mod+Shift+m exec --no-startup-id ~/.config/Scripts/toggleUnclutter.sh
+bindsym $mod+Shift+m exec --no-startup-id ~/.config/Scripts/toggle_unclutter.sh
 
 # - Function Buttons -
 bindsym F1	exec --no-startup-id ~/.config/Scripts/scratch_vim.sh
