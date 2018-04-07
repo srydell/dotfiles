@@ -4,7 +4,18 @@
 # Needed for i3-gaps
 hide_edge_borders both
 for_window [class="^.*"] border pixel 0
+
+# Special containers to their workspaces
+for_window [class="qutebrowser"] move to workspace $ws2
+
+# Called from script scratch_vim.sh
 for_window [instance="scratch"] floating enable;
+
+# Video called from browser, usually qutebrowser
+# Start as floating and sticky (visible on all workspaces)
+for_window [instance="browserVideo"] floating enable;
+for_window [instance="browserVideo"] sticky enable;
+
 gaps inner 10
 gaps outer 10
 font pango:iosevka 13
@@ -44,7 +55,7 @@ bindsym $mod+Shift+BackSpace	exec sudo reboot
 bindsym $mod+q			kill
 bindsym $mod+Shift+q		kill
 
-bindsym $mod+w			exec --no-startup-id $browser
+bindsym $mod+w			exec --no-startup-id $browser; workspace $ws2
 # bindsym $mod+Shift+w
 
 # bindsym $mod+e
@@ -111,7 +122,7 @@ bindsym $mod+Shift+x		exec sudo shutdown -h now
 # bindsym $mod+Shift+v
 
 # bindsym $mod+b
-# bindsym $mod+Shift+b
+bindsym $mod+Shift+b exec --no-startup-id blender; workspace $ws6
 
 # bindsym $mod+n
 # bindsym $mod+Shift+n
@@ -179,9 +190,6 @@ bindsym $mod+Shift+7		move container to workspace $ws7
 bindsym $mod+Shift+8		move container to workspace $ws8
 bindsym $mod+Shift+9		move container to workspace $ws9
 bindsym $mod+Shift+0		move container to workspace $ws10
-
-# Special containers to their workspaces
-for_window [class="qutebrowser"] move to workspace $ws2
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)

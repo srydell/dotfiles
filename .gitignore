@@ -8,12 +8,12 @@
 **/__pycache__/
 
 .bash/bash_history
-.config/configstore/*
-.config/systemd/*
-.config/yay/*
-.tmux/plugins/*
+.config/configstore/
+.config/systemd/
+.config/yay/
+.tmux/plugins/
 .vim/.netrwhist
-.vim/pack/*
+.vim/pack/
 
 # Except these
 # !exampleFile.txt
@@ -21,9 +21,8 @@
 
 # Directories
 !.bash/
-!.config/i3/
+!.config/i3/config
 !.config/polybar/
-!.config/qutebrowser/
 !.config/ranger/
 !.config/Scripts/
 !.git_template/
@@ -31,23 +30,20 @@
 !.vim/
 
 # Files
+!.Xmodmap
+!.Xresources
 !.bash_history
 !.bash_profile
 !.bashrc
-!.ctags
-!.config/compton.conf
-!.config/redshift.conf
 !.config/wallpaper.jpg
-!.git
+!.ctags
 !.gitconfig
 !.gitignore
 !.latemprc
 !.latexmkrc
-!README.md
 !.taskrc
 !.tmux.conf
 !.vimrc
 !.xinitrc
-!.Xmodmap
-!.Xresources
 !.ycm_extra_conf.py
+!README.md
