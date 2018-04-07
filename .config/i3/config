@@ -34,12 +34,11 @@ exec_always --no-startup-id ~/.config/polybar/launch.sh
 exec redshift
 # Switch between us, se keymap with SHIFT+ALT, and swap capslock with ctrl
 exec setxkbmap us,se -option "lv3:ralt_alt,grp:alt_shift_toggle,ctrl:swapcaps"
+# Fade out mouse when not in use after 0.1 seconds
+exec --no-startup-id unclutter --timeout 1
 
 # Wallpaper
 exec_always feh --bg-scale ~/.config/wallpaper.jpg
-
-# Fade out mouse when not in use after 0.2 seconds
-exec_always  --no-startup-id unclutter --timeout 1
 
 # -- Basic bindings --
 bindsym $mod+Return		exec $term
@@ -128,7 +127,7 @@ bindsym $mod+Shift+b exec --no-startup-id blender; workspace $ws6
 # bindsym $mod+Shift+n
 
 # bindsym $mod+m
-# bindsym $mod+Shift+m
+bindsym $mod+Shift+m exec --no-startup-id ~/.config/Scripts/toggleUnclutter.sh
 
 # - Function Buttons -
 bindsym F1	exec --no-startup-id ~/.config/Scripts/scratch_vim.sh
