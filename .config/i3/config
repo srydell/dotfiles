@@ -20,6 +20,12 @@ for_window [instance="browserVideo"] sticky enable;
 for_window [title="video0 - mpv"] floating enable;
 for_window [title="video0 - mpv"] sticky enable;
 
+# Gimp
+for_window [title="GIMP Startup"] move workspace $ws5
+for_window [class="Gimp"] move workspace $ws5
+for_window [window_role="gimp-dock"] floating disable; move left; resize shrink width 50 px or 50ppt
+for_window [window_role="gimp-toolbox"] floating disable; move right; resize grow width 30 px or 30ppt
+
 gaps inner 10
 gaps outer 10
 font pango:iosevka 13
@@ -70,7 +76,7 @@ bindsym $mod+Shift+r		restart
 bindsym $mod+t			split toggle
 bindsym $mod+Shift+t		gaps inner current set 15; gaps outer current set 15
 
-# bindsym $mod+y		exec $term -e calcurse
+# bindsym $mod+y
 bindsym $mod+Shift+y		resize shrink width 10 px or 10 ppt
 
 # bindsym $mod+u
@@ -98,7 +104,7 @@ bindsym $mod+f			fullscreen toggle
 # bindsym $mod+Shift+f
 
 bindsym $mod+g			workspace prev
-# bindsym $mod+Shift+g		
+bindsym $mod+Shift+g		exec --no-startup-id gimp; workspace $ws5
 
 bindsym $mod+h			focus left
 bindsym $mod+Shift+h		move left 30
@@ -143,8 +149,8 @@ bindsym F1	exec --no-startup-id ~/.config/Scripts/scratch_vim.sh
 # bindsym F7
 bindsym F8	exec maim ~/Documents/screenshots/$(date +%s).png
 # bindsym F9
-# bindsym F10 			pactl set-sink-volume @DEFAULT_SINK@ -3%
-# bindsym F11			pactl set-sink-volume @DEFAULT_SINK@ +3%
+bindsym F10 			exec pactl set-sink-volume @DEFAULT_SINK@ -3%
+bindsym F11			exec pactl set-sink-volume @DEFAULT_SINK@ +3%
 # bindsym F12
 
 # - Arrow keys -
