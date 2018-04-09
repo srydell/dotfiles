@@ -27,7 +27,7 @@ font pango:iosevka 13
 # Set Defaults
 set $mod Mod4
 set $term urxvt
-set $browser qutebrowser --backend webkit
+set $browser qutebrowser
 
 # -- Start external scripts --
 # Composite manager, CG disables shadowing effects
