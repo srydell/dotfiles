@@ -7,23 +7,28 @@
 **.pyc
 **/__pycache__/
 
+# Special cases
 .bash/bash_history
+.config/.mono
+.config/Kitware
+.config/QtProject.conf
+.config/Zeal/
+.config/configstore/
+.config/inkscape/
+.config/pavucontrol.ini
+.config/pulse/
+.config/qutebrowser/autoconfig.yml
+.config/qutebrowser/bookmarks/
+.config/qutebrowser/qsettings/
+.config/qutebrowser/quickmarks
+.config/ranger/
 .config/ranger/history
 .config/ranger/tagged
 .config/redshift.conf
-.config/QtProject.conf
-.config/qutebrowser/qsettings/
-.config/qutebrowser/autoconfig.yml
-.config/qutebrowser/bookmarks/
-.config/pavucontrol.ini
-.config/Kitware
-.config/.mono
-.config/configstore/
-.config/Zeal/
 .config/systemd/
 .config/yay/
-.config/pulse/
 .tmux/plugins/
+.tmux/resurrect/
 .vim/.netrwhist
 .vim/pack/
 
@@ -35,7 +40,7 @@
 !.bash/
 !.config/
 !.git_template/
-!.tmux/tmuxp/
+!.tmux/
 !.vim/
 
 # Files

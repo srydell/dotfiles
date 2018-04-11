@@ -33,6 +33,7 @@ font pango:iosevka 13
 # Set Defaults
 set $mod Mod4
 set $term urxvt
+set $term alacritty
 set $browser qutebrowser
 
 # -- Start external scripts --
@@ -52,7 +53,7 @@ exec_always feh --bg-scale ~/.config/wallpaper.jpg
 
 # -- Basic bindings --
 bindsym $mod+Return		exec $term
-bindsym $mod+Shift+Return	exec $term -e tmux
+bindsym $mod+Shift+Return	exec $term -e "tmux attach"
 
 bindsym $mod+space		floating toggle
 bindsym $mod+Shift+space	focus mode_toggle
@@ -88,7 +89,7 @@ bindsym $mod+Shift+i		resize grow height 10 px or 10 ppt
 # bindsym $mod+o
 bindsym $mod+Shift+o		resize grow width 10 px or 10 ppt
 
-# bindsym $mod+p
+bindsym $mod+p			workspace prev
 # bindsym $mod+Shift+p
 
 # bindsym $mod+a
@@ -131,23 +132,23 @@ bindsym $mod+Shift+x		exec sudo shutdown -h now
 # bindsym $mod+Shift+v
 
 # bindsym $mod+b
-bindsym $mod+Shift+b exec --no-startup-id blender; workspace $ws6
+bindsym $mod+Shift+b		exec --no-startup-id blender; workspace $ws6
 
-# bindsym $mod+n
+bindsym $mod+n			workspace next
 # bindsym $mod+Shift+n
 
 # bindsym $mod+m
-bindsym $mod+Shift+m exec --no-startup-id ~/.config/Scripts/toggle_unclutter.sh
+bindsym $mod+Shift+m		exec --no-startup-id ~/.config/Scripts/toggle_unclutter.sh
 
 # - Function Buttons -
-bindsym F1	exec --no-startup-id ~/.config/Scripts/scratch_vim.sh
+bindsym F1			exec --no-startup-id ~/.config/Scripts/scratch_vim.sh
 # bindsym F2
 # bindsym F3
 # bindsym F4
 # bindsym F5
 # bindsym F6
 # bindsym F7
-bindsym F8	exec maim ~/Documents/screenshots/$(date +%s).png
+bindsym F8			exec maim ~/Documents/screenshots/$(date +%s).png
 # bindsym F9
 bindsym F10 			exec pactl set-sink-volume @DEFAULT_SINK@ -3%
 bindsym F11			exec pactl set-sink-volume @DEFAULT_SINK@ +3%
