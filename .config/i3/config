@@ -71,7 +71,7 @@ bindsym $mod+w			exec --no-startup-id $browser; workspace $ws2
 # bindsym $mod+e
 # bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
-# bindsym $mod+r		exec $term -e ranger
+bindsym $mod+r		exec $term -e ranger
 bindsym $mod+Shift+r		restart
 
 bindsym $mod+t			split toggle
@@ -138,10 +138,10 @@ bindsym $mod+n			workspace next
 # bindsym $mod+Shift+n
 
 # bindsym $mod+m
-bindsym $mod+Shift+m		exec --no-startup-id ~/.config/Scripts/toggle_unclutter.sh
+bindsym $mod+Shift+m		exec --no-startup-id toggle_unclutter.sh
 
 # - Function Buttons -
-bindsym F1			exec --no-startup-id ~/.config/Scripts/scratch_vim.sh
+bindsym F1			exec --no-startup-id scratch_vim.sh
 # bindsym F2
 # bindsym F3
 # bindsym F4

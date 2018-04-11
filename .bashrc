@@ -69,6 +69,8 @@ export EDITOR=$VISUAL
 # Counteracting a bug in systemd according to archlinux.org forum. Found in application "i3lock"
 export LC_ALL=en_US.UTF-8
 
+# Place for custom scripts
+export PATH="~/bin:$PATH"
 if [ "$(uname)" = "Linux" ]; then
 	# Make bash compiling use ccache and all cores. Check #Cores by lscpu
 	export PATH="/usr/lib/ccache/bin/:$PATH"
@@ -78,5 +80,4 @@ elif [ "$(uname)" = "Darwin" ]; then
 	export PATH="/usr/local/sbin:$PATH"
 	export PATH="/opt/local/bin:$PATH"
 	export PATH="$HOME/.cargo/bin:$PATH"
-	export PATH="~/bin:$PATH"
 fi
