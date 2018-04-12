@@ -37,13 +37,13 @@ set $term alacritty
 set $browser qutebrowser
 
 # -- Start external scripts --
-# Composite manager, CG disables shadowing effects
-exec_always --no-startup-id compton -CG
 # Launch polybar
-exec_always --no-startup-id ~/.config/polybar/launch.sh
+exec_always --no-startup-id "~/.config/polybar/launch.sh transparentBar"
 # Wallpaper
 exec_always --no-startup-id feh --bg-scale ~/.config/wallpaper.jpg
 
+# Composite manager, CG disables shadowing effects
+exec --no-startup-id compton -CG
 # redshift for better lighting
 exec --no-startup-id redshift
 # Switch between us, se keymap with SHIFT+ALT, and swap capslock with ctrl

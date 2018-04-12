@@ -9,19 +9,22 @@
 ;=====================================================
 
 [colors]
-;background = ${xrdb:color0:#222}
-background = #00222222
-; background-alt = #99222222
+; background = ${xrdb:color0:#222}
+; background = #00222222
+background = ${env:POLYBAR_BG}
 background-alt = #373b3d
-;foreground = ${xrdb:color7:#222}
-foreground = #dfdfdf
-foreground-alt = #551
+; foreground = ${xrdb:color7:#222}
+; foreground = #dfdfdf
+foreground = ${env:POLYBAR_FG}
+foreground-transparent = #dfdfdf
+foreground-grey = #dfdfdf
+foreground-alt = #91b6c8
 primary = #00ffb52a
 secondary = #e60053
 alert = #821324
 col = #00f
 
-[bar/mainBar]
+[bar/transparentBar]
 monitor = ${env:MONITOR:HDMI-1}
 ;monitor = ${env:MONITOR}
 ;monitor = ${env:MONITOR:LVDS-1}
@@ -33,15 +36,15 @@ radius = 6.0
 fixed-center = true
 
 background = ${colors.background}
-foreground = ${colors.foreground}
+foreground = ${colors.foreground-transparent}
 
 line-size = 3
 line-color = #f00
 
 ; border-size = 0
-border-top = 0
-border-left = 20
-border-right = 20
+border-top-size = 0
+border-left-size = 20
+border-right-size = 20
 border-color = #00000000
 
 padding-left = 0
@@ -57,14 +60,13 @@ font-2 = siji:pixelsize=11;1
 modules-left = i3
 #modules-center = mpd
 modules-center = date
-modules-right = xkeyboard volume filesystem eth
+modules-right = xkeyboard cpu volume filesystem eth
 
 tray-position = right
 tray-padding = 0
 ;tray-transparent = true
 ;tray-background = #0063ff
 
-;wm-restack = bspwm
 ;wm-restack = i3
 
 ;override-redirect = true
@@ -72,6 +74,56 @@ tray-padding = 0
 ; scroll-up = i3wm-wsnext
 ; scroll-down = i3wm-wsprev
 
+[bar/greyBar]
+monitor = ${env:MONITOR:HDMI-1}
+width = 100%
+height = 34
+;offset-x = 1%
+;offset-y = 1%
+radius = 6.0
+fixed-center = true
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 3
+line-color = #f00
+
+; border-size = 0
+border-top-size = 0
+border-left-size = 20
+border-right-size = 20
+border-color = #00000000
+
+padding-left = 0
+padding-right = 2
+
+module-margin-left = 1
+module-margin-right = 2
+
+font-0 = iosevka:pixelsize=14;1
+font-1 = croscore:fontformat=truetype:size=8:antialias=false;0
+font-2 = siji:pixelsize=11;1
+
+modules-left = i3
+#modules-center = mpd
+modules-center = date
+modules-right = xkeyboard cpu volume filesystem eth
+
+tray-position = right
+tray-padding = 2
+;tray-transparent = true
+;tray-background = #0063ff
+
+;wm-restack = i3
+
+;override-redirect = true
+
+;scroll-up = i3wm-wsnext
+;scroll-down = i3wm-wsprev
+
+cursor-click = pointer
+cursor-scroll = ns-resize
 [module/xwindow]
 type = internal/xwindow
 label = %title:0:30:...%
@@ -87,10 +139,13 @@ format-prefix-underline = ${colors.secondary}
 label-layout = %layout%
 ; label-layout-underline = ${colors.secondary}
 
+label-indicator = %name%
 label-indicator-padding = 2
 label-indicator-margin = 1
 label-indicator-background = ${colors.secondary}
 label-indicator-underline = ${colors.secondary}
+
+firnat = <label-layout>
 
 [module/filesystem]
 type = internal/fs
@@ -98,9 +153,13 @@ interval = 25
 
 mount-0 = /
 
-label-mounted = %{F#91b6c8}%mountpoint%%{F-}: %percentage_used%%
+; %{F-} resets the colors
+label-mounted = %mountpoint%%{F-}: %percentage_used%%
 label-unmounted = %mountpoint% not mounted
-label-unmounted-foreground = ${colors.foreground-alt}
+label-mounted-foreground = ${colors.foreground-alt}
+
+format-mounted = <label-mounted>
+format-unmounted = <label-unmounted>
 
 [module/home]
 type = internal/fs
@@ -108,27 +167,13 @@ interval = 25
 
 mount-0 = /home
 
-label-mounted = %{F#0a81f5}~%{F-}: %percentage_used%%
+; %{F-} resets the colors
+label-mounted = ~%{F-}: %percentage_used%%
 label-unmounted = %mountpoint% not mounted
-label-unmounted-foreground = ${colors.foreground-alt}
-[module/bspwm]
-type = internal/bspwm
+label-mounted-foreground = ${colors.foreground-alt}
 
-label-focused = %index%
-label-focused-background = ${colors.background-alt}
-label-focused-underline= ${colors.primary}
-label-focused-padding = 2
-
-label-occupied = %index%
-label-occupied-padding = 2
-
-label-urgent = %index%!
-label-urgent-background = ${colors.alert}
-label-urgent-padding = 2
-
-label-empty = %index%
-label-empty-foreground = ${colors.foreground-alt}
-label-empty-padding = 2
+format-mounted = <label-mounted>
+format-unmounted = <label-unmounted>
 
 [module/i3]
 type = internal/i3
@@ -158,13 +203,13 @@ label-mode-background = ${colors.primary}
 
 ; focused = Active workspace on focused monitor
 label-focused = %icon%
-label-focused-background = ${module/bspwm.label-focused-background}
-label-focused-underline = ${module/bspwm.label-focused-underline}
-label-focused-padding = ${module/bspwm.label-focused-padding}
+label-focused-background = ${colors.background-alt}
+label-focused-underline = ${colors.primary}
+label-focused-padding = 2
 
 ; unfocused = Inactive workspace on any monitor
 label-unfocused = %icon%
-label-unfocused-padding = ${module/bspwm.label-occupied-padding}
+label-unfocused-padding = 2
 
 ; visible = Active workspace on unfocused monitor
 label-visible = %icon%
@@ -174,8 +219,8 @@ label-visible-padding = ${self.label-focused-padding}
 
 ; urgent = Workspace with urgency hint set
 label-urgent = %icon%
-label-urgent-background = ${module/bspwm.label-urgent-background}
-label-urgent-padding = ${module/bspwm.label-urgent-padding}
+label-urgent-background = ${colors.alert}
+label-urgent-padding = 2
 
 [module/mpd]
 type = internal/mpd
@@ -228,7 +273,7 @@ type = internal/cpu
 interval = 2
 format-prefix = "CPU: "
 format-prefix-foreground = ${colors.foreground-alt}
-format-underline = #f90000
+; format-underline = #000000
 label = %percentage%%
 
 [module/memory]
@@ -296,6 +341,13 @@ format-prefix-foreground = ${colors.foreground-alt}
 
 ; label = %date% %time%
 label = %time%
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+sink = alsa_output.pci-0000_12_00.3.analog-stereo
+
+use-ui-max = true
 
 [module/volume]
 type = internal/volume
