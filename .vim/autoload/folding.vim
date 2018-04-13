@@ -2,6 +2,7 @@ scriptencoding utf-8
 
 " So that a terminal without utf-8 can read the code
 let s:midDot='·'
+let s:doubleRightBracket='»'
 let s:small_l='ℓ'
 
 " Override default `foldtext()`, which produces something like:
