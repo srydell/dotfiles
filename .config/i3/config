@@ -41,15 +41,15 @@ set $browser qutebrowser
 exec_always --no-startup-id compton -CG
 # Launch polybar
 exec_always --no-startup-id ~/.config/polybar/launch.sh
+# Wallpaper
+exec_always --no-startup-id feh --bg-scale ~/.config/wallpaper.jpg
+
 # redshift for better lighting
-exec redshift
+exec --no-startup-id redshift
 # Switch between us, se keymap with SHIFT+ALT, and swap capslock with ctrl
-exec setxkbmap us,se -option "lv3:ralt_alt,grp:alt_shift_toggle,ctrl:swapcaps"
+exec --no-startup-id setxkbmap us,se -option "lv3:ralt_alt,grp:alt_shift_toggle,ctrl:swapcaps"
 # Fade out mouse when not in use after 0.1 seconds
 exec --no-startup-id unclutter --timeout 1
-
-# Wallpaper
-exec_always feh --bg-scale ~/.config/wallpaper.jpg
 
 # -- Basic bindings --
 bindsym $mod+Return		exec $term
@@ -138,10 +138,10 @@ bindsym $mod+n			workspace next
 # bindsym $mod+Shift+n
 
 # bindsym $mod+m
-bindsym $mod+Shift+m		exec --no-startup-id toggle_unclutter.sh
+bindsym $mod+Shift+m		exec --no-startup-id ~/bin/system/toggle_unclutter.sh
 
 # - Function Buttons -
-bindsym F1			exec --no-startup-id scratch_vim.sh
+bindsym F1			exec --no-startup-id ~/bin/system/scratch_vim.sh
 # bindsym F2
 # bindsym F3
 # bindsym F4
