@@ -14,17 +14,10 @@ if [ -d ~/.bash ]; then
 fi
 unset file;
 
-# Always have one ssh-agent running,
-# and at start pipe the status to ~/.ssh/.ssh-agent-output
-if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-	ssh-agent > ~/.ssh/.ssh-agent-output
-fi
-if [[ "$SSH_AGENT_PID" == "" ]]; then
-	eval "$(<~/.ssh/.ssh-agent-output)"
-fi
-
 # Colorscheme
 source "$HOME/.vim/pack/minpac/opt/gruvbox/gruvbox_256palette.sh"
+
+eval "$(keychain --eval --agents ssh id_rsa)"
 
 # Use vi keybindings command prompt
 # For zsh, the same command is: bindkey -v
