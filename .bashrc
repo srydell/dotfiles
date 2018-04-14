@@ -17,7 +17,10 @@ unset file;
 # Colorscheme
 source "$HOME/.vim/pack/minpac/opt/gruvbox/gruvbox_256palette.sh"
 
-eval "$(keychain --eval --agents ssh id_rsa)"
+# Control ssh-agent. Only handles keys listed here.
+# To add a new key, add the name of the file after id_rsa if it is in ~/.ssh/
+# or give an absolute path
+eval "$(keychain --eval --quiet --agents ssh id_rsa)"
 
 # Use vi keybindings command prompt
 # For zsh, the same command is: bindkey -v
