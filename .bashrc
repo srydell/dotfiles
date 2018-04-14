@@ -14,6 +14,15 @@ if [ -d ~/.bash ]; then
 fi
 unset file;
 
+# Always have one ssh-agent running,
+# and at start pipe the status to ~/.ssh/.ssh-agent-output
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+	ssh-agent > ~/.ssh/.ssh-agent-output
+fi
+if [[ "$SSH_AGENT_PID" == "" ]]; then
+	eval "$(<~/.ssh/.ssh-agent-output)"
+fi
+
 # Colorscheme
 source "$HOME/.vim/pack/minpac/opt/gruvbox/gruvbox_256palette.sh"
 
@@ -70,7 +79,7 @@ export EDITOR=$VISUAL
 export LC_ALL=en_US.UTF-8
 
 # Place for custom scripts
-export PATH="~/bin:$PATH"
+export PATH="$HOME/bin:$PATH"
 if [ "$(uname)" = "Linux" ]; then
 	# Make bash compiling use ccache and all cores. Check #Cores by lscpu
 	export PATH="/usr/lib/ccache/bin/:$PATH"
