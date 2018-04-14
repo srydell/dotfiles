@@ -224,8 +224,8 @@ nnoremap <leader>m :make!<CR>
 " Move through the quickfix list
 nnoremap <silent> [q :cprevious<CR>
 nnoremap <silent> ]q :cnext<CR>
-nnoremap <silent> [q :cfirst<CR>
-nnoremap <silent> ]q :clast<CR>
+nnoremap <silent> [Q :cfirst<CR>
+nnoremap <silent> ]Q :clast<CR>
 
 " Move through the buffer list
 nnoremap <silent> [b :bprevious<CR>
@@ -253,10 +253,10 @@ nnoremap <silent> <leader>zk :call folding#NextClosedFold('k')<cr>
 " Fast substitutions for
 " Word under the cursor in normal mode
 " Visual selection in visual mode (Also copies selection into ")
-" <leader>s for the current line.
+" <leader>su for the current line.
 " <leader>S for the whole file
-nnoremap <leader>s :'{,'}s/\<<C-r><C-w>\>//g<left><left>
-xnoremap <leader>s y:'{,'}s/<C-r><C-0>//g<left><left>
+nnoremap <leader>su :'{,'}s/\<<C-r><C-w>\>//g<left><left>
+xnoremap <leader>su y:'{,'}s/<C-r><C-0>//g<left><left>
 nnoremap <leader>S :%s/\<<C-r><C-w>\>//g<left><left>
 xnoremap <leader>S y:%s/<C-r><C-0>//g<left><left>
 
