@@ -15,42 +15,53 @@ endif
 
 call minpac#init()
 
-" Minpac updates itself
-call minpac#add('k-takata/minpac', {'type': 'opt'})
-
-" General enhancements
-call minpac#add('tpope/vim-surround')
-call minpac#add('tpope/vim-commentary')
-call minpac#add('tpope/vim-repeat')
-call minpac#add('tpope/vim-fugitive')
-
-" Colorschemes
-call minpac#add('morhetz/gruvbox', {'type': 'opt'})
-
-" Add syntax highlighting for i3 config files
-call minpac#add('mboughaba/i3config.vim', {'type': 'opt'})
+" Snippets
+call minpac#add('SirVer/ultisnips')
 
 " Autocompletion
 " Note: Arch Linux specific: ncurses5-compat-libs
 "		is needed from AUR for the completion menu
 call minpac#add('Valloric/YouCompleteMe', {'do': '!./install.py --clang-completer --js-completer'})
-call minpac#add('SirVer/ultisnips')
 
-" Helps with keeping a session saved that
-" can be restored after a reboot
-call minpac#add('tpope/vim-obsession')
-
-" Interact with tmux sessions
+" Send commands from one tmux pane to another
 call minpac#add('benmills/vimux')
 
 " Move through tmux/vim panes with the same keybindings
 call minpac#add('christoomey/vim-tmux-navigator')
 
-" Emmet, snippets for html, css
-call minpac#add('mattn/emmet-vim', {'type': 'opt'})
-
-" Syntax highlighting for different Javascript frameworks
-call minpac#add('pangloss/vim-javascript', {'type': 'opt'})
+" Minpac updates itself
+call minpac#add('k-takata/minpac', {'type': 'opt'})
 
 " html, css, json and javascript formatter
 call minpac#add('maksimr/vim-jsbeautify', {'type': 'opt'})
+
+" Emmet, snippets for html, css
+call minpac#add('mattn/emmet-vim', {'type': 'opt'})
+
+" Add syntax highlighting for i3 config files
+call minpac#add('mboughaba/i3config.vim', {'type': 'opt'})
+
+" Colorscheme
+call minpac#add('morhetz/gruvbox', {'type': 'opt'})
+
+" Add syntax highlighting for javascript
+call minpac#add('pangloss/vim-javascript', {'type': 'opt'})
+
+" Operators which comment out text based on filetype
+call minpac#add('tpope/vim-commentary')
+
+" Git commands
+call minpac#add('tpope/vim-fugitive')
+
+" Helps with keeping a session saved that
+" can be restored after a reboot
+call minpac#add('tpope/vim-obsession')
+
+" Interface for repeating plugin type commands with .
+call minpac#add('tpope/vim-repeat')
+
+" Operators used to surround text with character
+call minpac#add('tpope/vim-surround')
+
+" Asynchronous Lint Engine
+call minpac#add('w0rp/ale')
