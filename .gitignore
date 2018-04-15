@@ -55,6 +55,7 @@
 !.gitignore
 !.latemprc
 !.latexmkrc
+!.config/qutebrowser/keys.conf
 !.taskrc
 !.tmux.conf
 !.vimrc
