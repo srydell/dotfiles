@@ -1,13 +1,23 @@
 " Edit the specific ftplugin file for the current filetype
-function! functions#EditFtplugin() abort
+function! utils#EditFtplugin() abort
 	let s:command = "~/.vim/ftplugin/" . &ft . ".vim"
 	execute(":e" . s:command)
+endfunction
+
+function! utils#toggleLoclist() abort
+	if exists("g:lfix_win")
+		lclose
+		unlet g:lfix_win
+	else
+		lopen 5
+		let g:lfix_win = bufnr("$")
+	endif
 endfunction
 
 " Function to open a search for the word under the cursor.
 " Depending on which filetype is in the current buffer,
 " different search engines will be used
-function! functions#GetHelpDocs(browser, currentOS)
+function! utils#GetHelpDocs(browser, currentOS)
 	" Depending on which filetype, use different search engines
 	" OBS: Use ' instead of " to tell vim to use the string AS IS.
 	" Therefore no substitutions to escaped characters are needed

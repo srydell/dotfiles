@@ -2,12 +2,12 @@
 let g:ale_sign_error = '>>'
 let g:ale_sign_warning = '--'
 
-" Use the quickfix list to store errors
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
+" Use the loclist (like a local quicklist) to show errors
+let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
 
 " Open list in a vim split (default: horizontal)
-let g:ale_open_list = 1
+let g:ale_open_list = 0
 let g:ale_list_vertical = 0
 
 " How many lines of errors are shown (default: 10)

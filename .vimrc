@@ -155,7 +155,7 @@ let g:editorconfig_Beautifier = "~/.vim/.jsBeautifierConfig"
 " Open appropriate help on the word under the cursor
 " Filetype dependent.
 " Takes a browser and OS
-nnoremap <leader>h :call utils#GetHelpDocs("qutebrowser", g:currentOS)<CR>
+nnoremap <silent> <leader>h :call utils#GetHelpDocs("qutebrowser", g:currentOS)<CR>
 
 " Write document
 nnoremap <leader>w :write<CR>
@@ -172,7 +172,7 @@ nnoremap <leader>ev :split$MYVIMRC<CR>
 nnoremap <leader>et :split ~/.tmux.conf<CR>
 
 " Open split window and edit filetype specific configs expand
-nnoremap <leader>ef :call utils#EditFtplugin()<CR>
+nnoremap <silent> <leader>ef :call utils#EditFtplugin()<CR>
 
 " Open a split and edit snippets for this filetype
 nnoremap <leader>es :UltiSnipsEdit<CR>
@@ -221,17 +221,24 @@ nnoremap <silent> <leader>tf :VimuxZoomRunner<CR>
 " To populate the quickfix list for other compilers
 nnoremap <leader>m :make!<CR>
 
-" Move through the quickfix list
-nnoremap <silent> [q :cprevious<CR>
-nnoremap <silent> ]q :cnext<CR>
-nnoremap <silent> [Q :cfirst<CR>
-nnoremap <silent> ]Q :clast<CR>
-
 " Move through the buffer list
 nnoremap <silent> [b :bprevious<CR>
 nnoremap <silent> ]b :bnext<CR>
 nnoremap <silent> [B :bfirst<CR>
 nnoremap <silent> ]B :blast<CR>
+
+" Move through the loclist
+nnoremap <leader>l :call utils#toggleLoclist()<CR>
+nnoremap <silent> [l :lprevious<CR>
+nnoremap <silent> ]l :lnext<CR>
+nnoremap <silent> [L :lfirst<CR>
+nnoremap <silent> ]L :llast<CR>
+
+" Move through the quickfix list
+nnoremap <silent> [q :cprevious<CR>
+nnoremap <silent> ]q :cnext<CR>
+nnoremap <silent> [Q :cfirst<CR>
+nnoremap <silent> ]Q :clast<CR>
 
 " Yank to system clipboard
 nnoremap <leader>y "*y
