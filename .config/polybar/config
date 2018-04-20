@@ -300,6 +300,10 @@ label = %time%
 [module/volume]
 type = internal/volume
 
+master-soundcard = hw:1
+speaker-soundcard = default
+headphone-soundcard = default
+
 format-volume = <label-volume> <bar-volume>
 label-volume = VOL
 label-volume-foreground = ${root.foreground}
