@@ -52,7 +52,7 @@ if has('folding')
 	set foldmethod=indent
 
 	" Start unfolded
-	set foldlevelstart=99
+	" set foldlevelstart=99
 	set foldtext=folding#foldtext()
 endif
 
