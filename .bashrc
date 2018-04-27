@@ -79,13 +79,16 @@ export LC_ALL=en_US.UTF-8
 
 # Place for custom scripts
 export PATH="$HOME/bin:$PATH"
-if [ "$(uname)" = "Linux" ]; then
-	# Make bash compiling use ccache and all cores. Check #Cores by lscpu
-	export PATH="/usr/lib/ccache/bin/:$PATH"
-	export MAKEFLAGS="-j13 -l12"
-elif [ "$(uname)" = "Darwin" ]; then
-	# Let brew programs come first
-	export PATH="/usr/local/sbin:$PATH"
-	export PATH="/opt/local/bin:$PATH"
-	export PATH="$HOME/.cargo/bin:$PATH"
-fi
+case "$(uname)" in
+	Linux )
+		# Make bash compiling use ccache and all cores. Check #Cores by lscpu
+		export PATH="/usr/lib/ccache/bin/:$PATH"
+		export MAKEFLAGS="-j13 -l12"
+		;;
+	Darwin )
+		# Let brew programs come first
+		export PATH="/usr/local/sbin:$PATH"
+		export PATH="/opt/local/bin:$PATH"
+		export PATH="$HOME/.cargo/bin:$PATH"
+		;;
+esac

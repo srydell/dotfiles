@@ -29,13 +29,22 @@ for_window [class="Gimp"] move workspace $ws5
 for_window [window_role="gimp-dock"] floating disable; move left; resize shrink width 50 px or 50ppt
 for_window [window_role="gimp-toolbox"] floating disable; move right; resize grow width 30 px or 30ppt
 
+# Correct handling of popup windows (floating, center)
+for_window [window_role="pop-up"] floating enable; move center
+for_window [window_role="bubble"] floating enable; move center
+for_window [window_role="task_dialog"] floating enable; move center
+for_window [window_role="dialog"] floating enable; move center
+for_window [window_role="menu"] floating enable; move center
+for_window [window_role="Preferences"] floating enable; move center
+for_window [class="Gifview"] floating enable; move center
+
 gaps inner 10
 gaps outer 10
 font pango:iosevka 13
 
 # Set Defaults
 set $mod Mod4
-set $term urxvt
+# set $term urxvt
 set $term alacritty
 set $browser qutebrowser
 
