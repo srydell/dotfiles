@@ -16,9 +16,12 @@ for_window [instance="scratch"] floating enable;
 for_window [instance="browserVideo"] floating enable;
 for_window [instance="browserVideo"] sticky enable;
 
-# webcam float and sticky
+# Webcam float and sticky
 for_window [title="video0 - mpv"] floating enable;
 for_window [title="video0 - mpv"] sticky enable;
+
+# Blender
+for_window [title="Blender User Preferences"] floating enable; move center
 
 # Gimp
 for_window [title="GIMP Startup"] move workspace $ws5
