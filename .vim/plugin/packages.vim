@@ -47,6 +47,10 @@ call minpac#add('morhetz/gruvbox', {'type': 'opt'})
 " Add syntax highlighting for javascript
 call minpac#add('pangloss/vim-javascript', {'type': 'opt'})
 
+" Correct spelling mistakes, substitutions,
+" and change naming conventions on the fly.
+call minpac#add('tpope/vim-abolish')
+
 " Operators which comment out text based on filetype
 call minpac#add('tpope/vim-commentary')
 
@@ -59,6 +63,9 @@ call minpac#add('tpope/vim-obsession')
 
 " Interface for repeating plugin type commands with .
 call minpac#add('tpope/vim-repeat')
+
+" Functions for vimL scripting
+call minpac#add('tpope/vim-scriptease', {'type': 'opt'})
 
 " Operators used to surround text with character
 call minpac#add('tpope/vim-surround')
