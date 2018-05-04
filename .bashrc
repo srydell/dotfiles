@@ -5,15 +5,6 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-# Load the shell dotfiles if they exist.
-if [ -d ~/.bash ]; then
-	for file in ~/.bash/{bash_prompt,aliases,functions};
-	do
-		[ -r "$file" ] && [ -f "$file" ] && source "$file";
-	done
-fi
-unset file;
-
 # Colorscheme
 source "$HOME/.vim/pack/minpac/opt/gruvbox/gruvbox_256palette.sh"
 
@@ -77,8 +68,14 @@ export EDITOR=$VISUAL
 # Counteracting a bug in systemd according to archlinux.org forum. Found in application "i3lock"
 export LC_ALL=en_US.UTF-8
 
+# Let fzf fuzzy finder use ripgrep to search for the files.
+# This respects .gitignore and the like
+export FZF_DEFAULT_COMMAND='rg --files'
+
 # Place for custom scripts
 export PATH="$HOME/bin:$PATH"
+# Fuzzy finder binary
+export PATH="$HOME/.vim/pack/minpac/start/fzf/bin:$PATH"
 case "$(uname)" in
 	Linux )
 		# Make bash compiling use ccache and all cores. Check #Cores by lscpu
@@ -92,3 +89,13 @@ case "$(uname)" in
 		export PATH="$HOME/.cargo/bin:$PATH"
 		;;
 esac
+
+# Load the shell dotfiles if they exist.
+if [ -d ~/.bash ]; then
+	for file in ~/.bash/{bash_prompt,aliases,functions};
+	do
+		[ -r "$file" ] && [ -f "$file" ] && source "$file";
+	done
+fi
+unset file;
+
