@@ -135,7 +135,7 @@ bindsym $mod+z			gaps outer current plus 5
 bindsym $mod+Shift+z		gaps outer current minus 5
 
 # bindsym $mod+x		exec --no-startup-id i3lock
-bindsym $mod+Shift+x		exec sudo shutdown -h now
+bindsym $mod+Shift+x		exec "shutdown now"
 
 # bindsym $mod+c
 # bindsym $mod+Shift+c
