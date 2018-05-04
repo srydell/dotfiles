@@ -2,10 +2,10 @@ command! PackUpdate packadd minpac | source ~/.vim/plugin/packages.vim | redraw 
 command! PackClean packadd minpac | source ~/.vim/plugin/packages.vim | call minpac#clean()
 
 " If packages are not handled
-if !isdirectory($HOME . "/.vim/pack")
+if !isdirectory($HOME . '/.vim/pack')
 	" Download minpac
 	execute('silent !git clone https://github.com/k-takata/minpac.git ~/.vim/pack/minpac/opt/minpac')
-	echom "You may now install the plugins listed in ~/.vim/plugin/packages.vim by typing :PackUpdate"
+	echom 'You may now install the plugins listed in ~/.vim/plugin/packages.vim by typing :PackUpdate'
 endif
 
 " This will only happen if packadd minpac has been executed
@@ -29,6 +29,10 @@ call minpac#add('benmills/vimux')
 " Move through tmux/vim panes with the same keybindings
 call minpac#add('christoomey/vim-tmux-navigator')
 
+" Fuzzy finder.
+" NOTE: The fzf binary is installed here in .vim/pack/minpac/start/fzf/bin
+call minpac#add('junegunn/fzf', {'do': '!./install --bin'})
+
 " Minpac updates itself
 call minpac#add('k-takata/minpac', {'type': 'opt'})
 
@@ -46,10 +50,6 @@ call minpac#add('morhetz/gruvbox', {'type': 'opt'})
 
 " Add syntax highlighting for javascript
 call minpac#add('pangloss/vim-javascript', {'type': 'opt'})
-
-" Correct spelling mistakes, substitutions,
-" and change naming conventions on the fly.
-call minpac#add('tpope/vim-abolish')
 
 " Operators which comment out text based on filetype
 call minpac#add('tpope/vim-commentary')
