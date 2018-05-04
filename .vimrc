@@ -192,6 +192,9 @@ nnoremap <leader>fc :Buffers<CR>
 " Fuzzy finder - fzf (commits)
 nnoremap <leader>fc :Commits<CR>
 
+" Fuzzy finder - fzf (snippets)
+nnoremap <leader>fs :Snippets<CR>
+
 " Run git commit -u
 nnoremap <leader>gu :silent! Git add -u<CR>:redraw!<CR>
 
