@@ -183,6 +183,15 @@ nnoremap <leader>sv :source $MYVIMRC<CR>
 " Generate a tags file
 nnoremap <leader>C :!ctags -R<CR>
 
+" Fuzzy finder - fzf (files)
+nnoremap <leader>ff :<C-u>FZF<CR>
+
+" Fuzzy finder - fzf (buffers)
+nnoremap <leader>fc :Buffers<CR>
+
+" Fuzzy finder - fzf (commits)
+nnoremap <leader>fc :Commits<CR>
+
 " Run git commit -u
 nnoremap <leader>gu :silent! Git add -u<CR>:redraw!<CR>
 
@@ -248,15 +257,6 @@ nnoremap <silent><leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
 " Yank to system clipboard from visual mode
 xnoremap <leader>y "*ygv<Esc>
 
-" Unfold all folds under cursor
-nnoremap <leader><Space> za
-" Create fold for visually selected text
-vnoremap <leader><Space> zf
-
-" Normally zj/zk moves to folds even if they are open
-nnoremap <silent> <leader>zj :call folding#NextClosedFold('j')<cr>
-nnoremap <silent> <leader>zk :call folding#NextClosedFold('k')<cr>
-
 " Fast substitutions for
 " Word under the cursor in normal mode
 " Visual selection in visual mode (Also copies selection into ")
@@ -266,6 +266,15 @@ nnoremap <leader>su :'{,'}s/\<<C-r><C-w>\>//g<left><left>
 xnoremap <leader>su y:'{,'}s/<C-r><C-0>//g<left><left>
 nnoremap <leader>S :%s/\<<C-r><C-w>\>//g<left><left>
 xnoremap <leader>S y:%s/<C-r><C-0>//g<left><left>
+
+" Unfold all folds under cursor
+nnoremap <leader><Space> za
+" Create fold for visually selected text
+vnoremap <leader><Space> zf
+
+" Normally zj/zk moves to folds even if they are open
+nnoremap <silent> <leader>zj :call folding#NextClosedFold('j')<cr>
+nnoremap <silent> <leader>zk :call folding#NextClosedFold('k')<cr>
 
 " H moves to beginning of line and L to end of line
 nnoremap H ^
