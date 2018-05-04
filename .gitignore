@@ -13,6 +13,7 @@
 .config/Kitware
 .config/QtProject.conf
 .config/Zeal/
+.config/blender/
 .config/configstore/
 .config/inkscape/
 .config/pavucontrol.ini
