@@ -114,4 +114,4 @@ c.bindings.key_mappings = {'<Ctrl+6>': '<Ctrl+^>', '<Ctrl+Enter>': '<Ctrl+Return
 
 # Spawn mpv on url with <Ctrl+v>
 # Opens in corner and --x11-name will be picked up by i3
-config.bind('<Ctrl+v>', 'spawn mpv --x11-name=browserVideo --geometry=-0-0 --autofit=35% {url}')
+config.bind('<Ctrl+v>', 'spawn mpv --x11-name=browserVideo --geometry=-0-0 --autofit=45% {url}')
