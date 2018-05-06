@@ -145,9 +145,6 @@ set undolevels=100
 " Always use filetype latex for .tex files
 let g:tex_flavor = "latex"
 
-" Always use filetype latex for .tex files
-let g:editorconfig_Beautifier = "~/.vim/.jsBeautifierConfig"
-
 " ---- Leader mappings ----
 " <leader><lowerCaseLetter> for harmless commands
 " <leader><upperCaseLetter> for potentially harmful commands

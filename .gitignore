@@ -51,12 +51,13 @@
 !.bash_history
 !.bash_profile
 !.bashrc
+!.config/qutebrowser/keys.conf
 !.ctags
+!.editorconfig
 !.gitconfig
 !.gitignore
 !.latemprc
 !.latexmkrc
-!.config/qutebrowser/keys.conf
 !.taskrc
 !.tmux.conf
 !.vimrc

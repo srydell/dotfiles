@@ -1,0 +1,26 @@
+; vim: filetype=dosini
+; .editorconfig
+
+; Make programs looking for .editorconfig stop looking here
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+
+[**.{js,json}]
+indent_style = tab
+indent_size = 4
+
+[**.css]
+indent_style = tab
+indent_size = 4
+
+[**.html]
+indent_style = tab
+indent_size = 4
+max_char = 78
+brace_style = expand
+
+[Makefile]
+indent_style = tab
