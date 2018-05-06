@@ -38,6 +38,9 @@ call minpac#add('junegunn/fzf.vim')
 " Minpac updates itself
 call minpac#add('k-takata/minpac', {'type': 'opt'})
 
+" Tags management
+call minpac#add('ludovicchabant/vim-gutentags')
+
 " html, css, json and javascript formatter
 call minpac#add('maksimr/vim-jsbeautify', {'type': 'opt'})
 
