@@ -47,6 +47,9 @@ call minpac#add('mattn/emmet-vim', {'type': 'opt'})
 " Add syntax highlighting for i3 config files
 call minpac#add('mboughaba/i3config.vim', {'type': 'opt'})
 
+" Asynchronous wrapper around different grep tools (Use multiple at once)
+call minpac#add('mhinz/vim-grepper')
+
 " Colorscheme
 call minpac#add('morhetz/gruvbox', {'type': 'opt'})
 
