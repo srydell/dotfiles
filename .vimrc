@@ -183,17 +183,28 @@ nnoremap <leader>sv :source $MYVIMRC<CR>
 " Generate a tags file
 nnoremap <leader>C :!ctags -R<CR>
 
-" Fuzzy finder - fzf (files)
-nnoremap <leader>ff :<C-u>FZF<CR>
-
 " Fuzzy finder - fzf (buffers)
-nnoremap <leader>fc :Buffers<CR>
+nnoremap <leader>fb :Buffers<CR>
 
 " Fuzzy finder - fzf (commits)
 nnoremap <leader>fc :Commits<CR>
 
+" Fuzzy finder - fzf (files)
+nnoremap <leader>ff :<C-u>FZF<CR>
+
 " Fuzzy finder - fzf (snippets)
 nnoremap <leader>fs :Snippets<CR>
+
+" Find all the TODO/FIXME in current git project
+" :Todo command specified in .vim/plugin/searchtools.vim
+nnoremap <Leader>ft :Todo<CR>
+
+" Search for the current word in the whole directory structure
+nnoremap <Leader>* :Grepper -cword -noprompt<CR>
+
+" Search for the current selection
+nmap gs <Plug>(GrepperOperator)
+xmap gs <Plug>(GrepperOperator)
 
 " Run git commit -u
 nnoremap <leader>gu :silent! Git add -u<CR>:redraw!<CR>
