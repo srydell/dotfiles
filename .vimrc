@@ -233,14 +233,6 @@ nnoremap <silent> <leader>ti :VimuxInspectRunner<CR>
 " Zoom the tmux runner pane ( [t]mux [f]ullscreen )
 nnoremap <silent> <leader>tf :VimuxZoomRunner<CR>
 
-" Populate the quickfix list with errors generated from make
-" The ! sign makes vim not automatically jump to the first quickfix
-" Works automatically with makefiles but may want to be setting
-" setlocal makeprg=COMPILER\ %
-" setlocal errorformat=...
-" To populate the quickfix list for other compilers
-nnoremap <leader>m :make!<CR>
-
 " Move through the buffer list
 nnoremap <silent> [b :bprevious<CR>
 nnoremap <silent> ]b :bnext<CR>
