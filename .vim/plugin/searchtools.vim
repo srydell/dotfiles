@@ -8,7 +8,7 @@ let g:grepper.jump = 1
 
 " Open the quickfix/location list on search
 " Default: 1
-let g:grepper.open = 1
+let g:grepper.open = 0
 
 let g:grepper.operator = {}
 " Prompt search tool when using GrepperOperator

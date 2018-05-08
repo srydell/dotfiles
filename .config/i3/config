@@ -29,6 +29,8 @@ for_window [class="Gimp"] move workspace $ws5
 for_window [window_role="gimp-dock"] floating disable; move left; resize shrink width 50 px or 50ppt
 for_window [window_role="gimp-toolbox"] floating disable; move right; resize grow width 30 px or 30ppt
 
+for_window [class="inkscape"] move to workspace $ws7
+
 # Correct handling of popup windows (floating, center)
 for_window [window_role="pop-up"] floating enable; move center
 for_window [window_role="bubble"] floating enable; move center
@@ -141,7 +143,7 @@ bindsym $mod+Shift+x		exec "shutdown now"
 # bindsym $mod+Shift+c
 
 # bindsym $mod+v
-# bindsym $mod+Shift+v
+bindsym $mod+Shift+v		exec --no-startup-id inkscape; workspace $ws7
 
 # bindsym $mod+b
 bindsym $mod+Shift+b		exec --no-startup-id blender; workspace $ws6
