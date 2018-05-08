@@ -15,6 +15,7 @@
 .config/Zeal/
 .config/blender/
 .config/configstore/
+.config/gtk-*/
 .config/inkscape/
 .config/pavucontrol.ini
 .config/pulse/
