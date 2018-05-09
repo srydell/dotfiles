@@ -215,7 +215,7 @@ nnoremap <leader>ga :Gwrite<CR>
 nnoremap <leader>gc :Gcommit --verbose<CR>
 
 " Push the changes
-nnoremap <leader>Gp :Gpush<CR>
+nnoremap <leader>gp :Gpush<CR>
 
 " Revert current file to last checked in version
 " Same as running git checkout %
@@ -247,6 +247,7 @@ nnoremap <silent> [L :lfirst<CR>
 nnoremap <silent> ]L :llast<CR>
 
 " Move through the quickfix list
+nnoremap <leader>q :call utils#toggleQuickfixlist()<CR>
 nnoremap <silent> [q :cprevious<CR>
 nnoremap <silent> ]q :cnext<CR>
 nnoremap <silent> [Q :cfirst<CR>
