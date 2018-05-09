@@ -62,6 +62,9 @@ call minpac#add('pangloss/vim-javascript', {'type': 'opt'})
 " Operators which comment out text based on filetype
 call minpac#add('tpope/vim-commentary')
 
+" :Make command with synchronized tmux/quickfix list
+call minpac#add('tpope/vim-dispatch')
+
 " Git commands
 call minpac#add('tpope/vim-fugitive')
 

@@ -75,7 +75,7 @@ export FZF_DEFAULT_COMMAND='rg --files'
 # Place for custom scripts
 export PATH="$HOME/bin:$PATH"
 # Fuzzy finder binary
-export PATH="$HOME/.vim/pack/minpac/start/fzf/bin:$PATH"
+export PATH="$HOME/.vim/pack/minpac/start/fzf/bin/:$PATH"
 case "$(uname)" in
 	Linux )
 		# Make bash compiling use ccache and all cores. Check #Cores by lscpu
@@ -87,6 +87,8 @@ case "$(uname)" in
 		export PATH="/usr/local/sbin:$PATH"
 		export PATH="/opt/local/bin:$PATH"
 		export PATH="$HOME/.cargo/bin:$PATH"
+		# Use brew version of gcc
+		alias gcc=/usr/local/Cellar/gcc/8.1.0/bin/gcc-8
 		;;
 esac
 
@@ -98,4 +100,3 @@ if [ -d ~/.bash ]; then
 	done
 fi
 unset file;
-
