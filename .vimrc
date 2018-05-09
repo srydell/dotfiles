@@ -4,6 +4,7 @@ filetype plugin indent on
 " Enable syntax
 syntax enable
 
+echom "hi"
 " Set mapleader
 let mapleader="\<Space>"
 let maplocalleader="\<Space>"
