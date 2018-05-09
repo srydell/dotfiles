@@ -240,14 +240,14 @@ nnoremap <silent> [B :bfirst<CR>
 nnoremap <silent> ]B :blast<CR>
 
 " Move through the loclist
-nnoremap <leader>l :call utils#toggleLoclist()<CR>
+nnoremap <leader>l :call utils#ToggleList("Location List", 'l')<CR>
 nnoremap <silent> [l :lprevious<CR>
 nnoremap <silent> ]l :lnext<CR>
 nnoremap <silent> [L :lfirst<CR>
 nnoremap <silent> ]L :llast<CR>
 
 " Move through the quickfix list
-nnoremap <leader>q :call utils#toggleQuickfixlist()<CR>
+nnoremap <leader>q :call utils#ToggleList("Quickfix List", 'c')<CR>
 nnoremap <silent> [q :cprevious<CR>
 nnoremap <silent> ]q :cnext<CR>
 nnoremap <silent> [Q :cfirst<CR>
