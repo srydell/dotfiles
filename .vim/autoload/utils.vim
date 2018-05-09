@@ -4,23 +4,39 @@ function! utils#EditFtplugin() abort
 	execute(":e" . s:command)
 endfunction
 
-function! utils#toggleQuickfixlist() abort
-	if exists("g:qfix_win")
-		cclose
-		unlet g:qfix_win
-	else
-		copen 5
-		let g:qfix_win = bufnr("$")
-	endif
+function! GetBufferList()
+	redir =>buflist
+	silent! ls!
+	redir END
+	return buflist
 endfunction
 
-function! utils#toggleLoclist() abort
-	if exists("g:lfix_win")
-		lclose
-		unlet g:lfix_win
-	else
-		lopen 5
-		let g:lfix_win = bufnr("$")
+function! utils#ToggleList(bufname, prefix) abort
+	" :bufname: String - "Location List", "Quickfix List"
+	" :prefix: String - What prefix vim uses to close/open the list - "l", "q"
+	let buflist = GetBufferList()
+
+	" Find a buffer nummer corresponding to the bufname given
+	for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'), 'str2nr(matchstr(v:val, "\\d\\+"))')
+		" If it is found, close it and return
+		if bufwinnr(bufnum) != -1
+			exec(a:prefix.'close')
+			return
+		endif
+	endfor
+
+	" Guard for empty location list
+	if a:prefix == 'l' && len(getloclist(0)) == 0
+		echohl ErrorMsg
+		echo "Location List is Empty."
+		return
+	endif
+
+	let winnr = winnr()
+	" Open the list
+	exec(a:prefix.'open')
+	if winnr() != winnr
+		wincmd p
 	endif
 endfunction
 
