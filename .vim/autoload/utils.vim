@@ -4,6 +4,16 @@ function! utils#EditFtplugin() abort
 	execute(":e" . s:command)
 endfunction
 
+function! utils#toggleQuickfixlist() abort
+	if exists("g:qfix_win")
+		cclose
+		unlet g:qfix_win
+	else
+		copen 5
+		let g:qfix_win = bufnr("$")
+	endif
+endfunction
+
 function! utils#toggleLoclist() abort
 	if exists("g:lfix_win")
 		lclose
