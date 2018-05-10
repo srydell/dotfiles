@@ -149,19 +149,6 @@ let g:tex_flavor = "latex"
 " <leader><lowerCaseLetter> for harmless commands
 " <leader><upperCaseLetter> for potentially harmful commands
 
-" Open appropriate help on the word under the cursor
-" Filetype dependent.
-" Takes a browser and OS
-nnoremap <silent> <leader>h :call utils#GetHelpDocs("qutebrowser", g:currentOS)<CR>
-
-" Write document
-nnoremap <leader>w :write<CR>
-
-" Write all buffers and exit
-" If there are buffers without a name,
-" or that are readonly, bring up a confirm prompt
-nnoremap <leader>W :confirm wqall<CR>
-
 " Open split window and edit .vimrc
 nnoremap <leader>ev :split$MYVIMRC<CR>
 
@@ -173,12 +160,6 @@ nnoremap <silent> <leader>ef :call utils#EditFtplugin()<CR>
 
 " Open a split and edit snippets for this filetype
 nnoremap <leader>es :UltiSnipsEdit<CR>
-
-" Source vimrc
-nnoremap <leader>sv :source $MYVIMRC<CR>
-
-" Generate a tags file
-nnoremap <leader>C :!ctags -R<CR>
 
 " Fuzzy finder - fzf (buffers)
 nnoremap <leader>fb :Buffers<CR>
@@ -218,8 +199,16 @@ nnoremap <leader>gc :Gcommit --verbose<CR>
 nnoremap <leader>gp :Gpush<CR>
 
 " Revert current file to last checked in version
-" Same as running git checkout %
+" Same as running :!git checkout %
 nnoremap <leader>Gr :Gread<CR>
+
+" Open appropriate help on the word under the cursor
+" Filetype dependent.
+" Takes a browser and OS
+nnoremap <silent> <leader>h :call utils#GetHelpDocs("qutebrowser", g:currentOS)<CR>
+
+" Call Dispatch make with the appropriate handler (tmux, split, ...)
+nnoremap <silent> <leader>m :Make<CR>
 
 " Prompt for a command to run in the nearest tmux pane ( [t]mux [c]ommand )
 nnoremap <silent> <leader>tc :VimuxPromptCommand<CR>
@@ -255,11 +244,14 @@ nnoremap <silent> ]Q :clast<CR>
 
 " Yank to system clipboard
 nnoremap <leader>y "*y
+xnoremap <leader>y "*ygv<Esc>
+
 " Paste from clipboard
 nnoremap <silent><leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
 nnoremap <silent><leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
-" Yank to system clipboard from visual mode
-xnoremap <leader>y "*ygv<Esc>
+
+" Source vimrc
+nnoremap <leader>sv :source $MYVIMRC<CR>
 
 " Fast substitutions for
 " Word under the cursor in normal mode
@@ -270,6 +262,14 @@ nnoremap <leader>su :'{,'}s/\<<C-r><C-w>\>//g<left><left>
 xnoremap <leader>su y:'{,'}s/<C-r><C-0>//g<left><left>
 nnoremap <leader>S :%s/\<<C-r><C-w>\>//g<left><left>
 xnoremap <leader>S y:%s/<C-r><C-0>//g<left><left>
+
+" Write document
+nnoremap <leader>w :write<CR>
+
+" Write all buffers and exit
+" If there are buffers without a name,
+" or that are readonly, bring up a confirm prompt
+nnoremap <leader>W :confirm wqall<CR>
 
 " Unfold all folds under cursor
 nnoremap <leader><Space> za
