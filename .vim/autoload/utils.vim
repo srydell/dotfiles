@@ -43,18 +43,21 @@ endfunction
 " Function to open a search for the word under the cursor.
 " Depending on which filetype is in the current buffer,
 " different search engines will be used
-function! utils#GetHelpDocs(browser, currentOS)
+function! utils#GetHelpDocs(browser, currentOS) abort
 	" Depending on which filetype, use different search engines
 	" OBS: Use ' instead of " to tell vim to use the string AS IS.
 	" Therefore no substitutions to escaped characters are needed
 	" TODO: Make this a dictionary
-	if &ft =~ "vim"
+	if &filetype =~ "vim"
 		execute(":help " . expand("<cword>"))
 		return
-	elseif &ft =~ "cpp"
+	elseif &filetype =~ "cpp"
 		let s:urlTemplate = 'http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=SEARCHTERM&button='
-	else
+	elseif &filetype =~ "python"
 		let s:urlTemplate = 'https://duckduckgo.com/?q=python+SEARCHTERM&ia=qa'
+	else
+		" Default: Search for keyword on duckduckgo
+		let s:urlTemplate = 'https://duckduckgo.com/?q=SEARCHTERM&ia=qa'
 	endif
 
 	" Expand the word under the cursor and
