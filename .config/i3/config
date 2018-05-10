@@ -46,9 +46,12 @@ font pango:iosevka 13
 
 # Set Defaults
 set $mod Mod4
-# set $term urxvt
-set $term alacritty
+set $term urxvt
+# set $term alacritty
 set $browser qutebrowser
+
+# Press and hold $mod to resize floating windows with right mouse button
+floating_modifier $mod
 
 # -- Start external scripts --
 # Composite manager, CG disables shadowing effects
