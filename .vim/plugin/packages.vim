@@ -65,6 +65,9 @@ call minpac#add('tpope/vim-commentary')
 " :Make command with synchronized tmux/quickfix list
 call minpac#add('tpope/vim-dispatch')
 
+" Add end, fi, endfunction and so on automatically
+call minpac#add('tpope/vim-endwise')
+
 " Git commands
 call minpac#add('tpope/vim-fugitive')
 
