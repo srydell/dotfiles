@@ -50,6 +50,9 @@ set $mod Mod4
 set $term alacritty
 set $browser qutebrowser
 
+# Press and hold $mod to resize floating windows with right mouse button
+floating_modifier $mod
+
 # -- Start external scripts --
 # Composite manager, CG disables shadowing effects
 exec_always --no-startup-id compton -CG
@@ -67,13 +70,13 @@ exec --no-startup-id unclutter --timeout 1
 
 # -- Basic bindings --
 bindsym $mod+Return		exec $term
-bindsym $mod+Shift+Return	exec $term -e "tmux attach"
+bindsym $mod+Shift+Return	exec "$term -e tmux attach"
 
 bindsym $mod+space		floating toggle
 bindsym $mod+Shift+space	focus mode_toggle
 
 # bindsym $mod+BackSpace
-bindsym $mod+Shift+BackSpace	exec sudo reboot
+bindsym $mod+Shift+BackSpace	exec "sudo reboot"
 
 # - Letter key bindings -
 bindsym $mod+q			kill
