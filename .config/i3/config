@@ -82,7 +82,7 @@ bindsym $mod+Shift+BackSpace	exec "sudo reboot"
 bindsym $mod+q			kill
 bindsym $mod+Shift+q		kill
 
-bindsym $mod+w			exec --no-startup-id $browser; workspace $ws2
+# bindsym $mod+w			exec --no-startup-id $browser; workspace $ws2
 # bindsym $mod+Shift+w
 
 # bindsym $mod+e
@@ -148,7 +148,7 @@ bindsym $mod+Shift+x		exec "shutdown now"
 # bindsym $mod+v
 bindsym $mod+Shift+v		exec --no-startup-id inkscape; workspace $ws7
 
-# bindsym $mod+b
+bindsym $mod+b			exec --no-startup-id $browser; workspace $ws2
 bindsym $mod+Shift+b		exec --no-startup-id blender; workspace $ws6
 
 bindsym $mod+n			workspace next
