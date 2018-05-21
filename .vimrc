@@ -184,6 +184,9 @@ nnoremap <Leader>* :Grepper -cword -noprompt<CR>
 nmap gs <Plug>(GrepperOperator)
 xmap gs <Plug>(GrepperOperator)
 
+" Search for the current word in the whole directory structure
+nnoremap g/ :Grepper<CR>
+
 " Run git commit -u
 nnoremap <leader>gu :silent! Git add -u<CR>:redraw!<CR>
 
