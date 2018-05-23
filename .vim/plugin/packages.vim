@@ -75,6 +75,10 @@ call minpac#add('tpope/vim-fugitive')
 " can be restored after a reboot
 call minpac#add('tpope/vim-obsession')
 
+" Project configuration
+" (used to find alternate files and some fancy Ultisnips tricks)
+call minpac#add('tpope/vim-projectionist')
+
 " Interface for repeating plugin type commands with .
 call minpac#add('tpope/vim-repeat')
 
