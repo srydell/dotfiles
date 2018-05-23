@@ -62,3 +62,16 @@ ${1:ReturnType} ${2:FunctionName}(${3:param})
 	${0:FunctionBody}
 }
 endsnippet
+
+snippet cout "Print output" b
+std::cout << $0 << "\n";
+endsnippet
+
+snippet _header "Header skeleton file" b
+#ifndef `!v toupper(expand("%:t:r"))`_H
+#define `!v toupper(expand("%:t:r"))`_H
+
+${0}
+
+#endif
+endsnippet
