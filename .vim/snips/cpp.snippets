@@ -26,8 +26,7 @@ def write_docstring_args(arglist, snip):
 endglobal
 
 snippet cl "class .. (class)"
-class ${1:`!p snip.rv = snip.basename or "name"`}
-{
+class ${1:`!p snip.rv = snip.basename or "name"`}{
 public:
 	${1/(\w+).*/$1/} (${2:arguments});
 	virtual ~${1/(\w+).*/$1/} ();
@@ -57,16 +56,16 @@ snippet fnc "Basic c++ doxygen function template" b
 *
 * @return: `!p snip.rv = t[1]`
 */
-${1:ReturnType} ${2:FunctionName}(${3:param})
-{
+${1:ReturnType} ${2:FunctionName}(${3:param}){
 	${0:FunctionBody}
 }
 endsnippet
 
 snippet cout "Print output" b
-std::cout << $0 << "\n";
+std::cout << ${0:${VISUAL:output}} << "\n";
 endsnippet
 
+# Skeletons
 snippet _header "Header skeleton file" b
 #ifndef `!v toupper(expand("%:t:r"))`_H
 #define `!v toupper(expand("%:t:r"))`_H
