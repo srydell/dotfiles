@@ -185,7 +185,7 @@ nmap gs <Plug>(GrepperOperator)
 xmap gs <Plug>(GrepperOperator)
 
 " Search for the current word in the whole directory structure
-nnoremap g/ :Grepper<CR>
+nnoremap <leader>/ :Grepper<CR>
 
 " Run git commit -u
 nnoremap <leader>gu :silent! Git add -u<CR>:redraw!<CR>
@@ -209,9 +209,6 @@ nnoremap <leader>Gr :Gread<CR>
 " Filetype dependent.
 " Takes a browser and OS
 nnoremap <silent> <leader>h :call utils#GetHelpDocs("qutebrowser", g:currentOS)<CR>
-
-" Call Dispatch make with the appropriate handler (tmux, split, ...)
-nnoremap <silent> <leader>m :Make<CR>
 
 " Prompt for a command to run in the nearest tmux pane ( [t]mux [c]ommand )
 nnoremap <silent> <leader>tc :VimuxPromptCommand<CR>
