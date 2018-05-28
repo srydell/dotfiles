@@ -53,8 +53,11 @@ eval "$(_TMUXP_COMPLETE=source tmuxp)"
 # Save tmuxp project config files under .tmux directory
 export TMUXP_CONFIGDIR=$HOME/.tmux/tmuxp
 
-# Use vim as a manpager
-export MANPAGER="/bin/sh -c \"col -b | vim --not-a-term -c 'set ft=man ts=8 nomod nolist noma' -\""
+# Use vim as a manpager. Read from stdin
+export MANPAGER="vim -M +MANPAGER -"
+
+# Hacky way of setting vim to be the manpager
+# export MANPAGER="/bin/sh -c \"col -b | vim --not-a-term -c 'set ft=man ts=8 nomod nolist noma' -\""
 
 # Set history file out of the way. Default is ~/.bash_history
 if [ -d ~/.bash ]; then
