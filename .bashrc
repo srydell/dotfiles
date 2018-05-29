@@ -72,7 +72,7 @@ export LC_ALL=en_US.UTF-8
 if [ "$(uname)" = "Linux" ]; then
 	# Make bash compiling use ccache and all cores. Check #Cores by lscpu
 	export PATH="/usr/lib/ccache/bin/:$PATH"
-	export MAKEFLAGS="-j13 -l12"
+	export MAKEFLAGS="-j5 -l4"
 elif [ "$(uname)" = "Darwin" ]; then
 	# Let brew programs come first
 	export PATH="/usr/local/sbin:$PATH"
