@@ -47,6 +47,7 @@
 !bin/
 
 # Files
+!.Arch
 !.Xmodmap
 !.Xresources
 !.bash_history

@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# A crude installation script for Arch linux
+
+XPACKAGES="xorg-server xorg-apps xorg-xinit xorg-twm xorg-xclock xterm mesa"
+UTILITYPACKAGES="ccache rxvt-unicode urxvt-perls openssh keychain git jshon wget"
+WINDOWMANAGER="i3-gaps perl-anyevent-i3 perl-json-xs xdotool"
+export USERPACKAGES_PACMAN="compton ctags tmux pulseaudio pulseaudio-jack pavucontrol arandr feh redshift mupdf qutebrowser gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav pass gnupg ranger wireless_tools tk texlive-most texlive-lang task maim pandoc npm python-pip shellcheck python-pylint ripgrep"
+export USERPACKAGES_YAY="urxvt-resize-font-git ttf-iosevka ttf-croscore unclutter-xfixes-git rofi entr polybar ncurses5-compat-libs rubber"
+PYTHONPACKAGES="youtube-dl jsbeautifier tmuxp grip vim-vint"
+NPMPACKAGES="tern"
+
+echo "Installing packages related to X11"
+sudo pacman -S $XPACKAGES
+
+echo "Installing utility packages"
+sudo pacman -S $UTILITYPACKAGES
+
+echo "Installing yay AUR package manager"
+git clone https://aur.archlinux.org/yay.git || exit
+# Sanity check
+if [ -d yay ]
+then
+	cd ./yay || exit
+	makepkg -s || exit
+	sudo pacman -U *xz
+	cd ..
+	rm -rf yay
+fi
+
+echo "Setting up ntp"
+sudo pacman -S ntp
+# Sync using the ntp daemon
+sudo ntpd -qg
+# Can now correct the hwclock
+sudo hwclock --systohc
+
+echo "Installing automatic ntp on network setup script"
+# Enable networkmanager scripts
+systemctl enable --now NetworkManager-dispatcher.service
+
+yay -S networkmanager-dispatcher-ntpd
+
+echo "Installing window manager related packages"
+sudo pacman -S $WINDOWMANAGER
+
+echo "Installing packages to make system more user friendly"
+#sudo pacman -S $USERPACKAGES_PACMAN
+yay -S $USERPACKAGES_YAY
+
+echo "Installing python and npm packages"
+sudo pip install $PYTHONPACKAGES
+sudo npm install -g $NPMPACKAGES
