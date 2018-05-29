@@ -1,21 +1,17 @@
 #
 # ~/.bashrc
-#
+
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-# Load the shell dotfiles if they exist.
-if [ -d ~/.bash ]; then
-	for file in ~/.bash/{bash_prompt,aliases,functions};
-	do
-		[ -r "$file" ] && [ -f "$file" ] && source "$file";
-	done
-fi
-unset file;
-
 # Colorscheme
 source "$HOME/.vim/pack/minpac/opt/gruvbox/gruvbox_256palette.sh"
+
+# Control ssh-agent. Only handles keys listed here.
+# To add a new key, add the name of the file after id_rsa if it is in ~/.ssh/
+# or give an absolute path
+eval "$(keychain --eval --quiet --agents ssh id_rsa)"
 
 # Use vi keybindings command prompt
 # For zsh, the same command is: bindkey -v
@@ -57,6 +53,12 @@ eval "$(_TMUXP_COMPLETE=source tmuxp)"
 # Save tmuxp project config files under .tmux directory
 export TMUXP_CONFIGDIR=$HOME/.tmux/tmuxp
 
+# Use vim as a manpager. Read from stdin
+export MANPAGER="vim -M +MANPAGER -"
+
+# Hacky way of setting vim to be the manpager
+# export MANPAGER="/bin/sh -c \"col -b | vim --not-a-term -c 'set ft=man ts=8 nomod nolist noma' -\""
+
 # Set history file out of the way. Default is ~/.bash_history
 if [ -d ~/.bash ]; then
 	HISTFILE=~/.bash/bash_history
@@ -69,14 +71,35 @@ export EDITOR=$VISUAL
 # Counteracting a bug in systemd according to archlinux.org forum. Found in application "i3lock"
 export LC_ALL=en_US.UTF-8
 
-if [ "$(uname)" = "Linux" ]; then
-	# Make bash compiling use ccache and all cores. Check #Cores by lscpu
-	export PATH="/usr/lib/ccache/bin/:$PATH"
-	export MAKEFLAGS="-j5 -l4"
-elif [ "$(uname)" = "Darwin" ]; then
-	# Let brew programs come first
-	export PATH="/usr/local/sbin:$PATH"
-	export PATH="/opt/local/bin:$PATH"
-	export PATH="$HOME/.cargo/bin:$PATH"
-	export PATH="~/bin:$PATH"
+# Let fzf fuzzy finder use ripgrep to search for the files.
+# This respects .gitignore and the like
+export FZF_DEFAULT_COMMAND='rg --files'
+
+# Place for custom scripts
+export PATH="$HOME/bin:$PATH"
+# Fuzzy finder binary
+export PATH="$HOME/.vim/pack/minpac/start/fzf/bin/:$PATH"
+case "$(uname)" in
+	Linux )
+		# Make bash compiling use ccache and all cores. Check #Cores by lscpu
+		export PATH="/usr/lib/ccache/bin/:$PATH"
+		export MAKEFLAGS="-j5 -l4"
+		;;
+	Darwin )
+		# Let brew programs come first
+		export PATH="/usr/local/sbin:$PATH"
+		export PATH="/opt/local/bin:$PATH"
+		export PATH="$HOME/.cargo/bin:$PATH"
+		# Use brew version of gcc
+		alias gcc=/usr/local/Cellar/gcc/8.1.0/bin/gcc-8
+		;;
+esac
+
+# Load the shell dotfiles if they exist.
+if [ -d ~/.bash ]; then
+	for file in ~/.bash/{bash_prompt,aliases,functions};
+	do
+		[ -r "$file" ] && [ -f "$file" ] && source "$file";
+	done
 fi
+unset file;

@@ -8,10 +8,9 @@ set laststatus=2
 set statusline=%f
 
 " Separator
-set statusline+=\ -\
+set statusline+=\ -\ 
 
 " Label
-set statusline+=FileType:
 " Filetype of the file
 set statusline+=%y
 
@@ -19,7 +18,9 @@ set statusline+=%y
 set statusline+=%=
 
 " Check session tracking
-set statusline+=%{ObsessionStatus()}
+if exists("*ObsessionStatus")
+	set statusline+=%{ObsessionStatus()}
+endif
 
 " Current line
 set statusline+=%l

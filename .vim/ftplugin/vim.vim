@@ -1,3 +1,6 @@
+" VimL scripting help
+packadd vim-scriptease
+
 " Folding
 setlocal foldmethod=marker
 

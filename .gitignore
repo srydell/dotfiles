@@ -4,14 +4,35 @@
 # Ignore all files named .DS_Store or ending with .log
 **/.DS_Store
 **.log
+**.pyc
+**/__pycache__/
 
+# Special cases
 .bash/bash_history
-.config/configstore/*
-.config/systemd/*
-.config/yay/*
-.tmux/plugins/*
+.config/.mono
+.config/Kitware
+.config/QtProject.conf
+.config/Zeal/
+.config/blender/
+.config/configstore/
+.config/gtk-*/
+.config/inkscape/
+.config/pavucontrol.ini
+.config/pulse/
+.config/qutebrowser/autoconfig.yml
+.config/qutebrowser/bookmarks/
+.config/qutebrowser/qsettings/
+.config/qutebrowser/quickmarks
+.config/ranger/
+.config/ranger/history
+.config/ranger/tagged
+.config/redshift.conf
+.config/systemd/
+.config/yay/
+.tmux/plugins/
+.tmux/resurrect/
 .vim/.netrwhist
-.vim/pack/*
+.vim/pack/
 
 # Except these
 # !exampleFile.txt
@@ -23,22 +44,25 @@
 !.git_template/
 !.tmux/
 !.vim/
+!bin/
 
 # Files
+!.Xmodmap
+!.Xresources
 !.bash_history
 !.bash_profile
 !.bashrc
+!.config/qutebrowser/keys.conf
 !.ctags
-!.git
+!.editorconfig
 !.gitconfig
 !.gitignore
 !.latemprc
 !.latexmkrc
-!README.md
 !.taskrc
 !.tmux.conf
 !.vimrc
+!.vintrc.yaml
 !.xinitrc
-!.Xmodmap
-!.Xresources
 !.ycm_extra_conf.py
+!README.md

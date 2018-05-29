@@ -29,18 +29,18 @@ function! snippet#insert_skeleton() abort
     return
   endif
 
-  " " Checks if there are any project specific skeletons
-  " " This is set by the Tim Pope plugin 'projectionist'
-  " if !empty(b:projectionist)
-  "   " Loop through projections with 'skeleton' key and try each one until the
-  "   " snippet expands
-  "   for [root, value] in projectionist#query('skeleton')
-  "     if s:try_insert(value)
-  "       call s:install_undo_workaround()
-  "       return
-  "     endif
-  "   endfor
-  " endif
+  " Checks if there are any project specific skeletons
+  " This is set by the Tim Pope plugin 'projectionist'
+  if !empty(b:projectionist)
+    " Loop through projections with 'skeleton' key and try each one until the
+    " snippet expands
+    for [root, value] in projectionist#query('skeleton')
+      if s:try_insert(value)
+        call s:install_undo_workaround()
+        return
+      endif
+    endfor
+  endif
 
   " Try generic _skel template as last resort
   if s:try_insert("skel")

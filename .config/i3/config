@@ -4,59 +4,97 @@
 # Needed for i3-gaps
 hide_edge_borders both
 for_window [class="^.*"] border pixel 0
+
+# Special containers to their workspaces
+for_window [class="qutebrowser"] move to workspace $ws2
+
+# Called from script scratch_vim.sh
 for_window [instance="scratch"] floating enable;
+
+# Video called from browser, usually qutebrowser
+# Start as floating and sticky (visible on all workspaces)
+for_window [instance="browserVideo"] floating enable;
+for_window [instance="browserVideo"] sticky enable;
+
+# Webcam float and sticky
+for_window [title="video0 - mpv"] floating enable;
+for_window [title="video0 - mpv"] sticky enable;
+
+# Blender
+for_window [title="Blender User Preferences"] floating enable; move center
+
+# Gimp
+for_window [title="GIMP Startup"] move workspace $ws5
+for_window [class="Gimp"] move workspace $ws5
+for_window [window_role="gimp-dock"] floating disable; move left; resize shrink width 50 px or 50ppt
+for_window [window_role="gimp-toolbox"] floating disable; move right; resize grow width 30 px or 30ppt
+
+for_window [class="inkscape"] move to workspace $ws7
+
+# Correct handling of popup windows (floating, center)
+for_window [window_role="pop-up"] floating enable; move center
+for_window [window_role="bubble"] floating enable; move center
+for_window [window_role="task_dialog"] floating enable; move center
+for_window [window_role="dialog"] floating enable; move center
+for_window [window_role="menu"] floating enable; move center
+for_window [window_role="Preferences"] floating enable; move center
+for_window [class="Gifview"] floating enable; move center
+
 gaps inner 10
 gaps outer 10
 font pango:iosevka 13
 
 # Set Defaults
 set $mod Mod4
-set $term urxvt
-set $browser qutebrowser --backend webkit
+# set $term urxvt
+set $term alacritty
+set $browser qutebrowser
+
+# Press and hold $mod to resize floating windows with right mouse button
+floating_modifier $mod
 
 # -- Start external scripts --
 # Composite manager, CG disables shadowing effects
 exec_always --no-startup-id compton -CG
 # Launch polybar
 exec_always --no-startup-id ~/.config/polybar/launch.sh
-# redshift for better lighting
-exec redshift
-# Switch between us, se keymap with SHIFT+ALT, and swap capslock with ctrl
-exec setxkbmap us,se -option "lv3:ralt_alt,grp:alt_shift_toggle,ctrl:swapcaps"
-
 # Wallpaper
-exec_always feh --bg-scale ~/.config/wallpaper.jpg
+exec_always --no-startup-id feh --bg-scale ~/.config/wallpaper.jpg
 
-# Fade out mouse when not in use after 0.2 seconds
-exec_always  --no-startup-id unclutter --timeout 1
+# redshift for better lighting
+exec --no-startup-id redshift
+# Switch between us, se keymap with SHIFT+ALT, and swap capslock with ctrl
+exec --no-startup-id setxkbmap us,se -option "lv3:ralt_alt,grp:alt_shift_toggle,ctrl:swapcaps"
+# Fade out mouse when not in use after 0.1 seconds
+exec --no-startup-id unclutter --timeout 1
 
 # -- Basic bindings --
 bindsym $mod+Return		exec $term
-bindsym $mod+Shift+Return	exec $term -e tmux
+bindsym $mod+Shift+Return	exec "$term -e tmux attach"
 
 bindsym $mod+space		floating toggle
 bindsym $mod+Shift+space	focus mode_toggle
 
 # bindsym $mod+BackSpace
-bindsym $mod+Shift+BackSpace	exec sudo reboot
+bindsym $mod+Shift+BackSpace	exec "sudo reboot"
 
 # - Letter key bindings -
 bindsym $mod+q			kill
 bindsym $mod+Shift+q		kill
 
-bindsym $mod+w			exec --no-startup-id $browser
+# bindsym $mod+w			exec --no-startup-id $browser; workspace $ws2
 # bindsym $mod+Shift+w
 
 # bindsym $mod+e
 # bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
-# bindsym $mod+r		exec $term -e ranger
+bindsym $mod+r		exec $term -e ranger
 bindsym $mod+Shift+r		restart
 
 bindsym $mod+t			split toggle
 bindsym $mod+Shift+t		gaps inner current set 15; gaps outer current set 15
 
-# bindsym $mod+y		exec $term -e calcurse
+# bindsym $mod+y
 bindsym $mod+Shift+y		resize shrink width 10 px or 10 ppt
 
 # bindsym $mod+u
@@ -68,7 +106,7 @@ bindsym $mod+Shift+i		resize grow height 10 px or 10 ppt
 # bindsym $mod+o
 bindsym $mod+Shift+o		resize grow width 10 px or 10 ppt
 
-# bindsym $mod+p
+bindsym $mod+p			workspace prev
 # bindsym $mod+Shift+p
 
 # bindsym $mod+a
@@ -77,14 +115,14 @@ bindsym $mod+Shift+o		resize grow width 10 px or 10 ppt
 bindsym $mod+s			gaps inner current plus 5
 bindsym $mod+Shift+s		gaps inner current minus 5
 
-bindsym $mod+d			exec rofi -show run
+bindsym $mod+d			exec --no-startup-id rofi -show run
 bindsym $mod+Shift+d		gaps inner current set 0; gaps outer current set 0
 
 bindsym $mod+f			fullscreen toggle
 # bindsym $mod+Shift+f
 
 bindsym $mod+g			workspace prev
-# bindsym $mod+Shift+g		
+bindsym $mod+Shift+g		exec --no-startup-id gimp; workspace $ws5
 
 bindsym $mod+h			focus left
 bindsym $mod+Shift+h		move left 30
@@ -101,36 +139,36 @@ bindsym $mod+Shift+l		move right 30
 bindsym $mod+z			gaps outer current plus 5
 bindsym $mod+Shift+z		gaps outer current minus 5
 
-# bindsym $mod+x			exec --no-startup-id i3lock
-bindsym $mod+Shift+x		exec sudo shutdown -h now
+# bindsym $mod+x		exec --no-startup-id i3lock
+bindsym $mod+Shift+x		exec "shutdown now"
 
 # bindsym $mod+c
 # bindsym $mod+Shift+c
 
 # bindsym $mod+v
-# bindsym $mod+Shift+v
+bindsym $mod+Shift+v		exec --no-startup-id inkscape; workspace $ws7
 
-# bindsym $mod+b
-# bindsym $mod+Shift+b
+bindsym $mod+b			exec --no-startup-id $browser; workspace $ws2
+bindsym $mod+Shift+b		exec --no-startup-id blender; workspace $ws6
 
-# bindsym $mod+n
+bindsym $mod+n			workspace next
 # bindsym $mod+Shift+n
 
 # bindsym $mod+m
-# bindsym $mod+Shift+m
+bindsym $mod+Shift+m		exec --no-startup-id ~/bin/system/toggle_unclutter.sh
 
 # - Function Buttons -
-bindsym F1	exec --no-startup-id ~/.config/Scripts/scratch_vim.sh
+bindsym F1			exec --no-startup-id ~/bin/system/scratch_vim.sh
 # bindsym F2
 # bindsym F3
 # bindsym F4
 # bindsym F5
 # bindsym F6
 # bindsym F7
-bindsym F8	exec maim ~/Documents/screenshots/$(date +%s).png
+bindsym F8			exec maim ~/Documents/screenshots/$(date +%s).png
 # bindsym F9
-# bindsym F10 			pactl set-sink-volume @DEFAULT_SINK@ -3%
-# bindsym F11			pactl set-sink-volume @DEFAULT_SINK@ +3%
+bindsym F10 			exec pactl set-sink-volume @DEFAULT_SINK@ -3%
+bindsym F11			exec pactl set-sink-volume @DEFAULT_SINK@ +3%
 # bindsym F12
 
 # - Arrow keys -
@@ -179,9 +217,6 @@ bindsym $mod+Shift+7		move container to workspace $ws7
 bindsym $mod+Shift+8		move container to workspace $ws8
 bindsym $mod+Shift+9		move container to workspace $ws9
 bindsym $mod+Shift+0		move container to workspace $ws10
-
-# Special containers to their workspaces
-for_window [class="qutebrowser"] move to workspace $ws2
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)

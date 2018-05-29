@@ -52,7 +52,7 @@ if has('folding')
 	set foldmethod=indent
 
 	" Start unfolded
-	set foldlevelstart=99
+	" set foldlevelstart=99
 	set foldtext=folding#foldtext()
 endif
 
@@ -145,25 +145,9 @@ set undolevels=100
 " Always use filetype latex for .tex files
 let g:tex_flavor = "latex"
 
-" Always use filetype latex for .tex files
-let g:editorconfig_Beautifier = "~/.vim/.jsBeautifierConfig"
-
 " ---- Leader mappings ----
 " <leader><lowerCaseLetter> for harmless commands
 " <leader><upperCaseLetter> for potentially harmful commands
-
-" Open appropriate help on the word under the cursor
-" Filetype dependent.
-" Takes a browser and OS
-nnoremap <leader>h :call utils#GetHelpDocs("qutebrowser", g:currentOS)<CR>
-
-" Write document
-nnoremap <leader>w :write<CR>
-
-" Write all buffers and exit
-" If there are buffers without a name,
-" or that are readonly, bring up a confirm prompt
-nnoremap <leader>W :confirm wqall<CR>
 
 " Open split window and edit .vimrc
 nnoremap <leader>ev :split$MYVIMRC<CR>
@@ -172,16 +156,36 @@ nnoremap <leader>ev :split$MYVIMRC<CR>
 nnoremap <leader>et :split ~/.tmux.conf<CR>
 
 " Open split window and edit filetype specific configs expand
-nnoremap <leader>ef :call utils#EditFtplugin()<CR>
+nnoremap <silent> <leader>ef :call utils#EditFtplugin()<CR>
 
 " Open a split and edit snippets for this filetype
 nnoremap <leader>es :UltiSnipsEdit<CR>
 
-" Source vimrc
-nnoremap <leader>sv :source $MYVIMRC<CR>
+" Fuzzy finder - fzf (buffers)
+nnoremap <leader>fb :Buffers<CR>
 
-" Generate a tags file
-nnoremap <leader>C :!ctags -R<CR>
+" Fuzzy finder - fzf (commits)
+nnoremap <leader>fc :Commits<CR>
+
+" Fuzzy finder - fzf (files)
+nnoremap <leader>ff :<C-u>FZF<CR>
+
+" Fuzzy finder - fzf (snippets)
+nnoremap <leader>fs :Snippets<CR>
+
+" Find all the TODO/FIXME in current git project
+" :Todo command specified in .vim/plugin/searchtools.vim
+nnoremap <Leader>ft :Todo<CR>
+
+" Search for the current word in the whole directory structure
+nnoremap <Leader>* :Grepper -cword -noprompt<CR>
+
+" Search for the current selection
+nmap gs <Plug>(GrepperOperator)
+xmap gs <Plug>(GrepperOperator)
+
+" Search for the current word in the whole directory structure
+nnoremap <leader>/ :Grepper<CR>
 
 " Run git commit -u
 nnoremap <leader>gu :silent! Git add -u<CR>:redraw!<CR>
@@ -195,11 +199,16 @@ nnoremap <leader>ga :Gwrite<CR>
 nnoremap <leader>gc :Gcommit --verbose<CR>
 
 " Push the changes
-nnoremap <leader>Gp :Gpush<CR>
+nnoremap <leader>gp :Gpush<CR>
 
 " Revert current file to last checked in version
-" Same as running git checkout %
+" Same as running :!git checkout %
 nnoremap <leader>Gr :Gread<CR>
+
+" Open appropriate help on the word under the cursor
+" Filetype dependent.
+" Takes a browser and OS
+nnoremap <silent> <leader>h :call utils#GetHelpDocs("qutebrowser", g:currentOS)<CR>
 
 " Prompt for a command to run in the nearest tmux pane ( [t]mux [c]ommand )
 nnoremap <silent> <leader>tc :VimuxPromptCommand<CR>
@@ -213,33 +222,54 @@ nnoremap <silent> <leader>ti :VimuxInspectRunner<CR>
 " Zoom the tmux runner pane ( [t]mux [f]ullscreen )
 nnoremap <silent> <leader>tf :VimuxZoomRunner<CR>
 
-" Populate the quickfix list with errors generated from make
-" The ! sign makes vim not automatically jump to the first quickfix
-" Works automatically with makefiles but may want to be setting
-" setlocal makeprg=COMPILER\ %
-" setlocal errorformat=...
-" To populate the quickfix list for other compilers
-nnoremap <leader>m :make!<CR>
-
-" Move through the quickfix list
-nnoremap <silent> [q :cprevious<CR>
-nnoremap <silent> ]q :cnext<CR>
-nnoremap <silent> [q :cfirst<CR>
-nnoremap <silent> ]q :clast<CR>
-
 " Move through the buffer list
 nnoremap <silent> [b :bprevious<CR>
 nnoremap <silent> ]b :bnext<CR>
 nnoremap <silent> [B :bfirst<CR>
 nnoremap <silent> ]B :blast<CR>
 
+" Move through the loclist
+nnoremap <silent> <leader>l :call utils#ToggleList("Location List", 'l')<CR>
+nnoremap <silent> [l :lprevious<CR>
+nnoremap <silent> ]l :lnext<CR>
+nnoremap <silent> [L :lfirst<CR>
+nnoremap <silent> ]L :llast<CR>
+
+" Move through the quickfix list
+nnoremap <silent> <leader>q :call utils#ToggleList("Quickfix List", 'c')<CR>
+nnoremap <silent> [q :cprevious<CR>
+nnoremap <silent> ]q :cnext<CR>
+nnoremap <silent> [Q :cfirst<CR>
+nnoremap <silent> ]Q :clast<CR>
+
 " Yank to system clipboard
 nnoremap <leader>y "*y
+xnoremap <leader>y "*ygv<Esc>
+
 " Paste from clipboard
 nnoremap <silent><leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
 nnoremap <silent><leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
-" Yank to system clipboard from visual mode
-xnoremap <leader>y "*ygv<Esc>
+
+" Source vimrc
+nnoremap <leader>sv :source $MYVIMRC<CR>
+
+" Fast substitutions for
+" Word under the cursor in normal mode
+" Visual selection in visual mode (Also copies selection into ")
+" <leader>su for the current line.
+" <leader>S for the whole file
+nnoremap <leader>su :'{,'}s/\<<C-r><C-w>\>//g<left><left>
+xnoremap <leader>su y:'{,'}s/<C-r><C-0>//g<left><left>
+nnoremap <leader>S :%s/\<<C-r><C-w>\>//g<left><left>
+xnoremap <leader>S y:%s/<C-r><C-0>//g<left><left>
+
+" Write document
+nnoremap <leader>w :write<CR>
+
+" Write all buffers and exit
+" If there are buffers without a name,
+" or that are readonly, bring up a confirm prompt
+nnoremap <leader>W :confirm wqall<CR>
 
 " Unfold all folds under cursor
 nnoremap <leader><Space> za
@@ -249,16 +279,6 @@ vnoremap <leader><Space> zf
 " Normally zj/zk moves to folds even if they are open
 nnoremap <silent> <leader>zj :call folding#NextClosedFold('j')<cr>
 nnoremap <silent> <leader>zk :call folding#NextClosedFold('k')<cr>
-
-" Fast substitutions for
-" Word under the cursor in normal mode
-" Visual selection in visual mode (Also copies selection into ")
-" <leader>s for the current line.
-" <leader>S for the whole file
-nnoremap <leader>s :'{,'}s/\<<C-r><C-w>\>//g<left><left>
-xnoremap <leader>s y:'{,'}s/<C-r><C-0>//g<left><left>
-nnoremap <leader>S :%s/\<<C-r><C-w>\>//g<left><left>
-xnoremap <leader>S y:%s/<C-r><C-0>//g<left><left>
 
 " H moves to beginning of line and L to end of line
 nnoremap H ^
