@@ -83,7 +83,10 @@ case "$(uname)" in
 	Linux )
 		# Make bash compiling use ccache and all cores. Check #Cores by lscpu
 		export PATH="/usr/lib/ccache/bin/:$PATH"
-		export MAKEFLAGS="-j5 -l4"
+		# Find the flags programmatically. Good for not blowing up your lesser machine :)
+		LFLAG=$(grep -c '^processor' /proc/cpuinfo)
+		((JFLAG=LFLAG+1))
+		export MAKEFLAGS="-j$JFLAG -l$LFLAG"
 		;;
 	Darwin )
 		# Let brew programs come first
