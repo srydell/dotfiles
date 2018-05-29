@@ -1,0 +1,44 @@
+# Ignore everything
+/*
+
+# Ignore all files named .DS_Store or ending with .log
+**.log
+**.pyc
+**/.DS_Store
+**/__pycache__/
+
+# Exceptions
+# Directories
+qutebrowser/.config/qutebrowser/bookmarks/
+tmux/.tmux/plugins/
+vim/.vim/pack/
+
+# Files
+qutebrowser/.config/qutebrowser/quickmarks
+bash/.bash/bash_history
+
+# Except these
+# !exampleFile.txt
+# !exampleDir/
+
+# Directories
+!X11
+!alacritty
+!bash
+!bin
+!compton
+!git
+!i3
+!latex
+!mpv
+!polybar
+!qutebrowser
+!ranger
+!tmux
+!utils
+!vim
+
+# Files
+!.Arch
+!.gitignore
+!README.md
