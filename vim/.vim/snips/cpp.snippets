@@ -65,6 +65,18 @@ snippet cout "Print output" b
 std::cout << ${0:${VISUAL:output}} << "\n";
 endsnippet
 
+snippet forin "for in container" b
+for (${3:auto} ${1:value} : ${2:container}) {
+	$0
+}
+endsnippet
+
+snippet fors "Simple for loop" b
+if (${1:0 == 0}) {
+	$0
+}
+endsnippet
+
 # Skeletons
 snippet _header "Header skeleton file" b
 #ifndef `!v toupper(expand("%:t:r"))`_H
