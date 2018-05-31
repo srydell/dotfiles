@@ -11,6 +11,7 @@
 # Directories
 qutebrowser/.config/qutebrowser/bookmarks/
 tmux/.tmux/plugins/
+tmux/.tmux/resurrect/
 vim/.vim/pack/
 
 # Files
