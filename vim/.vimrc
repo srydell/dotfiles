@@ -27,6 +27,12 @@ set encoding=utf-8
 " Darwin for MacOS
 if !exists("g:currentOS")
 	let g:currentOS = substitute(system('uname'), '\n', '', '')
+	" Set OS specific settings
+	if g:currentOS == 'Darwin'
+		let g:browser = 'Safari'
+	elseif g:currentOS == 'Linux'
+		let g:browser = 'qutebrowser'
+	endif
 endif
 
 set background=dark
@@ -208,7 +214,7 @@ nnoremap <leader>Gr :Gread<CR>
 " Open appropriate help on the word under the cursor
 " Filetype dependent.
 " Takes a browser and OS
-nnoremap <silent> <leader>h :call utils#GetHelpDocs("qutebrowser", g:currentOS)<CR>
+nnoremap <silent> <leader>h :call utils#GetHelpDocs(g:browser, g:currentOS)<CR>
 
 " Prompt for a command to run in the nearest tmux pane ( [t]mux [c]ommand )
 nnoremap <silent> <leader>tc :VimuxPromptCommand<CR>
