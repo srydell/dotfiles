@@ -87,3 +87,15 @@ endsnippet
 pre_expand "create_table(snip)"
 snippet "tb(\d+x\d+)" "Customizable table" br
 endsnippet
+
+# Skeletons
+snippet _blogpost "Blog post skeleton" b
+Title:           ${1:Blog post title}
+Subtitle:        ${2:Blog post subtitle}
+Authors:         Simon Rydell
+Date_posted:     `!v strftime("%b %d, %Y")`
+Date_modified:
+
+# $1 #
+$0
+endsnippet
