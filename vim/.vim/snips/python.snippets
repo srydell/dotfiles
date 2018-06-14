@@ -157,6 +157,21 @@ finally:
 	${7:pass}
 endsnippet
 
+# Skeletons
+snippet _skel "Skeleton for each python file" b
+'''
+Brief:               ${1:Explanation of file functionality here}
+
+File name:           `!v expand("%:t")`
+Author:              Simon Rydell
+Date created:        `!v strftime("%b %d, %Y")`
+Date last modified:  `!v strftime("%b %d, %Y")`
+Python Version:      3.6
+'''
+
+$0
+endsnippet
+
 # The smart def and smart class snippets use a global option called
 # "g:ultisnips_python_style" which, if set to "doxygen" will use doxygen
 # style comments in docstrings.
@@ -377,3 +392,9 @@ def get_dir_and_file_name(snip):
 	return os.getcwd().split(os.sep)[-1] + '.' + snip.basename
 
 endglobal
+
+snippet daniel "this ias daniel" b
+${1:daniel}danieldaniel
+$0
+{daniel}danieldaniel
+endsnippet

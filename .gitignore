@@ -12,6 +12,7 @@
 qutebrowser/.config/qutebrowser/bookmarks/
 tmux/.tmux/plugins/
 tmux/.tmux/resurrect/
+vim/.vim/.netrwhist
 vim/.vim/pack/
 
 # Files
