@@ -29,14 +29,20 @@ case ${1:word} in
 esac
 endsnippet
 
-snippet _skel "Skeleton for shell scripts" b
-#!/usr/bin/env bash
-
-$0
+snippet fnc "A simple function" b
+# ${2:Brief explanation of functionality}
+# Parameter: ${4:None}
+# Returns: ${5:None}
+${1:functionName}() {
+	${0:${VISUAL::}}
+}
 endsnippet
 
-snippet func "A simple function" b
-function ${1:functionName} {
-	${0::}
-}
+# Skeletons
+snippet _skel "Skeleton for shell scripts" b
+#!/usr/bin/env bash
+## Maintainer: Simon Rydell
+## Date created: `!v strftime("%b %d, %Y")`
+
+$0
 endsnippet
