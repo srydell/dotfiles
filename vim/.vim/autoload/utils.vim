@@ -44,20 +44,25 @@ endfunction
 " Depending on which filetype is in the current buffer,
 " different search engines will be used
 function! utils#GetHelpDocs(browser, currentOS) abort
-	" Depending on which filetype, use different search engines
-	" OBS: Use ' instead of " to tell vim to use the string AS IS.
-	" Therefore no substitutions to escaped characters are needed
-	" TODO: Make this a dictionary
+	" Special case for vim
 	if &filetype =~ "vim"
 		execute(":help " . expand("<cword>"))
 		return
-	elseif &filetype =~ "cpp"
-		let s:urlTemplate = 'http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=SEARCHTERM&button='
-	elseif &filetype =~ "python"
-		let s:urlTemplate = 'https://duckduckgo.com/?q=python+SEARCHTERM&ia=qa'
+	endif
+	" Depending on which filetype, use different search engines
+	" OBS: Use ' instead of " to tell vim to use the string AS IS.
+	let s:filetypes_and_actions = {
+		\ 'cpp': 'http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=SEARCHTERM&button=',
+		\ 'cmake': 'https://cmake.org/cmake/help/v3.12/search.html?q=SEARCHTERM&check_keywords=yes&area=default',
+		\ 'default': 'https://duckduckgo.com/?q=FILETYPE+SEARCHTERM&ia=qa',
+		\}
+
+	" Get the url to open in the browser
+	if has_key(s:filetypes_and_actions, &filetype)
+		let s:urlTemplate = s:filetypes_and_actions[&filetype]
 	else
-		" Default: Search for keyword on duckduckgo
-		let s:urlTemplate = 'https://duckduckgo.com/?q=SEARCHTERM&ia=qa'
+		" Default: Search duckduckgo with filetype wordUnderCursor
+		let s:urlTemplate = substitute(s:filetypes_and_actions['default'], "FILETYPE", &filetype, "g")
 	endif
 
 	" Expand the word under the cursor and
