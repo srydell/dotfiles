@@ -5,4 +5,4 @@ setlocal noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
 setlocal commentstring=//\ %s
 
 " Enable only cppcheck for C++.
-let b:ale_linters = ['clang', 'cppcheck']
+let b:ale_linters = ['cppcheck']

@@ -22,6 +22,9 @@ let g:ycm_global_ycm_extra_conf='~/.vim/.ycm_extra_conf.py'
 " Use ctags files for autocompletion
 let g:ycm_collect_identifiers_from_tags_files = 1
 
+" Turn on completion in comments
+let g:ycm_complete_in_comments=1
+
 " Cycle setting for completion
 let g:ycm_key_list_select_completion = ['<TAB>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<S-TAB>', '<Up>']

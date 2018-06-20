@@ -2,49 +2,49 @@ import os
 import os.path
 import fnmatch
 import logging
-import ycm_core
 import re
+import ycm_core
 
 BASE_FLAGS = [
-        '-Wall',
-        '-Wextra',
-        '-Wno-long-long',
-        '-Wno-variadic-macros',
-        '-fexceptions',
-        '-ferror-limit=10000',
-        '-DNDEBUG',
-        '-std=c++1z',
-        '-xc++',
-        '-I/usr/lib/',
-        '-I/usr/include/'
-        ]
+    '-Wall',
+    '-Wextra',
+    '-Wno-long-long',
+    '-Wno-variadic-macros',
+    '-fexceptions',
+    '-ferror-limit=10000',
+    '-DNDEBUG',
+    '-std=c++1z',
+    '-xc++',
+    '-I/usr/lib/',
+    '-I/usr/include/'
+    ]
 
 SOURCE_EXTENSIONS = [
-        '.cpp',
-        '.cxx',
-        '.cc',
-        '.c',
-        '.m',
-        '.mm'
-        ]
+    '.cpp',
+    '.cxx',
+    '.cc',
+    '.c',
+    '.m',
+    '.mm'
+    ]
 
 SOURCE_DIRECTORIES = [
-        'src',
-        'lib'
-        ]
+    'src',
+    'lib'
+    ]
 
 HEADER_EXTENSIONS = [
-        '.h',
-        '.hxx',
-        '.hpp',
-        '.hh'
-        ]
+    '.h',
+    '.hxx',
+    '.hpp',
+    '.hh'
+    ]
 
 HEADER_DIRECTORIES = [
-        'include'
-        ]
+    'include'
+    ]
 
-BUILD_DIRECTORY = 'build';
+BUILD_DIRECTORY = 'build'
 
 def IsHeaderFile(filename):
     extension = os.path.splitext(filename)[1]
@@ -75,10 +75,10 @@ def FindNearest(path, target, build_folder=None):
     candidate = os.path.join(path, target)
     if(os.path.isfile(candidate) or os.path.isdir(candidate)):
         logging.info("Found nearest " + target + " at " + candidate)
-        return candidate;
+        return candidate
 
     parent = os.path.dirname(os.path.abspath(path));
-    if(parent == path):
+    if parent == path:
         raise RuntimeError("Could not find " + target);
 
     if(build_folder):
@@ -159,8 +159,8 @@ def FlagsForCompilationDatabase(root, filename):
     except:
         return None
 
-def FlagsForFile(filename):
-    root = os.path.realpath(filename);
+def FlagsForFile(filename, **kwargs):
+    root = os.path.realpath(filename)
     compilation_db_flags = FlagsForCompilationDatabase(root, filename)
     if compilation_db_flags:
         final_flags = compilation_db_flags
@@ -173,6 +173,6 @@ def FlagsForFile(filename):
         if include_flags:
             final_flags = final_flags + include_flags
     return {
-            'flags': final_flags,
-            'do_cache': True
-            }
+        'flags': final_flags,
+        'do_cache': True
+    }
