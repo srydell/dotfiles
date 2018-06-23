@@ -7,9 +7,25 @@ alias sa="fc -e : -1"
 # Rerun the last two commands
 alias ssa="fc -e : -2 -1"
 
-# ls with colors
-if [ "$(uname)" = "Linux" ]; then
-	alias ls='ls --color=auto'
-else
-	alias ls='ls -G'
-fi
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+# -> Prevents accidentally clobbering files.
+alias mkdir='mkdir -p'
+alias ..='cd ..'
+
+case "$(uname)" in
+	Linux )
+		alias ls='ls --color=auto'
+		# ll : directories first, with alphanumeric sorting:
+		alias ll="ls -lv --group-directories-first"
+		# Recursive
+		alias lr='ll -R'
+		# Show hidden files
+		alias la='ll -A'
+		;;
+	Darwin )
+		alias ls='ls -G'
+		alias mupdf='mupdf-gl'
+		;;
+esac
