@@ -39,6 +39,9 @@ set background=dark
 let g:gruvbox_contrast_dark=1
 silent! colorscheme gruvbox
 
+" Always use filetype latex for .tex files
+let g:tex_flavor = "latex"
+
 " Make it easier to see tabs and newlines
 set list
 set listchars=tab:▸\ ,eol:¬
@@ -147,9 +150,6 @@ set undofile
 
 " How many levels are saved in each file
 set undolevels=100
-
-" Always use filetype latex for .tex files
-let g:tex_flavor = "latex"
 
 " ---- Leader mappings ----
 " <leader><lowerCaseLetter> for harmless commands
@@ -262,7 +262,7 @@ nnoremap <leader>sv :source $MYVIMRC<CR>
 " Fast substitutions for
 " Word under the cursor in normal mode
 " Visual selection in visual mode (Also copies selection into ")
-" <leader>su for the current line.
+" <leader>su for the current paragraph
 " <leader>S for the whole file
 nnoremap <leader>su :'{,'}s/\<<C-r><C-w>\>//g<left><left>
 xnoremap <leader>su y:'{,'}s/<C-r><C-0>//g<left><left>
