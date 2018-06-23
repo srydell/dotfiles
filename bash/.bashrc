@@ -1,6 +1,6 @@
 #
 # ~/.bashrc
-
+#
 
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
@@ -30,6 +30,24 @@ shopt -s histappend
 
 # Record multiline commands as one command in history
 shopt -s cmdhist
+
+# Correct spelling mistakes in cd commands
+shopt -s cdspell
+
+# I always have new mail, stop telling me about it
+shopt -u mailwarn
+unset MAILCHECK
+
+# Set for autocompletion
+shopt -s extglob
+
+complete -A hostname   ssh scp ping disk
+complete -A export     printenv
+complete -A variable   export local readonly unset
+complete -A enabled    builtin
+complete -A alias      alias unalias
+complete -A function   function
+complete -A shopt      shopt
 
 # Set historysize
 HISTFILESIZE=100000
@@ -95,6 +113,12 @@ case "$(uname)" in
 		export PATH="$HOME/.cargo/bin:$PATH"
 		# Use brew version of gcc
 		alias gcc=/usr/local/Cellar/gcc/8.1.0/bin/gcc-8
+		# ROOT CERN plotting
+		export ROOTSYS=/usr/local/root
+		export PATH=$ROOTSYS/bin:$PATH
+		export PYTHONDIR=$ROOTSYS
+		export LD_LIBRARY_PATH=$ROOTSYS/lib:$PYTHONDIR/lib:$ROOTSYS/bindings/pyroot:$LD_LIBRARY_PATH
+		export PYTHONPATH=$ROOTSYS/lib:$PYTHONPATH:$ROOTSYS/bindings/pyroot
 		;;
 esac
 
