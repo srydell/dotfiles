@@ -56,13 +56,13 @@ snippet fnc "Basic c++ doxygen function template" b
 *
 * @return: `!p snip.rv = t[1]`
 */
-${1:ReturnType} ${2:FunctionName}(${3:param}){
+${1:ReturnType} ${2:FunctionName}(${3:param}) {
 	${0:FunctionBody}
 }
 endsnippet
 
 snippet cout "Print output" b
-std::cout << ${0:${VISUAL:output}} << "\n";
+std::cout << ${0:${VISUAL:"output"}} << "\n";
 endsnippet
 
 snippet forin "for in container" b
