@@ -84,6 +84,9 @@ set wrap
 " Make vim highlight search while typing
 set incsearch
 
+" Auto read file when changed while open
+set autoread
+
 " Autoindent new lines to match previous line
 " Autoindent when creating new lines
 set autoindent
