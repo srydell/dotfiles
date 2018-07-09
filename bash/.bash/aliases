@@ -14,6 +14,12 @@ alias mv='mv -i'
 alias mkdir='mkdir -p'
 alias ..='cd ..'
 
+# Git commands
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit --verbose'
+alias gp='git push'
+
 case "$(uname)" in
 	Linux )
 		alias ls='ls --color=auto'
