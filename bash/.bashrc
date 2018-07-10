@@ -49,6 +49,10 @@ complete -A alias      alias unalias
 complete -A function   function
 complete -A shopt      shopt
 
+# Custom completion
+eval "$(pipenv --completion)"
+eval "$(_TMUXP_COMPLETE=source tmuxp)"
+
 # Set historysize
 HISTFILESIZE=100000
 HISTSIZE=100000
@@ -64,9 +68,6 @@ HISTTIMEFORMAT='%F %T '
 
 # Store history after each command. Helps with recovering from crashes
 PROMPT_COMMAND='history -a'
-
-# Get completion for tmuxp commands
-eval "$(_TMUXP_COMPLETE=source tmuxp)"
 
 # Save tmuxp project config files under .tmux directory
 export TMUXP_CONFIGDIR=$HOME/.tmux/tmuxp
