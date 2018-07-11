@@ -21,7 +21,7 @@ call minpac#add('SirVer/ultisnips')
 " Autocompletion
 " Note: Arch Linux specific: ncurses5-compat-libs
 "		is needed from AUR for the completion menu
-call minpac#add('Valloric/YouCompleteMe', {'do': '!./install.py --clang-completer --js-completer'})
+call minpac#add('Valloric/YouCompleteMe', {'do': '!python3 ./install.py --clang-completer --js-completer'})
 
 " Send commands from one tmux pane to another
 call minpac#add('benmills/vimux')
