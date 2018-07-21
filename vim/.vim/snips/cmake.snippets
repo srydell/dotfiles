@@ -1,0 +1,12 @@
+# cmake.snippets - Snippets for cmake file type
+
+snippet _skel "Skeleton" b
+cmake_minimum_required(VERSION `cmake --version | head -n 1 | sed 's/[ a-z]//g' | cut -d '.' -f1-2`)
+
+project(${1:project_name}
+        VERSION 0.1
+        LANGUAGES CXX
+)
+
+add_executable(${2:executable_name} ${3:${4:main}.cpp})
+endsnippet
