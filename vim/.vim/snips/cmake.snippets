@@ -8,5 +8,14 @@ project(${1:project_name}
         LANGUAGES CXX
 )
 
+# Require C++14 and disable extensions for all targets
+set(CMAKE_CXX_STANDARD          14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS        OFF)
+
+# Export compile flags to compile_commands.json database.
+# Useful for linters and autocompletion
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 add_executable(${2:executable_name} ${3:${4:main}.cpp})
 endsnippet
