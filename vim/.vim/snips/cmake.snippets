@@ -8,6 +8,10 @@ snippet alib "add_library(...)" b
 add_library(${1:library_name} ${2:sources})$0
 endsnippet
 
+snippet atest "add_test(...)" b
+add_test(NAME ${1:test_name} COMMAND ${2:how_to_run})$0
+endsnippet
+
 snippet tlinklib "target_link_libraries(...)" b
 target_link_libraries(${1:target_name} ${2:PRIVATE} ${3:library_name})$0
 endsnippet
