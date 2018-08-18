@@ -29,6 +29,8 @@ project(${1:project_name}
         LANGUAGES CXX
 )
 
+enable_testing()
+
 # Require C++$2 and disable extensions for all targets
 set(CMAKE_CXX_STANDARD          ${2:14})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -39,4 +41,7 @@ set(CMAKE_CXX_EXTENSIONS        OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(${3:executable_name} ${4:${5:main}.cpp})
+
+add_executable(${6:testapp} ${7:${8:testapp}.cpp})
+add_test(NAME ${9:test} COMMAND $6)
 endsnippet
