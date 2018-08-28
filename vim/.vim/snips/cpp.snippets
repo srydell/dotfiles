@@ -52,12 +52,12 @@ snippet fnc "Basic c++ doxygen function template" b
 /**
 * @brief: ${4:brief}
 *
-* @param: `!p write_docstring_args(t[3],snip)`
+* @param: `!p write_docstring_args(t[3], snip)`
 *
 * @return: `!p snip.rv = t[1]`
 */
-${1:ReturnType} ${2:FunctionName}(${3:param}) {
-	${0:FunctionBody}
+${1:void} ${2:FunctionName}(${3:param}) {
+	${0:${VISUAL:}}
 }
 endsnippet
 
@@ -71,14 +71,31 @@ for (${3:auto}& ${1:value} : ${2:container}) {
 }
 endsnippet
 
+snippet forline "for line in stream" b
+for (string ${1:line}; std::getline(${2:std::cin}, $1);) {
+	${3:${VISUAL:}}
+}
+endsnippet
+
 snippet if "Simple if statement" b
 if (${1:0 == 0}) {
 	${0:${VISUAL:}}
 }
 endsnippet
 
+snippet ifreg "If regex match" b
+std::smatch ${1:matches};
+if (std::regex_search(${2:string}, $1, ${3:pat})) {
+	${3:${VISUAL:}}
+}
+endsnippet
+
 snippet inc "#include statement" b
 #include ${1:<${2:vector}>}$0
+endsnippet
+
+snippet regex "Regex pattern" b
+std::regex ${1:pattern} {R"(${2:${VISUAL:pat}})"};
 endsnippet
 
 # Skeletons
