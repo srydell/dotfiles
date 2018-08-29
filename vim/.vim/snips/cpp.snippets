@@ -67,7 +67,13 @@ endsnippet
 
 snippet forin "for in container" b
 for (${3:auto}& ${1:value} : ${2:container}) {
-	$0
+	${0:${VISUAL:}}
+}
+endsnippet
+
+snippet formap "for in map" b
+for (${3:auto}& [${1:key}, ${2:value}] : ${3:map}) {
+	${0:${VISUAL:}}
 }
 endsnippet
 
