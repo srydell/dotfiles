@@ -164,8 +164,6 @@ Brief:               ${1:Explanation of file functionality here}
 
 File name:           `!v expand("%:t")`
 Author:              Simon Rydell
-Date created:        `!v strftime("%b %d, %Y")`
-Date last modified:  `!v strftime("%b %d, %Y")`
 Python Version:      `python3 --version 2>&1 | awk '{print $2}' | cut -d '.' -f1-2`
 '''
 
@@ -175,7 +173,6 @@ endsnippet
 # The smart def and smart class snippets use a global option called
 # "g:ultisnips_python_style" which, if set to "doxygen" will use doxygen
 # style comments in docstrings.
-
 global !p
 
 NORMAL  = 0x1

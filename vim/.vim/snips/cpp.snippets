@@ -112,6 +112,13 @@ snippet optcout "Avoid overhead with C standard out/input" b
 std::ios_base::sync_with_stdio(false);$0
 endsnippet
 
+snippet timeit "Time the code" b
+auto t0 = std::chrono::high_resolution_clock::now();
+${VISUAL}$0
+auto t1 = std::chrono::high_resolution_clock::now();
+std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count() << "\n";
+endsnippet
+
 # Skeletons
 snippet _header "Header skeleton file" b
 #ifndef `!v toupper(expand("%:t:r"))`_H

@@ -24,12 +24,6 @@ int main(int argc, char *argv[]) {
 endsnippet
 
 snippet for "for loop (for)"
-for (${2:i} = 0; $2 < ${1:count}; ${3:++$2}) {
-	${VISUAL}$0
-}
-endsnippet
-
-snippet fori "for int loop (fori)"
 for (${4:int} ${2:i} = 0; $2 < ${1:count}; ${3:++$2}) {
 	${VISUAL}$0
 }
@@ -55,8 +49,4 @@ snippet eli "else if .. (eli)"
 else if (${1:/* condition */}) {
 	${VISUAL}$0
 }
-endsnippet
-
-snippet fund "function declaration" b
-${1:void} ${2:function_name}($3);
 endsnippet
