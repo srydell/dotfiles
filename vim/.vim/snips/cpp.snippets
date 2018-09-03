@@ -119,6 +119,13 @@ auto t1 = std::chrono::high_resolution_clock::now();
 std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count() << "\n";
 endsnippet
 
+snippet random "Get a small random dist template" b
+// Random numbers in [$2]
+std::default_random_engine re;
+std::uniform_${1:int}_distribution<> dist {${2:1, 6}};
+auto ${3:get_random} = [&](){ return dist(re); };
+endsnippet
+
 # Skeletons
 snippet _header "Header skeleton file" b
 #ifndef `!v toupper(expand("%:t:r"))`_H
