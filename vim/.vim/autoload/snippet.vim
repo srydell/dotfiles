@@ -42,8 +42,16 @@ function! snippet#insert_skeleton() abort
     endfor
   endif
 
-  " Try generic _skel template as last resort
-  if s:try_insert("skel")
+  " Special filenames and corresponding snippets
+  " NOTE: Overrides default behavious
+  let s:filenames_and_snippets = {
+      \ 'CMakeLists.txt': 'cmakelists',
+      \}
+
+  " If the current filename is in s:filenames_and_snippets,
+  " then insert that snippet,
+  " otherwise try generic _skel template
+  if s:try_insert(get(s:filenames_and_snippets, expand('%'), 'skel'))
     call s:install_undo_workaround()
   endif
 endfunction
