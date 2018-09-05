@@ -1,10 +1,7 @@
-" Enable filetype
 filetype plugin indent on
-
-" Enable syntax
 syntax enable
 
-" Set mapleader
+" Set <leader>
 let mapleader="\<Space>"
 let maplocalleader="\<Space>"
 
@@ -94,7 +91,7 @@ set autoindent
 " Make vim exit visual mode without delay
 set timeoutlen=1000 ttimeoutlen=0
 
-" Don't redraw buffer in all situations
+" Don't redraw buffer while evaluating macros
 set lazyredraw
 
 " Be able to hide unsaved buffers while editing new ones
