@@ -17,6 +17,35 @@ if ${2:[[ ${1:condition} ]]}; then
 fi
 endsnippet
 
+# will be triggered only if visual selection is not empty
+snippet forin "for in array" "snip.visual_text" be
+for ${1:i} in "${${2:arr}[@]}"
+do
+	${3:${VISUAL}}
+done
+endsnippet
+
+snippet forin "for in array" b
+for ${1:i} in "${${2:arr}[@]}"
+do
+	${3:echo "$$1"}
+done
+endsnippet
+
+snippet fori "C-style for i" "snip.visual_text" be
+for (( ${1:i}=1; $1<${2:10}+1; $1++ ));
+do
+	${3:${VISUAL}}
+done
+endsnippet
+
+snippet fori "C-style for i" b
+for (( ${1:i}=1; $1<${2:10}+1; $1++ ));
+do
+	${3:echo "$$1"}
+done
+endsnippet
+
 snippet elif "elif .. (elif)"
 elif ${2:[[ ${1:condition} ]]}; then
 	${0:#statements}
