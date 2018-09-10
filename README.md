@@ -10,4 +10,4 @@ $ stow vim
 
 This will create a symlink from the `dotfiles/vim` directory to the directory containing `dotfiles` (in this case `~`). If there are conflicting files, `stow` will not remove them but will simply terminate with a warning.
 
-Note however that these are ** *my* ** config files and I do not recommend using them as they are. It is dangerous to blindly install something. Read through the files you are interested in and copy the lines you understand. I have commented to my best ability.
+Note however that these are **my** config files and I do not recommend using them as they are. It is dangerous to blindly install something. Read through the files you are interested in and copy the lines you understand. I have commented to my best ability.
