@@ -13,11 +13,15 @@ add_test(NAME ${1:test_name} COMMAND ${2:how_to_run})$0
 endsnippet
 
 snippet ainterface "add_library(... INTERFACE lib_a lib_b)" b
-add_library(${1:library_name} INTERFACE)$0
+add_library(${1:library_name} INTERFACE)
 target_link_libraries($1 INTERFACE 
 	${2:lib_a}
 	${3:lib_b}
-)
+)$0
+endsnippet
+
+snippet acustomscript "Append to CMAKE_MODULE_PATH" b
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/${1:cmake}")$0
 endsnippet
 
 snippet tlinklib "target_link_libraries(...)" b
@@ -37,8 +41,6 @@ project(${1:project_name}
         LANGUAGES CXX
 )
 
-enable_testing()
-
 # Require C++$2 and disable extensions for all targets
 set(CMAKE_CXX_STANDARD          ${2:14})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -50,6 +52,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(${3:executable_name} ${4:${5:main}.cpp})
 
-add_executable(${6:testapp} ${7:${8:testapp}.cpp})
-add_test(NAME ${9:test} COMMAND $6)
+option(BUILD_TESTING "Build the testing tree" ON)
+if(BUILD_TESTING AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
+        enable_testing()
+        add_executable(${6:testapp} ${7:${8:testapp}.cpp})
+        add_test(NAME ${9:test} COMMAND $6)
+endif()$0
 endsnippet
