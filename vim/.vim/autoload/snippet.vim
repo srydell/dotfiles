@@ -51,7 +51,7 @@ function! snippet#insert_skeleton() abort
   " If the current filename is in s:filenames_and_snippets,
   " then insert that snippet,
   " otherwise try generic _skel template
-  if s:try_insert(get(s:filenames_and_snippets, expand('%'), 'skel'))
+  if s:try_insert(get(s:filenames_and_snippets, expand('%:t'), 'skel'))
     call s:install_undo_workaround()
   endif
 endfunction
