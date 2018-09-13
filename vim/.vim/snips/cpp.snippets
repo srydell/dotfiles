@@ -25,15 +25,21 @@ def write_docstring_args(arglist, snip):
 
 endglobal
 
-snippet cl "class .. (class)"
-class ${1:`!p snip.rv = snip.basename or "name"`}{
+snippet cl "class"
+class ${1:`!p snip.rv = snip.basename or "ClassName"`}{
 public:
-	${1/(\w+).*/$1/} (${2:arguments});
+	${1/(\w+).*/$1/}(${2:arguments});
 	virtual ~${1/(\w+).*/$1/} ();
 
 private:
 	${0:/* data */}
 };
+endsnippet
+
+snippet str "struct"
+struct ${1:`!p snip.rv = snip.basename or "StructName"`}{
+	${1/(\w+).*/$1/}(${2:arguments});
+};$0
 endsnippet
 
 snippet fnc "Basic C++ doxygen function template" b
