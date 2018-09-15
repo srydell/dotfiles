@@ -13,7 +13,7 @@ endsnippet
 
 snippet if "if ... then (if)"
 if ${2:[[ ${1:condition} ]]}; then
-	${0:#statements}
+	${0:${VISUAL:#statements}}
 fi
 endsnippet
 
