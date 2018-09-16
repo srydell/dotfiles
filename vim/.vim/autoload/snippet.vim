@@ -32,8 +32,8 @@ function! snippet#insert_skeleton() abort
   " Checks if there are any project specific skeletons
   " This is set by the Tim Pope plugin 'projectionist'
   if !empty(b:projectionist)
-    " Loop through projections with 'skeleton' key and try each one until the
-    " snippet expands
+    " Loop through projections with 'skeleton' key
+    " and try each one until the snippet expands
     for [root, value] in projectionist#query('skeleton')
       if s:try_insert(value)
         call s:install_undo_workaround()
@@ -43,15 +43,26 @@ function! snippet#insert_skeleton() abort
   endif
 
   " Special filenames and corresponding snippets
-  " NOTE: Overrides default behavious
   let s:filenames_and_snippets = {
-      \ 'CMakeLists.txt': 'cmakelists',
+      \ "CMakeLists.txt": 'cmakelists',
+      \ "test_.*.py": 'unittest',
       \}
+
+  let current_filename = expand('%:t')
+  for pattern in keys(s:filenames_and_snippets)
+    let match = matchstr(current_filename, pattern)
+    if !empty(match)
+      if s:try_insert(s:filenames_and_snippets[pattern])
+        call s:install_undo_workaround()
+        return
+      endif
+    endif
+  endfor
 
   " If the current filename is in s:filenames_and_snippets,
   " then insert that snippet,
   " otherwise try generic _skel template
-  if s:try_insert(get(s:filenames_and_snippets, expand('%:t'), 'skel'))
+  if s:try_insert('skel')
     call s:install_undo_workaround()
   endif
 endfunction
