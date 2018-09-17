@@ -170,6 +170,26 @@ Python Version:      `python3 --version 2>&1 | awk '{print $2}' | cut -d '.' -f1
 $0
 endsnippet
 
+snippet _unittest "Skeleton for unit testing" b
+import unittest
+import `!v matchlist(expand("%:t"), 'test_\?\(\w\+\).py')[1]`
+
+class TestGraphs(unittest.TestCase):
+	@classmethod
+	def setUpClass(cls):
+		"""Runs at the start of the test
+
+		:cls: class
+		"""
+
+	def test_${1:function}(self):
+		`!p snip.rv = triple_quotes(snip)`${2:TODO: Docstring for $1.}`!p snip.rv = triple_quotes(snip)`
+		${2:pass}
+
+if __name__ == '__main__':
+	unittest.main()
+endsnippet
+
 # The smart def and smart class snippets use a global option called
 # "g:ultisnips_python_style" which, if set to "doxygen" will use doxygen
 # style comments in docstrings.

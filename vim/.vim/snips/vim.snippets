@@ -1,0 +1,19 @@
+# vim.snippets - Snippets for vim file type
+
+snippet for "simple for loop" b
+for ${1:item} in ${2:iterable}
+	${0:${VISUAL}}
+endfor
+endsnippet
+
+snippet formap "for in map" b
+for [${1:key}, ${2:value}] in ${3:dictionary}
+	${0:${VISUAL}}
+endfor
+endsnippet
+
+snippet if "simple if statement" b
+if ${1:expr}
+	${0:${VISUAL}}
+endif
+endsnippet
