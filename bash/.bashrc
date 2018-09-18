@@ -49,10 +49,6 @@ complete -A alias      alias unalias
 complete -A function   function
 complete -A shopt      shopt
 
-# Custom completion
-eval "$(pipenv --completion)"
-eval "$(_TMUXP_COMPLETE=source tmuxp)"
-
 # Set historysize
 HISTFILESIZE=100000
 HISTSIZE=100000
