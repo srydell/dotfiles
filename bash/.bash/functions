@@ -8,6 +8,17 @@ gi() {
 	cat ./.git/info/exclude >> ./.gitignore
 }
 
+# git commit with commit message in vim or with a simple string as $1
+# Parameter: Optional commit message
+# Returns: None
+gc() {
+	if [[ -z $1 ]]; then
+		git commit --verbose
+	else
+		git commit -m "$1"
+	fi
+}
+
 # Load a new tmux session from template $2 called $1 via tmuxp
 tp() {
 	if [ $# -lt 2 ] || [ $# -gt 2 ]; then
