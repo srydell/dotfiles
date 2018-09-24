@@ -13,6 +13,10 @@ source "$HOME/.vim/pack/minpac/opt/gruvbox/gruvbox_256palette.sh"
 # or give an absolute path
 eval "$(keychain --eval --quiet --agents ssh id_rsa)"
 
+# Always prompt for gpg password in the terminal instead of gui popup
+GPG_TTY="$(tty)"
+export GPG_TTY
+
 # Use vi keybindings command prompt
 # For zsh, the same command is: bindkey -v
 # set -o vi

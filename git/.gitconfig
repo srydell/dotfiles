@@ -9,3 +9,5 @@
 	ctags = !.git/hooks/ctags
 [diff]
 	tool = vimdiff
+[commit]
+	gpgsign = true
