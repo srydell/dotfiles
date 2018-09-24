@@ -1,6 +1,7 @@
 [user]
 	name = srydell
 	email = simonwrydell@gmail.com
+	signingkey = CF81E4BB370F2809
 [core]
 	editor = vim
 [init]
@@ -11,3 +12,5 @@
 	tool = vimdiff
 [commit]
 	gpgsign = true
+[gpg]
+	program = gpg
