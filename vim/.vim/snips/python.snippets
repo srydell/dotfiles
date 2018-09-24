@@ -157,7 +157,14 @@ finally:
 	${7:pass}
 endsnippet
 
-# Skeletons
+# --- Misc ---
+
+snippet pf "print(f'...')" b
+print(f"${1:${VISUAL}}")$0
+endsnippet
+
+# --- Skeletons ---
+
 snippet _skel "Skeleton for each python file" b
 '''
 Brief:               ${1:Explanation of file functionality here}
