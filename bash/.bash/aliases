@@ -9,7 +9,6 @@ alias mkdir='mkdir -p'
 alias ..='cd ..'
 
 alias v=vim
-alias ta='tmux a'
 
 # Git commands
 alias gs='git status'

@@ -19,6 +19,15 @@ gc() {
 	fi
 }
 
+# tmux attach and if an argument is passed, try to attach to that session
+ta() {
+	if [[ -z $1 ]]; then
+		tmux attach
+	else
+		tmux attach -t "$1"
+	fi
+}
+
 # Load a new tmux session from template $2 called $1 via tmuxp
 tp() {
 	if [ $# -lt 2 ] || [ $# -gt 2 ]; then
