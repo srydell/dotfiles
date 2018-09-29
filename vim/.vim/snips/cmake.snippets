@@ -32,6 +32,12 @@ snippet tincdir "target_include_directories(...)" b
 target_link_libraries(${1:target_name} ${2:PRIVATE} ${3:dir_name})$0
 endsnippet
 
+snippet fnc "function" b
+function(${1:function_name} ${2:args})
+	${0:${VISUAL}}
+endfunction($1)
+endsnippet
+
 # Skeletons
 snippet _cmakelists "Skeleton for files called CMakeLists.txt" b
 cmake_minimum_required(VERSION `cmake --version | head -n 1 | sed 's/[ a-z]//g' | cut -d '.' -f1-2`)
