@@ -1,0 +1,45 @@
+set home-page=https://gentoo.org
+
+set download-path=~/Downloads/
+
+# Number of pages saved
+set history-max-items=30000
+
+set hint-keys=jklfds;a
+
+# Backward/forward history L/H
+nnoremap H <C-O>
+nnoremap L <C-I>
+
+# Used for editing text on web pages
+set editor-command=urxvt -name "scratch" -e vim -c 'startinsert' %s
+
+# Hide input box when empty
+set input-autohide=true
+
+set spell-checking=true
+set spell-checking-languages=en,se
+
+set webgl=true
+
+# While typing a search command, show where the pattern typed so far matches
+set incsearch=true
+
+set default-font=DejaVu Sans
+set monospace-font=DejaVu Sans Mono
+set sans-serif-font=DejaVu Sans
+set serif-font=DejaVu Serif
+
+# Default font size
+set font-size=16
+set monospace-font-size=13
+
+set webinspector=on
+
+# Shorcuts - Accessed via :open <key> <query>
+shortcut-add duck=https://duckduckgo.com/?q=$0
+shortcut-add y=https://www.youtube.com/results?search_query=$0
+shortcut-add a=https://wiki.archlinux.org/index.php?search=bash&title=Special%3ASearch&go=Go
+
+# The shortcut that will be used if <key> in :open <key> is not an URL
+shortcut-default duck

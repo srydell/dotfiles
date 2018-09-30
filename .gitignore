@@ -42,6 +42,7 @@ qutebrowser/.config/qutebrowser/quickmarks
 !tmux
 !utils
 !vim
+!vimb
 
 # Files
 !.Arch
