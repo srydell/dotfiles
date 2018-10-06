@@ -69,6 +69,14 @@ snippet inc "#include statement" b
 #include ${1:<${2:vector}>}$0
 endsnippet
 
+snippet try "try catch statement" b
+try {
+	${1:${VISUAL}}
+} catch (${2:std::string}& ${3:error}) {
+	$0
+}
+endsnippet
+
 snippet map "std::map"
 std::map<${1:key}, ${2:value}> ${3:map}$0
 endsnippet
