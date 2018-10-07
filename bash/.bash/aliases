@@ -10,6 +10,8 @@ alias ..='cd ..'
 
 alias v=vim
 
+alias seejobs='ssh -t octo "qstat -f | grep rydell" 2> /dev/null'
+
 # Git commands
 alias gs='git status'
 alias ga='git add'
