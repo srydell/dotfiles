@@ -65,7 +65,10 @@ call minpac#add('pangloss/vim-javascript', {'type': 'opt'})
 " call minpac#add('Shougo/echodoc.vim')
 
 if has('nvim')
-  " call minpac#add('Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' })
+  call minpac#add('Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' })
+  " call minpac#add('ncm2/ncm2')
+  " call minpac#add('ncm2/ncm2-ultisnips')
+  " call minpac#add('roxma/nvim-yarp')
 else
   " call minpac#add('Shougo/deoplete.nvim')
   call minpac#add('ncm2/ncm2')

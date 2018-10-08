@@ -1,15 +1,11 @@
 " Where Ultisnips searches for snippet files
 let g:UltiSnipsSnippetDirectories = ["~/.vim/snips", "snips"]
 
-" " Expand and cycle settings for snippets
-" let g:UltiSnipsExpandTrigger = "<C-j>"
-" let g:UltiSnipsJumpForwardTrigger = "<C-j>"
-" let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
-
-let g:UltiSnipsExpandTrigger="<NUL>"
-let g:UltiSnipsListSnippets="<NUL>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+" Expand and cycle settings for snippets
+let g:UltiSnipsExpandTrigger = "<C-j>"
+let g:UltiSnipsJumpForwardTrigger = "<C-j>"
+let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
+" inoremap <C-j> <C-r>=CompleteSnippet()<CR>
 
 " Where to open split on :UltiSnipsEdit
 let g:UltisnipsEditSplit = "vertical"
@@ -38,11 +34,14 @@ set signcolumn=yes
 " found' messages
 set shortmess+=c
 
-augroup ncm2_and_completesnip
-	" enable ncm2 for all buffers
-	autocmd BufEnter * call ncm2#enable_for_buffer()
-	autocmd CompleteDone * call CompleteSnippet()
-augroup END
+" augroup ncm2_and_completesnip
+" 	" enable ncm2 for all buffers
+" 	autocmd BufEnter * call ncm2#enable_for_buffer()
+" 	" autocmd CompleteDone * call CompleteSnippet()
+" augroup END
+
+" Use deoplete.
+let g:deoplete#enable_at_startup = 1
 
 inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -53,7 +52,7 @@ function! CompleteSnippet()
     return
   endif
 
-  call UltiSnips#ExpandSnippet()
+  call UltiSnips#ExpandSnippetOrJump()
   if g:ulti_expand_res > 0
     return
   endif
@@ -72,10 +71,6 @@ function! CompleteSnippet()
 
   call UltiSnips#Anon(l:complete)
 endfunction
-
-" Press enter key to trigger snippet expansion
-" The parameters are the same as `:help feedkeys()`
-" inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
 
 " let g:ycm_python_binary_path = 'python3'
 
