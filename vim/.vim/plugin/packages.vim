@@ -21,7 +21,7 @@ call minpac#add('SirVer/ultisnips')
 " Autocompletion
 " Note: Arch Linux specific: ncurses5-compat-libs
 "		is needed from AUR for the completion menu
-call minpac#add('Valloric/YouCompleteMe', {'do': '!python3 ./install.py --clang-completer --js-completer'})
+" call minpac#add('Valloric/YouCompleteMe', {'do': '!python3 ./install.py --clang-completer --js-completer'})
 
 " Send commands from one tmux pane to another
 call minpac#add('benmills/vimux')
@@ -44,6 +44,8 @@ call minpac#add('ludovicchabant/vim-gutentags')
 " html, css, json and javascript formatter
 call minpac#add('maksimr/vim-jsbeautify', {'type': 'opt'})
 
+call minpac#add('autozimu/LanguageClient-neovim', {'rev': 'next', 'do': 'bash install.sh'})
+
 " Emmet, snippets for html, css
 call minpac#add('mattn/emmet-vim', {'type': 'opt'})
 
@@ -58,6 +60,19 @@ call minpac#add('morhetz/gruvbox', {'type': 'opt'})
 
 " Add syntax highlighting for javascript
 call minpac#add('pangloss/vim-javascript', {'type': 'opt'})
+
+" Show parameter doc.
+" call minpac#add('Shougo/echodoc.vim')
+
+if has('nvim')
+  " call minpac#add('Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' })
+else
+  " call minpac#add('Shougo/deoplete.nvim')
+  call minpac#add('ncm2/ncm2')
+  " call minpac#add('ncm2/ncm2-ultisnips')
+  call minpac#add('roxma/nvim-yarp')
+  call minpac#add('roxma/vim-hug-neovim-rpc')
+endif
 
 " Operators which comment out text based on filetype
 call minpac#add('tpope/vim-commentary')
