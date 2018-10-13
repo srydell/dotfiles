@@ -32,6 +32,14 @@ do
 done
 endsnippet
 
+snippet forinf "for in file" b
+shopt -s nullglob
+for ${1:f} in ${4:${2:*}.${3:txt}}
+do
+	${5:echo "$$1"}
+done
+endsnippet
+
 snippet fori "C-style for i" "snip.visual_text" be
 for (( ${1:i}=1; $1<${2:10}+1; $1++ ));
 do
