@@ -60,6 +60,26 @@ extract() {
 	fi
 }
 
+togif() {
+	if [ -f "$1" ]; then
+		outfile="output"
+		if ! [ -z "$2" ]; then
+			outfile="$2"
+		fi
+		ffmpeg -i "$1" -r "20" "$outfile".gif
+	else
+		cat <<-END
+		Usage:
+
+		    $ togif inputfile outputfile
+
+		Or default to output.gif
+
+		    $ togif inputfile
+		END
+	fi
+}
+
 # FZF integration
 # Source: https://github.com/junegunn/dotfiles/blob/master/bashrc
 

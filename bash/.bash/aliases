@@ -11,6 +11,7 @@ alias ..='cd ..'
 alias v=vim
 
 alias seejobs='ssh -t octo "qstat -f | grep rydell" 2> /dev/null'
+alias irc='ssh -t weeberry "tmux attach" 2> /dev/null'
 
 # Git commands
 alias gs='git status'
