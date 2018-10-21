@@ -1,6 +1,6 @@
 " Disable undo file when in tmp
 " (so no passwords are accidentally saved in undodir)
-augroup noUndoTempFiles
+augroup no_undo_temp_files
 	autocmd!
 	autocmd BufWritePre /tmp/* setlocal noundofile
 augroup END
@@ -17,4 +17,10 @@ augroup quick_and_loc_list_autoclose
     autocmd BufEnter * if (winnr('$') == 1 && &buftype ==# 'quickfix' ) |
                 \   bd|
                 \   q | endif
+augroup END
+
+" Resize on window changed (Useful when opening new panes in tmux)
+augroup resize_window_on_change
+	autocmd!
+	autocmd VimResized * :wincmd =
 augroup END

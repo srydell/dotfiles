@@ -286,6 +286,10 @@ vnoremap <leader><Space> zf
 nnoremap <silent> <leader>zj :call folding#NextClosedFold('j')<cr>
 nnoremap <silent> <leader>zk :call folding#NextClosedFold('k')<cr>
 
+" Zoom a vim pane, <C-w>= to re-balance
+nnoremap <silent> <leader>- :wincmd _<cr>:wincmd \|<cr>
+nnoremap <silent> <leader>= :wincmd =<cr>
+
 " H moves to beginning of line and L to end of line
 nnoremap H ^
 nnoremap L $
