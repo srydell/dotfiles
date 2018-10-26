@@ -158,6 +158,10 @@ endsnippet
 
 # --- Misc ---
 
+snippet p "print()" b
+print(${1:${VISUAL}})$0
+endsnippet
+
 snippet pf "print(f'...')" b
 print(f"${1:${VISUAL}}")$0
 endsnippet
@@ -177,6 +181,12 @@ $0
 endsnippet
 
 snippet _unittest "Skeleton for unit testing" b
+# Assume module to test is in parent directory
+import os, sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir)
+
 import unittest
 import `!v matchlist(expand("%:t"), 'test_\?\(\w\+\).py')[1]`
 

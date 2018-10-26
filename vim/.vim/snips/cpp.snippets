@@ -146,6 +146,15 @@ std::uniform_${1:int}_distribution<> dist {${2:1, 6}};
 auto ${3:get_random} = [&](){ return dist(re); };
 endsnippet
 
+snippet bmfnc "Google Benchmark function" b
+static void BM_${1:func_name}(benchmark::State& state) {
+	for (auto _ : state) {
+		${2:${VISUAL}}$0
+	}
+}
+BENCHMARK(BM_$1);
+endsnippet
+
 snippet anyof "std::any_of" b
 std::any_of(${1:container}.begin(), $1.end(), [](${2:int ${3:i}}) { return ${4:$3 > 0}; });
 endsnippet
