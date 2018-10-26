@@ -151,6 +151,9 @@ set undofile
 " How many levels are saved in each file
 set undolevels=100
 
+" If possible, show &scrolloff lines below cursor
+set scrolloff=5
+
 " ---- Leader mappings ----
 " <leader><lowerCaseLetter> for harmless commands
 " <leader><upperCaseLetter> for potentially harmful commands
