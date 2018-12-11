@@ -51,6 +51,7 @@ PS1+="\[${white}\] at ";
 PS1+="\[${hostStyle}\]\h"; # Host
 PS1+="\[${white}\] in ";
 PS1+="\[${green}\]\W"; # Working directory base name
+PS1+="\033[36m\]\`__git_ps1\`\[\033[0m\]"
 PS1+="\[${reset}\]\n";
 PS1+="\[${white}\]\$ \[${reset}\]"; # `$` (and reset color)
 export PS1;
