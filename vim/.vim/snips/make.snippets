@@ -9,3 +9,8 @@ snippet _skel "Skeleton for make" b
 
 $0
 endsnippet
+
+snippet trg "A new target" b
+${1:out_file}: ${3:${2:input}.cpp}
+	g++ -std=c++14 -o $1 $3
+endsnippet

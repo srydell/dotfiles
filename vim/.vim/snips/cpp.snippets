@@ -55,8 +55,8 @@ ${1:void} ${2:FunctionName}(${3:param}) {
 }
 endsnippet
 
-snippet main "int main(){...}" b
-int main(){
+snippet main "int main() {...}" b
+int main() {
 	${0:${VISUAL}}
 }
 endsnippet
@@ -95,6 +95,12 @@ endsnippet
 
 snippet forin "for in container" b
 for (${3:auto}& ${1:value} : ${2:container}) {
+	${0:${VISUAL:}}
+}
+endsnippet
+
+snippet while "while (condition) {}" b
+while (${1:true}) {
 	${0:${VISUAL:}}
 }
 endsnippet
