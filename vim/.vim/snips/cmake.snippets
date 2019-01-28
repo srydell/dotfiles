@@ -1,5 +1,11 @@
 # cmake.snippets - Snippets for cmake file type
 
+snippet if "if statement" b
+if(${1:ON})
+	${0:${VISUAL}}
+endif()
+endsnippet
+
 snippet aex "add_executable(...)" b
 add_library(${1:target_name} ${2:sources})$0
 endsnippet
@@ -38,6 +44,28 @@ function(${1:function_name} ${2:args})
 endfunction($1)
 endsnippet
 
+snippet m "message" b
+message(${1:STATUS} "${2:${VISUAL}}")$0
+endsnippet
+
+snippet fdecl "FetchContent_Declare" b
+FetchContent_Declare(
+	${1:contentName}
+	GIT_REPOSITORY ${2:https://github.com/${3:srydell/dotfiles}}
+	GIT_TAG        ${4}
+)$0
+endsnippet
+
+snippet fgprop "FetchContent_GetProperties" b
+FetchContent_GetProperties(${1:contentName})$0
+if(NOT $1_POPULATED)
+	FetchContent_Populate($1)
+
+	# Add the downloaded directories
+	add_subdirectory(${$1_SOURCE_DIR} ${$1_BINARY_DIR})
+endif()
+endsnippet
+
 # Skeletons
 snippet _cmakelists "Skeleton for files called CMakeLists.txt" b
 cmake_minimum_required(VERSION `cmake --version | head -n 1 | sed 's/[ a-z]//g' | cut -d '.' -f1-2`)
@@ -47,21 +75,36 @@ project(${1:project_name}
         LANGUAGES CXX
 )
 
-# Require C++$2 and disable extensions for all targets
-set(CMAKE_CXX_STANDARD          ${2:14})
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS        OFF)
-
 # Export compile flags to compile_commands.json database.
 # Useful for linters and autocompletion
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_executable(${3:executable_name} ${4:${5:main}.cpp})
+# Set variable with warning flags for different compilers
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
+	set(_extra_warnings /W4 /WX)
+elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+	set(_extra_warnings -W -Wall -Werror)
+elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+	set(_extra_warnings -W -Wall -Werror)
+endif()
+
+add_${2:executable}(${3:executable_name} ${4:${5:main}.cpp})
+target_compile_options($3 PRIVATE ${_extra_warnings})
+set_target_properties($3 PROPERTIES
+	CXX_STANDARD ${6:14}
+	CXX_STANDARD_REQUIRED ON
+	CXX_EXTENSIONS OFF
+)
 
 option(BUILD_TESTING "Build the testing tree" ON)
 if(BUILD_TESTING AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
-        enable_testing()
-        add_executable(${6:testapp} ${7:${8:testapp}.cpp})
-        add_test(NAME ${9:test} COMMAND $6)
+        include(CTest)
+        add_executable(${7:testapp} ${8:${9:testapp}.cpp})
+        add_test(NAME ${10:test} COMMAND $6)
+endif()$0
+
+option(BUILD_BENCHMARKS "Build the benchmarks" ON)
+if(BUILD_BENCHMARKS AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
+	# TODO: Add benchmarks
 endif()$0
 endsnippet
