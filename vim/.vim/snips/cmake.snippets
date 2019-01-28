@@ -79,6 +79,9 @@ project(${1:project_name}
 # Useful for linters and autocompletion
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Add custom scripts
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
 # Set variable with warning flags for different compilers
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
 	set(_extra_warnings /W4 /WX)
