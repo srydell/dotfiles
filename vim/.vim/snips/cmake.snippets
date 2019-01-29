@@ -66,6 +66,12 @@ if(NOT $1_POPULATED)
 endif()
 endsnippet
 
+snippet _skel "Skeleton for a cmake script file" b
+include_guard()
+
+$0
+endsnippet
+
 # Skeletons
 snippet _cmakelists "Skeleton for files called CMakeLists.txt" b
 cmake_minimum_required(VERSION `cmake --version | head -n 1 | sed 's/[ a-z]//g' | cut -d '.' -f1-2`)
@@ -80,7 +86,7 @@ project(${1:project_name}
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Add custom scripts
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
 # Set variable with warning flags for different compilers
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
