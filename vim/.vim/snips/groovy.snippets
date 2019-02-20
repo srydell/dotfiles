@@ -1,0 +1,17 @@
+# groovy.snippets - Snippets for groovy file type
+
+snippet forin "for in range" b
+for (${1:value} in ${2:container}) {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet if "if (...) {}" b
+if (${1:condition}) {
+	${0:${VISUAL}}
+}
+endsnippet
+
+snippet p "println" b
+println ${1:${VISUAL:value}}$0
+endsnippet

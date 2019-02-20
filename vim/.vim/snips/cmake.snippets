@@ -14,6 +14,16 @@ snippet alib "add_library(...)" b
 add_library(${1:library_name} ${2:sources})$0
 endsnippet
 
+snippet asub "add_subdirectory(...)" b
+add_subdirectory(${1:sub_directory})$0
+endsnippet
+
+snippet asubg "add_subdirectory(...) with guard" b
+if(NOT TARGET ${1:target_name})
+	add_subdirectory(${2:sub_directory})$0
+endif()
+endsnippet
+
 snippet atest "add_test(...)" b
 add_test(NAME ${1:test_name} COMMAND ${2:how_to_run})$0
 endsnippet
@@ -35,7 +45,7 @@ target_link_libraries(${1:target_name} ${2:PRIVATE} ${3:library_name})$0
 endsnippet
 
 snippet tincdir "target_include_directories(...)" b
-target_link_libraries(${1:target_name} ${2:PRIVATE} ${3:dir_name})$0
+target_include_directories(${1:target_name} ${2:PRIVATE} ${3:dir_name})$0
 endsnippet
 
 snippet fnc "function" b
