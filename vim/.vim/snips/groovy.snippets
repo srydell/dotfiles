@@ -6,6 +6,12 @@ for (${1:value} in ${2:container}) {
 }
 endsnippet
 
+snippet forint "for in range with transpose" b
+for (${1:value} in [${2:a}, ${3:b}].transpose()) {
+	${0:${VISUAL}}
+}
+endsnippet
+
 snippet if "if (...) {}" b
 if (${1:condition}) {
 	${0:${VISUAL}}

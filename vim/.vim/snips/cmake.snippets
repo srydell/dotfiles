@@ -110,16 +110,17 @@ endif()
 add_${2:executable}(${3:executable_name} ${4:${5:main}.cpp})
 target_compile_options($3 PRIVATE ${_extra_warnings})
 set_target_properties($3 PROPERTIES
-	CXX_STANDARD ${6:14}
+	CXX_STANDARD ${6:17}
 	CXX_STANDARD_REQUIRED ON
 	CXX_EXTENSIONS OFF
 )
 
 option(BUILD_TESTING "Build the testing tree" ON)
 if(BUILD_TESTING AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
-        include(CTest)
-        add_executable(${7:testapp} ${8:${9:testapp}.cpp})
-        add_test(NAME ${10:test} COMMAND $6)
+	# TODO: Add tests
+        # include(CTest)
+        # add_executable(${7:testapp} ${8:${9:testapp}.cpp})
+        # add_test(NAME ${10:test} COMMAND $7)
 endif()$0
 
 option(BUILD_BENCHMARKS "Build the benchmarks" ON)
