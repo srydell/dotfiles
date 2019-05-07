@@ -6,6 +6,15 @@ if(${1:ON})
 endif()
 endsnippet
 
+snippet target "A full target (executable or library)" b
+add_${2:executable}(${3:executable_name} ${4:${5:main}.cpp})
+target_compile_options($3 PRIVATE ${_warnings} ${_extra_warnings}))
+set_target_properties($3
+                      PROPERTIES CXX_STANDARD ${6:17}
+                                 CXX_STANDARD_REQUIRED ON
+                                 CXX_EXTENSIONS OFF)
+endsnippet
+
 snippet aex "add_executable(...)" b
 add_library(${1:target_name} ${2:sources})$0
 endsnippet
@@ -135,6 +144,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
       -W
       -Wall
       -Werror
+      -Wextra
       -Wnon-virtual-dtor
       -Wshadow
       -pedantic)
@@ -158,6 +168,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
       -W
       -Wall
       -Werror
+      -Wextra
       -Wnon-virtual-dtor
       -Wshadow
       -pedantic)
