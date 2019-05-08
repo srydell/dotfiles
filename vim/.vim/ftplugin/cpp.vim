@@ -8,4 +8,4 @@ setlocal commentstring=//\ %s
 let b:ale_linters = ['cppcheck']
 
 " Usually use cmake to build out of source
-set makeprg=cmake\ \-H\.\ \-Bbuild\ \&\&\ make\ \-C\ build
+set makeprg=cmake\ \-H\.\ \-Bbuild\ \&\&\ make\ \-\-\no\-print\-directory\ \-C\ build
