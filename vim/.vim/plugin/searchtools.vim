@@ -1,6 +1,6 @@
 let g:grepper = {}
 " Search programs used.
-let g:grepper.tools = ['grep', 'git', 'rg']
+let g:grepper.tools = ['rg', 'grep', 'git']
 
 " Jump to the next result automatically
 " Default: 1
