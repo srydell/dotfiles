@@ -85,13 +85,13 @@ if(NOT $1_POPULATED)
 endif()
 endsnippet
 
+# Skeletons
 snippet _skel "Skeleton for a cmake script file" b
 include_guard()
 
 $0
 endsnippet
 
-# Skeletons
 snippet _cmakelists "Skeleton for files called CMakeLists.txt" b
 cmake_minimum_required(VERSION `cmake --version | head -n 1 | sed 's/[ a-z]//g' | cut -d '.' -f1-2`)
 
@@ -110,8 +110,7 @@ endif()
 
 # Add custom scripts
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-
-`mkdir cmake && echo 'include_guard()
+`mkdir cmake || test ! -f cmake/SetupWarnings.cmake && echo 'include_guard()
 
 # Set variable with warning flags for different compilers
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
@@ -193,15 +192,12 @@ target_compile_options($3 PRIVATE ${_warnings} ${_extra_warnings})
 set_target_properties($3
                       PROPERTIES CXX_STANDARD ${6:17}
                                  CXX_STANDARD_REQUIRED ON
-                                 CXX_EXTENSIONS OFF)
+                                 CXX_EXTENSIONS OFF)$0
 
 option(BUILD_TESTING "Build the testing tree" ON)
 if(BUILD_TESTING AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
   # TODO: Add tests
-  # include(CTest)
-  # add_executable(${7:testapp} ${8:${9:testapp}.cpp})
-  # add_test(NAME ${10:test} COMMAND $7)
-endif()$0
+endif()
 
 option(BUILD_BENCHMARKS "Build the benchmarks" ON)
 if(BUILD_BENCHMARKS AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
