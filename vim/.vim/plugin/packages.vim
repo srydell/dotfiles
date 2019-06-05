@@ -54,7 +54,7 @@ call minpac#add('mboughaba/i3config.vim', {'type': 'opt'})
 call minpac#add('mhinz/vim-grepper')
 
 " Colorscheme
-call minpac#add('morhetz/gruvbox', {'type': 'opt'})
+call minpac#add('gruvbox-community/gruvbox', {'type': 'opt'})
 
 " Add syntax highlighting for javascript
 call minpac#add('pangloss/vim-javascript', {'type': 'opt'})
