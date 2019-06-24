@@ -11,7 +11,14 @@ endsnippet
 
 # --- If / Elif / Case ---
 
-snippet if "if ... then (if)"
+snippet if "if statement"
+if ${2:[ ${1:condition} ]}; then
+	${0:${VISUAL:#statements}}
+fi
+endsnippet
+
+
+snippet ifb "if statement bash"
 if ${2:[[ ${1:condition} ]]}; then
 	${0:${VISUAL:#statements}}
 fi
