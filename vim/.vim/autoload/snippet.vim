@@ -46,6 +46,7 @@ function! snippet#insert_skeleton() abort
   let s:filenames_and_snippets = {
       \ "CMakeLists.txt": 'cmakelists',
       \ "test_.*.py": 'unittest',
+      \ "conanfile.txt": 'conanfile',
       \}
 
   let current_filename = expand('%:t')

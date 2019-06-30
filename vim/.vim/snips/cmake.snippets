@@ -98,8 +98,6 @@ function(get_conan_helper)
       "${CMAKE_BINARY_DIR}/conan.cmake")
   endif()
   include(${CMAKE_BINARY_DIR}/conan.cmake)
-  endif()
-  include(${CMAKE_BINARY_DIR}/conan.cmake)
 endfunction(get_conan_helper)' >> cmake/SetupConan.cmake`include(SetupConan)
 get_conan_helper()
 # Require that conan is installed
