@@ -4,10 +4,11 @@ endif
 
 function! s:Formatonsave()
   let l:formatdiff = 1
-  py3f ~/.vim/integrations/clang-format.py
+  py3file ~/.vim/integrations/clang-format.py
 endfunction
 
 if executable('clang-format')
+	let g:clang_format_fallback_style = 'LLVM'
 	augroup clang_format_on_save
 		autocmd!
 		autocmd BufWritePre *.cpp,*.cc,*.h,*.hpp silent! call s:Formatonsave() | silent redraw!
