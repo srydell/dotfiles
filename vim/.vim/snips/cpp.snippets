@@ -89,8 +89,12 @@ snippet vec "std::vector"
 std::vector<${1:int}> ${2:v}$0
 endsnippet
 
+snippet cout "Print output" "snip.visual_text" be
+std::cout << ${0:${VISUAL}} << '\n';
+endsnippet
+
 snippet cout "Print output" b
-std::cout << ${0:${VISUAL:"output"}} << '\n';
+std::cout << ${1:"${2:output}"} << '\n';$0
 endsnippet
 
 snippet forin "for in container" b
