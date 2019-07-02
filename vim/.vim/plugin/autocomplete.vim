@@ -17,7 +17,7 @@ let g:ycm_python_binary_path = 'python3'
 let g:ycm_add_preview_to_completeopt = 0
 set completeopt-=preview
 
-let g:ycm_global_ycm_extra_conf='~/.vim/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf='~/.vim/integrations/.ycm_extra_conf.py'
 
 " Use ctags files for autocompletion
 let g:ycm_collect_identifiers_from_tags_files = 1
