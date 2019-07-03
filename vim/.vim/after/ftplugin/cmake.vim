@@ -1,5 +1,5 @@
 if !exists("current_compiler")
-  compiler cmake-format
+  compiler cmake_format
 endif
 
 if executable('cmake-format')
