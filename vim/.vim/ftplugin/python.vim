@@ -1,3 +1,6 @@
+" Formatting of python
+packadd black
+
 " Do not override my tab config please.
 let g:python_recommended_style=0
 

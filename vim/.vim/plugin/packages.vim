@@ -44,6 +44,9 @@ call minpac#add('ludovicchabant/vim-gutentags')
 " html, css, json and javascript formatter
 call minpac#add('maksimr/vim-jsbeautify', {'type': 'opt'})
 
+" Python formatter
+call minpac#add('python/black', {'type': 'opt'})
+
 " Emmet, snippets for html, css
 call minpac#add('mattn/emmet-vim', {'type': 'opt'})
 
