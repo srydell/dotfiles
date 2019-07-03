@@ -32,8 +32,6 @@ call minpac#add('christoomey/vim-tmux-navigator')
 " Fuzzy finder.
 " NOTE: The fzf binary is installed in .vim/pack/minpac/start/fzf/bin
 call minpac#add('junegunn/fzf', {'do': '!./install --bin'})
-" A collection of bindings of lists piped into fzf (:Buffers, :Gfiles, :Commits, ...)
-call minpac#add('junegunn/fzf.vim')
 
 " Minpac updates itself
 call minpac#add('k-takata/minpac', {'type': 'opt'})
