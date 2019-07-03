@@ -170,17 +170,8 @@ nnoremap <silent> <leader>ef :call utils#EditFtplugin()<CR>
 " Open a split and edit snippets for this filetype
 nnoremap <leader>es :UltiSnipsEdit<CR>
 
-" Fuzzy finder - fzf (buffers)
-nnoremap <leader>fb :Buffers<CR>
-
-" Fuzzy finder - fzf (commits)
-nnoremap <leader>fc :Commits<CR>
-
 " Fuzzy finder - fzf (files)
 nnoremap <leader>ff :<C-u>FZF<CR>
-
-" Fuzzy finder - fzf (snippets)
-nnoremap <leader>fs :Snippets<CR>
 
 " Find all the TODO/FIXME in current git project
 " :Todo command specified in .vim/plugin/searchtools.vim
