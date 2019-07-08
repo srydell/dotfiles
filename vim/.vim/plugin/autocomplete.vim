@@ -1,30 +1,51 @@
-" Where Ultisnips searches for snippet files
-let g:UltiSnipsSnippetDirectories = ["~/.vim/snips", "snips"]
+" This file is used for autocompletion config.
+" Mostly for CocVim 
 
-" Expand and cycle settings for snippets
-let g:UltiSnipsExpandTrigger = "<C-j>"
-let g:UltiSnipsJumpForwardTrigger = "<C-j>"
-let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
+" " Install extensions if not installed
+" call coc#add_extension(
+" 			\'coc-json',
+" 			\'coc-python'
+" 			\'coc-snippet',
+" 			\'coc-vimlsp',
+" 			\)
 
-" Where to open split on :UltiSnipsEdit
-let g:UltisnipsEditSplit = "vertical"
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
 
-" Always use Python 3
-let g:UltisnipsUsePythonVersion = 3
-let g:ycm_python_binary_path = 'python3'
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
 
-" Don't open a buffer containing information about the completion
-let g:ycm_add_preview_to_completeopt = 0
-set completeopt-=preview
+" Use tab for trigger completion with characters ahead and navigate.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
 
-let g:ycm_global_ycm_extra_conf='~/.vim/integrations/.ycm_extra_conf.py'
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-" Use ctags files for autocompletion
-let g:ycm_collect_identifiers_from_tags_files = 1
+" Use `[c` and `]c` to navigate diagnostics
+nmap <silent> [c <Plug>(coc-diagnostic-prev)
+nmap <silent> ]c <Plug>(coc-diagnostic-next)
 
-" Turn on completion in comments
-let g:ycm_complete_in_comments=1
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
 
-" Cycle setting for completion
-let g:ycm_key_list_select_completion = ['<TAB>', '<Down>']
-let g:ycm_key_list_previous_completion = ['<S-TAB>', '<Up>']
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+xmap <leader>f <Plug>(coc-format-selected)
+nmap <leader>f <Plug>(coc-format-selected)

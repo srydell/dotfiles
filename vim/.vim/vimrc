@@ -154,6 +154,18 @@ set undolevels=100
 " If possible, show &scrolloff lines below cursor
 set scrolloff=5
 
+" Better display for messages
+set cmdheight=2
+
+" For faster diagnostics
+set updatetime=300
+
+" Don't give |ins-completion-menu| messages.
+set shortmess+=c
+
+" Always show signcolumns
+set signcolumn=yes
+
 " ---- Leader mappings ----
 " <leader><lowerCaseLetter> for harmless commands
 " <leader><upperCaseLetter> for potentially harmful commands
