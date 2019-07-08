@@ -46,21 +46,24 @@ if [ -d ~/.bash ]; then
 	HISTFILE=~/.bash/bash_history
 fi
 
-	# Make vim default editor
-	export VISUAL=vim
-	export EDITOR=$VISUAL
+# Make vim default editor
+export VISUAL=vim
+export EDITOR=$VISUAL
 
-	# Counteracting a bug in systemd according to archlinux.org forum. Found in application "i3lock"
-	export LC_ALL=en_US.UTF-8
+# Counteracting a bug in systemd according to archlinux.org forum. Found in application "i3lock"
+export LC_ALL=en_US.UTF-8
 
-	# Let fzf fuzzy finder use ripgrep to search for the files.
-	# This respects .gitignore and the like
-	export FZF_DEFAULT_COMMAND='rg --files'
+# Let fzf fuzzy finder use ripgrep to search for the files.
+# This respects .gitignore and the like
+export FZF_DEFAULT_COMMAND='rg --files'
 
-	# Place for custom scripts
-	export PATH="$HOME/bin:$PATH"
-	# Fuzzy finder binary
-	export PATH="$HOME/.vim/pack/minpac/start/fzf/bin/:$PATH"
+# Place for custom scripts
+export PATH="$HOME/bin:$PATH"
+# Place for custom python integrations scripts for vim
+# (want it to find system pip before this one)
+export PATH="$PATH:$HOME/.vim/integrations/venv/bin"
+# Fuzzy finder binary
+export PATH="$HOME/.vim/pack/minpac/start/fzf/bin/:$PATH"
 
 # Set config path
 export XDG_CONFIG_HOME=$HOME/.config
