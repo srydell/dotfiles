@@ -81,9 +81,6 @@ case "$(uname)" in
 		# Let brew programs come first
 		export PATH="/usr/local/sbin:$PATH"
 		export PATH="/opt/local/bin:$PATH"
-		export PATH="$HOME/.cargo/bin:$PATH"
-		# Use brew version of gcc
-		alias gcc=/usr/local/Cellar/gcc/8.1.0/bin/gcc-8
 		# ROOT CERN plotting
 		export ROOTSYS=/usr/local/root
 		export PATH=$ROOTSYS/bin:$PATH
