@@ -9,7 +9,8 @@
             "initializationOptions": {
                 "cache": {
                     "directory": "/tmp/ccls"
-                }
+                },
+                "compilationDatabaseDirectory": "build"
             }
         }
     }
