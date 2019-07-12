@@ -86,19 +86,7 @@ endif()
 endsnippet
 
 snippet incconan "Setup and include conan" b
-`test ! -f cmake/SetupConan.cmake && echo 'include_guard()
-function(get_conan_helper)
-  if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-    message(
-      STATUS
-        "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-    file(
-      DOWNLOAD
-      "https://raw.githubusercontent.com/conan-io/cmake-conan/v0.14/conan.cmake"
-      "${CMAKE_BINARY_DIR}/conan.cmake")
-  endif()
-  include(${CMAKE_BINARY_DIR}/conan.cmake)
-endfunction(get_conan_helper)' >> cmake/SetupConan.cmake`include(SetupConan)
+`mkdir cmake || test ! -f cmake/SetupConan.cmake && cp ~/.vim/integrations/templates/cmake/SetupConan.cmake cmake/SetupConan.cmake`include(SetupConan)
 get_conan_helper()
 # Require that conan is installed
 conan_check(REQUIRED)
@@ -138,85 +126,12 @@ endif()
 
 # Add custom scripts
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-`mkdir cmake || test ! -f cmake/SetupWarnings.cmake && echo 'include_guard()
-
-# Set variable with warning flags for different compilers
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
-  set(_warnings
-      /W4
-      /WX
-      /permissive-
-      /w14640)
-  set(_extra_warnings
-      /w14242
-      /w14254
-      /w14263
-      /w14265
-      /w14287
-      /we4289
-      /w14296
-      /w14311
-      /w14545
-      /w14546
-      /w14547
-      /w14549
-      /w14555
-      /w14619
-      /w14826
-      /w14905
-      /w14906
-      /w14928)
-elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
-  set(_warnings
-      -W
-      -Wall
-      -Werror
-      -Wextra
-      -Wnon-virtual-dtor
-      -Wshadow
-      -pedantic)
-  set(_extra_warnings
-      -Wcast-align
-      -Wconversion
-      -Wdate-time
-      -Wdouble-promotion
-      -Wduplicated-cond
-      -Wformat=2
-      -Wlogical-op
-      -Wmisleading-indentation
-      -Wnull-dereference
-      -Wold-style-cast
-      -Woverloaded-virtual
-      -Wsign-conversion
-      -Wunused
-      -Wuseless-cast)
-elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-  set(_warnings
-      -W
-      -Wall
-      -Werror
-      -Wextra
-      -Wnon-virtual-dtor
-      -Wshadow
-      -pedantic)
-  set(_extra_warnings
-      -Wcast-align
-      -Wconversion
-      -Wdate-time
-      -Wdouble-promotion
-      -Wduplicate-enum
-      -Wformat=2
-      -Wnull-dereference
-      -Wold-style-cast
-      -Woverloaded-virtual
-      -Wsign-conversion
-      -Wunused)
-endif()' >> cmake/SetupWarnings.cmake`
-# Define _warnings and _extra_warnings variables
-include(SetupWarnings)
+`mkdir cmake || test ! -f cmake/WarningsAndOptions.cmake && cp ~/.vim/integrations/templates/cmake/WarningsAndOptions.cmake cmake/WarningsAndOptions.cmake`
+# Define project_warnings and project_options variables
+include(WarningsAndOptions)
 
 add_${2:executable}(${3:executable_name} ${4:${5:main}.cpp})
-target_compile_options($3 PRIVATE ${_warnings} ${_extra_warnings})
+target_link_libraries($3 PRIVATE project_warnings project_options)
 set_target_properties($3
                       PROPERTIES CXX_STANDARD ${6:17}
                                  CXX_STANDARD_REQUIRED ON
