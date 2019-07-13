@@ -1,4 +1,4 @@
-if !exists("current_compiler")
+if !exists('current_compiler')
   compiler cmake_format
 endif
 

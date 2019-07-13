@@ -18,16 +18,17 @@ augroup customColorscheme
 augroup END
 " Encoding
 set encoding=utf-8
+scriptencoding utf-8
 
 " Check current operating system
 " Linux for Linux
 " Darwin for MacOS
-if !exists("g:currentOS")
+if !exists('g:currentOS')
 	let g:currentOS = substitute(system('uname'), '\n', '', '')
 	" Set OS specific settings
-	if g:currentOS == 'Darwin'
+	if g:currentOS ==# 'Darwin'
 		let g:browser = 'Safari'
-	elseif g:currentOS == 'Linux'
+	elseif g:currentOS ==# 'Linux'
 		let g:browser = 'qutebrowser'
 	endif
 endif
@@ -37,7 +38,7 @@ let g:gruvbox_contrast_dark=1
 silent! colorscheme gruvbox
 
 " Always use filetype latex for .tex files
-let g:tex_flavor = "latex"
+let g:tex_flavor = 'latex'
 
 " Make it easier to see tabs and newlines
 set list

@@ -1,10 +1,10 @@
-if !exists("current_compiler")
+if !exists('current_compiler')
 	compiler python
 endif
 
 function! s:canRunBlack()
-	if exists("g:black_virtualenv")
-		return executable(expand(g:black_virtualenv . "/bin/black"))
+	if exists('g:black_virtualenv')
+		return executable(expand(g:black_virtualenv . '/bin/black'))
 	endif
 	return 0
 endfunction

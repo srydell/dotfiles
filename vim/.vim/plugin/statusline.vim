@@ -18,7 +18,7 @@ set statusline+=%y
 set statusline+=%=
 
 " Check session tracking
-if exists("*ObsessionStatus")
+if exists('*ObsessionStatus')
 	set statusline+=%{ObsessionStatus()}
 endif
 

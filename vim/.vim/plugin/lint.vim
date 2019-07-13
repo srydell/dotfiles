@@ -19,4 +19,4 @@ let g:ale_completion_enabled = 0
 " Guess that the compile_commands.json is in ./build
 " Otherwise, the linter will use some default flags
 " NOTE: Available linters are set in .vim/ftplugin/cpp.vim
-let g:ale_c_build_dir = "./build/"
+let g:ale_c_build_dir = './build/'
