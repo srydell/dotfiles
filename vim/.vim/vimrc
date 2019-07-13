@@ -220,7 +220,7 @@ nnoremap <leader>Gr :Gread<CR>
 " Open appropriate help on the word under the cursor
 " Filetype dependent.
 " Takes a browser and OS
-nnoremap <silent> <leader>h :call utils#GetHelpDocs(g:browser, g:currentOS)<CR>
+nnoremap <silent> <leader>h :call helpDocs#GetHelpDocs(g:browser, g:currentOS)<CR>
 
 " Prompt for a command to run in the nearest tmux pane ( [t]mux [c]ommand )
 nnoremap <silent> <leader>tc :VimuxPromptCommand<CR>
