@@ -1,0 +1,27 @@
+# conanfile_txt.snippets - Snippets for conanfile_txt file type
+
+snippet fmt "Format library" b
+fmt/5.2.0@bincrafters/stable$0
+endsnippet
+
+snippet catch "Test library" b
+Catch2/2.9.1@catchorg/stable$0
+endsnippet
+
+snippet bench "Benchmark library" b
+google-benchmark/1.4.1@mpusz/stable$0
+endsnippet
+
+snippet ctre "Compile time regular expressions library" b
+CTRE/v2.6.4@ctre/stable$0
+endsnippet
+
+snippet _skel "A simple conanfile txt skeleton" b
+[requires]
+${1:Catch2/2.9.1@catchorg/stable}
+${2:google-benchmark/1.4.1@mpusz/stable}
+${3:fmt/5.2.0@bincrafters/stable}
+
+[generators]
+cmake$0
+endsnippet

@@ -8,10 +8,9 @@ endsnippet
 
 snippet target "A full target (executable or library)" b
 add_${2:executable}(${3:executable_name} ${4:${5:main}.cpp})
-target_compile_options($3 PRIVATE ${_warnings} ${_extra_warnings})
+target_link_libraries($3 PRIVATE project_warnings project_options)
 set_target_properties($3
-                      PROPERTIES CXX_STANDARD ${6:17}
-                                 CXX_STANDARD_REQUIRED ON
+                      PROPERTIES CXX_STANDARD_REQUIRED ON
                                  CXX_EXTENSIONS OFF)
 endsnippet
 
@@ -85,65 +84,9 @@ if(NOT $1_POPULATED)
 endif()
 endsnippet
 
-snippet incconan "Setup and include conan" b
-`mkdir cmake || test ! -f cmake/SetupConan.cmake && cp ~/.vim/integrations/templates/cmake/SetupConan.cmake cmake/SetupConan.cmake`include(SetupConan)
-get_conan_helper()
-# Require that conan is installed
-conan_check(REQUIRED)
-# Install dependencies (defined in conanfile.{txt,py})
-conan_cmake_run(CONANFILE
-                conanfile.${1:txt}
-                BASIC_SETUP
-                CONAN_COMMAND
-                ${CONAN_CMD}
-                CMAKE_TARGETS
-                BUILD
-                missing)$0
-endsnippet
-
 # Skeletons
 snippet _skel "Skeleton for a cmake script file" b
 include_guard()
 
 $0
-endsnippet
-
-snippet _cmakelists "Skeleton for files called CMakeLists.txt" b
-cmake_minimum_required(VERSION `cmake --version | head -n 1 | sed 's/[ a-z]//g' | cut -d '.' -f1-2`)
-
-project(${1:project_name} VERSION 0.1 LANGUAGES CXX)
-
-# Export compile flags to compile_commands.json database. Useful for linters and
-# autocompletion
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# If no build type is provided explicitly, set it to Release
-if(NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
-  if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
-  endif()
-endif()
-
-# Add custom scripts
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-`mkdir cmake || test ! -f cmake/WarningsAndOptions.cmake && cp ~/.vim/integrations/templates/cmake/WarningsAndOptions.cmake cmake/WarningsAndOptions.cmake`
-# Define project_warnings and project_options variables
-include(WarningsAndOptions)
-
-add_${2:executable}(${3:executable_name} ${4:${5:main}.cpp})
-target_link_libraries($3 PRIVATE project_warnings project_options)
-set_target_properties($3
-                      PROPERTIES CXX_STANDARD ${6:17}
-                                 CXX_STANDARD_REQUIRED ON
-                                 CXX_EXTENSIONS OFF)$0
-
-option(BUILD_TESTING "Build the testing tree" ON)
-if(BUILD_TESTING AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
-  # TODO: Add tests
-endif()
-
-option(BUILD_BENCHMARKS "Build the benchmarks" ON)
-if(BUILD_BENCHMARKS AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
-  # TODO: Add benchmarks
-endif()
 endsnippet

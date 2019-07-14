@@ -2,7 +2,7 @@
 
 " Try to expand the snippet named _skel
 function! s:try_insert(skel)
-  execute "normal! i_" . a:skel . "\<C-r>=UltiSnips#ExpandSnippet()\<CR>"
+  execute 'normal! i_' . a:skel . "\<C-r>=UltiSnips#ExpandSnippet()\<CR>"
 
   if g:ulti_expand_res == 0
     silent! undo
@@ -25,7 +25,7 @@ endfunction
 
 function! snippet#insert_skeleton() abort
   " Abort on non-empty buffer or extant file
-  if !exists('g:did_plugin_ultisnips') || !(line('$') == 1 && getline('$') == '') || filereadable(expand('%:p'))
+  if !exists('g:did_plugin_ultisnips') || !(line('$') ==# 1 && getline('$') ==# '') || filereadable(expand('%:p'))
     return
   endif
 
@@ -44,9 +44,9 @@ function! snippet#insert_skeleton() abort
 
   " Special filenames and corresponding snippets
   let s:filenames_and_snippets = {
-      \ "CMakeLists.txt": 'cmakelists',
-      \ "test_.*.py": 'unittest',
-      \ "conanfile.txt": 'conanfile',
+      \ 'CMakeLists.txt': 'cmakelists',
+      \ 'test_.*.py': 'unittest',
+      \ 'conanfile.txt': 'conanfile',
       \}
 
   let current_filename = expand('%:t')

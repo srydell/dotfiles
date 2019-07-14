@@ -1,5 +1,18 @@
 # vim.snippets - Snippets for vim file type
 
+snippet augroup "autogroup" b
+augroup ${1:augroup_name}
+	autocmd!
+	autocmd ${2:BufWritePre} ${3:*.cpp} ${4:echom 'Hello'}
+augroup END$0
+endsnippet
+
+snippet func "function" b
+function! ${1:name}() abort
+	${VISUAL}$0
+endfunction
+endsnippet
+
 snippet for "simple for loop" b
 for ${1:item} in ${2:iterable}
 	${0:${VISUAL}}

@@ -5,7 +5,7 @@
 " call coc#add_extension(
 " 			\'coc-json',
 " 			\'coc-python'
-" 			\'coc-snippet',
+" 			\'coc-ultisnips',
 " 			\'coc-vimlsp',
 " 			\)
 

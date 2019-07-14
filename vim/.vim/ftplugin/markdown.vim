@@ -1,6 +1,6 @@
 let g:markdown_fenced_languages = ['html', 'python', 'bash=sh']
 
-set spell
+setlocal spell
 
 " Maximum number of syntax highlighted code block lines
 " Default: 50

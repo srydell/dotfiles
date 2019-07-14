@@ -9,4 +9,4 @@ nnoremap <buffer> <leader>c :w<CR>:silent !rubber --pdf --warn all %<CR>:redraw!
 " View PDF. '%:r' is current file's root (base) name
 nnoremap <buffer> <leader>v :silent !mupdf %:r.pdf &<CR><CR>
 
-set spell
+setlocal spell

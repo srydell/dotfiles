@@ -260,8 +260,8 @@ nnoremap <leader>y "*y
 xnoremap <leader>y "*ygv<Esc>
 
 " Paste from clipboard
-nnoremap <silent><leader>p :set paste<CR>"*p<CR>:set nopaste<CR>
-nnoremap <silent><leader>P :set paste<CR>"*P<CR>:set nopaste<CR>
+nnoremap <silent><leader>p :setlocal paste<CR>"*p<CR>:setlocal nopaste<CR>
+nnoremap <silent><leader>P :setlocal paste<CR>"*P<CR>:setlocal nopaste<CR>
 
 " Source vimrc
 nnoremap <leader>sv :source $MYVIMRC<CR>
