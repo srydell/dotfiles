@@ -3,14 +3,14 @@ command! PackClean packadd minpac | source ~/.vim/plugin/packages.vim | call min
 
 " If packages are not handled
 if !isdirectory($HOME . '/.vim/pack')
-	" Download minpac
-	execute('silent !git clone https://github.com/k-takata/minpac.git ~/.vim/pack/minpac/opt/minpac')
-	echom 'You may now install the plugins listed in ~/.vim/plugin/packages.vim by typing :PackUpdate'
+  " Download minpac
+  execute('silent !git clone https://github.com/k-takata/minpac.git ~/.vim/pack/minpac/opt/minpac')
+  echom 'You may now install the plugins listed in ~/.vim/plugin/packages.vim by typing :PackUpdate'
 endif
 
 " This will only happen if packadd minpac has been executed
 if !exists('*minpac#init')
-	finish
+  finish
 endif
 
 call minpac#init()
@@ -38,6 +38,9 @@ call minpac#add('k-takata/minpac', {'type': 'opt'})
 
 " Tags management
 call minpac#add('ludovicchabant/vim-gutentags')
+
+" Reads .editorconfig
+call minpac#add('editorconfig/editorconfig-vim')
 
 " html, css, json and javascript formatter
 call minpac#add('maksimr/vim-jsbeautify', {'type': 'opt'})

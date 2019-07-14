@@ -44,10 +44,10 @@ function! snippet#insert_skeleton() abort
 
   " Special filenames and corresponding snippets
   let s:filenames_and_snippets = {
-      \ 'CMakeLists.txt': 'cmakelists',
-      \ 'test_.*.py': 'unittest',
-      \ 'conanfile.txt': 'conanfile',
-      \}
+        \ 'CMakeLists.txt': 'cmakelists',
+        \ 'test_.*.py': 'unittest',
+        \ 'conanfile.txt': 'conanfile',
+        \}
 
   let current_filename = expand('%:t')
   for pattern in keys(s:filenames_and_snippets)
@@ -67,5 +67,3 @@ function! snippet#insert_skeleton() abort
     call s:install_undo_workaround()
   endif
 endfunction
-
-" vim:set et sw=2:

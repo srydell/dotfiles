@@ -22,5 +22,10 @@ indent_size = 4
 max_char = 78
 brace_style = expand
 
+[**.vim]
+[{,.}vimrc]
+indent_style = space
+indent_size = 2
+
 [Makefile]
 indent_style = tab

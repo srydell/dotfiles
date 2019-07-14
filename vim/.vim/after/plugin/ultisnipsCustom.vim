@@ -10,5 +10,3 @@ augroup ultisnips_custom
   " Try and expand a skeleton upon a new file
   autocmd BufNewFile * silent! call snippet#insert_skeleton()
 augroup END
-
-" vim: fdm=marker:sw=2:sts=2:et
