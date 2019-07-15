@@ -22,7 +22,7 @@ endsnippet
 snippet _cmakelists "Skeleton for files called CMakeLists.txt" b
 cmake_minimum_required(VERSION `cmake --version | head -n 1 | sed 's/[ a-z]//g' | cut -d '.' -f1-2`)
 
-project(${1:project_name} VERSION 0.1 LANGUAGES CXX)
+project(${1:`!v split(getcwd(), '/')[-1] " Directory name`} VERSION 0.1 LANGUAGES CXX)
 
 # Export compile flags to compile_commands.json database. Useful for linters and
 # autocompletion
@@ -41,11 +41,14 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # Define project_warnings and project_options variables
 include(WarningsAndOptions)
 
-add_${2:executable}(${3:executable_name} ${4:${5:main}.cpp})
-target_link_libraries($3 PRIVATE project_warnings project_options)
+add_${2:executable}(${3:`!v split(getcwd(), '/')[-1] " Directory name`} ${4:src/${5:main}.cpp})
+target_link_libraries($3
+                      PRIVATE project_warnings project_options)
 set_target_properties($3
-                      CXX_STANDARD_REQUIRED ON
-                      CXX_EXTENSIONS OFF)$0
+                      CXX_STANDARD_REQUIRED
+                      ON
+                      CXX_EXTENSIONS
+                      OFF)$0
 
 option(BUILD_TESTING "Build the testing tree" ON)
 if(BUILD_TESTING AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
