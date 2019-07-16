@@ -1,7 +1,7 @@
 # cmakelists.snippets - Snippets for cmakelists file type
 # NOTE: This is a made up filetype and should only have specialized snippets
 
-snippet incconan "Setup and include conan" b
+snippet mod_conan "Setup and include conan module" b
 `mkdir cmake || test ! -f cmake/SetupConan.cmake && cp ~/.vim/integrations/templates/cmake/SetupConan.cmake cmake/SetupConan.cmake`include(SetupConan)
 get_conan_helper()
 # Require that conan is installed
@@ -38,7 +38,7 @@ endif()
 # Add custom scripts
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 `mkdir cmake || test ! -f cmake/WarningsAndOptions.cmake && cp ~/.vim/integrations/templates/cmake/WarningsAndOptions.cmake cmake/WarningsAndOptions.cmake`
-# Define project_warnings and project_options variables
+# Define project_warnings and project_options targets
 include(WarningsAndOptions)
 
 add_${2:executable}(${3:`!v split(getcwd(), '/')[-1] " Directory name`} ${4:src/${5:main}.cpp})
