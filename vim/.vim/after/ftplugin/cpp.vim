@@ -1,5 +1,5 @@
 if !exists('current_compiler')
-  compiler cmake_make
+  compiler cmake_ninja
 endif
 
 function! s:runClangFormat()
