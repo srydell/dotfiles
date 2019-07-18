@@ -22,10 +22,25 @@ indent_size = 4
 max_char = 78
 brace_style = expand
 
+[**.cmake]
+indent_style = space
+indent_size = 2
+
+[CMakeLists.txt]
+indent_style = space
+indent_size = 2
+
 [**.vim]
+indent_style = space
+indent_size = 2
+
 [{,.}vimrc]
 indent_style = space
 indent_size = 2
+
+[**.{cpp,cc,c,h,hpp}]
+indent_style = tab
+indent_size = 4
 
 [Makefile]
 indent_style = tab
