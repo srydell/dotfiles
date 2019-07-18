@@ -1,6 +1,5 @@
 {
     "suggest.snippetIndicator": "~",
-    "snippets.snipmate.enable": false,
     "languageserver": {
         "ccls": {
             "command": "ccls",
