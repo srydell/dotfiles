@@ -1,11 +1,27 @@
 # cmakelists.snippets - Snippets for cmakelists file type
 # NOTE: This is a made up filetype and should only have specialized snippets
 
+snippet mod_cath2 "Setup and include catch2 module" b
+`mkdir cmake || test ! -f cmake/Catch2Helpers.cmake && cp ~/.vim/integrations/templates/cmake/Catch2Helpers.cmake cmake/Catch2Helpers.cmake`# Define create_catch2_test
+include(Catch2Helpers)
+# NOTE: Depends on find_package(catch2) being found
+create_catch2_test(TARGET
+                   ${1:catch2_test}
+                   SOURCES
+                   ${2:test/${3:catch2_test}.cpp})$0
+endsnippet
+
 snippet mod_conan "Setup and include conan module" b
-`mkdir cmake || test ! -f cmake/SetupConan.cmake && cp ~/.vim/integrations/templates/cmake/SetupConan.cmake cmake/SetupConan.cmake`include(SetupConan)
+`mkdir cmake || test ! -f cmake/SetupConan.cmake && cp ~/.vim/integrations/templates/cmake/SetupConan.cmake cmake/SetupConan.cmake`# Define get_conan_helper
+include(SetupConan)
 get_conan_helper()
 # Require that conan is installed
 conan_check(REQUIRED)
+`!p
+if t[1] == "txt":
+    snip.rv = "# Needed when using conanfile.txt and find_package\nset(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})"
+else:
+    snip.rv = ""`
 # Install dependencies (defined in conanfile.{txt,py})
 conan_cmake_run(CONANFILE
                 conanfile.${1:txt}
@@ -16,7 +32,6 @@ conan_cmake_run(CONANFILE
                 BUILD
                 missing)$0
 endsnippet
-
 
 # Skeletons
 snippet _cmakelists "Skeleton for files called CMakeLists.txt" b
@@ -45,6 +60,7 @@ add_${2:executable}(${3:`!v split(getcwd(), '/')[-1] " Directory name`} ${4:src/
 target_link_libraries($3
                       PRIVATE project_warnings project_options)
 set_target_properties($3
+                      PROPERTIES
                       CXX_STANDARD_REQUIRED
                       ON
                       CXX_EXTENSIONS
