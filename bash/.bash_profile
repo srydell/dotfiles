@@ -59,9 +59,8 @@ export FZF_DEFAULT_COMMAND='rg --files'
 
 # Place for custom scripts
 export PATH="$HOME/bin:$PATH"
-# Place for custom python integrations scripts for vim
-# (want it to find system pip before this one)
-export PATH="$PATH:$HOME/.vim/integrations/venv/bin"
+# Place for custom executables used by vim
+export PATH="$PATH:$HOME/.vim/integrations/bin"
 # Fuzzy finder binary
 export PATH="$HOME/.vim/pack/minpac/start/fzf/bin/:$PATH"
 

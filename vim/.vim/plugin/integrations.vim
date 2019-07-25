@@ -19,11 +19,24 @@ if has('python3') && executable('python3')
 
     " Install dependencies
     let pip_executable = g:integrations_virtualenv . '/bin/pip'
-    let python_packages = ['black', 'rope', 'cmake-format', 'vim-vint']
-    execute('!' . pip_executable . ' install ' . join(python_packages, ' '))
+    let python_packages = ['black', 'cmake-format', 'vim-vint']
+    execute('silent !' . pip_executable . ' install ' . join(python_packages, ' '))
+
     echom 'Installed python dependencies: ' . join(python_packages, ', ')
+
+    " Link them into bin directory
+    " vim-vint gives 'vint' executable (an ugly hack =)
+    for package in python_packages + ['vint']
+      if executable(g:integrations_virtualenv . '/bin/' . package)
+        echom 'Linking python executable ' . package . ' to ' . g:integrations_dir . 'bin/' . package
+        execute('silent !ln -s ' . g:integrations_virtualenv . '/bin/' . package .
+              \ ' ' .
+              \ g:integrations_dir . 'bin/' . package)
+      endif
+    endfor
+
   endif
 
   " Black formatting for python
-  let g:black_virtualenv = expand('~/.vim/integrations/venv')
+  let g:black_virtualenv = g:integrations_virtualenv
 endif
