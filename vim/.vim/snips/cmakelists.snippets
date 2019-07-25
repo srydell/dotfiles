@@ -57,7 +57,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # Define project_warnings and project_options targets
 include(WarningsAndOptions)
 
-add_${2:executable}(${3:`!v split(getcwd(), '/')[-1] " Directory name`} ${4:src/${5:main}.cpp})
+add_${2:executable}(${3:$1} ${4:src/${5:main}.cpp})
 target_link_libraries($3
                       PRIVATE project_warnings project_options)
 set_target_properties($3
