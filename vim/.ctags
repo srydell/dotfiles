@@ -71,9 +71,12 @@
 
 --langmap=vim:+(vimrc)
 
+--exclude=.ccls-cache
+--exclude=.clangd
 --exclude=.git
---exclude=.svn
 --exclude=.hg
+--exclude=.svn
+--exclude=.vscode
 --exclude=min
 --exclude=vendor
 --exclude=\*.min.\*
