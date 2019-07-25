@@ -19,7 +19,7 @@ if has('python3') && executable('python3')
 
     " Install dependencies
     let pip_executable = g:integrations_virtualenv . '/bin/pip'
-    let python_packages = ['black', 'cmake-format', 'vim-vint']
+    let python_packages = ['black', 'rope', 'cmake-format', 'vim-vint']
     execute('!' . pip_executable . ' install ' . join(python_packages, ' '))
     echom 'Installed python dependencies: ' . join(python_packages, ', ')
   endif

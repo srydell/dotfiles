@@ -13,6 +13,8 @@ augroup quick_and_loc_list_autoclose
   " NOTE: Both quickfix and location list window have buftype 'quickfix'
   autocmd BufWinEnter quickfix nnoremap <silent> <buffer>
         \ q :cclose<CR>:lclose<CR>
+  autocmd FileType qf nnoremap <silent> <buffer>
+        \ q :cclose<CR>:lclose<CR>
   " If there is only a quickfix type buffer left open, close it
   autocmd BufEnter * if (winnr('$') == 1 && &buftype ==# 'quickfix' ) |
         \   bd|
