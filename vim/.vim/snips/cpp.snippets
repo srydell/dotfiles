@@ -42,6 +42,12 @@ struct ${1:`!p snip.rv = snip.basename or "StructName"`}{
 };$0
 endsnippet
 
+snippet func "Basic function template" b
+${1:void} ${2:FunctionName}(${3:param}) {
+	${0:${VISUAL:}}
+}
+endsnippet
+
 snippet fnc "Basic C++ doxygen function template" b
 /**
 * @brief: ${4:brief}
@@ -66,7 +72,7 @@ template <typename ${1:T}>
 endsnippet
 
 snippet inc "#include statement" b
-#include ${1:<${2:vector}>}$0
+#include ${1:<${2:iostream}>}$0
 endsnippet
 
 snippet try "try catch statement" b
@@ -89,12 +95,20 @@ snippet vec "std::vector"
 std::vector<${1:int}> ${2:v}$0
 endsnippet
 
-snippet cout "Print output" "snip.visual_text" be
+snippet cout "Print output to stdout" "snip.visual_text" be
 std::cout << ${0:${VISUAL}} << '\n';
 endsnippet
 
-snippet cout "Print output" b
+snippet cout "Print output to stdout" b
 std::cout << ${1:"${2:output}"} << '\n';$0
+endsnippet
+
+snippet cerr "Print output to stderr" "snip.visual_text" be
+std::cerr << ${0:${VISUAL}} << '\n';
+endsnippet
+
+snippet cerr "Print output to stderr" b
+std::cerr << ${1:"${2:output}"} << '\n';$0
 endsnippet
 
 snippet forin "for in container" b

@@ -4,6 +4,10 @@ snippet pkg_fmt "Format library" b
 fmt/5.2.0@bincrafters/stable$0
 endsnippet
 
+snippet pkg_clara "Command line parser library" b
+clara/1.1.5@bincrafters/stable$0
+endsnippet
+
 snippet pkg_catch "Test library" b
 Catch2/2.9.1@catchorg/stable$0
 endsnippet
@@ -24,5 +28,6 @@ ${3:fmt/5.2.0@bincrafters/stable}
 
 [generators]
 cmake
-cmake_find_package$0
+cmake_find_package
+cmake_paths$0
 endsnippet

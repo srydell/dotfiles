@@ -17,20 +17,21 @@ include(SetupConan)
 get_conan_helper()
 # Require that conan is installed
 conan_check(REQUIRED)
-`!p
-if t[1] == "txt":
-    snip.rv = "# Needed when using conanfile.txt and find_package\nset(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})"
-else:
-    snip.rv = ""`
+${1:conan_setup_remotes()}
 # Install dependencies (defined in conanfile.{txt,py})
 conan_cmake_run(CONANFILE
-                conanfile.${1:txt}
+                conanfile.${2:txt}
                 BASIC_SETUP
                 CONAN_COMMAND
                 ${CONAN_CMD}
                 CMAKE_TARGETS
                 BUILD
-                missing)$0
+                missing)
+`!p
+if t[1] == "txt":
+    snip.rv = "# Needed when using conanfile.txt and find_package\n# NOTE: Relies on cmake_paths generator\ninclude(${CMAKE_BINARY_DIR}/conan_paths.cmake)"
+else:
+    snip.rv = ""`$0
 endsnippet
 
 # Skeletons
