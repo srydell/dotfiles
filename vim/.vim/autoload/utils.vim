@@ -17,10 +17,10 @@ function! utils#ToggleList(bufname, prefix) abort
   let buflist = GetBufferList()
 
   " Find a buffer nummer corresponding to the bufname given
-  for bufnum in map(filter(split(buflist, '\n'), 'v:val =~ "'.a:bufname.'"'), 'str2nr(matchstr(v:val, "\\d\\+"))')
+  for bufnum in map(filter(split(buflist, "\n"), 'v:val =~ "'.a:bufname.'"'), 'str2nr(matchstr(v:val, "\\d\\+"))')
     " If it is found, close it and return
     if bufwinnr(bufnum) != -1
-      exec(a:prefix.'close')
+      execute(a:prefix . 'close')
       return
     endif
   endfor
@@ -34,7 +34,7 @@ function! utils#ToggleList(bufname, prefix) abort
 
   let winnr = winnr()
   " Open the list
-  exec(a:prefix.'open')
+  execute(a:prefix . 'open')
   if winnr() != winnr
     wincmd p
   endif
