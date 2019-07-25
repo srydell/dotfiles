@@ -1,27 +1,5 @@
 # markdown.snippets - Snippets for markdown file type
 
-global !p
-def create_table(snip):
-    # retrieving single line from current string and treat it like tabstops count
-    placeholders_string = snip.buffer[snip.line].strip()[2:].split("x",1)
-    rows_amount = int(placeholders_string[0])
-    columns_amount = int(placeholders_string[1])
-
-    # erase current line
-    snip.buffer[snip.line] = ''
-
-    # create anonymous snippet with expected content and number of tabstops
-    anon_snippet_title = ' | '.join(['$' + str(col) for col in range(1,columns_amount+1)]) + "\n"
-    anon_snippet_delimiter = ':-|' * (columns_amount-1) + ":-\n"
-    anon_snippet_body = ""
-    for row in range(1,rows_amount+1):
-        anon_snippet_body += ' | '.join(['$' + str(row*columns_amount+col) for col in range(1,columns_amount+1)]) + "\n"
-    anon_snippet_table = anon_snippet_title + anon_snippet_delimiter + anon_snippet_body
-
-    # expand anonymous snippet
-    snip.expand_anon(anon_snippet_table)
-endglobal
-
 ###########################
 # Sections and Paragraphs #
 ###########################
@@ -39,17 +17,6 @@ endsnippet
 
 snippet sssec "SubSub Section" b
 ### ${1:Section Name} ###
-
-$0
-endsnippet
-
-snippet par "Paragraph" b
-#### ${1:Paragraph Name} ####
-$0
-endsnippet
-
-snippet spar "Paragraph" b
-##### ${1:Paragraph Name} #####
 
 $0
 endsnippet
@@ -88,10 +55,6 @@ snippet fnt "Footnote"
 [^$1]:${2:Text}
 endsnippet
 
-pre_expand "create_table(snip)"
-snippet "tb(\d+x\d+)" "Customizable table" br
-endsnippet
-
 # Skeletons
 snippet _blogpost "Blog post skeleton" b
 Title:           ${1:Blog post title}
@@ -108,4 +71,37 @@ $0
 
 
 ---
+endsnippet
+
+snippet _readme "README.md skeleton" b
+# ${1:`!v split(getcwd(), '/')[-1] " Directory name`} #
+
+${2:$1 is a Python library for dealing with word pluralization.}
+
+## Installation ##
+
+${3:Use the package manager [pip](https://pip.pypa.io/en/stable/) to install $1.}
+
+## Usage ##
+
+\`\`\`${4:python}
+${5:import $1
+
+$1.pluralize('word') # returns 'words'
+$1.pluralize('goose') # returns 'geese'
+$1.singularize('phenomena') # returns 'phenomenon'}
+\`\`\`
+
+## Contributing ##
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License ##
+[${6:MIT}](https://choosealicense.com/licenses/`!p
+# Get the license as specified by choosealicense url
+license = t[6].lower()
+if 'v' in license:
+    license = "{}-{}.0".format(*license.split('v'))
+snip.rv = license`/)$0
 endsnippet
