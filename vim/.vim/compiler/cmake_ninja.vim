@@ -13,7 +13,7 @@ CompilerSet errorformat&
 " and is located in build/bin/
 
 " Build config from cmake to ninja
-CompilerSet makeprg=cmake\ \-H\.\ \-Bbuild\ \-G\ Ninja\ \>\ /dev/null
+CompilerSet makeprg=cmake\ \-S\.\ \-Bbuild\ \-G\ Ninja\ \>\ /dev/null
 " Build executable with ninja
 CompilerSet makeprg+=\ \&\&\ ninja\ \-C\ build
 " Run executable if found
