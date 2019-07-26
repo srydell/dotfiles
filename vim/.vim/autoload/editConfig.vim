@@ -32,13 +32,13 @@ endfunction
 
 function! editConfig#EditConfig(command, checkForFiletype) abort
   " Call a:command with execute() with caveats:
-  " * If a:checkForFiletype is true a:command will have the keyword FILETYPE replaced with the current filetype
+  " * If a:checkForFiletype is true a:command will have the keyword <FILETYPE> replaced with the current filetype
   "   and executed as many times as there are filetypes (e.g. filetype=cmake.cmake_module)
   " * Any buffers entered will be saved and deleted upon leaving
   "
   " :command: String - Will be called with execute.
   " :checkForFiletype: Bool - True if the command should be done once per filetype.
-  "                          If true, 'FILETYPE' will be replaced in command with the current filetype.
+  "                           If true, '<FILETYPE>' will be replaced in command with the current filetype.
   let command = a:command
 
   if a:checkForFiletype
@@ -49,7 +49,7 @@ function! editConfig#EditConfig(command, checkForFiletype) abort
 
     let possibleCommands = []
     for ft in split(&filetype, '\.')
-      let possibleCommands += [substitute(a:command, 'FILETYPE', ft, 'g')]
+      let possibleCommands += [substitute(a:command, '<FILETYPE>', ft, 'g')]
     endfor
     " Strictly from my own convention, since I have filetypes as
     " <vim provided ft>.<my own special ft>

@@ -171,18 +171,20 @@ set signcolumn=yes
 " <leader><lowerCaseLetter> for harmless commands
 " <leader><upperCaseLetter> for potentially harmful commands
 
-" Open buffer and edit .vimrc
-nnoremap <leader>ev :call editConfig#EditConfig(':edit ~/.vim/vimrc', v:false)<CR>
+function! s:SetupEditConfigMapping(keystrokes, cmd, checkForFiletype) abort
+  execute('nnoremap <leader>' . a:keystrokes .
+         \ " :call editConfig#EditConfig('" . a:cmd . "', " . a:checkForFiletype . ')<CR>')
+endfunction
 
-" Open buffer and edit .tmux.conf
-nnoremap <leader>et :call editConfig#EditConfig(':edit ~/.tmux.conf', v:false)<CR>
+" Open buffer and edit 
+call s:SetupEditConfigMapping('ev', ':edit ~/.vim/vimrc', v:false)
+call s:SetupEditConfigMapping('et', ':edit ~/.tmux.conf', v:false)
 
-" Open buffer and edit filetype specific configs expand
-nnoremap <silent> <leader>ef :call editConfig#EditConfig(':edit ~/.vim/ftplugin/FILETYPE.vim', v:true)<CR>
-nnoremap <silent> <leader>eaf :call editConfig#EditConfig(':edit ~/.vim/after/ftplugin/FILETYPE.vim', v:true)<CR>
-
-" Open a buffer and edit snippets for this filetype
-nnoremap <silent> <leader>es :call editConfig#EditConfig(':UltiSnipsEdit FILETYPE', checkForFiletype)<CR>
+" Filetype dependent plugins
+call s:SetupEditConfigMapping('ef', ':edit ~/.vim/ftplugin/<FILETYPE>.vim', v:true)
+call s:SetupEditConfigMapping('eaf', ':edit ~/.vim/after/ftplugin/<FILETYPE>.vim', v:true)
+call s:SetupEditConfigMapping('eef', ':edit ~/.vim/autoload/extra_filetypes/<FILETYPE>.vim', v:true)
+call s:SetupEditConfigMapping('es', ':UltiSnipsEdit <FILETYPE>', v:true)
 
 " Fuzzy finder - fzf (files)
 nnoremap <leader>ff :<C-u>FZF<CR>
