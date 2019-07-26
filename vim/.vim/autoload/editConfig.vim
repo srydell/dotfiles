@@ -42,6 +42,11 @@ function! editConfig#EditConfig(command, checkForFiletype) abort
   let command = a:command
 
   if a:checkForFiletype
+    if empty(&filetype)
+      echohl WarningMsg | echo 'This file has no filetype detected.' | echohl None
+      return
+    endif
+
     let possibleCommands = []
     for ft in split(&filetype, '\.')
       let possibleCommands += [substitute(a:command, 'FILETYPE', ft, 'g')]

@@ -172,16 +172,14 @@ set signcolumn=yes
 " <leader><upperCaseLetter> for potentially harmful commands
 
 " Open buffer and edit .vimrc
-let checkForFiletype=v:false
-nnoremap <leader>ev :call editConfig#EditConfig(':edit $MYVIMRC', checkForFiletype)<CR>
+nnoremap <leader>ev :call editConfig#EditConfig(':edit ~/.vim/vimrc', v:false)<CR>
 
 " Open buffer and edit .tmux.conf
-nnoremap <leader>et :call editConfig#EditConfig(':edit ~/.tmux.conf', checkForFiletype)<CR>
+nnoremap <leader>et :call editConfig#EditConfig(':edit ~/.tmux.conf', v:false)<CR>
 
 " Open buffer and edit filetype specific configs expand
-let checkForFiletype=v:true
-nnoremap <silent> <leader>ef :call editConfig#EditConfig(':edit ~/.vim/ftplugin/FILETYPE.vim', checkForFiletype)<CR>
-nnoremap <silent> <leader>eaf :call editConfig#EditConfig(':edit ~/.vim/after/ftplugin/FILETYPE.vim', checkForFiletype)<CR>
+nnoremap <silent> <leader>ef :call editConfig#EditConfig(':edit ~/.vim/ftplugin/FILETYPE.vim', v:true)<CR>
+nnoremap <silent> <leader>eaf :call editConfig#EditConfig(':edit ~/.vim/after/ftplugin/FILETYPE.vim', v:true)<CR>
 
 " Open a buffer and edit snippets for this filetype
 nnoremap <silent> <leader>es :call editConfig#EditConfig(':UltiSnipsEdit FILETYPE', checkForFiletype)<CR>
