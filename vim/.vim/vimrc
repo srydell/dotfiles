@@ -171,17 +171,20 @@ set signcolumn=yes
 " <leader><lowerCaseLetter> for harmless commands
 " <leader><upperCaseLetter> for potentially harmful commands
 
-" Open split window and edit .vimrc
-nnoremap <leader>ev :split$MYVIMRC<CR>
+" Open buffer and edit .vimrc
+let shouldCallPerFt=v:false
+nnoremap <leader>ev :call utils#EditConfig(':edit $MYVIMRC', shouldCallPerFt)<CR>
 
-" Open split window and edit .tmux.conf
-nnoremap <leader>et :split ~/.tmux.conf<CR>
+" Open buffer and edit .tmux.conf
+nnoremap <leader>et :call utils#EditConfig(':edit ~/.tmux.conf', shouldCallPerFt)<CR>
 
-" Open split window and edit filetype specific configs expand
-nnoremap <silent> <leader>ef :call utils#EditFtplugin()<CR>
+" Open buffer and edit filetype specific configs expand
+let shouldCallPerFt=v:true
+nnoremap <silent> <leader>ef :call utils#EditConfig(':edit ~/.vim/ftplugin/FILETYPE.vim', shouldCallPerFt)<CR>
+nnoremap <silent> <leader>eaf :call utils#EditConfig(':edit ~/.vim/after/ftplugin/FILETYPE.vim', shouldCallPerFt)<CR>
 
-" Open a split and edit snippets for this filetype
-nnoremap <leader>es :UltiSnipsEdit<CR>
+" Open a buffer and edit snippets for this filetype
+nnoremap <silent> <leader>es :call utils#EditConfig(':UltiSnipsEdit FILETYPE', shouldCallPerFt)<CR>
 
 " Fuzzy finder - fzf (files)
 nnoremap <leader>ff :<C-u>FZF<CR>
