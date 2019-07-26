@@ -15,13 +15,16 @@ function! s:getAutocompletedCommand(possibleCommands) abort
     let command = fzf#run({'source': a:possibleCommands, 'down': '40%'})[0]
   else
     " Fallback to inputlist
-    let index = inputlist(['Which command do you want to run? '] + a:possibleCommands)
-    let command = get(a:possibleCommands, index, 'NONE')
 
-    " Error check
-    if command ==# 'NONE'
-      let command = a:possibleCommands[0]
-    endif
+    " Local function to provide autocompletions
+    let g:editConfigCurrentAutcompleteCommands = a:possibleCommands
+    function! ListCommands(ArgLead, CmdLine, CursorPos) abort
+      return g:editConfigCurrentAutcompleteCommands
+    endfunction
+
+    call inputsave()
+    let command = input('Which command do you want to run? <TAB> between them. ', '', 'customlist,ListCommands')
+    call inputrestore()
   endif
 
   return command
@@ -43,14 +46,19 @@ function! editConfig#EditConfig(command, checkForFiletype) abort
     for ft in split(&filetype, '\.')
       let possibleCommands += [substitute(a:command, 'FILETYPE', ft, 'g')]
     endfor
+    " Strictly from my own convention, since I have filetypes as
+    " <vim provided ft>.<my own special ft>
+    " I want it to give autocompletions to my own filetype first
+    call reverse(possibleCommands)
 
     let command = s:getAutocompletedCommand(possibleCommands)
   endif
 
   execute(command)
 
-  " Note: This will only apply the WriteBufferOnLeave
-  "       for the last opened buffer. Close enough.
+  " Note: This assumes that this function will open a new buffer.
+  "       Otherwise this will be applied to the current buffer and will
+  "       (maybe, but probably not) cause damage
   augroup WriteBufferOnLeave
     autocmd! * <buffer>
     autocmd BufLeave <buffer> call s:writeAndQuitIfNotEmpty()
