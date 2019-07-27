@@ -63,14 +63,14 @@ endfunction()
 endsnippet
 
 snippet fnc "function" b
-function(${1:function_name} ${2:args})
+function(${1:function_name})
   # Define the supported set of keywords
-  set(prefix ${3:ARG})
-  set(noValues ${4:ENABLE_STUFF})
-  set(singleValues ${5:TARGET})
-  set(multiValues ${6:SOURCES})
+  set(prefix ${2:ARG})
+  set(noValues ${3:ENABLE_STUFF})
+  set(singleValues ${4:TARGET})
+  set(multiValues ${5:SOURCES})
   # Process the arguments passed in
-  # Can be used e.g. via $3_TARGET
+  # can be used e.g. via $2_TARGET
   cmake_parse_arguments(${prefix}
                         "${noValues}"
                         "${singleValues}"
@@ -82,6 +82,19 @@ endsnippet
 
 snippet m "message" b
 message(${1:STATUS} "${2:${VISUAL}}")$0
+endsnippet
+
+snippet runpython "Setup and run a python custom target" b
+# Generate helpers for the tests
+find_package(Python REQUIRED)
+add_custom_target(
+  ${1:target_name} ALL
+  WORKING_DIRECTORY ${2:${CMAKE_CURRENT_SOURCE_DIR}}
+  COMMAND ${Python_EXECUTABLE} ${3:path/to/python.py}
+  COMMENT
+    "Running command: ${Python_EXECUTABLE} $2/$3"
+  )
+add_dependencies(${4:target_built_after_$1} $1)$0
 endsnippet
 
 snippet fdecl "FetchContent_Declare" b

@@ -34,6 +34,23 @@ else:
     snip.rv = ""`$0
 endsnippet
 
+snippet mod_targetHelpers "Module for creating targets" b
+`mkdir cmake || test ! -f cmake/TargetHelpers.cmake && cp ~/.vim/integrations/templates/cmake/TargetHelpers.cmake cmake/TargetHelpers.cmake`
+include(TargetHelpers)
+
+create_target(TARGET
+              ${1:target_name}
+              ${2:IS_LIBRARY}
+              SOURCES
+              ${3:src/${4:main}.cpp}
+              INCLUDE
+              ${5:include}
+              LINK_LIBRARIES
+              project_warnings
+              project_options
+              ${6:ExternalLib})
+endsnippet
+
 # Skeletons
 snippet _cmakelists "Skeleton for files called CMakeLists.txt" b
 cmake_minimum_required(VERSION `cmake --version | head -n 1 | sed 's/[ a-z]//g' | cut -d '.' -f1-2`)

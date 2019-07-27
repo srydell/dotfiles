@@ -14,7 +14,7 @@ function(create_catch2_test)
   # Define the supported set of keywords
   set(prefix ARG)
   set(singleValues TARGET)
-  set(multiValues SOURCES)
+  set(multiValues SOURCES LINK_LIBRARIES INCLUDE)
   # Process the arguments passed in
   cmake_parse_arguments(${prefix}
                         "${noValues}"
@@ -33,7 +33,16 @@ function(create_catch2_test)
   _create_main_catch2()
 
   add_executable(${ARG_TARGET} ${ARG_SOURCES})
-  target_link_libraries(${ARG_TARGET} PRIVATE ${catch2_main_target})
+  target_link_libraries(${ARG_TARGET}
+                        PRIVATE ${catch2_main_target} ${ARG_LINK_LIBRARIES})
+  if(ARG_INCLUDE)
+    target_include_directories(${ARG_TARGET} PRIVATE ${ARG_INCLUDE})
+  endif()
+  set_target_properties(${ARG_TARGET}
+                        PROPERTIES CXX_STANDARD_REQUIRED
+                                   ON
+                                   CXX_EXTENSIONS
+                                   OFF)
 endfunction()
 
 # NOTE: Internal function that should not be called
