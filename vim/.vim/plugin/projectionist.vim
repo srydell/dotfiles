@@ -1,9 +1,16 @@
 let g:projectionist_heuristics = {
-      \   'etc/rbenv.d/|bin/rbenv-*': {
-      \     'bin/rbenv-*': {
-      \        'type': 'command',
-      \        'template': ['#!/usr/bin/env bash'],
+      \   'test/*.cpp|src/*.cpp|include/*.h': {
+      \     'src/*.cpp': {
+      \       'alternate': 'include/{}.h',
+      \       'type': 'source'
       \     },
-      \     'etc/rbenv.d/*.bash': {'type': 'hook', 'skeleton': 'test'}
+      \     'test/*.cpp': {
+      \       'alternate': 'src/{}.h',
+      \       'type': 'source'
+      \     },
+      \     'include/*.h': {
+      \       'alternate': 'src/{}.cpp',
+      \       'type': 'header'
+      \     },
       \   }
       \ }
