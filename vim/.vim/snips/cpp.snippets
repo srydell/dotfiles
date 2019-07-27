@@ -185,10 +185,7 @@ endsnippet
 
 # Skeletons
 snippet _header "Header skeleton file" b
-#ifndef `!v toupper(expand("%:t:r"))`_H
-#define `!v toupper(expand("%:t:r"))`_H
+#pragma once
 
-${0}
-
-#endif
+$0
 endsnippet
