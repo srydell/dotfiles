@@ -1,3 +1,6 @@
+let g:ale_fixers = {'cmake': ['cmakeformat']}
+let g:ale_fix_on_save = 1
+
 " Appear in the left bar
 let g:ale_sign_error = '>>'
 let g:ale_sign_warning = '--'
