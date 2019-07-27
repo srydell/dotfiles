@@ -2,6 +2,6 @@
 function! extra_filetypes#cpp#set_special_filetype() abort
   let extra_ft = integrations#ftdetect#runftdetectBinary(expand('%:p'), 'cpp')
   if len(extra_ft) != 0
-    execute('setlocal filetype=cpp.' . extra_ft)
+    execute('setlocal filetype+=.' . extra_ft)
   endif
 endfunction

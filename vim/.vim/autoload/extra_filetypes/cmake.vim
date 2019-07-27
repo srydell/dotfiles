@@ -1,8 +1,22 @@
 " This function should be called from an autocmd
 function! extra_filetypes#cmake#set_special_filetype() abort
   if expand('%:t') ==# 'CMakeLists.txt'
-    setlocal filetype=cmake.cmakelists
+
+    " Check upwards in the directories after a CMakeLists.txt file
+    let directories = split(expand('%:p'), '/')[:-2]
+    while !empty(directories)
+      " Go up one level
+      let directories = directories[:-2]
+      if filereadable(filereadable('/' . join(directories, '/') . '/CMakeLists.txt'))
+        " Found a CMakeLists.txt on a lower directory level
+        " than the one opened
+        setlocal filetype+=.sub_cmakelists
+        return
+      endif
+    endwhile
+
+    setlocal filetype+=.cmakelists
   else
-    setlocal filetype=cmake.cmake_module
+    setlocal filetype+=.cmake_module
   endif
 endfunction
