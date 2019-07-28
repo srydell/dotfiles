@@ -9,6 +9,7 @@ let g:projectionist_heuristics = {
       \     },
       \     'test/*.cpp': {
       \       'alternate': 'src/{}.cpp',
+      \       'skeleton': 'test',
       \       'type': 'source'
       \     },
       \     'include/*.h': {
