@@ -1,0 +1,31 @@
+# catch2.snippets - Snippets for catch2 file type
+
+snippet r "REQUIRE" b
+REQUIRE(${1:1 == 1});$0
+endsnippet
+
+snippet test "Test case" b
+TEST_CASE("${1:Brief about the test}", "[${2:funcName}]") {
+	$0
+}
+endsnippet
+
+snippet _test "Test skeleton for catch2" b
+#include "${1:`!p
+import pathlib
+headers = [h.name for h in pathlib.Path("include/").glob("*.h")]
+if headers:
+    if fn.split('.')[0] + '.h' in headers:
+        # Found a header file with the same name as the test file.
+        # It should probably be included
+        snip.rv = fn.split('.')[0] + '.h'
+    else:
+        # Default to returning the first found
+        snip.rv = headers[0]
+`}"
+#include <catch2/catch.hpp>
+
+TEST_CASE("${2:Brief about the test}", "[${3:funcName}]") {
+	$0
+}
+endsnippet
