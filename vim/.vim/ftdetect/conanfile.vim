@@ -1,1 +1,1 @@
-autocmd BufRead,BufNewFile conanfile.txt setlocal filetype=text.conanfile_txt
+autocmd BufRead,BufNewFile conanfile.txt setlocal filetype+=.conanfile_txt

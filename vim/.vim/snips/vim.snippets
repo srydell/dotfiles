@@ -30,3 +30,7 @@ if ${1:expr}
 	${0:${VISUAL}}
 endif
 endsnippet
+
+snippet _ftdetect "An ftdetect vim script" b
+autocmd ${1:BufRead,BufNewFile} ${2:conanfile.txt} ${3:setlocal filetype+=.${4:conanfile_txt}}$0
+endsnippet
