@@ -18,6 +18,7 @@ let g:projectionist_heuristics = {
       \       'type': 'header'
       \     },
       \   },
+      \
       \   'ftdetect/*.vim': {
       \     'ftdetect/*.vim': {
       \       'skeleton': 'ftdetect'
