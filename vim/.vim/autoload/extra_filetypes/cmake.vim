@@ -7,7 +7,7 @@ function! extra_filetypes#cmake#set_special_filetype() abort
     while !empty(directories)
       " Go up one level
       let directories = directories[:-2]
-      if filereadable(filereadable('/' . join(directories, '/') . '/CMakeLists.txt'))
+      if filereadable('/' . join(directories, '/') . '/CMakeLists.txt')
         " Found a CMakeLists.txt on a lower directory level
         " than the one opened
         setlocal filetype+=.sub_cmakelists
