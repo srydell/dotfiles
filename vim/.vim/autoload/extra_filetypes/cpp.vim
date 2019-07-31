@@ -15,10 +15,6 @@ function! extra_filetypes#cpp#set_special_filetype() abort
 endfunction
 
 function! extra_filetypes#cpp#check_for_similar_files() abort
-  " For all cpp files in the opened directory
-  for f in split(globpath(expand('%:h'), '*.{cpp,cxx,cc}'), '\n')
-    if s:trySetDetectedFt(f)
-      return
-    endif
-  endfor
+  " All cpp files in the opened directory
+  call s:trySetDetectedFt(split(globpath(expand('%:h'), '*.{cpp,cxx,cc}'), '\n'))
 endfunction
