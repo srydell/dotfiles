@@ -2,10 +2,10 @@
 /*
 
 # Ignore all files named .DS_Store or ending with .log
-**.log
-**.pyc
-**/.DS_Store
-**/__pycache__/
+*.log
+*.pyc
+.DS_Store
+__pycache__/
 
 # Exceptions
 # Directories
