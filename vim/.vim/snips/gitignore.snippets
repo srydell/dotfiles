@@ -1,0 +1,28 @@
+# gitignore.snippets - Snippets for gitignore file type
+
+snippet _skel "Skeleton for .gitignore" b
+# Ignore everything
+/*
+
+# Ignore all files named .DS_Store or ending with .log
+.DS_Store
+.log
+
+# Except these
+# Files
+!.gitignore
+`!p
+import pathlib
+exludes = ['tags']
+files = [f"!{p.name}" for p in pathlib.Path('.').glob('*') if p.is_file() and p.name not in exludes]
+snip.rv = '\n'.join(sorted(files))
+`
+
+# Directories
+`!p
+import pathlib
+exludes = ['.git']
+directories = [f"!{p.name}" for p in pathlib.Path('.').glob('*') if p.is_dir() and p.name not in exludes]
+snip.rv = '\n'.join(sorted(directories))
+`
+endsnippet
