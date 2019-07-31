@@ -2,25 +2,35 @@
 " Depending on which filetype is in the current buffer,
 " different search engines will be used
 function! helpDocs#GetHelpDocs(browser, currentOS) abort
+  " Take the least specific filetype
+  " Allowing the user to have special filetypes such as 'cmake.cmakelists'
+  let l:filetype = split(&filetype, '\.')[0]
+
   " Special case for vim
-  if &filetype ==# 'vim'
+  if l:filetype ==# 'vim'
     execute(':help ' . expand('<cword>'))
     return
   endif
+
+  " Optimization to only call system once
+  if !exists('g:has_cmake_version_string')
+    " Ugly trick to remove ^@ at the end of system() returned string
+    let g:has_cmake_version_string = systemlist("cmake --version | head -n 1 | sed 's/[ a-z]//g' | cut -d '.' -f1-2")[0]
+  endif
+
   " Depending on which filetype, use different search engines
-  " OBS: Use ' instead of " to tell vim to use the string AS IS.
   let s:filetypes_and_actions = {
         \ 'cpp': 'http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=SEARCHTERM&button=',
-        \ 'cmake': 'https://cmake.org/cmake/help/v3.12/search.html?q=SEARCHTERM&check_keywords=yes&area=default',
+        \ 'cmake': 'https://cmake.org/cmake/help/v' . g:has_cmake_version_string . '/search.html?q=SEARCHTERM&check_keywords=yes&area=default',
         \ 'default': 'https://duckduckgo.com/?q=FILETYPE+SEARCHTERM&ia=qa',
         \}
 
   " Get the url to open in the browser
-  if has_key(s:filetypes_and_actions, &filetype)
-    let s:urlTemplate = s:filetypes_and_actions[&filetype]
+  if has_key(s:filetypes_and_actions, l:filetype)
+    let s:urlTemplate = s:filetypes_and_actions[l:filetype]
   else
     " Default: Search duckduckgo with filetype wordUnderCursor
-    let s:urlTemplate = substitute(s:filetypes_and_actions['default'], 'FILETYPE', &filetype, 'g')
+    let s:urlTemplate = substitute(s:filetypes_and_actions['default'], 'FILETYPE', l:filetype, 'g')
   endif
 
   " Expand the word under the cursor and
