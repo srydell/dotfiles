@@ -1,7 +1,7 @@
 " Helper function
 
 function! s:trySetDetectedFt(filepath) abort
-  let extra_ft = integrations#ftdetecter#runftdetecter(a:filepath, 'cpp')
+  let extra_ft = integrations#ftdetector#runftdetector(a:filepath, 'cpp')
   if len(extra_ft) != 0
     execute('setlocal filetype+=.' . extra_ft)
     return v:true
