@@ -7,7 +7,7 @@ let g:projectionist_heuristics = {
       \       ],
       \       'type': 'source'
       \     },
-      \     'test/*.cpp': {
+      \     'tests/*.cpp': {
       \       'alternate': 'src/{}.cpp',
       \       'skeleton': 'test',
       \       'type': 'source'

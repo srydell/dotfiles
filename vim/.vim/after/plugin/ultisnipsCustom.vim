@@ -1,7 +1,7 @@
 " Modified by Simon Rydell originally from Noah Frederick
 
 " Check if UltiSnips is loaded
-if !exists('g:UltiSnipsExpandTrigger') || !has('python') && !has('python3')
+if !(exists('g:UltiSnipsExpandTrigger') || (has('python') && has('python3')))
   finish
 endif
 

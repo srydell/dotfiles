@@ -179,6 +179,7 @@ endfunction
 " Open buffer and edit 
 call s:SetupEditConfigMapping('ev', ':edit ~/.vim/vimrc', v:false)
 call s:SetupEditConfigMapping('et', ':edit ~/.tmux.conf', v:false)
+call s:SetupEditConfigMapping('ep', ':edit ~/.vim/plugin/projectionist.vim', v:false)
 
 " Filetype dependent plugins
 call s:SetupEditConfigMapping('ef', ':edit ~/.vim/ftplugin/<FILETYPE>.vim', v:true)

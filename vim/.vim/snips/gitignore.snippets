@@ -4,17 +4,17 @@ snippet _skel "Skeleton for .gitignore" b
 # Ignore everything
 /*
 
-# Ignore all files named .DS_Store or ending with .log
+# Ignore all files named (wherever they are):
 .DS_Store
 .log
 
 # Except these
 # Files
-!.gitignore
 `!p
 import pathlib
 exludes = ['tags']
 files = [f"!{p.name}" for p in pathlib.Path('.').glob('*') if p.is_file() and p.name not in exludes]
+files.append('!.gitignore')
 snip.rv = '\n'.join(sorted(files))
 `
 
