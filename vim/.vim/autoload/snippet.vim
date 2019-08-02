@@ -1,4 +1,4 @@
-" Modified by Simon Rydell originally from Noah Frederick
+" Modified by Simon Rydell originally by Noah Frederick
 
 " Try to expand the snippet named _skel
 function! s:try_insert(skel)
