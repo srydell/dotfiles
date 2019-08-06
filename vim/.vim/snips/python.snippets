@@ -186,26 +186,16 @@ $0
 endsnippet
 
 snippet _unittest "Skeleton for unit testing" b
-# Assume module to test is in parent directory
-import os, sys
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir)
-
 import unittest
-import `!v matchlist(expand("%:t"), 'test_\?\(\w\+\).py')[1]`
+import `!p snip.rv = fn[5:-3]`
 
-class TestGraphs(unittest.TestCase):
+class Test`!p snip.rv = fn[5:-3].title()`(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls):
-		"""Runs at the start of the test
+		${1:pass}
 
-		:cls: class
-		"""
-
-	def test_${1:function}(self):
-		`!p snip.rv = triple_quotes(snip)`${2:TODO: Docstring for $1.}`!p snip.rv = triple_quotes(snip)`
-		${2:pass}
+	def test_${2:function}(self):
+		${3:pass}
 
 if __name__ == '__main__':
 	unittest.main()
