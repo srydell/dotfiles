@@ -80,11 +80,10 @@ case "$(uname)" in
 		# Let brew programs come first
 		export PATH="/usr/local/sbin:$PATH"
 		export PATH="/opt/local/bin:$PATH"
-		# ROOT CERN plotting
-		export ROOTSYS=/usr/local/root
-		export PATH=$ROOTSYS/bin:$PATH
-		export PYTHONDIR=$ROOTSYS
-		export LD_LIBRARY_PATH=$ROOTSYS/lib:$PYTHONDIR/lib:$ROOTSYS/bindings/pyroot:$LD_LIBRARY_PATH
-		export PYTHONPATH=$ROOTSYS/lib:$PYTHONPATH:$ROOTSYS/bindings/pyroot
+
+		# Use llvm clang
+		export PATH="/usr/local/opt/llvm/bin:$PATH"
+		export LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"
+		export CPPFLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/llvm/include/c++/v1/"
 		;;
 esac
