@@ -187,6 +187,9 @@ call s:SetupEditConfigMapping('eaf', ':edit ~/.vim/after/ftplugin/{filetype}.vim
 call s:SetupEditConfigMapping('eef', ':edit ~/.vim/autoload/extra_filetypes/{filetype}.vim')
 call s:SetupEditConfigMapping('es', ':UltiSnipsEdit {filetype}')
 
+" Compiler
+call s:SetupEditConfigMapping('ec', ':edit ~/.vim/compiler/{compiler}')
+
 " Fuzzy finder - fzf (files)
 nnoremap <leader>ff :<C-u>FZF<CR>
 

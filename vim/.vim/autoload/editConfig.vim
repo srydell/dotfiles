@@ -12,9 +12,16 @@ function! s:getAutocompletedCommand(possibleCommands) abort
 
   let command = ''
   if exists('*fzf#run')
-    let command = fzf#run({'source': a:possibleCommands, 'down': '40%'})[0]
+    let commands = fzf#run({'source': a:possibleCommands, 'down': '40%'})
+    " Handle if the user presses <C-C> during completion
+    if len(commands) != 0
+      let command = commands[0]
+    else
+      " Execute nothing
+      let command = ''
+    endif
   else
-    " Fallback to inputlist
+    " Fallback to inputlist when fzf is not available
 
     " Local function to provide autocompletions
     let g:editConfigCurrentAutcompleteCommands = a:possibleCommands
@@ -25,6 +32,7 @@ function! s:getAutocompletedCommand(possibleCommands) abort
     call inputsave()
     let command = input('Which command do you want to run? <TAB> between them. ', '', 'customlist,ListCommands')
     call inputrestore()
+    unlet g:editConfigCurrentAutcompleteCommands
   endif
 
   return command
@@ -37,27 +45,27 @@ function! editConfig#EditConfig(command) abort
   " * Any buffers entered will be saved and deleted upon leaving
   "
   " :command: String - Will be called with execute.
-  let command = a:command
+  let extraCommands = []
 
   let filetypeToken = '{filetype}'
-  if match(command, filetypeToken)
-    if empty(&filetype)
-      echohl WarningMsg | echo 'This file has no filetype detected.' | echohl None
-      return
-    endif
-
-    let possibleCommands = []
+  if match(a:command, filetypeToken) != -1
     for ft in split(&filetype, '\.')
-      let possibleCommands += [substitute(a:command, '{filetype}', ft, 'g')]
+      let extraCommands += [substitute(a:command, filetypeToken, ft, 'g')]
     endfor
     " Strictly from my own convention, since I have filetypes as
     " <vim provided ft>.<my own special ft>
     " I want it to give autocompletions to my own filetype first
-    call reverse(possibleCommands)
-
-    let command = s:getAutocompletedCommand(possibleCommands)
+    call reverse(extraCommands)
   endif
 
+  let compilerToken = '{compiler}'
+  if match(a:command, compilerToken) != -1
+    " Handle not defined b:current_compiler
+    let compiler = exists('b:current_compiler') ? b:current_compiler : ''
+    let extraCommands += [substitute(a:command, compilerToken, compiler, 'g')]
+  endif
+
+  let command = empty(extraCommands) ? a:command : s:getAutocompletedCommand(extraCommands)
   execute(command)
 
   " Note: This assumes that this function will open a new buffer.
