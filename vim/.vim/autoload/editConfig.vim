@@ -7,6 +7,7 @@ endfunction
 
 function! s:getAutocompletedCommand(possibleCommands) abort
   if len(a:possibleCommands) == 1
+    " Nothing to autocomplete
     return a:possibleCommands[0]
   endif
 
@@ -14,12 +15,7 @@ function! s:getAutocompletedCommand(possibleCommands) abort
   if exists('*fzf#run')
     let commands = fzf#run({'source': a:possibleCommands, 'down': '40%'})
     " Handle if the user presses <C-C> during completion
-    if len(commands) != 0
-      let command = commands[0]
-    else
-      " Execute nothing
-      let command = ''
-    endif
+    let command = len(commands) != 0 ? commands[0] : ''
   else
     " Fallback to inputlist when fzf is not available
 
@@ -30,8 +26,12 @@ function! s:getAutocompletedCommand(possibleCommands) abort
     endfunction
 
     call inputsave()
-    let command = input('Which command do you want to run? <TAB> between them. ', '', 'customlist,ListCommands')
+    let command = input('Which command do you want to run? <TAB> between them. ',
+          \ a:possibleCommands[-1],
+          \ 'customlist,ListCommands')
     call inputrestore()
+
+    " Lets not clutter
     unlet g:editConfigCurrentAutcompleteCommands
   endif
 
@@ -40,8 +40,9 @@ endfunction
 
 function! editConfig#EditConfig(command) abort
   " Call a:command with execute() with caveats:
-  " * If a:checkForFiletype is true a:command will have the keyword {filetype} replaced with the current filetype
-  "   and executed as many times as there are filetypes (e.g. filetype=cmake.cmake_module)
+  " * a:command will be searched for:
+  "     * {filetype} - Replaced with all filetypes (might be more separated with a .)
+  "     * {compiler} - Replaced with b:current_compiler if exists, otherwise ''
   " * Any buffers entered will be saved and deleted upon leaving
   "
   " :command: String - Will be called with execute.
@@ -65,7 +66,9 @@ function! editConfig#EditConfig(command) abort
     let extraCommands += [substitute(a:command, compilerToken, compiler, 'g')]
   endif
 
-  let command = empty(extraCommands) ? a:command : s:getAutocompletedCommand(extraCommands)
+  let command = empty(extraCommands) ?
+        \ a:command :
+        \ s:getAutocompletedCommand(extraCommands)
   execute(command)
 
   " Note: This assumes that this function will open a new buffer.
@@ -76,4 +79,3 @@ function! editConfig#EditConfig(command) abort
     autocmd BufLeave <buffer> call s:writeAndQuitIfNotEmpty()
   augroup END
 endfunction
-
