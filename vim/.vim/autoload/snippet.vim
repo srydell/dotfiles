@@ -42,22 +42,6 @@ function! snippet#insert_skeleton() abort
     endfor
   endif
 
-  " Special filenames and corresponding snippets
-  let s:filenames_and_snippets = {
-        \ 'README.md': 'readme',
-        \}
-
-  let current_filename = expand('%:t')
-  for pattern in keys(s:filenames_and_snippets)
-    let match = matchstr(current_filename, pattern)
-    if !empty(match)
-      if s:try_insert(s:filenames_and_snippets[pattern])
-        call s:install_undo_workaround()
-        return
-      endif
-    endif
-  endfor
-
   " If the current filename is in s:filenames_and_snippets,
   " then insert that snippet,
   " otherwise try generic _skel template

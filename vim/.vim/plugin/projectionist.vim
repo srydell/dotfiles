@@ -1,5 +1,5 @@
 let g:projectionist_heuristics = {
-      \   'tests/*.cpp|src/*.cpp|include/*.h': {
+      \   '*': {
       \     'src/*.cpp': {
       \       'alternate': [
       \         'test/{}.cpp',
@@ -12,27 +12,34 @@ let g:projectionist_heuristics = {
       \       'skeleton': 'test',
       \       'type': 'source'
       \     },
-      \     'include/*.h': {
+      \     '*.h': {
       \       'alternate': 'src/{}.cpp',
       \       'skeleton': 'header',
       \       'type': 'header'
       \     },
-      \   },
-      \
-      \   'ftdetect/*.vim': {
-      \     'ftdetect/*.vim': {
-      \       'skeleton': 'ftdetect'
-      \     },
-      \   },
-      \   '*': {
-      \     'test_*.py': {
-      \       'skeleton': 'unittest'
+      \     'CMakeLists.txt': {
+      \       'skeleton': 'cmakelists'
       \     },
       \     'conanfile.txt': {
       \       'skeleton': 'conanfile'
       \     },
-      \     'CMakeLists.txt': {
-      \       'skeleton': 'cmakelists'
+      \
+      \     'README.md': {
+      \       'skeleton': 'readme'
+      \     },
+      \
+      \     'plugin/*.vim': {
+      \       'skeleton': 'plugin'
+      \     },
+      \     'autoload/*.vim': {
+      \       'skeleton': 'autoload'
+      \     },
+      \     'ftdetect/*.vim': {
+      \       'skeleton': 'ftdetect'
+      \     },
+      \
+      \     'test_*.py': {
+      \       'skeleton': 'unittest'
       \     },
       \   }
       \ }
