@@ -1,30 +1,23 @@
-" This file builds everything in the statusbar. It is sourced in ~/.vimrc
-
 " Enable statusline
-set laststatus=2
+setlocal laststatus=2
 
 " --- Statusline ---
 " Path to file
-set statusline=%f
+setlocal statusline=%f
 
 " Separator
-set statusline+=\ -\ 
+setlocal statusline+=\ -\ 
 
 " Label
 " Filetype of the file
-set statusline+=%y
+setlocal statusline+=%y
 
 " Switch to the right side
-set statusline+=%=
-
-" Check session tracking
-if exists('*ObsessionStatus')
-  set statusline+=%{ObsessionStatus()}
-endif
+setlocal statusline+=%=
 
 " Current line
-set statusline+=%l
+setlocal statusline+=%l
 " Separator
-set statusline+=/
+setlocal statusline+=/
 " Total lines
-set statusline+=%L
+setlocal statusline+=%L
