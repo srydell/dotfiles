@@ -17,6 +17,7 @@ call minpac#init()
 
 " Snippets
 call minpac#add('SirVer/ultisnips')
+call minpac#add('srydell/vim-template')
 
 " Autocompletion
 " NOTE: Arch Linux specific: ncurses5-compat-libs
