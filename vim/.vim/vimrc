@@ -248,6 +248,10 @@ nnoremap <silent> ]b :bnext<CR>
 nnoremap <silent> [B :bfirst<CR>
 nnoremap <silent> ]B :blast<CR>
 
+" Move through the valid compilers. Set by g:valid_compilers
+nnoremap <silent> ]c :CompilerNext<CR>
+nnoremap <silent> [c :CompilerPrevious<CR>
+
 " Move through the loclist
 nnoremap <silent> <leader>l :call utils#ToggleList("Location List", 'l')<CR>
 nnoremap <silent> [l :lprevious<CR>

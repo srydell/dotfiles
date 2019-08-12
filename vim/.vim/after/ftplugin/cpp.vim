@@ -2,6 +2,9 @@ if !exists('current_compiler')
   compiler cmake_ninja
 endif
 
+" Default compilers. Use binding to toggle between them
+let g:valid_compilers = ['cmake_ninja', 'gcc']
+
 function! s:runClangFormat()
   let l:formatdiff = 1
   py3file ~/.vim/integrations/clang-format.py
@@ -9,8 +12,7 @@ endfunction
 
 if executable('clang-format')
   " Check if the helper is downloaded
-  let clang_format_file = expand('~/.vim/integrations/clang-format.py')
-  if !filereadable(clang_format_file)
+  if !filereadable(expand('~/.vim/integrations/clang-format.py'))
     call integrations#installation#getClangHelper()
   endif
 
