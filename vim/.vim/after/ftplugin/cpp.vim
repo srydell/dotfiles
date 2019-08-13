@@ -1,9 +1,13 @@
-if !exists('current_compiler')
-  compiler cmake_ninja
+" Default compilers. Use binding to toggle between them
+if expand('%:p:h:t') ==# 'prototypes'
+  let g:valid_compilers = ['proto_clang++', 'proto_g++']
+else
+  let g:valid_compilers = ['cmake_ninja']
 endif
 
-" Default compilers. Use binding to toggle between them
-let g:valid_compilers = ['cmake_ninja', 'gcc']
+if !exists('current_compiler')
+  execute('compiler ' . g:valid_compilers[0])
+endif
 
 function! s:runClangFormat()
   let l:formatdiff = 1
