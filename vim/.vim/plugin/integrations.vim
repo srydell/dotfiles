@@ -13,7 +13,7 @@ if has('python3') && executable('python3')
   endif
 
   if !isdirectory(g:integrations_virtualenv)
-    call integrations#installation#getPythonPackages()
+    call integrations#installation#GetPythonPackages()
   endif
 
   " Black formatting for python

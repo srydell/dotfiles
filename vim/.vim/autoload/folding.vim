@@ -13,7 +13,7 @@ let s:small_l='ℓ'
 "
 "   »··[2ℓ]··: source $HOME/.vim/autoload/folding.vim···································
 "
-function! folding#foldtext() abort
+function! folding#FoldText() abort
 
   " Get the number of lines folded x and concatenate to [xl]
   let l:lines='[' . (v:foldend - v:foldstart + 1) . s:small_l . ']'

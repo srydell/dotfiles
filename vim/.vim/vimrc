@@ -60,7 +60,7 @@ if has('folding')
 
   " Start unfolded
   set foldlevelstart=2
-  set foldtext=folding#foldtext()
+  set foldtext=folding#FoldText()
 endif
 
 " Show absolute current row and relative rows from that
@@ -234,7 +234,7 @@ nnoremap <silent> <leader>h :call helpDocs#GetHelpDocs(g:browser, g:currentOS)<C
 nnoremap <silent> <leader>tc :VimuxPromptCommand<CR>
 
 " Run last command executed by VimuxRunCommand ( [t]mux [r]un )
-nnoremap <silent> <leader>tr :call tmux#vimuxRunLastCommandIfExists()<CR>
+nnoremap <silent> <leader>tr :call tmux#VimuxRunLastCommandIfExists()<CR>
 
 " Inspect runner pane ( [t]mux [i]nspect )
 nnoremap <silent> <leader>ti :VimuxInspectRunner<CR>

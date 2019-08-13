@@ -1,4 +1,4 @@
-function! integrations#fmdetect#run_fmdetect(path, initialFiletype) abort
+function! integrations#fmdetect#RunFmdetect(path, initialFiletype) abort
   let fm_binary = g:integrations_dir . '/bin/fmdetect'
   " Allow multiple files to be read in one system call
   let parsed_paths = type(a:path) == type([]) ? join(a:path, ',') : a:path

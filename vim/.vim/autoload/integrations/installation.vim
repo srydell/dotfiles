@@ -2,7 +2,7 @@ if !exists('g:integrations_dir')
   let g:integrations_dir = expand('~/.vim/integrations')
 endif
 
-function! integrations#installation#getPythonPackages() abort
+function! integrations#installation#GetPythonPackages() abort
   " Install python packages and link them to g:integrations_dir bin
   " NOTE: Relies on g:integrations_dir and g:integrations_virtualenv
   "       being set beforehand
@@ -35,7 +35,7 @@ function! integrations#installation#getPythonPackages() abort
   endfor
 endfunction
 
-function! integrations#installation#getClangHelper() abort
+function! integrations#installation#GetClangHelper() abort
   let url = 'https://llvm.org/svn/llvm-project/cfe/trunk/tools/clang-format/clang-format.py'
 
   execute '!wget --directory-prefix=' . g:integrations_dir . ' ' . url
