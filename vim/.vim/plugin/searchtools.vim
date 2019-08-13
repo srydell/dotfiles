@@ -1,3 +1,8 @@
+if exists('g:loaded_plugin_searchtools')
+  finish
+endif
+let g:loaded_plugin_searchtools = 1
+
 let g:grepper = {}
 " Search programs used.
 let g:grepper.tools = ['rg', 'grep', 'git']

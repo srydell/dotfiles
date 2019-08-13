@@ -1,3 +1,8 @@
+if exists('g:loaded_plugin_statusline')
+  finish
+endif
+let g:loaded_plugin_statusline = 1
+
 " Enable statusline
 setlocal laststatus=2
 

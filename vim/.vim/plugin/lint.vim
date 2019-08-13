@@ -1,3 +1,8 @@
+if exists('g:loaded_plugin_lint')
+  finish
+endif
+let g:loaded_plugin_lint = 1
+
 let g:ale_fixers = {'cmake': ['cmakeformat']}
 let g:ale_fix_on_save = 1
 

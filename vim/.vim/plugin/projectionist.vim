@@ -1,3 +1,8 @@
+if exists('g:loaded_plugin_projectionist')
+  finish
+endif
+let g:loaded_plugin_projectionist = 1
+
 let g:projectionist_heuristics = {
       \   '*': {
       \     'src/*.cpp': {

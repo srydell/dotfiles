@@ -1,3 +1,8 @@
+if exists('g:loaded_plugin_autocomplete')
+  finish
+endif
+let g:loaded_plugin_autocomplete = 1
+
 " This file is used for autocompletion config.
 " Mostly for CocVim 
 
