@@ -1,7 +1,7 @@
-if exists('g:loaded_plugin_projectionist')
+if exists('g:loaded_srydell_projectionist')
   finish
 endif
-let g:loaded_plugin_projectionist = 1
+let g:loaded_srydell_projectionist = 1
 
 let g:projectionist_heuristics = {
       \   '*': {

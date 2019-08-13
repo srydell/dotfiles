@@ -1,7 +1,7 @@
-if exists('g:loaded_plugin_snippets')
+if exists('g:loaded_srydell_snippets')
   finish
 endif
-let g:loaded_plugin_snippets = 1
+let g:loaded_srydell_snippets = 1
 
 " Where Ultisnips searches for snippet files
 let g:UltiSnipsSnippetDirectories = ['~/.vim/snips', 'snips']

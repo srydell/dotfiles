@@ -1,7 +1,7 @@
-if exists('g:loaded_plugin_lint')
+if exists('g:loaded_srydell_lint')
   finish
 endif
-let g:loaded_plugin_lint = 1
+let g:loaded_srydell_lint = 1
 
 let g:ale_fixers = {'cmake': ['cmakeformat']}
 let g:ale_fix_on_save = 1

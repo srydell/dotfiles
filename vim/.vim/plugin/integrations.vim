@@ -1,7 +1,7 @@
-if exists('g:loaded_plugin_integrations')
+if exists('g:loaded_srydell_integrations')
   finish
 endif
-let g:loaded_plugin_integrations = 1
+let g:loaded_srydell_integrations = 1
 
 " This is all the general options for integrations
 " or 'things that tools used from vim needs'

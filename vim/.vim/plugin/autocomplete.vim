@@ -1,7 +1,7 @@
-if exists('g:loaded_plugin_autocomplete')
+if exists('g:loaded_srydell_autocomplete')
   finish
 endif
-let g:loaded_plugin_autocomplete = 1
+let g:loaded_srydell_autocomplete = 1
 
 " This file is used for autocompletion config.
 " Mostly for CocVim 

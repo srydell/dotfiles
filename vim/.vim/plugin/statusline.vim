@@ -1,7 +1,7 @@
-if exists('g:loaded_plugin_statusline')
+if exists('g:loaded_srydell_statusline')
   finish
 endif
-let g:loaded_plugin_statusline = 1
+let g:loaded_srydell_statusline = 1
 
 " Enable statusline
 setlocal laststatus=2

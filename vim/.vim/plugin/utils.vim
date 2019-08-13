@@ -1,7 +1,7 @@
-if exists('g:loaded_plugin_utils')
+if exists('g:loaded_srydell_utils')
   finish
 endif
-let g:loaded_plugin_utils = 1
+let g:loaded_srydell_utils = 1
 
 " Disable undo file when in tmp
 " (so no passwords are accidentally saved in undodir)
