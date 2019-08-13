@@ -51,6 +51,6 @@ snippet _autoload "An autoload vim script" b
 if exists('g:autoloaded_srydell_`!v expand('%:t:r')`')
   finish
 endif
-let g:autoloaded_`!v expand('%:t:r')` = 1
+let g:autoloaded_srydell_`!v expand('%:t:r')` = 1
 $0
 endsnippet

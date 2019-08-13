@@ -1,3 +1,8 @@
+if exists('g:autoloaded_srydell_compilers')
+  finish
+endif
+let g:autoloaded_srydell_compilers = 1
+
 function! compilers#StepThroughCompilers(step) abort
   if type(a:step) != type(0)
     echoerr 'Input must be a number. Got: ' . a:step

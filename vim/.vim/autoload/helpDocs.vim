@@ -1,3 +1,8 @@
+if exists('g:autoloaded_srydell_helpDocs')
+  finish
+endif
+let g:autoloaded_srydell_helpDocs = 1
+
 " Function to open a search for the word under the cursor.
 " Depending on which filetype is in the current buffer,
 " different search engines will be used

@@ -1,3 +1,8 @@
+if exists('g:autoloaded_srydell_installation')
+  finish
+endif
+let g:autoloaded_srydell_installation = 1
+
 if !exists('g:integrations_dir')
   let g:integrations_dir = expand('~/.vim/integrations')
 endif

@@ -1,3 +1,8 @@
+if exists('g:autoloaded_srydell_folding')
+  finish
+endif
+let g:autoloaded_srydell_folding = 1
+
 scriptencoding utf-8
 
 " So that a terminal without utf-8 can read the code

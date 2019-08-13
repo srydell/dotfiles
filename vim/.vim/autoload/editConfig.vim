@@ -1,3 +1,8 @@
+if exists('g:autoloaded_srydell_editConfig')
+  finish
+endif
+let g:autoloaded_srydell_editConfig = 1
+
 function! s:WriteAndQuitIfNotEmpty() abort
   if line('$') > 1 && getline(1) !=# ''
     write

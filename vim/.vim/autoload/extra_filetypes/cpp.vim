@@ -1,5 +1,9 @@
-" Helper function
+if exists('g:autoloaded_srydell_cpp')
+  finish
+endif
+let g:autoloaded_srydell_cpp = 1
 
+" Helper function
 function! s:TrySetDetectedFt(filepath) abort
   if len(a:filepath) == 0
     return

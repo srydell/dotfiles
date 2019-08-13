@@ -1,3 +1,8 @@
+if exists('g:autoloaded_srydell_utils')
+  finish
+endif
+let g:autoloaded_srydell_utils = 1
+
 function! s:GetBufferList() abort
   redir =>buflist
   silent! buffers!
