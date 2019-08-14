@@ -1,5 +1,5 @@
 " Default compilers. Use binding to toggle between them
-if match(expand('%:p'), 'prototypes') != -1
+if match(expand('%:p'), '\Cproto\(type\)\?s\?') != -1
   let g:valid_compilers = ['proto_clang++', 'proto_g++']
 else
   let g:valid_compilers = ['cmake_ninja']
