@@ -6,8 +6,38 @@ let current_compiler = 'proto_g++'
 let s:cpo_save = &cpoptions
 set cpoptions&vim
 
+let s:flags = [
+      \ '-Wall',
+      \ '-Werror',
+      \ '-Wextra',
+      \ '-Wshadow',
+      \ '-Wnon-virtual-dtor',
+      \ '-Wold-style-cast',
+      \ '-Wcast-align',
+      \ '-Wunused',
+      \ '-Woverloaded-virtual',
+      \ '-Wpedantic',
+      \ '-Wconversion',
+      \ '-Wsign-conversion',
+      \ '-Wnull-dereference',
+      \ '-Wdouble-promotion',
+      \ '-Wdate-time',
+      \ '-Wformat=2',
+      \
+      \ '-Wmisleading-indentation',
+      \ '-Wduplicated-cond',
+      \ '-Wduplicated-branches',
+      \ '-Wlogical-op',
+      \ '-Wuseless-cast',
+      \ ]
+
+" Create bin
 CompilerSet makeprg=mkdir\ \-p\ build/bin
+" Compile file to bin
 CompilerSet makeprg+=\ \&\&\ g\+\+\ \-std\=c\+\+17\ \-O3\ \-o\ \./build/bin/%:t:r\ %:p
+" Set flags
+execute('CompilerSet makeprg+=\ ' . join(s:flags, '\ '))
+" If there is an executable, run it
 CompilerSet makeprg+=\ \&\&\ test\ \-x\ \./build/bin/%:t:r\ \&\&\ \./build/bin/%:t:r
 
 CompilerSet errorformat=
