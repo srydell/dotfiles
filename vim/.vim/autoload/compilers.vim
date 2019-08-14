@@ -5,7 +5,9 @@ let g:autoloaded_srydell_compilers = 1
 
 function! compilers#StepThroughCompilers(step) abort
   if type(a:step) != type(0)
-    echoerr 'Input must be a number. Got: ' . a:step
+    echohl WarningMsg
+    echomsg 'Input must be a number. Got: ' . a:step
+    echohl None
     return
   endif
 
