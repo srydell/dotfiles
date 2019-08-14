@@ -167,6 +167,9 @@ set shortmess+=c
 " Always show signcolumns
 set signcolumn=yes
 
+" Use sh. It's faster than bash
+set shell=sh
+
 " ---- Leader mappings ----
 " <leader><lowerCaseLetter> for harmless commands
 " <leader><upperCaseLetter> for potentially harmful commands
