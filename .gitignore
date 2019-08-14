@@ -20,8 +20,6 @@ bash/.bash/bash_history
 qutebrowser/.config/qutebrowser/quickmarks
 
 # Except these
-# !exampleFile.txt
-# !exampleDir/
 
 # Directories
 !X11
