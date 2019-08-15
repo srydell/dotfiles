@@ -1,3 +1,8 @@
+if exists('g:autoloaded_srydell_folding')
+  finish
+endif
+let g:autoloaded_srydell_folding = 1
+
 scriptencoding utf-8
 
 " So that a terminal without utf-8 can read the code
@@ -13,7 +18,7 @@ let s:small_l='ℓ'
 "
 "   »··[2ℓ]··: source $HOME/.vim/autoload/folding.vim···································
 "
-function! folding#foldtext() abort
+function! folding#FoldText() abort
 
   " Get the number of lines folded x and concatenate to [xl]
   let l:lines='[' . (v:foldend - v:foldstart + 1) . s:small_l . ']'

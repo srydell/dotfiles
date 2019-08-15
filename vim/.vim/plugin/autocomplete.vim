@@ -1,3 +1,8 @@
+if exists('g:loaded_srydell_autocomplete')
+  finish
+endif
+let g:loaded_srydell_autocomplete = 1
+
 " This file is used for autocompletion config.
 " Mostly for CocVim 
 
@@ -30,9 +35,9 @@ inoremap <silent><expr> <TAB>
 
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-" Use `[c` and `]c` to navigate diagnostics
-nmap <silent> [c <Plug>(coc-diagnostic-prev)
-nmap <silent> ]c <Plug>(coc-diagnostic-next)
+" Use `[d` and `]d` to navigate diagnostics
+nmap <silent> [d <Plug>(coc-diagnostic-prev)
+nmap <silent> ]d <Plug>(coc-diagnostic-next)
 
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
@@ -47,5 +52,5 @@ nnoremap <silent> K :call <SID>show_documentation()<CR>
 nmap <leader>rn <Plug>(coc-rename)
 
 " Remap for format selected region
-xmap <silent> <leader>f <Plug>(coc-format-selected)
-nmap <silent> <leader>f <Plug>(coc-format-selected)
+xmap <silent> <leader>F <Plug>(coc-format-selected)
+nmap <silent> <leader>F <Plug>(coc-format-selected)

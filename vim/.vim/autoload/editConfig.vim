@@ -1,11 +1,16 @@
-function! s:writeAndQuitIfNotEmpty() abort
+if exists('g:autoloaded_srydell_editConfig')
+  finish
+endif
+let g:autoloaded_srydell_editConfig = 1
+
+function! s:WriteAndQuitIfNotEmpty() abort
   if line('$') > 1 && getline(1) !=# ''
     write
   endif
   bdelete
 endfunction
 
-function! s:getAutocompletedCommand(possibleCommands) abort
+function! s:GetAutocompletedCommand(possibleCommands) abort
   if len(a:possibleCommands) == 1
     " Nothing to autocomplete
     return a:possibleCommands[0]
@@ -68,7 +73,7 @@ function! editConfig#EditConfig(command) abort
 
   let command = empty(extraCommands) ?
         \ a:command :
-        \ s:getAutocompletedCommand(extraCommands)
+        \ s:GetAutocompletedCommand(extraCommands)
   execute(command)
 
   " Note: This assumes that this function will open a new buffer.
@@ -76,6 +81,6 @@ function! editConfig#EditConfig(command) abort
   "       (maybe, but probably not) cause damage
   augroup WriteBufferOnLeave
     autocmd! * <buffer>
-    autocmd BufLeave <buffer> call s:writeAndQuitIfNotEmpty()
+    autocmd BufLeave <buffer> call s:WriteAndQuitIfNotEmpty()
   augroup END
 endfunction

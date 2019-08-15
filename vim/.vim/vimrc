@@ -60,7 +60,7 @@ if has('folding')
 
   " Start unfolded
   set foldlevelstart=2
-  set foldtext=folding#foldtext()
+  set foldtext=folding#FoldText()
 endif
 
 " Show absolute current row and relative rows from that
@@ -167,6 +167,9 @@ set shortmess+=c
 " Always show signcolumns
 set signcolumn=yes
 
+" Use sh. It's faster than bash
+set shell=sh
+
 " ---- Leader mappings ----
 " <leader><lowerCaseLetter> for harmless commands
 " <leader><upperCaseLetter> for potentially harmful commands
@@ -188,7 +191,7 @@ call s:SetupEditConfigMapping('eef', ':edit ~/.vim/autoload/extra_filetypes/{fil
 call s:SetupEditConfigMapping('es', ':UltiSnipsEdit {filetype}')
 
 " Compiler
-call s:SetupEditConfigMapping('ec', ':edit ~/.vim/compiler/{compiler}')
+call s:SetupEditConfigMapping('ec', ':edit ~/.vim/compiler/{compiler}.vim')
 
 " Fuzzy finder - fzf (files)
 nnoremap <leader>ff :<C-u>FZF<CR>
@@ -234,7 +237,7 @@ nnoremap <silent> <leader>h :call helpDocs#GetHelpDocs(g:browser, g:currentOS)<C
 nnoremap <silent> <leader>tc :VimuxPromptCommand<CR>
 
 " Run last command executed by VimuxRunCommand ( [t]mux [r]un )
-nnoremap <silent> <leader>tr :call tmux#vimuxRunLastCommandIfExists()<CR>
+nnoremap <silent> <leader>tr :call tmux#VimuxRunLastCommandIfExists()<CR>
 
 " Inspect runner pane ( [t]mux [i]nspect )
 nnoremap <silent> <leader>ti :VimuxInspectRunner<CR>
@@ -247,6 +250,10 @@ nnoremap <silent> [b :bprevious<CR>
 nnoremap <silent> ]b :bnext<CR>
 nnoremap <silent> [B :bfirst<CR>
 nnoremap <silent> ]B :blast<CR>
+
+" Move through the valid compilers. Set by g:valid_compilers
+nnoremap <silent> ]c :CompilerNext<CR>
+nnoremap <silent> [c :CompilerPrevious<CR>
 
 " Move through the loclist
 nnoremap <silent> <leader>l :call utils#ToggleList("Location List", 'l')<CR>

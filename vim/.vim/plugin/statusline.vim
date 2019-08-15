@@ -1,30 +1,34 @@
-" This file builds everything in the statusbar. It is sourced in ~/.vimrc
+if exists('g:loaded_srydell_statusline')
+  finish
+endif
+let g:loaded_srydell_statusline = 1
 
 " Enable statusline
-set laststatus=2
+setlocal laststatus=2
 
 " --- Statusline ---
 " Path to file
-set statusline=%f
+setlocal statusline=%f
 
 " Separator
-set statusline+=\ -\ 
+setlocal statusline+=\ -\ 
 
 " Label
 " Filetype of the file
-set statusline+=%y
+setlocal statusline+=%y
+
+function! GetCompiler() abort
+  return exists('b:current_compiler') ? ' {' . b:current_compiler . '} ' : ''
+endfunction
+" Current compiler
+setlocal statusline+=%{GetCompiler()}
 
 " Switch to the right side
-set statusline+=%=
-
-" Check session tracking
-if exists('*ObsessionStatus')
-  set statusline+=%{ObsessionStatus()}
-endif
+setlocal statusline+=%=
 
 " Current line
-set statusline+=%l
+setlocal statusline+=%l
 " Separator
-set statusline+=/
+setlocal statusline+=/
 " Total lines
-set statusline+=%L
+setlocal statusline+=%L

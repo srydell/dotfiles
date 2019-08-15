@@ -10,10 +10,10 @@ PYTHONPACKAGES="youtube-dl jsbeautifier tmuxp grip vim-vint"
 NPMPACKAGES="tern"
 
 echo "Installing packages related to X11"
-sudo pacman -S $XPACKAGES
+sudo pacman -S "$XPACKAGES"
 
 echo "Installing utility packages"
-sudo pacman -S $UTILITYPACKAGES
+sudo pacman -S "$UTILITYPACKAGES"
 
 echo "Installing yay AUR package manager"
 git clone https://aur.archlinux.org/yay.git || exit
@@ -41,12 +41,12 @@ systemctl enable --now NetworkManager-dispatcher.service
 yay -S networkmanager-dispatcher-ntpd
 
 echo "Installing window manager related packages"
-sudo pacman -S $WINDOWMANAGER
+sudo pacman -S "$WINDOWMANAGER"
 
 echo "Installing packages to make system more user friendly"
 #sudo pacman -S $USERPACKAGES_PACMAN
-yay -S $USERPACKAGES_YAY
+yay -S "$USERPACKAGES_YAY"
 
 echo "Installing python and npm packages"
-sudo pip install $PYTHONPACKAGES
+sudo pip install "$PYTHONPACKAGES"
 sudo npm install -g $NPMPACKAGES

@@ -1,3 +1,8 @@
+if exists('g:loaded_srydell_integrations')
+  finish
+endif
+let g:loaded_srydell_integrations = 1
+
 " This is all the general options for integrations
 " or 'things that tools used from vim needs'
 
@@ -13,7 +18,7 @@ if has('python3') && executable('python3')
   endif
 
   if !isdirectory(g:integrations_virtualenv)
-    call integrations#installation#getPythonPackages()
+    call integrations#installation#GetPythonPackages()
   endif
 
   " Black formatting for python
