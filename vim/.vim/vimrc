@@ -192,6 +192,7 @@ call s:SetupEditConfigMapping('es', ':UltiSnipsEdit {filetype}')
 
 " Compiler
 call s:SetupEditConfigMapping('ec', ':edit ~/.vim/compiler/{compiler}.vim')
+call s:SetupEditConfigMapping('eac', ':edit ~/.vim/compiler/{files}')
 
 " Fuzzy finder - fzf (files)
 nnoremap <leader>ff :<C-u>FZF<CR>

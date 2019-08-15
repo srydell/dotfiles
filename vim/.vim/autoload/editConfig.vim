@@ -71,6 +71,20 @@ function! editConfig#EditConfig(command) abort
     let extraCommands += [substitute(a:command, compilerToken, compiler, 'g')]
   endif
 
+  let filesToken = '{files}'
+  if match(a:command, filesToken) != -1
+    " Assume the command is on the form '{command} /path/to/{files}'
+    " Maybe limiting, but has not found it to be yet
+    let possiblePath = trim(split(a:command)[-1], filesToken)
+    if isdirectory(expand(possiblePath))
+      for l:f in split(globpath(possiblePath, '*'), '\n')
+        let extraCommands += filereadable(l:f) ?
+              \ [substitute(a:command, filesToken, fnamemodify(l:f, ':t'), 'g')]
+              \ : []
+      endfor
+    endif
+  endif
+
   let command = empty(extraCommands) ?
         \ a:command :
         \ s:GetAutocompletedCommand(extraCommands)
