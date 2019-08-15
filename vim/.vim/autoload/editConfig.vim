@@ -55,13 +55,18 @@ function! editConfig#EditConfig(command) abort
 
   let filetypeToken = '{filetype}'
   if match(a:command, filetypeToken) != -1
-    for ft in split(&filetype, '\.')
-      let extraCommands += [substitute(a:command, filetypeToken, ft, 'g')]
-    endfor
-    " Strictly from my own convention, since I have filetypes as
-    " <vim provided ft>.<my own special ft>
-    " I want it to give autocompletions to my own filetype first
-    call reverse(extraCommands)
+    if len(&filetype) != 0
+      for ft in split(&filetype, '\.')
+        let extraCommands += [substitute(a:command, filetypeToken, ft, 'g')]
+      endfor
+      " Strictly from my own convention, since I have filetypes as
+      " <vim provided ft>.<my own special ft>
+      " I want it to give autocompletions to my own filetype first
+      call reverse(extraCommands)
+    else
+      " Substitute for an empty string
+      let extraCommands += [substitute(a:command, filetypeToken, '', 'g')]
+    endif
   endif
 
   let compilerToken = '{compiler}'
