@@ -23,7 +23,6 @@ qutebrowser/.config/qutebrowser/quickmarks
 
 # Directories
 !X11
-!alacritty
 !bash
 !bin
 !compton
@@ -38,6 +37,7 @@ qutebrowser/.config/qutebrowser/quickmarks
 !ranger
 !rss
 !ssh
+!sway
 !tmux
 !utils
 !vim
@@ -47,3 +47,4 @@ qutebrowser/.config/qutebrowser/quickmarks
 !.Arch
 !.gitignore
 !README.md
+!alacritty/.config/alacritty/alacritty.yml
