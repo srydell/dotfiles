@@ -3,4 +3,4 @@ if exists('g:loaded_srydell_vimnout')
 endif
 let g:loaded_srydell_vimnout = 1
 
-command -nargs=* VimNOut call editConfig#EditConfig(<q-args>)
+command -nargs=* VimNOut call vimnout#FilterAndRunCommand(<q-args>)

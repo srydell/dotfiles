@@ -1,9 +1,9 @@
-if exists('g:autoloaded_srydell_editConfig')
+if exists('g:autoloaded_vimnout')
   finish
 endif
-let g:autoloaded_srydell_editConfig = 1
+let g:autoloaded_vimnout = 1
 
-function! editConfig#EditConfig(command) abort
+function! vimnout#FilterAndRunCommand(command) abort
   " Call a:command with execute() with caveats:
   " * a:command will be searched for:
   "     * {filetype} - Replaced with all filetypes (might be more separated with a .), otherwise ''
