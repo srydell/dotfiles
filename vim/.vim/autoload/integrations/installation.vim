@@ -47,3 +47,23 @@ function! integrations#installation#GetClangHelper() abort
 
   echomsg 'Downloaded clang-format helper script'
 endfunction
+
+function! integrations#installation#GetCMakeHelpFiles() abort
+  if !executable('wget')
+    return
+  endif
+  " Download syntax and indent files for CMake
+  let l:dirs_and_urls = {
+        \ expand('~/.vim/syntax'):
+        \     'https://raw.githubusercontent.com/Kitware/CMake/master/Auxiliary/vim/syntax/cmake.vim',
+        \ expand('~/.vim/indent'):
+        \     'https://raw.githubusercontent.com/Kitware/CMake/master/Auxiliary/vim/indent/cmake.vim'
+        \ }
+  for [l:dir, l:url] in items(l:dirs_and_urls)
+    if !isdirectory(l:dir)
+      call mkdir(l:dir)
+    endif
+    execute('!wget --directory-prefix=' . l:dir . ' ' . l:url)
+    echomsg 'Downloaded CMake help file to ' . l:dir
+  endfor
+endfunction
