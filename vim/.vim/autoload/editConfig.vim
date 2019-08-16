@@ -6,29 +6,32 @@ let g:autoloaded_srydell_editConfig = 1
 function! editConfig#EditConfig(command) abort
   " Call a:command with execute() with caveats:
   " * a:command will be searched for:
-  "     * {filetype} - Replaced with all filetypes (might be more separated with a .)
+  "     * {filetype} - Replaced with all filetypes (might be more separated with a .), otherwise ''
   "     * {compiler} - Replaced with b:current_compiler if exists, otherwise ''
+  "     * {files} - Replaced with all files in the resulting directory when
+  "         removed '{files}'. E.g. if a:command = ':edit /path/to/{files}', then
+  "         all the files in the directory '/path/to/' will be expanded. Otherwise ''
   " * Any buffers entered will be saved and deleted upon leaving
   "
   " :command: String - Will be called with execute.
 
-  let tokensAndFilters = {
+  let l:tokens_and_filters = {
         \ '{filetype}': function('s:FiletypeFilter'),
         \ '{compiler}': function('s:CompilerFilter'),
         \ '{files}': function('s:FilesFilter'),
         \ }
 
-  let extraCommands = []
-  for [l:token, l:Filter] in items(tokensAndFilters)
+  let l:extra_commands = []
+  for [l:token, l:Filter] in items(l:tokens_and_filters)
     if match(a:command, l:token) != -1
-      let extraCommands += l:Filter(a:command, l:token)
+      let l:extra_commands += l:Filter(a:command, l:token)
     endif
   endfor
 
-  let command = empty(extraCommands) ?
+  let l:command = empty(l:extra_commands) ?
         \ a:command :
-        \ s:GetAutocompletedCommand(extraCommands)
-  execute(command)
+        \ s:GetAutocompletedCommand(l:extra_commands)
+  execute(l:command)
 
   " Note: This assumes that this function will open a new buffer.
   "       Otherwise this will be applied to the current buffer and will
@@ -40,41 +43,41 @@ function! editConfig#EditConfig(command) abort
 endfunction
 
 function! s:FiletypeFilter(command, token) abort
-  let extraCommands = []
+  let l:extra_commands = []
   if len(&filetype) != 0
-    for ft in split(&filetype, '\.')
-      let extraCommands += [substitute(a:command, a:token, ft, 'g')]
+    for l:ft in split(&filetype, '\.')
+      let l:extra_commands += [substitute(a:command, a:token, l:ft, 'g')]
     endfor
     " Strictly from my own convention, since I have filetypes as
     " <vim provided ft>.<my own special ft>
     " I want it to give autocompletions to my own filetype first
-    call reverse(extraCommands)
+    call reverse(l:extra_commands)
   else
     " Substitute for an empty string
-    let extraCommands += [substitute(a:command, a:token, '', 'g')]
+    let l:extra_commands += [substitute(a:command, a:token, '', 'g')]
   endif
-  return extraCommands
+  return l:extra_commands
 endfunction
 
 function! s:CompilerFilter(command, token) abort
   " Handle not defined b:current_compiler
-  let compiler = exists('b:current_compiler') ? b:current_compiler : ''
-  return [substitute(a:command, a:token, compiler, 'g')]
+  let l:compiler = exists('b:current_compiler') ? b:current_compiler : ''
+  return [substitute(a:command, a:token, l:compiler, 'g')]
 endfunction
 
 function! s:FilesFilter(command, token) abort
-  let extraCommands = []
-  " Assume the command is on the form '{command} /path/to/{files}'
+  let l:extra_commands = []
+  " Assume the command is on the form '{edit-command} /path/to/{files}'
   " Maybe limiting, but has not found it to be yet
-  let possiblePath = trim(split(a:command)[-1], a:token)
-  if isdirectory(expand(possiblePath))
-    for l:file in split(globpath(possiblePath, '*'), '\n')
-      let extraCommands += filereadable(l:file) ?
+  let l:possible_path = substitute(split(a:command)[-1], a:token, '', 'g')
+  if isdirectory(expand(l:possible_path))
+    for l:file in split(globpath(l:possible_path, '*'), '\n')
+      let l:extra_commands += filereadable(l:file) ?
             \ [substitute(a:command, a:token, fnamemodify(l:file, ':t'), 'g')]
             \ : []
     endfor
   endif
-  return extraCommands
+  return l:extra_commands
 endfunction
 
 function! s:WriteAndQuitIfNotEmpty() abort
@@ -90,11 +93,11 @@ function! s:GetAutocompletedCommand(possibleCommands) abort
     return a:possibleCommands[0]
   endif
 
-  let command = ''
+  let l:command = ''
   if exists('*fzf#run')
-    let commands = fzf#run({'source': a:possibleCommands, 'down': '40%'})
+    let l:commands = fzf#run({'source': a:possibleCommands, 'down': '40%'})
     " Handle if the user presses <C-C> during completion
-    let command = len(commands) != 0 ? commands[0] : ''
+    let l:command = len(l:commands) != 0 ? l:commands[0] : ''
   else
     " Fallback to inputlist when fzf is not available
 
@@ -105,7 +108,7 @@ function! s:GetAutocompletedCommand(possibleCommands) abort
     endfunction
 
     call inputsave()
-    let command = input('Which command do you want to run? <TAB> between them. ',
+    let l:command = input('Which command do you want to run? <TAB> between them. ',
           \ a:possibleCommands[-1],
           \ 'customlist,ListCommands')
     call inputrestore()
@@ -114,5 +117,5 @@ function! s:GetAutocompletedCommand(possibleCommands) abort
     unlet g:editConfigCurrentAutcompleteCommands
   endif
 
-  return command
+  return l:command
 endfunction
