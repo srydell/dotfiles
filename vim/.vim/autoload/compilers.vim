@@ -15,10 +15,10 @@ function! compilers#StepThroughCompilers(step) abort
     return
   endif
 
-  let comp_index = index(g:valid_compilers, b:current_compiler)
-  let next_compiler = comp_index == -1 ?
+  let l:comp_index = index(g:valid_compilers, b:current_compiler)
+  let l:next_compiler = l:comp_index == -1 ?
         \ g:valid_compilers[0] :
-        \ g:valid_compilers[(comp_index + a:step) % len(g:valid_compilers)]
+        \ g:valid_compilers[(l:comp_index + a:step) % len(g:valid_compilers)]
 
-  execute('compiler ' . next_compiler)
+  execute('compiler ' . l:next_compiler)
 endfunction

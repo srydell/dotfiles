@@ -22,28 +22,28 @@ function! integrations#installation#GetPythonPackages() abort
   echom 'Created virtualenv in directory: ' . g:integrations_virtualenv
 
   " Install dependencies
-  let pip_executable = g:integrations_virtualenv . '/bin/pip'
-  let python_packages = ['black', 'cmake-format', 'vim-vint', 'pyls']
-  execute('silent !' . pip_executable . ' install ' . join(python_packages, ' '))
+  let l:pip_executable = g:integrations_virtualenv . '/bin/pip'
+  let l:python_packages = ['black', 'cmake-format', 'vim-vint', 'pyls']
+  execute('silent !' . l:pip_executable . ' install ' . join(l:python_packages, ' '))
 
-  echom 'Installed python dependencies: ' . join(python_packages, ', ')
+  echom 'Installed python dependencies: ' . join(l:python_packages, ', ')
 
   " Link them into bin directory
   " vim-vint gives 'vint' executable (an ugly hack =)
-  for package in python_packages + ['vint']
-    if executable(g:integrations_virtualenv . '/bin/' . package)
-      echom 'Linking python executable ' . package . ' to ' . g:integrations_dir . '/bin/' . package
-      execute('silent !ln -s ' . g:integrations_virtualenv . '/bin/' . package .
+  for l:package in l:python_packages + ['vint']
+    if executable(g:integrations_virtualenv . '/bin/' . l:package)
+      echom 'Linking python executable ' . l:package . ' to ' . g:integrations_dir . '/bin/' . l:package
+      execute('silent !ln -s ' . g:integrations_virtualenv . '/bin/' . l:package .
             \ ' ' .
-            \ g:integrations_dir . '/bin/' . package)
+            \ g:integrations_dir . '/bin/' . l:package)
     endif
   endfor
 endfunction
 
 function! integrations#installation#GetClangHelper() abort
-  let url = 'https://llvm.org/svn/llvm-project/cfe/trunk/tools/clang-format/clang-format.py'
+  let l:url = 'https://llvm.org/svn/llvm-project/cfe/trunk/tools/clang-format/clang-format.py'
 
-  execute '!wget --directory-prefix=' . g:integrations_dir . ' ' . url
+  execute '!wget --directory-prefix=' . g:integrations_dir . ' ' . l:url
 
   echom 'Downloaded clang-format helper script'
 endfunction
