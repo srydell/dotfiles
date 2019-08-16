@@ -174,25 +174,20 @@ set shell=sh
 " <leader><lowerCaseLetter> for harmless commands
 " <leader><upperCaseLetter> for potentially harmful commands
 
-function! s:SetupEditConfigMapping(keystrokes, cmd) abort
-  execute('nnoremap <leader>' . a:keystrokes .
-         \ " :call editConfig#EditConfig('" . a:cmd . "')<CR>")
-endfunction
-
 " Open buffer and edit 
-call s:SetupEditConfigMapping('ev', ':edit ~/.vim/vimrc')
-call s:SetupEditConfigMapping('et', ':edit ~/.tmux.conf')
-call s:SetupEditConfigMapping('ep', ':edit ~/.vim/plugin/projectionist.vim')
+nnoremap <leader>ev :VimNOut edit ~/.vim/vimrc<CR>
+nnoremap <leader>et :VimNOut edit ~/.tmux.conf<CR>
+nnoremap <leader>ep :VimNOut edit ~/.vim/plugin/projectionist.vim<CR>
 
 " Filetype dependent
-call s:SetupEditConfigMapping('ef', ':edit ~/.vim/ftplugin/{filetype}.vim')
-call s:SetupEditConfigMapping('eaf', ':edit ~/.vim/after/ftplugin/{filetype}.vim')
-call s:SetupEditConfigMapping('eef', ':edit ~/.vim/autoload/extra_filetypes/{filetype}.vim')
-call s:SetupEditConfigMapping('es', ':UltiSnipsEdit {filetype}')
+nnoremap <leader>ef :VimNOut edit ~/.vim/ftplugin/{filetype}.vim<CR>
+nnoremap <leader>eaf :VimNOut edit ~/.vim/after/ftplugin/{filetype}.vim<CR>
+nnoremap <leader>eef :VimNOut edit ~/.vim/autoload/extra_filetypes/{filetype}.vim<CR>
+nnoremap <leader>es :VimNOut UltiSnipsEdit {filetype}<CR>
 
 " Compiler
-call s:SetupEditConfigMapping('ec', ':edit ~/.vim/compiler/{compiler}.vim')
-call s:SetupEditConfigMapping('eac', ':edit ~/.vim/compiler/{files}')
+nnoremap <leader>ec :VimNOut edit ~/.vim/compiler/{compiler}.vim<CR>
+nnoremap <leader>eac :VimNOut edit ~/.vim/compiler/{files}<CR>
 
 " Fuzzy finder - fzf (files)
 nnoremap <leader>ff :<C-u>FZF<CR>
