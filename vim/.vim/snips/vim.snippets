@@ -3,7 +3,7 @@
 snippet augroup "autogroup" b
 augroup ${1:augroup_name}
 	autocmd!
-	autocmd ${2:BufWritePre} ${3:*.cpp} ${4:echom 'Hello'}
+	autocmd ${2:BufWritePre} ${3:*.cpp} ${4:echomsg 'Hello'}
 augroup END$0
 endsnippet
 

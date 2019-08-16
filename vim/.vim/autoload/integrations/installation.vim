@@ -19,20 +19,20 @@ function! integrations#installation#GetPythonPackages() abort
 
   " First time setup a virtualenv
   execute(':!python3 -m venv ' . g:integrations_virtualenv)
-  echom 'Created virtualenv in directory: ' . g:integrations_virtualenv
+  echomsg 'Created virtualenv in directory: ' . g:integrations_virtualenv
 
   " Install dependencies
   let l:pip_executable = g:integrations_virtualenv . '/bin/pip'
   let l:python_packages = ['black', 'cmake-format', 'vim-vint', 'pyls']
   execute('silent !' . l:pip_executable . ' install ' . join(l:python_packages, ' '))
 
-  echom 'Installed python dependencies: ' . join(l:python_packages, ', ')
+  echomsg 'Installed python dependencies: ' . join(l:python_packages, ', ')
 
   " Link them into bin directory
   " vim-vint gives 'vint' executable (an ugly hack =)
   for l:package in l:python_packages + ['vint']
     if executable(g:integrations_virtualenv . '/bin/' . l:package)
-      echom 'Linking python executable ' . l:package . ' to ' . g:integrations_dir . '/bin/' . l:package
+      echomsg 'Linking python executable ' . l:package . ' to ' . g:integrations_dir . '/bin/' . l:package
       execute('silent !ln -s ' . g:integrations_virtualenv . '/bin/' . l:package .
             \ ' ' .
             \ g:integrations_dir . '/bin/' . l:package)
@@ -45,5 +45,5 @@ function! integrations#installation#GetClangHelper() abort
 
   execute '!wget --directory-prefix=' . g:integrations_dir . ' ' . l:url
 
-  echom 'Downloaded clang-format helper script'
+  echomsg 'Downloaded clang-format helper script'
 endfunction

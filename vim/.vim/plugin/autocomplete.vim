@@ -23,8 +23,8 @@ function! s:show_documentation()
 endfunction
 
 function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
+  let l:col = col('.') - 1
+  return !col || getline('.')[l:col - 1]  =~# '\s'
 endfunction
 
 " Use tab for trigger completion with characters ahead and navigate.
