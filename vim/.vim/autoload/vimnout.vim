@@ -15,76 +15,91 @@ function! vimnout#FilterAndRunCommand(command) abort
   "
   " :command: String - Will be called with execute.
 
-  let l:tokens_and_filters = {
-        \ '{filetype}': function('s:FiletypeFilter'),
-        \ '{compiler}': function('s:CompilerFilter'),
-        \ '{files}': function('s:FilesFilter'),
-        \ }
+  " NOTE: {files} should be the last filter
+  "       since it will assume some part of the command is a path
+  let l:tokens_and_filters = [
+        \   ['{filetype}', function('s:FiletypeFilter')],
+        \   ['{compiler}', function('s:CompilerFilter')],
+        \   ['{files}', function('s:FilesFilter')],
+        \ ]
 
-  let l:extra_commands = []
-  for [l:token, l:Filter] in items(l:tokens_and_filters)
+  let l:all_commands = [a:command]
+  for [l:token, l:Filter] in l:tokens_and_filters
     if match(a:command, l:token) != -1
-      let l:extra_commands += l:Filter(a:command, l:token)
+      let l:all_commands = l:Filter(l:all_commands, l:token)
     endif
   endfor
 
-  let l:command = empty(l:extra_commands) ?
-        \ a:command :
-        \ s:GetAutocompletedCommand(l:extra_commands)
-  execute(l:command)
+  execute(s:GetAutocompletedCommand(l:all_commands))
 
-  " Note: This assumes that this function will open a new buffer.
-  "       Otherwise this will be applied to the current buffer and will
-  "       (maybe, but probably not) cause damage
-  augroup WriteBufferOnLeave
-    autocmd! * <buffer>
-    autocmd BufLeave <buffer> call s:QuitAndWriteIfNotEmpty()
-  augroup END
-endfunction
-
-function! s:FiletypeFilter(command, token) abort
-  let l:extra_commands = []
-  if len(&filetype) != 0
-    for l:ft in split(&filetype, '\.')
-      let l:extra_commands += [substitute(a:command, a:token, l:ft, 'g')]
-    endfor
-    " Strictly from my own convention, since I have filetypes as
-    " <vim provided ft>.<my own special ft>
-    " I want it to give autocompletions to my own filetype first
-    call reverse(l:extra_commands)
-  else
-    " Substitute for an empty string
-    let l:extra_commands += [substitute(a:command, a:token, '', 'g')]
+  if !exists('g:vimnout_delete_on_leave')
+    let g:vimnout_delete_on_leave = 1
   endif
-  return l:extra_commands
-endfunction
-
-function! s:CompilerFilter(command, token) abort
-  " Handle not defined b:current_compiler
-  let l:compiler = exists('b:current_compiler') ? b:current_compiler : ''
-  return [substitute(a:command, a:token, l:compiler, 'g')]
-endfunction
-
-function! s:FilesFilter(command, token) abort
-  let l:extra_commands = []
-  " Assume the command is on the form '{edit-command} /path/to/{files}'
-  " Maybe limiting, but has not found it to be yet
-  let l:possible_path = substitute(split(a:command)[-1], a:token, '', 'g')
-  if isdirectory(expand(l:possible_path))
-    for l:file in split(globpath(l:possible_path, '*'), '\n')
-      let l:extra_commands += filereadable(l:file) ?
-            \ [substitute(a:command, a:token, fnamemodify(l:file, ':t'), 'g')]
-            \ : []
-    endfor
+  if g:vimnout_delete_on_leave == 1
+    " Note: Assumes that this function will open a new buffer.
+    "       Otherwise this will be applied to the current buffer and will
+    "       (maybe, but probably not) cause damage
+    augroup VimNOutWriteBufferOnLeave
+      autocmd! * <buffer>
+      autocmd BufLeave <buffer> call s:QuitAndWriteIfNotEmpty()
+    augroup END
   endif
-  return l:extra_commands
 endfunction
 
 function! s:QuitAndWriteIfNotEmpty() abort
+  " Cleanup so that the next time the buffer is entered through a simple edit
+  " it is not deleted on leave
+  autocmd! VimNOutWriteBufferOnLeave
   if line('$') > 1 && getline(1) !=# ''
     write
   endif
   bdelete
+endfunction
+
+function! s:FiletypeFilter(commands, token) abort
+  let l:filtered_commands = []
+  for l:command in a:commands
+    if len(&filetype) != 0
+      for l:ft in split(&filetype, '\.')
+        let l:filtered_commands += [substitute(l:command, a:token, l:ft, 'g')]
+      endfor
+      " Strictly from my own convention, since I have filetypes as
+      " <vim provided ft>.<my own special ft>
+      " I want it to give autocompletions to my own filetype first
+      call reverse(l:filtered_commands)
+    else
+      " Substitute for an empty string
+      let l:filtered_commands += [substitute(l:command, a:token, '', 'g')]
+    endif
+  endfor
+  return l:filtered_commands
+endfunction
+
+function! s:CompilerFilter(commands, token) abort
+  let l:filtered_commands = []
+  for l:command in a:commands
+    " Handle not defined b:current_compiler
+    let l:compiler = exists('b:current_compiler') ? b:current_compiler : ''
+    let l:filtered_commands += [substitute(l:command, a:token, l:compiler, 'g')]
+  endfor
+  return l:filtered_commands
+endfunction
+
+function! s:FilesFilter(commands, token) abort
+  let l:filtered_commands = []
+  for l:command in a:commands
+    " Assume the command is on the form '{edit-command} /path/to/{files}'
+    " Maybe limiting, but has not found it to be yet
+    let l:possible_path = substitute(split(l:command)[-1], a:token, '', 'g')
+    if isdirectory(expand(l:possible_path))
+      for l:file in split(globpath(l:possible_path, '*'), '\n')
+        let l:filtered_commands += filereadable(l:file) ?
+              \ [substitute(l:command, a:token, fnamemodify(l:file, ':t'), 'g')]
+              \ : []
+      endfor
+    endif
+  endfor
+  return l:filtered_commands
 endfunction
 
 function! s:GetAutocompletedCommand(possibleCommands) abort

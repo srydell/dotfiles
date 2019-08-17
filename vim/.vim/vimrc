@@ -178,6 +178,7 @@ set shell=sh
 nnoremap <leader>ev :VimNOut edit ~/.vim/vimrc<CR>
 nnoremap <leader>et :VimNOut edit ~/.tmux.conf<CR>
 nnoremap <leader>ep :VimNOut edit ~/.vim/plugin/projectionist.vim<CR>
+nnoremap <leader>ex :VimNOut edit ~/.vim/ftplugin/{filetype}/{files}<CR>
 
 " Filetype dependent
 nnoremap <leader>ef :VimNOut edit ~/.vim/ftplugin/{filetype}.vim<CR>
