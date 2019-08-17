@@ -11,7 +11,7 @@ function! vimnout#FilterAndRunCommand(command) abort
   "     * {files} - Replaced with all files in the resulting directory when
   "         removed '{files}'. E.g. if a:command = ':edit /path/to/{files}', then
   "         all the files in the directory '/path/to/' will be expanded. Otherwise ''
-  " * Any buffers entered will be saved and deleted upon leaving
+  " * Any buffers entered will be saved and deleted upon leaving if they're not empty
   "
   " :command: String - Will be called with execute.
 
@@ -38,7 +38,7 @@ function! vimnout#FilterAndRunCommand(command) abort
   "       (maybe, but probably not) cause damage
   augroup WriteBufferOnLeave
     autocmd! * <buffer>
-    autocmd BufLeave <buffer> call s:WriteAndQuitIfNotEmpty()
+    autocmd BufLeave <buffer> call s:QuitAndWriteIfNotEmpty()
   augroup END
 endfunction
 
@@ -80,7 +80,7 @@ function! s:FilesFilter(command, token) abort
   return l:extra_commands
 endfunction
 
-function! s:WriteAndQuitIfNotEmpty() abort
+function! s:QuitAndWriteIfNotEmpty() abort
   if line('$') > 1 && getline(1) !=# ''
     write
   endif
