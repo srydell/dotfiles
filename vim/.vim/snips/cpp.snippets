@@ -170,6 +170,14 @@ std::uniform_${1:int}_distribution<> dist {${2:1, 6}};
 auto ${3:get_random} = [&](){ return dist(re); };
 endsnippet
 
+snippet switch "Switch statement" b
+switch (${1:${VISUAL}}) {
+	case ${2:firstCase}:
+		${3:Do when $2}
+		break;$0
+}
+endsnippet
+
 snippet bmfnc "Google Benchmark function" b
 static void BM_${1:func_name}(benchmark::State& state) {
 	for (auto _ : state) {
