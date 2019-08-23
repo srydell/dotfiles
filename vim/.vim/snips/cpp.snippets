@@ -26,7 +26,7 @@ def write_docstring_args(arglist, snip):
 endglobal
 
 snippet cl "class"
-class ${1:`!p snip.rv = snip.basename or "ClassName"`}{
+class ${1:`!p snip.rv = snip.basename or "ClassName"`} {
 public:
 	${1/(\w+).*/$1/}(${2:arguments});
 	virtual ~${1/(\w+).*/$1/} ();
@@ -37,7 +37,7 @@ private:
 endsnippet
 
 snippet str "struct"
-struct ${1:`!p snip.rv = snip.basename or "StructName"`}{
+struct ${1:`!p snip.rv = snip.basename or "StructName"`} {
 	${1/(\w+).*/$1/}(${2:arguments});
 };$0
 endsnippet
