@@ -5,6 +5,10 @@
 # Read `man 5 sway` for a complete reference.
 xwayland enable
 
+default_border pixel 2.3
+gaps inner 10
+gaps outer 4
+
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
@@ -25,7 +29,6 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
 output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 
-default_border none
 #
 # Example configuration:
 #
@@ -68,7 +71,6 @@ input * xkb_options "grp:win_space_toggle,ctrl:nocaps"
 #
 # Read `man 5 sway-bar` for more information about this section.
 bar {
-    gaps 16 16 0 16
     swaybar_command waybar
 }
 

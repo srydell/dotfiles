@@ -1,6 +1,6 @@
 {
-    "layer": "top",
-    "height": 25,
+    "layer": "bottom",
+    "height": 35,
 
     "modules-left": ["sway/workspaces", "custom/arrow6", "sway/mode", "custom/mpd"],
     "modules-center": ["clock#1"],
