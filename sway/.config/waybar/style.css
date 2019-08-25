@@ -1,0 +1,128 @@
+* {
+	border: none;
+	border-radius: 0;
+	font-family: Dejavu Sans Mono for Powerline;
+	font-size: 14px;
+	min-height: 0;
+}
+
+window#waybar {
+	background-color: #282828;
+	color: #949494;
+}
+
+#workspaces button {
+	padding: 0 5px;
+	background: #4a4a4a;
+	color: white;
+}
+
+#workspaces button.focused {
+	color: #ff8700;
+}
+
+#mode {
+	background: #282828;
+	color: #d05c5c;
+}
+
+#clock.1,
+#clock.2,
+#battery,
+#cpu,
+#memory,
+#backlight,
+#network,
+#pulseaudio,
+#custom-mpd,
+#tray,
+#mode,
+#idle_inhibitor {
+	padding: 0 10px;
+	margin: 0 0px;
+}
+
+#clock.1 {
+	background-color: transparent;
+	font-size: 19px;
+}
+
+@keyframes blink {
+	to {
+		background-color: #ffffff;
+		color: black;
+	}
+}
+
+#cpu {
+	background: #4e4e4e;
+}
+
+#memory {
+	background: #4e4e4e;
+}
+
+#clock.2 {
+	background: #4e4e4e;
+}
+
+#network.disconnected {
+	background: transparent;
+}
+
+#pulseaudio {
+	background: #3a3a3a;
+}
+
+#pulseaudio.muted {
+	background: #90b1b1;
+	color: #2a5c45;
+}
+
+#custom-mpd {
+	background: transparent;
+}
+
+#tray {
+	background-color: #949494;
+}
+
+#idle_inhibitor {
+	background-color: #2d3436;
+}
+
+#custom-arrow1 {
+	font-size: 24px;
+	color: #949494;
+	background: #4e4e4e
+}
+
+#custom-arrow2 {
+	font-size: 24px;
+	color: #ff8700;
+	background: #949494
+}
+
+#custom-arrow3 {
+	font-size: 24px;
+	background: #4e4e4e;
+	color: #949494
+}
+
+#custom-arrow4 {
+	font-size: 24px;
+	color: #4e4e4e;
+	background: #3a3a3a
+}
+
+#custom-arrow5 {
+	font-size: 24px;
+	color: #3a3a3a;
+	background: transparent;
+}
+
+#custom-arrow6 {
+	font-size: 24px;
+	color: #4a4a4a;
+	background: transparent;
+}

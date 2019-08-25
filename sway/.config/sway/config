@@ -68,17 +68,8 @@ input * xkb_options "grp:win_space_toggle,ctrl:nocaps"
 #
 # Read `man 5 sway-bar` for more information about this section.
 bar {
-    position top
-
-    # When the status_command prints a new line to stdout, swaybar updates.
-    # The default just shows the current date and time.
-    status_command while date +'%Y-%m-%d %l:%M:%S %p'; do sleep 1; done
-
-    colors {
-        statusline #ffffff
-        background #323232
-        inactive_workspace #32323200 #32323200 #5c5c5c
-    }
+    gaps 16 16 0 16
+    swaybar_command waybar
 }
 
 include ~/.config/sway/config.d/*
