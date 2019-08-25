@@ -62,6 +62,10 @@ window#waybar {
 	background: #4e4e4e;
 }
 
+#network {
+	background: #4e4e4e;
+}
+
 #clock.2 {
 	background: #4e4e4e;
 }
