@@ -42,6 +42,7 @@ qutebrowser/.config/qutebrowser/quickmarks
 !utils
 !vim
 !vimb
+!zsh
 
 # Files
 !.Arch
