@@ -35,11 +35,9 @@ PROMPT_COMMAND='history -a'
 # Save tmuxp project config files under .tmux directory
 export TMUXP_CONFIGDIR=$HOME/.tmux/tmuxp
 
-# Use vim as a manpager. Read from stdin
-export MANPAGER="vim -M +MANPAGER -"
-
-# Hacky way of setting vim to be the manpager
-# export MANPAGER="/bin/sh -c \"col -b | vim --not-a-term -c 'set ft=man ts=8 nomod nolist noma' -\""
+# Use vim as a manpager. Read from stdin.
+# NOTE: The settings are written in the corresponding ftplugin
+export MANPAGER="/bin/sh -c \"col -b | vim -c 'set filetype=man' -\""
 
 # Set history file out of the way. Default is ~/.bash_history
 if [ -d ~/.bash ]; then
