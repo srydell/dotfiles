@@ -17,7 +17,7 @@ call minpac#init()
 
 " Snippets
 call minpac#add('SirVer/ultisnips')
-call minpac#add('srydell/vim-template')
+call minpac#add('srydell/vim-skeleton')
 
 call minpac#add('srydell/vim-n-out')
 
