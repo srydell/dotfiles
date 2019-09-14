@@ -173,14 +173,14 @@ endsnippet
 
 # --- Skeletons ---
 
-snippet _skel "Skeleton for each python file" b
-'''
+snippet _skel "Skeleton for python files" b
+"""
 Brief:               ${1:Explanation of file functionality here}
 
 File name:           `!v expand("%:t")`
 Author:              Simon Rydell
 Python Version:      `python3 --version 2>&1 | awk '{print $2}' | cut -d '.' -f1-2`
-'''
+"""
 
 $0
 endsnippet

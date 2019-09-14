@@ -4,6 +4,7 @@
 snippet mod_cath2 "Setup and include catch2 module" b
 `mkdir cmake || test ! -f cmake/Catch2Helpers.cmake && cp ~/.vim/integrations/templates/cmake/Catch2Helpers.cmake cmake/Catch2Helpers.cmake`# Define create_catch2_test
 include(Catch2Helpers)
+find_package(Catch2 REQUIRED)
 # NOTE: Depends on find_package(catch2) being found
 create_catch2_test(TARGET
                    ${1:catch2_test}
@@ -28,8 +29,8 @@ conan_cmake_run(CONANFILE
                 BUILD
                 missing)
 `!p
-if t[1] == "txt":
-    snip.rv = "# Needed when using conanfile.txt and find_package\n# NOTE: Relies on cmake_paths generator\ninclude(${CMAKE_BINARY_DIR}/conan_paths.cmake)"
+if t[2] == "txt":
+    snip.rv = "# Needed when using conanfile.txt and find_package.\n# Relies on cmake_paths generator\ninclude(${CMAKE_BINARY_DIR}/conan_paths.cmake)"
 else:
     snip.rv = ""`$0
 endsnippet
