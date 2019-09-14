@@ -22,14 +22,14 @@ let g:projectionist_heuristics = {
       \       'skeleton': 'header',
       \       'type': 'header'
       \     },
-      \     'CMakeLists.txt': {
+      \     '*/CMakeLists.txt': {
       \       'skeleton': 'cmakelists'
       \     },
-      \     'conanfile.txt': {
+      \     '*/conanfile.txt': {
       \       'skeleton': 'conanfile'
       \     },
       \
-      \     'README.md': {
+      \     '*/README.md': {
       \       'skeleton': 'readme'
       \     },
       \
