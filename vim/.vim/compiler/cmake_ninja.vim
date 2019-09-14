@@ -20,18 +20,7 @@ endif
 " use the default 'errorformat'
 CompilerSet errorformat&
 
-" NOTE: This assumes that the binary is the same name as the file (without extension)
-"       and is located in build/bin/
-
-" Build config from cmake to ninja
-CompilerSet makeprg=cmake\ \-S\.\ \-Bbuild\ \-G\ Ninja
-" cmake options: Debug and using clang++
-CompilerSet makeprg+=\ \-D\ CMAKE_BUILD_TYPE\=Debug\ \-D\ CMAKE_CXX_COMPILER\=\$\(command\ \-v\ clang\+\+\)
-CompilerSet makeprg+=\ \>\ /dev/null
-" Build executable
-execute('CompilerSet makeprg+=\ \&\&\ cmake\ \-\-build\ build\ \-j' . g:number_of_threads)
-" Run executable if found
-CompilerSet makeprg+=\ \&\&\ test\ \-x\ \./build/bin/%:t:r\ \&\&\ \./build/bin/%:t:r
+execute('CompilerSet makeprg=\~/\.vim/integrations/compiler/cmake_ninja\.sh\ %:t:r\ ' . g:number_of_threads)
 
 let &cpoptions = s:cpo_save
 unlet s:cpo_save
