@@ -10,9 +10,9 @@ if !exists('g:currentOS')
   let g:number_of_threads = 2
 else
   if g:currentOS ==# 'Darwin'
-    let g:number_of_threads = system('sysctl -n hw.logicalcpu')
+    let g:number_of_threads = str2nr(system('sysctl -n hw.logicalcpu'))
   elseif g:currentOS ==# 'Linux'
-    let g:number_of_threads = system('nproc --all')
+    let g:number_of_threads = str2nr(system('nproc --all'))
   endif
 endif
 
@@ -20,7 +20,18 @@ endif
 " use the default 'errorformat'
 CompilerSet errorformat&
 
-execute('CompilerSet makeprg=\~/\.vim/integrations/compiler/cmake_ninja\.sh\ %:t:r\ ' . g:number_of_threads)
+let s:options = [
+      \ '--compiler\ ' . 'clang\+\+',
+      \ '--generator\ ' . 'Ninja',
+      \ '--build_type\ ' . 'Release',
+      \ '--cores\ ' . g:number_of_threads,
+      \ '--executable\ %:t:r'
+      \ ]
+
+CompilerSet makeprg=\~/\.vim/integrations/compiler/build_and_run_cmake\.sh
+
+" Set options
+execute('CompilerSet makeprg+=\ ' . join(s:options, '\ '))
 
 let &cpoptions = s:cpo_save
 unlet s:cpo_save
