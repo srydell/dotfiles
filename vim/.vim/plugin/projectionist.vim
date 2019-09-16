@@ -36,6 +36,9 @@ let g:projectionist_heuristics = {
       \     'plugin/*.vim': {
       \       'skeleton': 'plugin'
       \     },
+      \     'ftplugin/*.vim': {
+      \       'skeleton': 'ftplugin'
+      \     },
       \     'autoload/*.vim': {
       \       'skeleton': 'autoload'
       \     },

@@ -35,8 +35,26 @@ if ${1:expr}
 endif
 endsnippet
 
+# Skeletons
+
+snippet _autoload "An autoload vim script" b
+if exists('g:autoloaded_srydell_`!v expand('%:t:r')`')
+  finish
+endif
+let g:autoloaded_srydell_`!v expand('%:t:r')` = 1
+$0
+endsnippet
+
 snippet _ftdetect "An ftdetect vim script" b
 autocmd ${1:BufRead,BufNewFile} ${2:conanfile.txt} ${3:setlocal filetype+=.${4:conanfile_txt}}$0
+endsnippet
+
+snippet _ftplugin "An ftplugin vim script" b
+if exists('b:did_ftplugin')
+  finish
+endif
+let b:did_ftplugin = 1
+$0
 endsnippet
 
 snippet _plugin "An plugin vim script" b
@@ -44,13 +62,5 @@ if exists('g:loaded_srydell_`!v expand('%:t:r')`')
   finish
 endif
 let g:loaded_srydell_`!v expand('%:t:r')` = 1
-$0
-endsnippet
-
-snippet _autoload "An autoload vim script" b
-if exists('g:autoloaded_srydell_`!v expand('%:t:r')`')
-  finish
-endif
-let g:autoloaded_srydell_`!v expand('%:t:r')` = 1
 $0
 endsnippet
