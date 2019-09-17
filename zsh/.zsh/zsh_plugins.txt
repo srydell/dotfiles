@@ -1,4 +1,6 @@
 zsh-users/zsh-completions
 zdharma/fast-syntax-highlighting
 
+# async needed for pure
+mafredri/zsh-async
 sindresorhus/pure

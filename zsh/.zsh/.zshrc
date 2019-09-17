@@ -19,7 +19,7 @@ fi
 # Set up the prompt
 autoload -Uz promptinit
 promptinit
-prompt adam1
+prompt pure
 
 # Allow expansion of parameters and commands in prompt
 setopt PROMPT_SUBST
