@@ -1,3 +1,4 @@
 zsh-users/zsh-completions
-zsh-users/zsh-syntax-highlighting
-denysdovhan/spaceship-prompt
+zdharma/fast-syntax-highlighting
+
+sindresorhus/pure

@@ -19,12 +19,12 @@ fi
 # Set up the prompt
 autoload -Uz promptinit
 promptinit
-# prompt spaceship
+prompt adam1
 
 # Allow expansion of parameters and commands in prompt
 setopt PROMPT_SUBST
 # show git repo info in your prompt
-export RPROMPT='$vcs_info_msg_0_'
+# export RPROMPT='$vcs_info_msg_0_'
 
 # Use modern completion system
 autoload -Uz compinit
