@@ -8,7 +8,7 @@ HISTSIZE=1000
 SAVEHIST=1000
 HISTFILE=~/.zsh/.zsh_history
 
-if [ -x "$(command -v antibody)" ]; then
+if command -v antibody > /dev/null 2>&1; then
 	export ANTIBODY_HOME=$ZDOTDIR/antibody
 	if [ ! -f $ZDOTDIR/zsh_plugins.sh ]; then
 		antibody bundle < $ZDOTDIR/zsh_plugins.txt > $ZDOTDIR/zsh_plugins.sh
@@ -19,7 +19,7 @@ fi
 # Set up the prompt
 autoload -Uz promptinit
 promptinit
-prompt spaceship
+# prompt spaceship
 
 # Allow expansion of parameters and commands in prompt
 setopt PROMPT_SUBST
@@ -28,7 +28,12 @@ export RPROMPT='$vcs_info_msg_0_'
 
 # Use modern completion system
 autoload -Uz compinit
-compinit
+# Only load completions once a day
+if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' $ZDOTDIR/.zcompdump) ]; then
+  compinit
+else
+  compinit -C
+fi
 
 # ls colors completion
 if whence dircolors >/dev/null; then
