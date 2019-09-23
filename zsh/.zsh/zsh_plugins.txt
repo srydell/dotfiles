@@ -1,4 +1,5 @@
 zsh-users/zsh-completions
+zsh-users/zsh-autosuggestions
 zdharma/fast-syntax-highlighting
 
 # async needed for pure
