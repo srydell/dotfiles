@@ -23,7 +23,7 @@ function! integrations#installation#GetPythonPackages() abort
 
   " Install dependencies
   let l:pip_executable = g:integrations_virtualenv . '/bin/pip'
-  let l:python_packages = ['black', 'cmake-format', 'vim-vint', 'pyls']
+  let l:python_packages = ['black', 'cmake-format', 'vim-vint', 'python-language-server']
   execute('silent !' . l:pip_executable . ' install ' . join(l:python_packages, ' '))
 
   echomsg 'Installed python dependencies: ' . join(l:python_packages, ', ')
