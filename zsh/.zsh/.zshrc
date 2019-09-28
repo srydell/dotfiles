@@ -1,15 +1,4 @@
-# Keychain only handles the latest gpg key
-# LATEST_GPGKEY=$(gpg --list-secret-keys --with-colons 2>/dev/null | awk -F: '($1 ~ "sec") { print $5 }' | tail -n 1)
-# Control ssh-agent. Only handles keys listed here.
-# To add a new key, add the name of the file after id_rsa if it is in ~/.ssh/
-# or give an absolute path
-# eval $(keychain --eval --quiet --ignore-missing --agents gpg,ssh id_rsa "$LATEST_GPGKEY")
-# unset LATEST_GPGKEY
-
-# Always prompt for gpg password in the terminal instead of gui popup
-GPG_TTY="$(tty)"
-export GPG_TTY
-
+# Install plugins if not installed
 if [ ! -f $ZDOTDIR/zsh_plugins.sh ]; then
 	fpath+=($ZDOTDIR/installs)
 	autoload -Uz install_plugins
@@ -21,11 +10,25 @@ source $ZDOTDIR/zsh_plugins.sh
 bindkey '^ ' autosuggest-accept
 # Use emacs keybindings even if our EDITOR is set to vi
 bindkey -e
+# Expand commands on space
+bindkey " " magic-space
 
 # Set up the prompt
 autoload -Uz promptinit
 promptinit
 prompt pure
+
+# Keychain only handles the latest gpg key
+# LATEST_GPGKEY=$(gpg --list-secret-keys --with-colons 2>/dev/null | awk -F: '($1 ~ "sec") { print $5 }' | tail -n 1)
+# Control ssh-agent. Only handles keys listed here.
+# To add a new key, add the name of the file after id_rsa if it is in ~/.ssh/
+# or give an absolute path
+# eval $(keychain --eval --quiet --ignore-missing --agents gpg,ssh id_rsa "$LATEST_GPGKEY")
+# unset LATEST_GPGKEY
+
+# Always prompt for gpg password in the terminal instead of gui popup
+GPG_TTY="$(tty)"
+export GPG_TTY
 
 for ZSH_FILE in "${ZDOTDIR:-$HOME}"/zsh.d/*.zsh(N); do
 	source "${ZSH_FILE}"

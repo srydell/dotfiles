@@ -45,6 +45,6 @@ indent_size = 4
 [Makefile]
 indent_style = tab
 
-[*.{sh,zsh}]
+[*.{sh,zsh,zshrc}]
 indent_style = tab
 indent_size = 4
