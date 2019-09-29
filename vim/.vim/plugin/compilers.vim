@@ -3,6 +3,6 @@ if exists('g:loaded_srydell_compilers')
 endif
 let g:loaded_srydell_compilers = 1
 
-" Step through g:valid_compilers
+" Step through b:valid_compilers
 command! CompilerNext call compilers#StepThroughCompilers(1)
 command! CompilerPrevious call compilers#StepThroughCompilers(-1)

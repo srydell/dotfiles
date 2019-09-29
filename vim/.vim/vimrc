@@ -249,7 +249,7 @@ nnoremap <silent> ]b :bnext<CR>
 nnoremap <silent> [B :bfirst<CR>
 nnoremap <silent> ]B :blast<CR>
 
-" Move through the valid compilers. Set by g:valid_compilers
+" Move through the valid compilers. Set by b:valid_compilers
 nnoremap <silent> ]c :CompilerNext<CR>
 nnoremap <silent> [c :CompilerPrevious<CR>
 
@@ -332,3 +332,6 @@ nnoremap Y y$
 " Enable builtin matchit feature.
 " Hit '%' on 'if' to jump to 'else'.
 runtime macros/matchit.vim
+
+set laststatus=2
+call statusline#init()

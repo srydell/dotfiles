@@ -1,12 +1,12 @@
 " Default compilers. Use binding to toggle between them
 if match(expand('%:p'), '\Cproto\(type\)\?s\?') != -1
-  let g:valid_compilers = ['proto_clang++', 'proto_g++']
+  let b:valid_compilers = ['proto_clang++', 'proto_g++']
 else
-  let g:valid_compilers = ['cmake_ninja']
+  let b:valid_compilers = ['cmake_ninja']
 endif
 
 if !exists('current_compiler')
-  execute('compiler ' . g:valid_compilers[0])
+  execute('compiler ' . b:valid_compilers[0])
 endif
 
 function! s:RunClangFormat()
