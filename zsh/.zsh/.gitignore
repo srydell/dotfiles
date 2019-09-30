@@ -1,0 +1,16 @@
+# Ignore everything
+/*
+
+# Ignore all files named (wherever they are):
+.DS_Store
+.log
+
+# Except these
+# Files
+!.gitignore
+!.zshrc
+!zsh_plugins.txt
+
+# Directories
+!installs
+!zsh.d

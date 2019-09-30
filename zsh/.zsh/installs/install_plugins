@@ -1,9 +1,8 @@
 # Don't use user config while in this file
 emulate -L zsh
 
-echo Hiiii
 install_antibody() {
-	curl -sfL git.io/antibody | sh -s - -b /usr/local/bin
+	curl -sfL git.io/antibody | sh -s - -b $1
 }
 
 # Takes the path to a plugin list and installs them. If antibody is not installed, it is downloaded
@@ -17,10 +16,10 @@ install_plugins() {
 	fi
 	plugin_file=$1
 	if ! command -v antibody > /dev/null 2>&1; then
-		install_antibody
+		install_antibody $HOME/bin
 	fi
 	export ANTIBODY_HOME=$ZDOTDIR/antibody
-	antibody bundle < "${plugin_file}" > $ZDOTDIR/zsh_plugins.sh
+	$HOME/bin/antibody bundle < "${plugin_file}" > $ZDOTDIR/zsh_plugins.sh
 }
 
 install_plugins "$@"
