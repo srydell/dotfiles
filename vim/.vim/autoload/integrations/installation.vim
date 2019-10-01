@@ -9,8 +9,7 @@ endif
 
 function! integrations#installation#GetPythonPackages() abort
   " Install python packages and link them to g:integrations_dir bin
-  " NOTE: Relies on g:integrations_dir and g:integrations_virtualenv
-  "       being set beforehand
+  " NOTE: Relies on g:integrations_dir being set beforehand
 
   " Setup a virtualenv for python executables
   if !exists('g:integrations_virtualenv')
@@ -30,7 +29,7 @@ function! integrations#installation#GetPythonPackages() abort
 
   " Link them into bin directory
   " vim-vint gives 'vint' executable (an ugly hack =)
-  for l:package in l:python_packages + ['vint']
+  for l:package in l:python_packages + ['vint', 'pyls']
     if executable(g:integrations_virtualenv . '/bin/' . l:package)
       echomsg 'Linking python executable ' . l:package . ' to ' . g:integrations_dir . '/bin/' . l:package
       execute('silent !ln -s ' . g:integrations_virtualenv . '/bin/' . l:package .
