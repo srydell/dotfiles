@@ -6,13 +6,6 @@ if [ ! -f $ZDOTDIR/zsh_plugins.sh ]; then
 fi
 source $ZDOTDIR/zsh_plugins.sh
 
-# Accept autosuggest with <C-SPACE>
-bindkey '^ ' autosuggest-accept
-# Use emacs keybindings even if our EDITOR is set to vi
-bindkey -e
-# Expand commands on space
-bindkey " " magic-space
-
 # Set up the prompt
 autoload -Uz promptinit
 promptinit
@@ -30,6 +23,13 @@ prompt pure
 GPG_TTY="$(tty)"
 export GPG_TTY
 
-for ZSH_FILE in "${ZDOTDIR:-$HOME}"/zsh.d/*.zsh(N); do
+for ZSH_FILE in ${ZDOTDIR:-$HOME}/zsh.d/*.zsh; do
 	source "${ZSH_FILE}"
 done
+
+# Use emacs keybindings even if our EDITOR is set to vi
+bindkey -e
+# Expand commands on space
+bindkey " " magic-space
+# Accept autosuggest with <C-SPACE>
+bindkey '^ ' autosuggest-accept
