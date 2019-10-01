@@ -115,6 +115,9 @@ set splitright
 " Better autocomplete
 set completeopt=longest,menuone
 
+" Maximum number of autocomplete items
+set pumheight=6
+
 " Completion with commands
 set wildmenu
 set wildmode=longest,full
