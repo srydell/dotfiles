@@ -42,7 +42,7 @@ let g:tex_flavor = 'latex'
 
 " Make it easier to see tabs and newlines
 set list
-set listchars=tab:▸\ ,eol:¬
+set listchars=tab:▸\ ,eol:¬,trail:·
 
 if has('folding')
   if has('windows')
