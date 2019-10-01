@@ -1,11 +1,5 @@
 # Use modern completion system
 autoload -Uz compinit
-# Only load completions once a day
-if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' $ZDOTDIR/.zcompdump) ]; then
-	compinit
-else
-	compinit -C
-fi
 
 # ls colors completion
 if whence dircolors >/dev/null; then

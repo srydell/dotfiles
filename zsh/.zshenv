@@ -24,6 +24,18 @@ export PATH="$HOME/.vim/pack/minpac/start/fzf/bin/:$PATH"
 # Set config path
 export XDG_CONFIG_HOME=$HOME/.config
 
+# Keychain only handles the latest gpg key
+# LATEST_GPGKEY=$(gpg --list-secret-keys --with-colons 2>/dev/null | awk -F: '($1 ~ "sec") { print $5 }' | tail -n 1)
+# Control ssh-agent. Only handles keys listed here.
+# To add a new key, add the name of the file after id_rsa if it is in ~/.ssh/
+# or give an absolute path
+# eval $(keychain --eval --quiet --ignore-missing --agents gpg,ssh id_rsa "$LATEST_GPGKEY")
+# unset LATEST_GPGKEY
+
+# Always prompt for gpg password in the terminal instead of gui popup
+GPG_TTY="$(tty)"
+export GPG_TTY
+
 case "$(uname)" in
 	Linux )
 		export PATH="/usr/lib/ccache/bin/:$PATH"

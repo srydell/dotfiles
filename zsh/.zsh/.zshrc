@@ -11,19 +11,8 @@ autoload -Uz promptinit
 promptinit
 prompt pure
 
-# Keychain only handles the latest gpg key
-# LATEST_GPGKEY=$(gpg --list-secret-keys --with-colons 2>/dev/null | awk -F: '($1 ~ "sec") { print $5 }' | tail -n 1)
-# Control ssh-agent. Only handles keys listed here.
-# To add a new key, add the name of the file after id_rsa if it is in ~/.ssh/
-# or give an absolute path
-# eval $(keychain --eval --quiet --ignore-missing --agents gpg,ssh id_rsa "$LATEST_GPGKEY")
-# unset LATEST_GPGKEY
-
-# Always prompt for gpg password in the terminal instead of gui popup
-GPG_TTY="$(tty)"
-export GPG_TTY
-
-for ZSH_FILE in ${ZDOTDIR:-$HOME}/zsh.d/*.zsh; do
+# Load configs, platform specific files are in zsh.d/$(uname)
+for ZSH_FILE in ${ZDOTDIR:-$HOME}/zsh.d{,/$(uname)}/*.zsh; do
 	source "${ZSH_FILE}"
 done
 
