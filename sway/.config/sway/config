@@ -5,7 +5,7 @@
 # Read `man 5 sway` for a complete reference.
 xwayland enable
 
-default_border pixel 2.3
+default_border none
 gaps inner 10
 gaps outer 4
 
@@ -27,7 +27,9 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+# output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+output * bg #282828 solid_color
+
 
 #
 # Example configuration:
@@ -64,6 +66,7 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 # You can get the names of your inputs by running: swaymsg -t get_inputs
 # Read `man 5 sway-input` for more information about this section.
 input * xkb_layout "us,se"
+input * xkb_variant "colemak,"
 input * xkb_options "grp:win_space_toggle,ctrl:nocaps"
 
 #
