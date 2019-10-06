@@ -85,6 +85,9 @@ set incsearch
 " Auto read file when changed while open
 set autoread
 
+" Auto write on :make
+set autowrite
+
 " Autoindent new lines to match previous line
 " Autoindent when creating new lines
 set autoindent
