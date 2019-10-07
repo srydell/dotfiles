@@ -45,6 +45,9 @@ call minpac#add('ludovicchabant/vim-gutentags')
 " Reads .editorconfig
 call minpac#add('editorconfig/editorconfig-vim')
 
+" Add ftdetect, compiler and other good stuff for elixir
+call minpac#add('elixir-editors/vim-elixir')
+
 " html, css, json and javascript formatter
 call minpac#add('maksimr/vim-jsbeautify', {'type': 'opt'})
 

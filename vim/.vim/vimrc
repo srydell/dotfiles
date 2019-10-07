@@ -187,15 +187,15 @@ nnoremap <leader>ep :VimNOut edit ~/.vim/plugin/projectionist.vim<CR>
 nnoremap <leader>ex :VimNOut edit ~/.vim/ftplugin/{filetype}/{files}<CR>
 
 " Filetype dependent
+nnoremap <leader>es :VimNOut UltiSnipsEdit {filetype}<CR>
 nnoremap <leader>ef :VimNOut edit ~/.vim/ftplugin/{filetype}.vim<CR>
 nnoremap <leader>eaf :VimNOut edit ~/.vim/after/ftplugin/{filetype}.vim<CR>
 nnoremap <leader>eef :VimNOut edit ~/.vim/autoload/extra_filetypes/{filetype}.vim<CR>
-nnoremap <leader>es :VimNOut UltiSnipsEdit {filetype}<CR>
 
 " Compiler
-nnoremap <leader>ecc :VimNOut edit ~/.vim/compiler/{compiler}.vim<CR>
+nnoremap <leader>ec :VimNOut edit ~/.vim/compiler/{compiler}.vim<CR>
 nnoremap <leader>ecs :VimNOut edit ~/.vim/integrations/compiler/{files}<CR>
-nnoremap <leader>eca :VimNOut edit ~/.vim/compiler/{files}<CR>
+nnoremap <leader>eac :VimNOut edit ~/.vim/compiler/{files}<CR>
 
 " Fuzzy finder - fzf (files)
 nnoremap <leader>ff :<C-u>FZF<CR>
