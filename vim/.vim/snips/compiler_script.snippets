@@ -1,0 +1,20 @@
+# compiler_script.snippets - Snippets for compiler_script file type
+
+snippet _skel "Skeleton for a compiler script" b
+if exists('current_compiler')
+  finish
+endif
+let current_compiler = '`!v expand('%:t:r')`'
+
+let s:cpo_save = &cpoptions
+set cpoptions&vim
+
+CompilerSet errorformat=${1:%f:\ line\ %l:\ %m}
+
+CompilerSet makeprg=${2:if\ [\ \!\ -x\ %:p\ ];\ then\ chmod\ \+x\ %:p;\ fi;\ %:p}
+
+let &cpoptions = s:cpo_save
+unlet s:cpo_save
+
+finish " Add example output after this line
+endsnippet
