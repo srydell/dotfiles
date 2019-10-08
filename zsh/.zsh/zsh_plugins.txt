@@ -2,6 +2,4 @@ zsh-users/zsh-completions
 zsh-users/zsh-autosuggestions
 zdharma/fast-syntax-highlighting
 
-# async needed for pure
-mafredri/zsh-async
-sindresorhus/pure
+romkatv/powerlevel10k

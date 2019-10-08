@@ -8,9 +8,8 @@
 # Except these
 # Files
 !.gitignore
+!.p10k.zsh
 !.zshrc
 !zsh_plugins.txt
 
 # Directories
-!installs
-!zsh.d

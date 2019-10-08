@@ -17,9 +17,12 @@ install_plugins() {
 	plugin_file=$1
 	if ! command -v antibody > /dev/null 2>&1; then
 		install_antibody $HOME/bin
+		antibody_bin=$HOME/bin/antibody
+	else
+		antibody_bin=$(command -v antibody)
 	fi
 	export ANTIBODY_HOME=$ZDOTDIR/antibody
-	$HOME/bin/antibody bundle < "${plugin_file}" > $ZDOTDIR/zsh_plugins.sh
+	$antibody_bin bundle < "${plugin_file}" > $ZDOTDIR/zsh_plugins.sh
 }
 
 install_plugins "$@"

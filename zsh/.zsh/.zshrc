@@ -6,11 +6,6 @@ if [ ! -f $ZDOTDIR/zsh_plugins.sh ]; then
 fi
 source $ZDOTDIR/zsh_plugins.sh
 
-# Set up the prompt
-autoload -Uz promptinit
-promptinit
-prompt pure
-
 # Load configs, platform specific files are in zsh.d/$(uname)
 for ZSH_FILE in ${ZDOTDIR:-$HOME}/zsh.d{,/$(uname)}/*.zsh; do
 	source "${ZSH_FILE}"
@@ -22,3 +17,6 @@ bindkey -e
 bindkey " " magic-space
 # Accept autosuggest with <C-SPACE>
 bindkey '^ ' autosuggest-accept
+
+# To customize prompt, run `p10k configure` or edit ~/.zsh/.p10k.zsh.
+[[ -f ~/.zsh/.p10k.zsh ]] && source ~/.zsh/.p10k.zsh
