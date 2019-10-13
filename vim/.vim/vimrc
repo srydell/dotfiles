@@ -33,6 +33,11 @@ if !exists('g:currentOS')
   endif
 endif
 
+" Use the bundled xdiff tool
+if has('patch-8.1.0360')
+  set diffopt+=internal,algorithm:patience
+endif
+
 set background=dark
 let g:gruvbox_contrast_dark=1
 silent! colorscheme gruvbox
