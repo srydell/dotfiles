@@ -129,6 +129,26 @@ if(NOT $1_POPULATED)
 endif()
 endsnippet
 
+snippet install "Create an install config for a target" b
+include(GNUInstallDirs)
+install(TARGETS ${1:target_to_install}
+        EXPORT ${PROJECT_NAME}_Targets
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+                COMPONENT ${PROJECT_NAME}_RunTime
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                COMPONENT ${PROJECT_NAME}_RunTime
+                NAMELINK_COMPONENT ${PROJECT_NAME}_Development
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                COMPONENT ${PROJECT_NAME}_Development)
+
+install(EXPORT ${PROJECT_NAME}_Targets
+        DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKEDIR}
+        NAMESPACE ${PROJECT_NAME}::
+        FILE ${PROJECT_NAME}-Targets.cmake
+        COMPONENT ${PROJECT_NAME}_Development)$0
+endsnippet
+
 # Skeletons
 snippet _skel "Skeleton for a cmake script file" b
 include_guard()
