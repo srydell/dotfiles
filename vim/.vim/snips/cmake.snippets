@@ -22,6 +22,20 @@ snippet alib "add_library(...)" b
 add_library(${1:library_name} ${2:sources})$0
 endsnippet
 
+snippet alibv "Add library versioning" b
+# The SOVERSION is used by linkers,
+# should be the major version in semantic versioning
+set_target_properties(${1:library_name}
+                      PROPERTIES SOVERSION
+                                 `!p
+if t[2]:
+    snip.rv = t[2]
+else:
+    snip.rv = ""`
+                                 VERSION
+                                 ${2:1}.${3:0}.${4:0})$0
+endsnippet
+
 snippet asub "add_subdirectory(...)" b
 add_subdirectory(${1:sub_directory})$0
 endsnippet
