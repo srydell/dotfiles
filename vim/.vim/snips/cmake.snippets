@@ -130,7 +130,29 @@ endif()
 endsnippet
 
 snippet install "Create an install config for a target" b
+include(CMakePackageConfigHelpers)
+# To help with tooling trying to link our library
+write_basic_package_version_file(
+    ${PROJECT_NAME}ConfigVersion.cmake
+    VERSION ${0.0.1}
+    COMPATIBILITY SameMajorVersion
+)
+
 include(GNUInstallDirs)
+# Where to install
+set(${PROJECT_NAME}_INSTALL_CMAKEDIR
+        ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+        CACHE STRING “Path to ${PROJECT_NAME} cmake files”
+   )
+
+# Install our cmake files
+install(FILES
+        ${PROJECT_NAME}Config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKEDIR}
+)
+
+# What target to install
 install(TARGETS ${1:target_to_install}
         EXPORT ${PROJECT_NAME}_Targets
         INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
@@ -142,11 +164,21 @@ install(TARGETS ${1:target_to_install}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
                 COMPONENT ${PROJECT_NAME}_Development)
 
+# How to export the target to find_package users
+# NOTE: Should export an alias of your lib in the same way so
+#       the project can be used with add_subdirectory exactly
+#       the same as find_package
 install(EXPORT ${PROJECT_NAME}_Targets
         DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKEDIR}
         NAMESPACE ${PROJECT_NAME}::
         FILE ${PROJECT_NAME}-Targets.cmake
-        COMPONENT ${PROJECT_NAME}_Development)$0
+        COMPONENT ${PROJECT_NAME}_Development)
+
+# To avoid RPATH/RUNPATH on unix
+# Not finding dependencies of dependencies
+if(NOT APPLE)
+    set(CMAKE_INSTALL_RPATH $ORIGIN)
+endif()$0
 endsnippet
 
 # Skeletons
