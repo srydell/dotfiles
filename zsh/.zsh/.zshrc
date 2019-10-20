@@ -1,3 +1,9 @@
+# If instant prompt script is available, use it.
+# This makes the prompt available before all other config is fully loaded
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+	source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # Install plugins if not installed
 if [ ! -f $ZDOTDIR/zsh_plugins.sh ]; then
 	fpath+=($ZDOTDIR/installs)
