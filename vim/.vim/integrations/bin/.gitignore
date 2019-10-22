@@ -1,2 +1,3 @@
 *
 !.gitignore
+!get_cmake_project_name.py

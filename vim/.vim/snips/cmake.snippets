@@ -1,5 +1,9 @@
 # cmake.snippets - Snippets for cmake file type
 
+snippet proj "get proj name" b
+${1:`python3 ~/.vim/integrations/bin/get_cmake_project_name.py`}$0
+endsnippet
+
 snippet if "if statement" b
 if(${1:ON})
 	${0:${VISUAL}}
