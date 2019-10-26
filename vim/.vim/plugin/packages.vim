@@ -20,7 +20,6 @@ call minpac#add('SirVer/ultisnips')
 call minpac#add('srydell/vim-skeleton')
 
 call minpac#add('srydell/vim-n-out')
-
 " Autocompletion
 " NOTE: Arch Linux specific: ncurses5-compat-libs
 "       is needed from AUR for the completion menu
@@ -31,6 +30,9 @@ call minpac#add('benmills/vimux')
 
 " Move through tmux/vim panes with the same keybindings
 call minpac#add('christoomey/vim-tmux-navigator')
+
+" Send code from one pane to another with motions
+call minpac#add('jpalardy/vim-slime')
 
 " Fuzzy finder.
 " NOTE: The fzf binary is installed in .vim/pack/minpac/start/fzf/bin

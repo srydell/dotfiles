@@ -45,6 +45,12 @@ silent! colorscheme gruvbox
 " Always use filetype latex for .tex files
 let g:tex_flavor = 'latex'
 
+" Send to tmux when using slime
+let g:slime_target = 'tmux'
+let g:slime_default_config = {'socket_name': 'default', 'target_pane': '{right-of}'}
+let g:slime_dont_ask_default = 1
+let g:slime_no_mappings = 1
+
 " Make it easier to see tabs and newlines
 set list
 set listchars=tab:▸\ ,eol:¬,trail:·
@@ -207,14 +213,14 @@ nnoremap <leader>ff :<C-u>FZF<CR>
 
 " Find all the TODO/FIXME in current git project
 " :Todo command specified in .vim/plugin/searchtools.vim
-nnoremap <Leader>ft :Todo<CR>
+nnoremap <leader>ft :Todo<CR>
 
 " Search for the current word in the whole directory structure
-nnoremap <Leader>* :Grepper -cword -noprompt<CR>
+nnoremap <leader>* :Grepper -cword -noprompt<CR>
 
 " Search for the current selection
-nmap gs <Plug>(GrepperOperator)
-xmap gs <Plug>(GrepperOperator)
+nmap <leader>gs <Plug>(GrepperOperator)
+xmap <leader>gs <Plug>(GrepperOperator)
 
 " Search for the current word in the whole directory structure
 nnoremap <leader>/ :Grepper<CR>
@@ -323,6 +329,11 @@ nnoremap <silent> <leader>zk :call folding#NextClosedFold('k')<cr>
 " Zoom a vim pane, <C-w>= to re-balance
 nnoremap <silent> <leader>- :wincmd _<cr>:wincmd \|<cr>
 nnoremap <silent> <leader>= :wincmd =<cr>
+
+" Send to tmux pane
+nmap gs <Plug>SlimeMotionSend
+nmap gss <Plug>SlimeLineSend
+xmap gs <Plug>SlimeRegionSend
 
 " H moves to beginning of line and L to end of line
 nnoremap H ^
