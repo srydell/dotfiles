@@ -27,6 +27,7 @@ function! helpDocs#GetHelpDocs(browser, currentOS) abort
   let s:filetypes_and_actions = {
         \ 'cpp': 'http://en.cppreference.com/mwiki/index.php?title=Special%3ASearch&search=SEARCHTERM&button=',
         \ 'cmake': 'https://cmake.org/cmake/help/v' . g:has_cmake_version_string . '/search.html?q=SEARCHTERM&check_keywords=yes&area=default',
+        \ 'elixir': 'https://hexdocs.pm/elixir/search.html?q=SEARCHTERM',
         \ 'default': 'https://duckduckgo.com/?q=FILETYPE+SEARCHTERM&ia=qa',
         \}
 
