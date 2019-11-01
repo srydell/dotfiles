@@ -11,7 +11,12 @@
 				},
 				"compilationDatabaseDirectory": "build"
 			}
+		},
+		"elixirLS": {
+			"command": "~/bin/elixir-ls/rel/language_server.sh",
+			"filetypes": ["elixir", "eelixir"]
 		}
 	},
-	"coc.preferences.diagnostic.locationlist": true
+	"coc.preferences.diagnostic.locationlist": true,
+	"python.jediEnabled": false
 }
