@@ -13,7 +13,7 @@
 			}
 		},
 		"elixirLS": {
-			"command": "~/bin/elixir-ls/rel/language_server.sh",
+			"command": "~/bin/elixir-ls/release/language_server.sh",
 			"filetypes": ["elixir", "eelixir"]
 		}
 	},
