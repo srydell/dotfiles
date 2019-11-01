@@ -14,7 +14,8 @@
 		},
 		"elixirLS": {
 			"command": "~/bin/elixir-ls/release/language_server.sh",
-			"filetypes": ["elixir", "eelixir"]
+			"filetypes": ["elixir", "eelixir"],
+			"dialyzerEnabled": false
 		}
 	},
 	"coc.preferences.diagnostic.locationlist": true,
