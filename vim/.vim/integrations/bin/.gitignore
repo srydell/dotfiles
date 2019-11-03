@@ -1,3 +1,4 @@
 *
 !.gitignore
 !get_cmake_project_name.py
+!clang-format.py
