@@ -12,8 +12,6 @@ cores=2
 # Options to tweak
 # Will be passed when creating the build files
 cmake_extra_args=""
-# If non-empty, it will run ctest
-run_ctest=""
 # Name of the exe, without path
 executable=""
 # extra arguments for the exe
@@ -48,11 +46,6 @@ do
 			executable="$1"
 			shift
 			;;
-		--run_ctest )
-			shift
-			run_ctest="$1"
-			shift
-			;;
 		--cmake_extra_args )
 			shift
 			cmake_extra_args="$1"
@@ -65,21 +58,16 @@ do
 	esac
 done
 
-~/.vim/integrations/compiler/run_cmake.sh --compiler="$compiler" --generator="$generator" --cmake_extra_args="$cmake_extra_args"
+~/.vim/integrations/compiler/run_cmake.sh --compiler="$compiler" --generator="$generator" --build_type="$build_type" --cmake_extra_args="$cmake_extra_args"
 
 # Build libraries and executables
 cmake --build build -j "$cores" || exit
 
-# Check if ctest variable is empty
-if [ -z "$run_ctest" ]; then
-	# Run executable if found
-	for exe in ./build/bin/$executable ./build/$executable
-	do
-		if [ -x "$exe" ]; then
-			$exe "$exe_args"
-			exit
-		fi
-	done
-else
-	cd ./build && ctest
-fi
+# Run executable if found
+for exe in ./build/bin/$executable ./build/$executable
+do
+	if [ -x "$exe" ]; then
+		$exe "$exe_args"
+		exit
+	fi
+done
