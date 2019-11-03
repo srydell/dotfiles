@@ -1,7 +1,7 @@
 if exists('current_compiler')
   finish
 endif
-let current_compiler = 'cmake_ninja'
+let current_compiler = 'ctest'
 
 let s:cpo_save = &cpoptions
 set cpoptions&vim
@@ -25,7 +25,8 @@ let s:options = [
       \ '--generator\ ' . 'Ninja',
       \ '--build_type\ ' . 'Release',
       \ '--cores\ ' . g:number_of_threads,
-      \ '--executable\ %:t:r'
+      \ '--extra_cmake_args\ -DENABLE_TESTING=ON',
+      \ '--run_ctest\ on',
       \ ]
 
 CompilerSet makeprg=\~/\.vim/integrations/compiler/build_and_run_cmake\.sh
