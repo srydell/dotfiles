@@ -20,3 +20,7 @@ CompilerSet makeprg=cmake\ \-P\ %:p
 
 let &cpoptions = s:cpo_save
 unlet s:cpo_save
+
+finish
+CMake Error at test.cmake:5 (whatever)
+  This is an error because...
