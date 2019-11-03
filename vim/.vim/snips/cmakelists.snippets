@@ -85,13 +85,18 @@ set_target_properties($3
                       CXX_EXTENSIONS
                       OFF)$0
 
-option(BUILD_TESTING "Build the testing tree" ON)
-if(BUILD_TESTING AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
-  # TODO: Add tests
-endif()
+# Only build tests and benchmarks if building this project directly
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  option(ENABLE_TESTING "Build the testing tree" OFF)
+  if(ENABLE_TESTING)
+    # enable_testing()
+    # add_subdirectory(tests)
+    # TODO: Add benchmarks
+  endif()
 
-option(BUILD_BENCHMARKS "Build the benchmarks" ON)
-if(BUILD_BENCHMARKS AND (PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR))
-  # TODO: Add benchmarks
+  option(ENABLE_BENCHMARKS "Build the benchmarks" OFF)
+  if(ENABLE_BENCHMARKS)
+    # TODO: Add benchmarks
+  endif()
 endif()
 endsnippet
