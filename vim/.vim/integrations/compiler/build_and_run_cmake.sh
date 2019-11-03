@@ -2,7 +2,9 @@
 ## Maintainer: Simon Rydell
 
 # Default options
-compiler="clang++"
+# NOTE: Compiler only needs to be clang/gcc,
+#       the script handles for C++ etc
+compiler="clang"
 generator="Ninja"
 build_type="Release"
 cores=2
@@ -63,23 +65,10 @@ do
 	esac
 done
 
-# Full path of the supplied compiler
-compiler=$(command -v "$compiler")
+~/.vim/integrations/compiler/run_cmake.sh --compiler="$compiler" --generator="$generator" --cmake_extra_args="$cmake_extra_args"
 
-# CMake options
-# Example:
-#    generator = Ninja
-#    build_type = Release
-#    compiler = clang++
-cmake -S. -Bbuild -G "$generator" -D CMAKE_BUILD_TYPE="$build_type" -D CMAKE_CXX_COMPILER="$compiler" "$cmake_extra_args"> /dev/null || exit
-
-# Build executable
+# Build libraries and executables
 cmake --build build -j "$cores" || exit
-
-# Link the database
-if [ ! -f "$PWD/compile_commands.json" ] && [ -f "$PWD/build/compile_commands.json" ]; then
-	ln -s "$PWD/build/compile_commands.json" "$PWD/compile_commands.json"
-fi
 
 # Check if ctest variable is empty
 if [ -z "$run_ctest" ]; then
