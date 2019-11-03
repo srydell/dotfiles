@@ -42,7 +42,7 @@ endfunction
 function! integrations#installation#GetClangHelper() abort
   let l:url = 'https://llvm.org/svn/llvm-project/cfe/trunk/tools/clang-format/clang-format.py'
 
-  execute '!wget --directory-prefix=' . g:integrations_dir . ' ' . l:url
+  execute '!wget --directory-prefix=' . g:integrations_dir . '/bin/' . ' ' . l:url
 
   echomsg 'Downloaded clang-format helper script'
 endfunction

@@ -11,12 +11,12 @@ endif
 
 function! s:RunClangFormat()
   let l:formatdiff = 1
-  py3file ~/.vim/integrations/clang-format.py
+  py3file ~/.vim/integrations/bin/clang-format.py
 endfunction
 
 if executable('clang-format')
   " Check if the helper is downloaded
-  if !filereadable(expand('~/.vim/integrations/clang-format.py'))
+  if !filereadable(expand('~/.vim/integrations/bin/clang-format.py'))
     call integrations#installation#GetClangHelper()
   endif
 
