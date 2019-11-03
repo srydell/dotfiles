@@ -74,7 +74,8 @@ fi
 #    build_type = Release
 #    cxx_compiler = clang++
 #    c_compiler = clang
-cmake -S. -Bbuild -G "$generator" -DCMAKE_CXX_COMPILER="$cxx_compiler" -DCMAKE_C_COMPILER="$c_compiler" -DCMAKE_BUILD_TYPE="$build_type" "$cmake_extra_args" || exit
+# NOTE: cmake_extra_args should be split, since it could contain multiple commands
+cmake -S. -Bbuild -G "$generator" -DCMAKE_CXX_COMPILER="$cxx_compiler" -DCMAKE_C_COMPILER="$c_compiler" -DCMAKE_BUILD_TYPE="$build_type" $cmake_extra_args || exit
 
 # Link the database
 if [ ! -f "$PWD/compile_commands.json" ] && [ -f "$PWD/build/compile_commands.json" ]; then
