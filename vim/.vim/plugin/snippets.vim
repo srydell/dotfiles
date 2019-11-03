@@ -7,9 +7,9 @@ let g:loaded_srydell_snippets = 1
 let g:UltiSnipsSnippetDirectories = ['~/.vim/snips', 'snips']
 
 " Expand and cycle settings for snippets
-let g:UltiSnipsExpandTrigger = '<C-j>'
-let g:UltiSnipsJumpForwardTrigger = '<C-j>'
-let g:UltiSnipsJumpBackwardTrigger = '<C-k>'
+let g:UltiSnipsExpandTrigger = '<C-e>'
+let g:UltiSnipsJumpForwardTrigger = '<C-e>'
+let g:UltiSnipsJumpBackwardTrigger = '<C-h>'
 
 " Where to open split on :UltiSnipsEdit
 let g:UltisnipsEditSplit = 'vertical'
