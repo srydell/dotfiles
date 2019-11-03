@@ -21,15 +21,13 @@ endif
 CompilerSet errorformat&
 
 let s:options = [
-      \ '--compiler\ ' . 'clang\+\+',
-      \ '--generator\ ' . 'Ninja',
       \ '--build_type\ ' . 'Release',
       \ '--cores\ ' . g:number_of_threads,
       \ '--extra_cmake_args\ -DENABLE_TESTING=ON',
       \ '--run_ctest\ on',
       \ ]
 
-CompilerSet makeprg=\~/\.vim/integrations/compiler/build_and_run_cmake\.sh
+CompilerSet makeprg=\~/\.vim/integrations/compiler/run_ctest\.sh
 
 " Set options
 execute('CompilerSet makeprg+=\ ' . join(s:options, '\ '))
