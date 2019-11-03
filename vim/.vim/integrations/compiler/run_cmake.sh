@@ -5,15 +5,14 @@
 # Options:
 #     --compiler $compiler
 #         => $compiler one of [clang, gcc]
-
+#
 #     --generator $generator
 #         => $generator could be e.g. Ninja
-
+#
 #     --build_type $build_type
 #         => $build_type could be e.g. Debug, Release, ...
-
-#     --cmake_extra_args $cmake_extra_args
-#         => $cmake_extra_args is sent to cmake when creating the build files
+#
+#     The rest of the arguments are passed on to the cmake call
 
 # Default options
 c_compiler=""
@@ -21,41 +20,44 @@ cxx_compiler=""
 generator="Ninja"
 build_type="Release"
 cmake_extra_args=""
-for option in "$@"
+
+while [ -n "$*" ]
 do
 	# Shift once to the option value,
 	# and then once past it
-	case $option in
+	case $1 in
 		--compiler )
 			shift
-			compiler="$1"
-			case $compiler in
+			case $1 in
 				gcc )
-					c_compiler="gcc"
-					cxx_compiler="g++"
+					c_compiler="$(command -v gcc)"
+					cxx_compiler="$(command -v g++)"
 					;;
 				clang )
-					c_compiler="clang"
-					cxx_compiler="clang++"
+					c_compiler="$(command -v clang)"
+					cxx_compiler="$(command -v clang++)"
 					;;
 			esac
 			shift
+			continue
 			;;
 		--generator )
 			shift
 			generator="$1"
 			shift
+			continue
 			;;
 		--build_type )
 			shift
 			build_type="$1"
 			shift
+			continue
 			;;
-		--cmake_extra_args )
-			shift
-			cmake_extra_args="$1"
-			shift
-			;;
+		* )
+			# The rest of the arguments
+			# are passed to the cmake build
+			cmake_extra_args="$*"
+			break
 	esac
 done
 
@@ -64,17 +66,15 @@ if [ -n "$c_compiler" ] && [ -n "$cxx_compiler" ]; then
 	# Full path of the supplied compiler
 	c_compiler=$(command -v "$c_compiler")
 	cxx_compiler=$(command -v "$cxx_compiler")
-	cmake_compiler_args="-D CMAKE_CXX_COMPILER=$cxx_compiler -D CMAKE_CXX_COMPILER=$c_compiler"
-else
-	cmake_compiler_args=""
 fi
 
 # CMake options
 # Example:
 #    generator = Ninja
 #    build_type = Release
-#    compiler = clang++
-cmake -S. -Bbuild -G "$generator" -D CMAKE_BUILD_TYPE="$build_type" "$cmake_compiler_args" "$cmake_extra_args" > /dev/null || exit
+#    cxx_compiler = clang++
+#    c_compiler = clang
+cmake -S. -Bbuild -G "$generator" -DCMAKE_CXX_COMPILER="$cxx_compiler" -DCMAKE_C_COMPILER="$c_compiler" -DCMAKE_BUILD_TYPE="$build_type" "$cmake_extra_args" || exit
 
 # Link the database
 if [ ! -f "$PWD/compile_commands.json" ] && [ -f "$PWD/build/compile_commands.json" ]; then

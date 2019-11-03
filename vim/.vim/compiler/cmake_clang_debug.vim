@@ -39,11 +39,12 @@ CompilerSet errorformat=
       \%DMaking\ %*\\a\ in\ %f
 
 let s:options = [
-      \ '--compiler\ ' . 'clang\+\+',
+      \ '--compiler\ ' . 'clang',
       \ '--generator\ ' . 'Ninja',
       \ '--build_type\ ' . 'Debug',
       \ '--cores\ ' . g:number_of_threads,
-      \ '--executable\ %:t:r'
+      \ '--executable\ %:t:r',
+      \ '--extra_cmake_args\ \"\-DENABLE_TESTING\=ON\ \-DENABLE_BENCHMARKS\=ON\"',
       \ ]
 
 CompilerSet makeprg=\~/\.vim/integrations/compiler/build_and_run_cmake\.sh

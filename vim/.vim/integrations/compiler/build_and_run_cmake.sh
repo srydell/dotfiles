@@ -16,49 +16,57 @@ cmake_extra_args=""
 executable=""
 # extra arguments for the exe
 exe_args=""
-for option in "$@"
+
+while [ -n "$*" ]
 do
 	# Shift once to the option value,
 	# and then once past it
-	case $option in
+	case $1 in
 		--compiler )
 			shift
 			compiler="$1"
 			shift
+			continue
 			;;
 		--generator )
 			shift
 			generator="$1"
 			shift
+			continue
 			;;
 		--build_type )
 			shift
 			build_type="$1"
 			shift
+			continue
 			;;
 		--cores )
 			shift
 			cores="$1"
 			shift
+			continue
 			;;
 		--executable )
 			shift
 			executable="$1"
 			shift
+			continue
 			;;
-		--cmake_extra_args )
+		--extra_cmake_args )
 			shift
 			cmake_extra_args="$1"
 			shift
+			continue
 			;;
 		* )
 			# The rest of the arguments
 			# are passed to the executable
 			exe_args="$*"
+			break
 	esac
 done
 
-~/.vim/integrations/compiler/run_cmake.sh --compiler="$compiler" --generator="$generator" --build_type="$build_type" --cmake_extra_args="$cmake_extra_args"
+~/.vim/integrations/compiler/run_cmake.sh --compiler "$compiler" --generator "$generator" --build_type "$build_type" "$cmake_extra_args" || exit
 
 # Build libraries and executables
 cmake --build build -j "$cores" || exit
