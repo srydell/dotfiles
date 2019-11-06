@@ -21,7 +21,6 @@ endif
 CompilerSet errorformat&
 
 let s:options = [
-      \ '--build_type\ ' . 'Release',
       \ '--cores\ ' . g:number_of_threads,
       \ '--extra_cmake_args\ -DENABLE_TESTING=ON',
       \ '--output-on-failure',

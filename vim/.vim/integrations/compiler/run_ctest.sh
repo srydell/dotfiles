@@ -2,7 +2,6 @@
 ## Maintainer: Simon Rydell
 
 # Default options
-build_type="Release"
 cores=2
 
 # Options to tweak
@@ -14,11 +13,6 @@ do
 	# Shift once to the option value,
 	# and then once past it
 	case $option in
-		--build_type )
-			shift
-			build_type="$1"
-			shift
-			;;
 		--cores )
 			shift
 			cores="$1"
@@ -36,7 +30,7 @@ do
 	esac
 done
 
-~/.vim/integrations/compiler/run_cmake.sh --build_type="$build_type" $extra_cmake_args
+~/.vim/integrations/compiler/run_cmake.sh $extra_cmake_args
 
 # Build libraries and executables
 cmake --build build -j "$cores" || exit
