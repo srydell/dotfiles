@@ -7,7 +7,7 @@ cores=2
 
 # Options to tweak
 # Will be passed when creating the build files
-cmake_extra_args=""
+extra_cmake_args=""
 ctest_args=""
 for option in "$@"
 do
@@ -24,9 +24,9 @@ do
 			cores="$1"
 			shift
 			;;
-		--cmake_extra_args )
+		--extra_cmake_args )
 			shift
-			cmake_extra_args="$1"
+			extra_cmake_args="$1"
 			shift
 			;;
 		* )
@@ -36,9 +36,9 @@ do
 	esac
 done
 
-~/.vim/integrations/compiler/run_cmake.sh --build_type="$build_type" --cmake_extra_args="$cmake_extra_args"
+~/.vim/integrations/compiler/run_cmake.sh --build_type="$build_type" $extra_cmake_args
 
 # Build libraries and executables
 cmake --build build -j "$cores" || exit
 
-cd ./build && ctest "$ctest_args"
+cd ./build && ctest $ctest_args
