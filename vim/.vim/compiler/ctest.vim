@@ -22,7 +22,6 @@ CompilerSet errorformat&
 
 let s:options = [
       \ '--cores\ ' . g:number_of_threads,
-      \ '--extra_cmake_args\ -DENABLE_TESTING=ON',
       \ '--output-on-failure',
       \ ]
 
