@@ -1,14 +1,30 @@
-if exists('g:loaded_srydell_lint')
+if exists('g:loaded_srydell_ale')
   finish
 endif
-let g:loaded_srydell_lint = 1
+let g:loaded_srydell_ale = 1
 
-let g:ale_fixers = {'cmake': ['cmakeformat']}
+set encoding=utf-8
+scriptencoding utf-8
+
+let g:ale_fixers = {
+      \ 'cmake': ['cmakeformat'],
+      \ 'javascript': ['prettier'],
+      \}
+
+let b:ale_linters = {
+      \ 'cpp': ['cppcheck'],
+      \ 'javascript': ['eslint'],
+      \ 'python': ['pylint'],
+      \ }
+
 let g:ale_fix_on_save = 1
 
+" cmake-format shouldn't touch the comments
+let g:ale_cmake_cmakeformat_options = '--enable-markup false'
+
 " Appear in the left bar
-let g:ale_sign_error = '>>'
-let g:ale_sign_warning = '--'
+let g:ale_sign_error = '●'
+let g:ale_sign_warning = '⚠'
 
 " Use the loclist (like a local quicklist) to show errors
 let g:ale_set_loclist = 1
