@@ -62,6 +62,12 @@ project(${1:`!v split(getcwd(), '/')[-1] " Directory name`} VERSION 0.1 LANGUAGE
 # autocompletion
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Use ccache if available
+find_program(CCACHE ccache)
+if(CCACHE)
+  set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+endif()
+
 # If no build type is provided explicitly, set it to Release
 if(NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
   if(NOT CMAKE_BUILD_TYPE)
