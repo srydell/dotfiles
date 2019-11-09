@@ -1,5 +1,4 @@
 {
-	"suggest.snippetIndicator": "~",
 	"languageserver": {
 		"ccls": {
 			"command": "ccls",
@@ -18,6 +17,8 @@
 			"dialyzerEnabled": false
 		}
 	},
+	"suggest.snippetIndicator": "~",
+	"diagnostic.displayByAle": true,
 	"coc.preferences.diagnostic.locationlist": true,
 	"python.jediEnabled": false
 }
