@@ -85,6 +85,24 @@ ${1:functionName}() {
 }
 endsnippet
 
+snippet handle_args "Case switch way of dealing with input args" b
+for option in "$@"
+do
+	# Shift once to the option value,
+	# and then once past it
+	case $option in
+		--${1:option1} )
+			shift
+			$1="\$1"
+			shift
+			;;$0
+		* )
+			# The rest of the arguments
+			rest_of_args="$*"
+	esac
+done
+endsnippet
+
 # Skeletons
 snippet _skel "Skeleton for shell scripts" b
 #!/bin/sh
