@@ -23,6 +23,18 @@ bindkey -e
 bindkey " " magic-space
 # Accept autosuggest with <C-SPACE>
 bindkey '^ ' autosuggest-accept
+# Use shift+tab to autocomplete backwards
+bindkey '^[[Z' reverse-menu-complete
+
+setopt CORRECT          # Correct command names
+setopt ALWAYS_TO_END    # Cursor moves to end of completion
+setopt AUTO_LIST        # List choices
+setopt AUTO_MENU        # Automatically use menu
+setopt AUTO_PARAM_SLASH # If completion is directory add trailing slash
+setopt COMPLETE_IN_WORD # Also complete in word
+setopt PATH_DIRS        # Path search even on command names with slashes
+unsetopt CASE_GLOB      # Globbing case insensitively
+unsetopt MENU_COMPLETE  # Always display menu, don't directly insert
 
 # To customize prompt, run `p10k configure` or edit ~/.zsh/.p10k.zsh.
 [[ -f ~/.zsh/.p10k.zsh ]] && source ~/.zsh/.p10k.zsh
