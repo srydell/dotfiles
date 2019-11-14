@@ -2,9 +2,11 @@
 ## Maintainer: Simon Rydell
 ## Date created: Nov 13, 2019
 
+# One of [clang++, g++]
 compiler=""
-flags=""
+# Path to file that should be compiled
 path=""
+# Name of the outputed executable
 executable=""
 executable_args=""
 
@@ -91,10 +93,13 @@ do
 	esac
 done
 
-if [ -z $compiler ] || [ -z $path ] || [ -z $executable ]; then
+if [ -z "$compiler" ] || [ -z "$path" ] || [ -z "$executable" ]; then
 	echo "Not enough input specified."
 	echo "Input was:"
 	echo "$input"
+	echo "Compiler: $compiler"
+	echo "Path: $path"
+	echo "Executable: $executable"
 	exit 1
 fi
 
@@ -105,9 +110,9 @@ if [ ! -d "$bin_dir" ]; then
 fi
 
 # Compile file to bin
-echo "$compiler" -std=c++17 -O3 -o "$bin_dir/$executable" $path $flags
+$compiler -std=c++17 -O3 -o "$bin_dir/$executable" $path $flags
 
 # If there is an executable, run it
 if [ -n "$executable" ] && [ -x "$bin_dir/$executable" ]; then
-	echo "$bin_dir/$executable" $executable_args
+	"$bin_dir/$executable" $executable_args
 fi
