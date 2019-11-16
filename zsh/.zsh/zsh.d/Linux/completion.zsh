@@ -2,9 +2,9 @@
 autoload -Uz compinit
 
 # Only load completions once a day
-if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
 	compinit
-	touch .zcompdump
+	touch ${ZDOTDIR}/.zcompdump
 else
 	compinit -C
 fi
