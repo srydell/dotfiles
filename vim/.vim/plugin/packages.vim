@@ -53,6 +53,9 @@ call minpac#add('elixir-editors/vim-elixir')
 " html, css, json and javascript formatter
 call minpac#add('maksimr/vim-jsbeautify', {'type': 'opt'})
 
+" Debugging
+call minpac#add('puremourning/vimspector')
+
 " Python formatter
 call minpac#add('python/black', {'type': 'opt'})
 

@@ -45,6 +45,9 @@ silent! colorscheme gruvbox
 " Always use filetype latex for .tex files
 let g:tex_flavor = 'latex'
 
+" Use default bindings for vimspector
+let g:vimspector_enable_mappings = 'HUMAN'
+
 " Send to tmux when using slime
 let g:slime_target = 'tmux'
 let g:slime_default_config = {'socket_name': 'default', 'target_pane': '{right-of}'}
