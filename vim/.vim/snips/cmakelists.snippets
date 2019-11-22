@@ -89,7 +89,9 @@ set_target_properties($3
                       CXX_STANDARD_REQUIRED
                       ON
                       CXX_EXTENSIONS
-                      OFF)$0
+                      OFF
+                      CXX_STANDARD
+                      ${4:17})$0
 
 # Only build tests and benchmarks if building this project directly
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
