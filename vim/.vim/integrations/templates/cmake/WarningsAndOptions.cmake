@@ -13,8 +13,8 @@ if("${CMAKE_CXX_COMPILER_ID}" MATCHES "MSVC")
   target_compile_options(
     project_warnings
     INTERFACE
-      /W4
-      /WX
+      /W4 # Highest level of warnings
+      /WX # Treat warnings as errors
       "/permissive-"
       /w14242 # 'identfier': conversion from 'type1' to 'type1', possible loss of data¬
       /w14254 # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data¬
