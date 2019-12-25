@@ -35,23 +35,3 @@ export XDG_CONFIG_HOME=$HOME/.config
 # Always prompt for gpg password in the terminal instead of gui popup
 GPG_TTY="$(tty)"
 export GPG_TTY
-
-case "$(uname)" in
-	Linux )
-		export PATH="/usr/lib/ccache/bin/:$PATH"
-		# Find the flags programmatically. Good for not blowing up your lesser machine :)
-		LFLAG=$(grep -c '^processor' /proc/cpuinfo)
-		((JFLAG=LFLAG+1))
-		export MAKEFLAGS="-j$JFLAG -l$LFLAG"
-		;;
-	Darwin )
-		# Use llvm clang
-		export PATH="/usr/local/opt/llvm/bin:$PATH"
-		export LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"
-		export CPPFLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/llvm/include/c++/v1/"
-
-		# Let brew programs come first
-		export PATH="/usr/local/sbin:$PATH"
-		export PATH="/opt/local/bin:$PATH"
-		;;
-esac
