@@ -79,3 +79,16 @@ do
 		exit
 	fi
 done
+
+# If it is a test we might need to filter the output so the paths are absolute
+# (catch2 likes to report relative paths from the build dir)
+for test_exe in ./build/tests/$executable ./build/test/$executable
+do
+	if [ -x "$test_exe" ]; then
+
+		# NOTE: That this will replace any line that starts with two dots (..) with the $PWD
+		#       I used commas (,) as separators to avoid interference with the forward slashes (/)
+		$test_exe $exe_args | sed -e 's,\(^\.\.\)/,'"$PWD/"','
+		exit
+	fi
+done
