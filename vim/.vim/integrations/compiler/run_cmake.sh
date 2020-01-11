@@ -80,4 +80,12 @@ cmake -S. -Bbuild -G "$generator" -DCMAKE_CXX_COMPILER="$cxx_compiler" -DCMAKE_C
 # Link the database
 if [ ! -f "$PWD/compile_commands.json" ] && [ -f "$PWD/build/compile_commands.json" ]; then
 	ln -s "$PWD/build/compile_commands.json" "$PWD/compile_commands.json"
+
+	# Fix relative paths in Ninja compiler
+	# https://gitlab.kitware.com/cmake/cmake/issues/13894
+	# https://github.com/ninja-build/ninja/issues/1251
+	if [ "$generator" = "Ninja" ]; then
+		# NOTE: I used commas (,) as separators to avoid interference with the forward slashes (/)
+		sed -i "$PWD/build/compile_commands.json" -e 's,\(\.\.\)/,'"$PWD/"',g'
+	fi
 fi
