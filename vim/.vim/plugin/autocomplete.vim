@@ -4,12 +4,12 @@ endif
 let g:loaded_srydell_autocomplete = 1
 
 " This file is used for autocompletion config.
-" Mostly for CocVim 
+" Mostly for CocVim
 
 " " Install extensions if not installed
 " call coc#add_extension(
 " 			\'coc-json',
-" 			\'coc-python'
+" 			\'coc-python',
 " 			\'coc-ultisnips',
 " 			\'coc-vimlsp',
 " 			\)
