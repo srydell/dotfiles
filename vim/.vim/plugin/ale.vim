@@ -6,12 +6,14 @@ let g:loaded_srydell_ale = 1
 set encoding=utf-8
 scriptencoding utf-8
 
+let g:ale_c_parse_compile_commands = 1
+
 let g:ale_fixers = {
       \ 'cmake': ['cmakeformat'],
       \ 'javascript': ['prettier'],
       \}
 
-let b:ale_linters = {
+let g:ale_linters = {
       \ 'cpp': ['cppcheck'],
       \ 'javascript': ['eslint'],
       \ 'python': ['pylint'],
