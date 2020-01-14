@@ -1,7 +1,47 @@
 # catch2.snippets - Snippets for catch2 file type
 
-snippet r "REQUIRE" b
+snippet c "CHECK: Report on fail but continue" "snip.visual_text" be
+CHECK(${1:${VISUAL:}});$0
+endsnippet
+
+snippet c "CHECK: Report on fail but continue" b
+CHECK(${1:1 == 1});$0
+endsnippet
+
+snippet r "REQUIRE: Report on fail and stop" "snip.visual_text" be
+REQUIRE(${1:${VISUAL:}});$0
+endsnippet
+
+snippet r "REQUIRE: Report on fail and stop" b
 REQUIRE(${1:1 == 1});$0
+endsnippet
+
+snippet rthat "REQUIRE_THAT" "snip.visual_text" be
+REQUIRE_THAT(${1:${VISUAL:}});$0
+endsnippet
+
+snippet rthat "REQUIRE_THAT" b
+REQUIRE_THAT(${1:1 == 1});$0
+endsnippet
+
+snippet i "INFO: Log on failure" b
+INFO("$1");$0
+endsnippet
+
+snippet cap "CAPTURE: Log a variable on failure" b
+CAPTURE(${1:varName});$0
+endsnippet
+
+snippet s "SECTION" "snip.visual_text" be
+SECTION("${1:Description of what will happen}") {
+	${0:${VISUAL:}}
+}
+endsnippet
+
+snippet s "SECTION" b
+SECTION("${1:Description of what will happen}") {
+	$0
+}
 endsnippet
 
 snippet test "Test case" b

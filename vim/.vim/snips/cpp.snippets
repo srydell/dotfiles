@@ -61,6 +61,12 @@ ${1:void} ${2:FunctionName}(${3:param}) {
 }
 endsnippet
 
+snippet lambda "A lambda expression" b
+auto ${1:f} = [$2]($3) {
+	${0:${VISUAL:}}
+};
+endsnippet
+
 snippet ns "Namespace" b
 namespace ${1:`!v split(getcwd(), '/')[-1] " Directory name`} {
 	${0:${VISUAL:}}
@@ -194,7 +200,7 @@ BENCHMARK(BM_$1);
 endsnippet
 
 snippet anyof "std::any_of" b
-std::any_of(${1:container}.begin(), $1.end(), [](${2:int ${3:i}}) { return ${4:$3 > 0}; });
+std::any_of(${1:container}.begin(), $1.end(), [](${2:auto const& ${3:i}}) { return $4; });
 endsnippet
 
 # Skeletons
