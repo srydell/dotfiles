@@ -24,7 +24,7 @@
 		}
 	},
 	"suggest.snippetIndicator": "~",
-	"diagnostic.displayByAle": true,
+	"diagnostic.displayByAle": false,
 	"coc.preferences.diagnostic.locationlist": true,
 	"python.jediEnabled": false
 }
