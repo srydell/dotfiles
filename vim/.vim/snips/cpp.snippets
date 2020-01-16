@@ -68,7 +68,11 @@ auto ${1:f} = [$2]($3) {
 endsnippet
 
 snippet ns "Namespace" b
-namespace ${1:`!v split(getcwd(), '/')[-1] " Directory name`} {
+namespace ${1:`!p
+# Assume we are in the root of the project
+# and one level in is src/include so for src/path/to/file.cpp we get
+# path::to
+snip.rv = '::'.join(path.split('/')[1:-1])`} {
 	${0:${VISUAL:}}
 }
 endsnippet
