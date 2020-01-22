@@ -23,6 +23,11 @@ gco() {
 	git checkout "$(echo "$target" | awk '{print $2}')"
 }
 
+# Create and enter directories
+mkd() {
+	mkdir -p "$@" && cd "$@"
+}
+
 # tmux attach and if an argument is passed, try to attach to that session
 ta() {
 	if [[ -z $1 ]]; then
