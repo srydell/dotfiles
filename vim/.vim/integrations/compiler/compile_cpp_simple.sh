@@ -106,7 +106,7 @@ fi
 bin_dir="$PWD/build/bin"
 # Create bin
 if [ ! -d "$bin_dir" ]; then
-	echo mkdir -p "$bin_dir"
+	mkdir -p "$bin_dir"
 fi
 
 # Compile file to bin
