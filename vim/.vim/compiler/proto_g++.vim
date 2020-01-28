@@ -9,7 +9,7 @@ set cpoptions&vim
 let s:options = [
       \ '--path\ %:p',
       \ '--executable\ %:t:r',
-      \ '--compiler\ ' . 'clang++',
+      \ '--compiler\ ' . 'g++',
       \ ]
 
 CompilerSet makeprg=\~/\.vim/integrations/compiler/compile_cpp_simple\.sh
