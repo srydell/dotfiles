@@ -6,7 +6,10 @@ let current_compiler = 'groovy'
 let s:cpo_save = &cpoptions
 set cpoptions&vim
 
-CompilerSet errorformat=''
+" /path/to/file.groovy: 82: expecting ']', found ')' @ line 82, column 70.
+"     ["a", "b", "c") {
+CompilerSet errorformat=
+      \%f:\ %l:%m
 
 CompilerSet makeprg=groovy\ %:p
 
