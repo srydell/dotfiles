@@ -49,3 +49,7 @@ indent_style = tab
 [*.{sh,zsh,zshrc}]
 indent_style = tab
 indent_size = 4
+
+[*.{groovy,jenkins}]
+indent_style = space
+indent_size = 4
