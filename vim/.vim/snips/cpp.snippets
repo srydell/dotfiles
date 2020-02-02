@@ -42,6 +42,12 @@ struct ${1:`!p snip.rv = snip.basename or "StructName"`} {
 };$0
 endsnippet
 
+snippet enum "enum class"
+enum class ${1:Name} {
+	${0:${VISUAL:}}
+};
+endsnippet
+
 snippet func "Basic function template" b
 ${1:void} ${2:FunctionName}(${3:param}) {
 	${0:${VISUAL:}}
@@ -189,7 +195,7 @@ endsnippet
 snippet switch "Switch statement" b
 switch (${1:${VISUAL}}) {
 	case ${2:firstCase}:
-		${3:Do when $2}
+		${3:// Do when $2}
 		break;$0
 }
 endsnippet
