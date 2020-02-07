@@ -21,7 +21,7 @@ install_plugins() {
 	else
 		antibody_bin=$(command -v antibody)
 	fi
-	export ANTIBODY_HOME=$ZDOTDIR/antibody
+	export ANTIBODY_HOME=${HOME}/.cache/antibody
 	$antibody_bin bundle < "${plugin_file}" > $ZDOTDIR/zsh_plugins.sh
 }
 
