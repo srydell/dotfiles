@@ -48,13 +48,20 @@ enum class ${1:Name} {
 };
 endsnippet
 
-snippet func "Basic function template" b
+snippet funct "Basic template function" b
+template <typename ${1:T}>
+${2:void} ${3:FunctionName}(${4:param}) {
+	${0:${VISUAL:}}
+}
+endsnippet
+
+snippet func "Basic function" b
 ${1:void} ${2:FunctionName}(${3:param}) {
 	${0:${VISUAL:}}
 }
 endsnippet
 
-snippet fnc "Basic C++ doxygen function template" b
+snippet fnc "Basic C++ doxygen function" b
 /**
 * @brief: ${4:brief}
 *

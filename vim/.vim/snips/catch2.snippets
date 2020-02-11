@@ -45,7 +45,7 @@ SECTION("${1:Description of what will happen}") {
 endsnippet
 
 snippet test "Test case" b
-TEST_CASE("${1:Brief about the test}", "[${2:funcName}]") {
+TEST_CASE("${1:Brief about the test}", "[${2:`!v expand('%:t:r') " filename without extension`}]") {
 	$0
 }
 endsnippet
