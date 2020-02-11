@@ -29,7 +29,7 @@ if !exists('g:currentOS')
   if g:currentOS ==# 'Darwin'
     let g:browser = 'Safari'
   elseif g:currentOS ==# 'Linux'
-    let g:browser = 'qutebrowser'
+    let g:browser = 'firefox-developer-edition'
   endif
 endif
 
@@ -194,7 +194,7 @@ set shell=sh
 " <leader><lowerCaseLetter> for harmless commands
 " <leader><upperCaseLetter> for potentially harmful commands
 
-" Open buffer and edit 
+" Open buffer and edit
 nnoremap <leader>ev :VimNOut edit ~/.vim/vimrc<CR>
 nnoremap <leader>et :VimNOut edit ~/.tmux.conf<CR>
 nnoremap <leader>ep :VimNOut edit ~/.vim/plugin/projectionist.vim<CR>
