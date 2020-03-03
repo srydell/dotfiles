@@ -77,8 +77,8 @@ call minpac#add('pangloss/vim-javascript', {'type': 'opt'})
 " Operators which comment out text based on filetype
 call minpac#add('tpope/vim-commentary')
 
-" :Make command with synchronized tmux/quickfix list
-call minpac#add('tpope/vim-dispatch')
+" Asynchronously run tasks (can be used with :make)
+call minpac#add('skywind3000/asyncrun.vim')
 
 " Add end, fi, endfunction and so on automatically
 call minpac#add('tpope/vim-endwise')
