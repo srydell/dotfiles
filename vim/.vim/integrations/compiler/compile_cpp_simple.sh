@@ -27,6 +27,9 @@ common_flags="\
 	-Wdouble-promotion \
 	-Wdate-time \
 	-Wformat=2 \
+	-pthread \
+	-std=c++17 \
+	-O3 \
 	"
 
 clang_flags="\
@@ -110,7 +113,7 @@ if [ ! -d "$bin_dir" ]; then
 fi
 
 # Compile file to bin
-$compiler -std=c++17 -O3 -o "$bin_dir/$executable" $path $flags
+$compiler -o "$bin_dir/$executable" $path $flags
 
 # If there is an executable, run it
 if [ -n "$executable" ] && [ -x "$bin_dir/$executable" ]; then
