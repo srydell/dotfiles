@@ -10,6 +10,12 @@ if(${1:ON})
 endif()
 endsnippet
 
+snippet forin "for each loop" b
+foreach(${1:loopVar} ${2:var0 var1})
+  ${3:message(STATUS $1)}$0
+endforeach()
+endsnippet
+
 snippet target "A full target (executable or library)" b
 add_${2:executable}(${3:executable_name} ${4:${5:main}.cpp})
 target_link_libraries($3 PRIVATE project_warnings project_options)
