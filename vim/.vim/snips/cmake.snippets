@@ -108,6 +108,14 @@ snippet m "message" b
 message(${1:STATUS} "${2:${VISUAL}}")$0
 endsnippet
 
+snippet mf "message fatal error" b
+message(FATAL_ERROR "${1:${VISUAL}}")$0
+endsnippet
+
+snippet mw "message warning" b
+message(WARNING "${1:${VISUAL}}")$0
+endsnippet
+
 snippet runpython "Setup and run a python custom target" b
 # Generate helpers for the tests
 find_package(Python REQUIRED)

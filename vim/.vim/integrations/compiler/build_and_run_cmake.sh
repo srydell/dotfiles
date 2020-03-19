@@ -69,7 +69,7 @@ done
 ~/.vim/integrations/compiler/run_cmake.sh --compiler "$compiler" --generator "$generator" --build_type "$build_type" "$cmake_extra_args" > /dev/null || exit
 
 # Build libraries and executables
-cmake --build build -j "$cores" || exit
+cmake --build build -j "$cores" | sed -e 's,\(^\.\.\)/,'"$PWD/"',' || exit
 
 # Run executable if found
 for exe in ./build/bin/$executable ./build/$executable
