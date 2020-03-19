@@ -27,6 +27,10 @@ brace_style = expand
 indent_style = space
 indent_size = 2
 
+[**.yaml]
+indent_style = space
+indent_size = 2
+
 [CMakeLists.txt]
 indent_style = space
 indent_size = 2
