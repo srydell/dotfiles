@@ -4,6 +4,8 @@
 	signingkey = CF81E4BB370F2809
 [core]
 	editor = vim
+	quotepath = false
+	commitGraph = true
 [init]
 	templatedir = ~/.git_template
 [alias]
@@ -14,3 +16,5 @@
 	gpgsign = true
 [gpg]
 	program = gpg
+[gc]
+	writeCommitGraph = true
