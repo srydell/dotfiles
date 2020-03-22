@@ -263,6 +263,9 @@ nnoremap <silent> <leader>ti :VimuxInspectRunner<CR>
 " Zoom the tmux runner pane ( [t]mux [f]ullscreen )
 nnoremap <silent> <leader>tf :VimuxZoomRunner<CR>
 
+nnoremap <silent> m<space> :AsyncRun -program=make
+nnoremap <silent> m<CR> :AsyncRun -program=make<CR>
+
 " Move through the buffer list
 nnoremap <silent> [b :bprevious<CR>
 nnoremap <silent> ]b :bnext<CR>
