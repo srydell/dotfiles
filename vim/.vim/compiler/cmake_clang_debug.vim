@@ -30,13 +30,14 @@ CompilerSet errorformat=
       \%f:%l:\ %trror:\ %m,
       \%f:%l:\ %tarning:\ %m,
       \%f:%l:\ %m,
+      \%f:%l,
       \%f:\\(%*[^\\)]\\):\ %m,
       \\"%f\"\\,\ line\ %l%*\\D%c%*[^\ ]\ %m,
       \%D%*\\a[%*\\d]:\ Entering\ directory\ [`']%f',
       \%X%*\\a[%*\\d]:\ Leaving\ directory\ [`']%f',
       \%D%*\\a:\ Entering\ directory\ [`']%f',
       \%X%*\\a:\ Leaving\ directory\ [`']%f',
-      \%DMaking\ %*\\a\ in\ %f
+      \%DMaking\ %*\\a\ in\ %f,
 
 let s:options = [
       \ '--compiler\ ' . 'clang',

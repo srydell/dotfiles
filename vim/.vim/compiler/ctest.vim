@@ -16,9 +16,29 @@ else
   endif
 endif
 
-" Usually use cmake to build out of source
-" use the default 'errorformat'
-CompilerSet errorformat&
+" Default for clang
+CompilerSet errorformat=
+      \%*[^\"]\"%f\"%*\\D%l:%c:\ %m,
+      \%*[^\"]\"%f\"%*\\D%l:\ %m,
+      \\"%f\"%*\\D%l:%c:\ %m,
+      \\"%f\"%*\\D%l:\ %m,
+      \%-G%f:%l:\ %trror:\ (Each\ undeclared\ identifier\ is\ reported\ only\ once,
+      \%-G%f:%l:\ %trror:\ for\ each\ function\ it\ appears\ in.),
+      \%f:%l:%c:\ %trror:\ %m,
+      \%f:%l:%c:\ %tarning:\ %m,
+      \%f:%l:%c:\ %m,
+      \%f:%l:\ %trror:\ %m,
+      \%f:%l:\ %tarning:\ %m,
+      \%f:%l:\ %m,
+      \%f:%l,
+      \%f:\\(%*[^\\)]\\):\ %m,
+      \\"%f\"\\,\ line\ %l%*\\D%c%*[^\ ]\ %m,
+      \%D%*\\a[%*\\d]:\ Entering\ directory\ [`']%f',
+      \%X%*\\a[%*\\d]:\ Leaving\ directory\ [`']%f',
+      \%D%*\\a:\ Entering\ directory\ [`']%f',
+      \%X%*\\a:\ Leaving\ directory\ [`']%f',
+      \%DMaking\ %*\\a\ in\ %f,
+
 
 let s:options = [
       \ '--cores\ ' . g:number_of_threads,
