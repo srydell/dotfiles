@@ -22,7 +22,11 @@ let g:ale_linters = {
 let g:ale_fix_on_save = 1
 
 " cmake-format shouldn't touch the comments
-let g:ale_cmake_cmakeformat_options = '--enable-markup false'
+if filereadable('.cmake-format.yaml')
+  let g:ale_cmake_cmakeformat_options = '-c .cmake-format.yaml'
+else
+  let g:ale_cmake_cmakeformat_options = '--enable-markup false'
+endif
 
 " Appear in the left bar
 let g:ale_sign_error = '●'
