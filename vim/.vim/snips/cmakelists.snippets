@@ -3,7 +3,7 @@
 
 snippet mod_cath2 "Setup and include catch2 module" b
 `mkdir cmake || test ! -f cmake/Catch2Helpers.cmake && cp ~/.vim/integrations/templates/cmake/Catch2Helpers.cmake cmake/Catch2Helpers.cmake`# Define create_catch2_test
-include(Catch2Helpers)
+include(cmake/Catch2Helpers.cmake)
 find_package(Catch2 REQUIRED)
 # NOTE: Depends on find_package(catch2) being found
 create_catch2_test(TARGET
@@ -14,7 +14,7 @@ endsnippet
 
 snippet mod_conan "Setup and include conan module" b
 `mkdir cmake || test ! -f cmake/SetupConan.cmake && cp ~/.vim/integrations/templates/cmake/SetupConan.cmake cmake/SetupConan.cmake`# Define get_conan_helper
-include(SetupConan)
+include(cmake/SetupConan.cmake)
 get_conan_helper()
 # Require that conan is installed
 conan_check(REQUIRED)
@@ -37,7 +37,7 @@ endsnippet
 
 snippet mod_targetHelpers "Module for creating targets" b
 `mkdir cmake || test ! -f cmake/TargetHelpers.cmake && cp ~/.vim/integrations/templates/cmake/TargetHelpers.cmake cmake/TargetHelpers.cmake`
-include(TargetHelpers)
+include(cmake/TargetHelpers.cmake)
 
 create_target(TARGET
               ${1:target_name}
@@ -75,11 +75,22 @@ if(NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
   endif()
 endif()
 
-# Add custom scripts
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 `mkdir cmake || test ! -f cmake/WarningsAndOptions.cmake && cp ~/.vim/integrations/templates/cmake/WarningsAndOptions.cmake cmake/WarningsAndOptions.cmake`
 # Define project_warnings and project_options targets
-include(WarningsAndOptions)
+include(cmake/WarningsAndOptions.cmake)
+
+`mkdir cmake || test ! -f cmake/ProjectSettings.cmake && cp ~/.vim/integrations/templates/cmake/ProjectSettings.cmake cmake/ProjectSettings.cmake`
+# Define options such as ccache
+include(cmake/ProjectSettings.cmake)
+
+`mkdir cmake || test ! -f cmake/Sanitizers.cmake && cp ~/.vim/integrations/templates/cmake/Sanitizers.cmake cmake/Sanitizers.cmake`
+include(cmake/Sanitizers.cmake)
+
+`mkdir cmake || test ! -f cmake/StaticAnalyzers.cmake && cp ~/.vim/integrations/templates/cmake/StaticAnalyzers.cmake cmake/StaticAnalyzers.cmake`
+include(cmake/StaticAnalyzers.cmake)
+
+`mkdir cmake || test ! -f cmake/CodeCoverage.cmake && cp ~/.vim/integrations/templates/cmake/CodeCoverage.cmake cmake/CodeCoverage.cmake`
+include(cmake/CodeCoverage.cmake)
 
 add_${2:executable}(${3:$1} ${4:src/${5:main}.cpp})
 target_link_libraries($3
@@ -97,9 +108,9 @@ set_target_properties($3
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   option(ENABLE_TESTING "Build the testing tree" OFF)
   if(ENABLE_TESTING)
+    # TODO: Add tests
     # enable_testing()
     # add_subdirectory(tests)
-    # TODO: Add benchmarks
   endif()
 
   option(ENABLE_BENCHMARKS "Build the benchmarks" OFF)
