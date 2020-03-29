@@ -8,8 +8,8 @@ let g:projectionist_heuristics = {
       \     'src/*.cpp': {
       \       'alternate': [
       \         'test/{}.cpp',
-      \         'src/{}.h',
-      \         'include/{}.h',
+      \         'src/{}.hpp',
+      \         'include/{}.hpp',
       \       ],
       \       'type': 'source'
       \     },
@@ -18,12 +18,12 @@ let g:projectionist_heuristics = {
       \       'skeleton': 'test',
       \       'type': 'source'
       \     },
-      \     'include/*.h': {
+      \     'include/*.hpp': {
       \       'alternate': 'tests/{}.cpp',
       \       'skeleton': 'header',
       \       'type': 'header'
       \     },
-      \     'src/*.h': {
+      \     'src/*.hpp': {
       \       'alternate': 'tests/{}.cpp',
       \       'skeleton': 'header',
       \       'type': 'header'
