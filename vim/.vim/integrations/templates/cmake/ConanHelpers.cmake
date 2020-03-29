@@ -21,18 +21,45 @@ function(conan_setup_remotes)
     return()
   endif()
   # For clara
-  conan_add_remote(NAME
-                   bincrafters
-                   URL
+  conan_add_remote(NAME bincrafters URL
                    https://api.bintray.com/conan/bincrafters/public-conan)
 
   # For google benchmark
-  conan_add_remote(NAME
-                   conan-mpusz
-                   URL
+  conan_add_remote(NAME conan-mpusz URL
                    https://api.bintray.com/conan/mpusz/conan-mpusz)
   set(_conan_has_set_remotes
       TRUE
       CACHE INTERNAL
             "This is used to avoid setting the remotes twice. Only takes time.")
+endfunction()
+
+function(run_conan)
+  # Define the supported set of keywords
+  set(prefix ARG)
+  set(noValues)
+  set(singleValues)
+  set(multiValues OPTIONS REQUIRES)
+  # Process the arguments passed in can be used e.g. via ARG_TARGET
+  cmake_parse_arguments(${prefix} "${noValues}" "${singleValues}"
+                        "${multiValues}" ${ARGN})
+
+  # Get and include to get helper functions
+  get_conan_helper()
+
+  # Require that conan is installed
+  conan_check(REQUIRED)
+
+  # Add some useful remotes
+  conan_setup_remotes()
+
+  # Install dependencies
+  conan_cmake_run(
+    REQUIRES
+    ${ARG_REQUIRES}
+    OPTIONS
+    ${ARG_OPTIONS}
+    BASIC_SETUP
+    CMAKE_TARGETS # individual targets to link to
+    BUILD
+    missing)
 endfunction()
