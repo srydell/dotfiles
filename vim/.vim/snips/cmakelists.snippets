@@ -13,26 +13,9 @@ create_catch2_test(TARGET
 endsnippet
 
 snippet mod_conan "Setup and include conan module" b
-`mkdir cmake || test ! -f cmake/SetupConan.cmake && cp ~/.vim/integrations/templates/cmake/SetupConan.cmake cmake/SetupConan.cmake`# Define get_conan_helper
-include(cmake/SetupConan.cmake)
-get_conan_helper()
-# Require that conan is installed
-conan_check(REQUIRED)
-${1:conan_setup_remotes()}
-# Install dependencies (defined in conanfile.{txt,py})
-conan_cmake_run(CONANFILE
-                conanfile.${2:txt}
-                BASIC_SETUP
-                CONAN_COMMAND
-                ${CONAN_CMD}
-                CMAKE_TARGETS
-                BUILD
-                missing)
-`!p
-if t[2] == "txt":
-    snip.rv = "# Needed when using conanfile.txt and find_package.\n# Relies on cmake_paths generator\ninclude(${CMAKE_BINARY_DIR}/conan_paths.cmake)"
-else:
-    snip.rv = ""`$0
+`mkdir cmake || test ! -f cmake/ConanHelpers.cmake && cp ~/.vim/integrations/templates/cmake/ConanHelpers.cmake cmake/ConanHelpers.cmake`# Define run_conan
+include(cmake/ConanHelpers.cmake)
+run_conan(REQUIRES ${1:fmt/6.1.2})
 endsnippet
 
 snippet mod_targetHelpers "Module for creating targets" b

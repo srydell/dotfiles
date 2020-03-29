@@ -32,6 +32,14 @@ snippet alib "add_library(...)" b
 add_library(${1:library_name} ${2:sources})$0
 endsnippet
 
+snippet aliba "Add alias library" b
+add_library(${1:library_alias} ALIAS ${2:library_name})$0
+endsnippet
+
+snippet alibi "Add interface library" b
+add_library(${1:library_name} INTERFACE)$0
+endsnippet
+
 snippet alibv "Add library versioning" b
 # The SOVERSION is used by linkers,
 # should be the major version in semantic versioning
@@ -78,6 +86,10 @@ endsnippet
 
 snippet tincdir "target_include_directories(...)" b
 target_include_directories(${1:target_name} ${2:PRIVATE} ${3:dir_name})$0
+endsnippet
+
+snippet inc "include(...)" b
+include(${1:cmake/${2:Library}.cmake})$0
 endsnippet
 
 snippet func "simple function" b
