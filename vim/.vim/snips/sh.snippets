@@ -109,5 +109,12 @@ snippet _skel "Skeleton for shell scripts" b
 ## Maintainer: Simon Rydell
 ## Date created: `!v strftime("%b %d, %Y")`
 
+# Exit on any error
+set -o errexit
+# Print and exit on undefined variable
+set -o nounset
+# Stop if any command in a pipe fails
+set -o pipefail
+
 $0
 endsnippet

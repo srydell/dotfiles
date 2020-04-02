@@ -54,6 +54,16 @@ else:
                                  ${2:1}.${3:0}.${4:0})$0
 endsnippet
 
+snippet acust "add_custom_target" b
+add_custom_target(
+  ${1:target_name}
+  WORKING_DIRECTORY ${2:${CMAKE_CURRENT_SOURCE_DIR}}
+  COMMAND ${3:echo hello}
+  COMMENT
+    "Running command: $3"
+)
+endsnippet
+
 snippet asub "add_subdirectory(...)" b
 add_subdirectory(${1:sub_directory})$0
 endsnippet
@@ -86,6 +96,11 @@ endsnippet
 
 snippet tincdir "target_include_directories(...)" b
 target_include_directories(${1:target_name} ${2:PRIVATE} ${3:dir_name})$0
+endsnippet
+
+snippet configfile "configure_file(...)" b
+configure_file(${1:src/paths.hpp}.in
+               ${CMAKE_CURRENT_LIST_DIR}/$1 @ONLY)
 endsnippet
 
 snippet inc "include(...)" b
