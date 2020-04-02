@@ -78,6 +78,32 @@ snippet atest "add_test(...)" b
 add_test(NAME ${1:test_name} COMMAND ${2:how_to_run})$0
 endsnippet
 
+snippet afixture "add a test fixture" b
+add_test(NAME ${1:fixture_setup}
+  WORKING_DIRECTORY ${2:${CMAKE_CURRENT_LIST_DIR}}
+  COMMAND ${3:echo setup fixture}
+)
+set_tests_properties($1 PROPERTIES
+  FIXTURES_SETUP ${4:$1_fixture}
+)
+set_tests_properties(${5:test_that_needs_fixture} PROPERTIES
+  FIXTURES_REQUIRED $4
+)$0
+endsnippet
+
+snippet afixturecleanup "add a test fixture cleanup" b
+add_test(NAME ${1:fixture_cleanup}
+  WORKING_DIRECTORY ${2:${CMAKE_CURRENT_LIST_DIR}}
+  COMMAND ${3:echo cleanup fixture}
+)
+set_tests_properties($1 PROPERTIES
+  FIXTURES_CLEANUP ${4:$1_fixture}
+)
+set_tests_properties(${5:test_that_needs_fixture} PROPERTIES
+  FIXTURES_REQUIRED $4
+)$0
+endsnippet
+
 snippet ainterface "add_library(... INTERFACE lib_a lib_b)" b
 add_library(${1:library_name} INTERFACE)
 target_link_libraries($1 INTERFACE
