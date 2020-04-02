@@ -1,6 +1,13 @@
 #!/bin/sh
 ## Maintainer: Simon Rydell
 
+# Exit on any error
+set -o errexit
+# Print and exit on undefined variable
+set -o nounset
+# Stop if any command in a pipe fails
+set -o pipefail
+
 # Default options
 # NOTE: Compiler only needs to be clang/gcc,
 #       the script handles for C++ etc
@@ -66,10 +73,10 @@ do
 	esac
 done
 
-~/.vim/integrations/compiler/run_cmake.sh --compiler "$compiler" --generator "$generator" --build_type "$build_type" "$cmake_extra_args" > /dev/null || exit
+~/.vim/integrations/compiler/run_cmake.sh --compiler "$compiler" --generator "$generator" --build_type "$build_type" "$cmake_extra_args" > /dev/null
 
 # Build libraries and executables
-cmake --build build -j "$cores" | sed -e 's,\(^\.\.\)/,'"$PWD/"',' || exit
+cmake --build build -j "$cores" | sed -e 's,\(^\.\.\)/,'"$PWD/"','
 
 # Run executable if found
 for exe in ./build/bin/$executable ./build/$executable ./build/tests/$executable ./build/test/$executable

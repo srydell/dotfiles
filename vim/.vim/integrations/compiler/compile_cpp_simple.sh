@@ -2,6 +2,13 @@
 ## Maintainer: Simon Rydell
 ## Date created: Nov 13, 2019
 
+# Exit on any error
+set -o errexit
+# Print and exit on undefined variable
+set -o nounset
+# Stop if any command in a pipe fails
+set -o pipefail
+
 # One of [clang++, g++]
 compiler=""
 # Path to file that should be compiled

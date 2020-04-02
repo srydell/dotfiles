@@ -14,6 +14,13 @@
 #
 #     The rest of the arguments are passed on to the cmake call
 
+# Exit on any error
+set -o errexit
+# Print and exit on undefined variable
+set -o nounset
+# Stop if any command in a pipe fails
+set -o pipefail
+
 # Default options
 c_compiler=""
 cxx_compiler=""
@@ -75,7 +82,7 @@ fi
 #    cxx_compiler = clang++
 #    c_compiler = clang
 # NOTE: cmake_extra_args should be split, since it could contain multiple commands
-cmake -S. -Bbuild -G "$generator" -DCMAKE_CXX_COMPILER="$cxx_compiler" -DCMAKE_C_COMPILER="$c_compiler" -DCMAKE_BUILD_TYPE="$build_type" $cmake_extra_args || exit
+cmake -S. -Bbuild -G "$generator" -DCMAKE_CXX_COMPILER="$cxx_compiler" -DCMAKE_C_COMPILER="$c_compiler" -DCMAKE_BUILD_TYPE="$build_type" $cmake_extra_args
 
 # Link the database
 if [ ! -f "$PWD/compile_commands.json" ] && [ -f "$PWD/build/compile_commands.json" ]; then

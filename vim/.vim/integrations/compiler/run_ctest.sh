@@ -1,6 +1,13 @@
 #!/bin/sh
 ## Maintainer: Simon Rydell
 
+# Exit on any error
+set -o errexit
+# Print and exit on undefined variable
+set -o nounset
+# Stop if any command in a pipe fails
+set -o pipefail
+
 # Default options
 cores=2
 
@@ -24,7 +31,7 @@ do
 done
 
 # Build libraries and executables
-cmake --build build -j "$cores" || exit
+cmake --build build -j "$cores"
 
 # catch2 likes to report relative paths from the build dir
 # NOTE: That this will replace any line that starts with two dots (..) with the $PWD
