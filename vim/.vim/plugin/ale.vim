@@ -10,6 +10,7 @@ let g:ale_c_parse_compile_commands = 1
 
 let g:ale_fixers = {
       \ 'cmake': ['cmakeformat'],
+      \ 'elixir': ['mix_format'],
       \ 'javascript': ['prettier'],
       \}
 

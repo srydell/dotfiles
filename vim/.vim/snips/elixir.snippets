@@ -1,19 +1,29 @@
 # elixir.snippets - Snippets for elixir file type
 
-snippet mod "A module definition" b
-defmodule ${1:Module} do
-    ${0:${VISUAL:}}
+snippet def "A function definition" b
+def ${1:f}($2) do
+  ${0:${VISUAL:}}
 end
 endsnippet
 
-snippet def "A function definition" b
-def ${1:f}($2) do
-    ${0:${VISUAL:}}
+snippet defm "A module definition" b
+defmodule ${1:Module} do
+  ${0:${VISUAL:}}
 end
 endsnippet
 
 snippet defp "A private function definition" b
 defp ${1:f}($2) do
-    ${0:${VISUAL:}}
+  ${0:${VISUAL:}}
 end
+endsnippet
+
+snippet defs "A struct" b
+defstruct [${1::id, :name, :username}]$0
+endsnippet
+
+snippet mdoc "Module documentation" b
+@moduledoc """
+${1:${VISUAL:Module docs}}
+"""$0
 endsnippet

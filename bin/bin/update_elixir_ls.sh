@@ -13,7 +13,7 @@ cd ~/bin/elixir-ls || exit
 git pull
 
 # Where all the executables will rely
-mkdir release || exit
+mkdir release
 
 # Build dependencies
 mix deps.get || exit
