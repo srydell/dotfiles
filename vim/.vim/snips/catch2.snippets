@@ -53,19 +53,17 @@ endsnippet
 snippet _test "Test skeleton for catch2" b
 #include "${1:`!p
 import pathlib
-headers = [h.name for h in pathlib.Path("include/").glob("*.h")]
-if headers:
-    if fn.split('.')[0] + '.h' in headers:
-        # Found a header file with the same name as the test file.
-        # It should probably be included
-        snip.rv = fn.split('.')[0] + '.h'
-    else:
-        # Default to returning the first found
-        snip.rv = headers[0]
+for headerLocation in ["include/", "src/"]:
+    for header in pathlib.Path(headerLocation).glob("**/*.hpp"):
+        currentFilenameStem = fn.split('.')[0]
+        if currentFilenameStem in header.stem:
+            # Found a header file with the same name as the test file.
+            # It should probably be included
+            snip.rv = str(header.relative_to(headerLocation))
 `}"
 #include <catch2/catch.hpp>
 
-TEST_CASE("${2:Brief about the test}", "[${3:funcName}]") {
+TEST_CASE("${2:Brief about the test}", "[${3:`!p snip.rv = fn.split('.')[0]`}]") {
 	$0
 }
 endsnippet
