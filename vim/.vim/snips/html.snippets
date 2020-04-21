@@ -1,0 +1,13 @@
+# html.snippets - Snippets for html file type
+
+snippet "(h[1-6]|div|section|article|b|body|nav|img|p|script|li|ul)" "html tag" wr
+<`!p snip.rv = match.group(0)`>$1</`!p snip.rv = match.group(0)`>$0
+endsnippet
+
+snippet "(h[1-6]|div|section|article|b|body|nav|img|p|script)c" "html tag with class" wr
+<`!p snip.rv = match.group(0)[0:-1]` class="$1">$2</`!p snip.rv = match.group(0)[0:-1]`>$0
+endsnippet
+
+snippet a "a tag" w
+<a href="$1">$2</a>$0
+endsnippet

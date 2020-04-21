@@ -1,0 +1,22 @@
+# eelixir.snippets - Snippets for eelixir file type
+
+# This is normally what I embed elixir in
+extends html
+
+snippet if "If statement" w
+<%= if ${1:true} do %>
+  $2
+<% end %>$0
+endsnippet
+
+snippet ife "If else statement" w
+<%= if ${1:true} do %>
+  $2
+<% else %>
+  $3
+<% end %>$0
+endsnippet
+
+snippet tag "Embedded tag" w
+<%= $1 %>$0
+endsnippet
