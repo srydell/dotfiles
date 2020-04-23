@@ -12,7 +12,15 @@ let g:loaded_srydell_autocomplete = 1
 " 			\'coc-python',
 " 			\'coc-ultisnips',
 " 			\'coc-vimlsp',
+" 			\'coc-cmake',
 " 			\)
+
+" Map my 'fake' filetypes to real ones that can be interpreted by coc
+let g:coc_filetype_map = {
+        \ 'cmake.cmake_module': 'cmake',
+        \ 'cmake.cmakelists': 'cmake',
+        \ 'cmake.sub_cmakelists': 'cmake',
+        \ }
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
