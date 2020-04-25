@@ -3,21 +3,8 @@
 ###########################
 # Sections and Paragraphs #
 ###########################
-snippet sec "Section" b
-# ${1:Section Name} #
-
-$0
-endsnippet
-
-snippet ssec "Sub Section" b
-## ${1:Section Name} ##
-
-$0
-endsnippet
-
-snippet sssec "SubSub Section" b
-### ${1:Section Name} ###
-
+snippet "(s+)ec" "SubSub Section" br
+`!p snip.rv = '#' * len(match.group(1))` ${1:Section Name} `!p snip.rv = '#' * len(match.group(1))`
 $0
 endsnippet
 
@@ -34,6 +21,10 @@ endsnippet
 
 snippet ilc "Inline Code" i
 \`${1:${VISUAL}}\`$0
+endsnippet
+
+snippet ib "Inline bold" i
+**${1:${VISUAL}}**$0
 endsnippet
 
 snippet cbl "Codeblock" b

@@ -2,43 +2,19 @@
 
 extends c
 
-###########################################################################
-#			    Global functions 						  #
-###########################################################################
-
-global !p
-
-def write_docstring_args(arglist, snip):
-	args = str(arglist).split(',')
-
-	if len(args) > 1:
-		c = 0
-		for arg in args:
-			if c == 0:
-				snip.rv += arg
-				c = 1
-			else:
-				snip += '*       : %s' % arg.strip()
-	else:
-		snip.rv = args[0]
-
-
-endglobal
-
 snippet cl "class"
 class ${1:`!p snip.rv = snip.basename or "ClassName"`} {
 public:
-	${1/(\w+).*/$1/}(${2:arguments});
+	explicit ${1/(\w+).*/$1/}($2);
 
-private:
-	${0:/* data */}
+	$0
 };
 endsnippet
 
 snippet str "struct"
 struct ${1:`!p snip.rv = snip.basename or "StructName"`} {
-	${1/(\w+).*/$1/}(${2:arguments});
-};$0
+	$0;
+};
 endsnippet
 
 snippet enum "enum class"
@@ -145,6 +121,12 @@ snippet while "while (condition) {}" b
 while (${1:true}) {
 	${0:${VISUAL:}}
 }
+endsnippet
+
+snippet dowhile "do {} while (condition)" b
+do {
+	${0:${VISUAL:}}
+} while (${1:true});
 endsnippet
 
 snippet formap "for in map" b

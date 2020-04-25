@@ -169,6 +169,14 @@ snippet mw "message warning" b
 message(WARNING "${1:${VISUAL}}")$0
 endsnippet
 
+snippet sreplace "String replace" b
+string(REPLACE "${1:match_me}" "${2:replace_with}" ${3:out_var} ${4:${${5:input}}})
+endsnippet
+
+snippet sfind "String find" b
+string(FIND "${1:${${2:input}}}" "${3:search_for}" ${4:out_var})
+endsnippet
+
 snippet runpython "Setup and run a python custom target" b
 # Generate helpers for the tests
 find_package(Python REQUIRED)
