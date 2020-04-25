@@ -272,6 +272,10 @@ nnoremap <silent> ]b :bnext<CR>
 nnoremap <silent> [B :bfirst<CR>
 nnoremap <silent> ]B :blast<CR>
 
+" How I think about alternative files
+nnoremap <silent> [a :A<CR>
+nnoremap <silent> ]a :A<CR>
+
 " Move through the valid compilers. Set by b:valid_compilers
 nnoremap <silent> ]c :CompilerNext<CR>
 nnoremap <silent> [c :CompilerPrevious<CR>
