@@ -198,6 +198,16 @@ std::any_of(${1:container}.begin(), $1.end(), [](${2:auto const& ${3:i}}) { retu
 endsnippet
 
 # Skeletons
+snippet _source "Source skeleton file" b
+#include "`!p
+# Assume we are in the root of the project
+# and one level in is src so for src/path/to/file.cpp we get
+# path/to/file.hpp
+snip.rv = f"{'/'.join(path.split('/')[1:-1])}/{fn.split('.')[0]}.hpp"`"
+
+$0
+endsnippet
+
 snippet _header "Header skeleton file" b
 #pragma once
 
