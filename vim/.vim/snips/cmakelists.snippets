@@ -41,10 +41,6 @@ cmake_minimum_required(VERSION `cmake --version | head -n 1 | sed 's/[ a-z]//g' 
 
 project(${1:`!v split(getcwd(), '/')[-1] " Directory name`} VERSION 0.1 LANGUAGES CXX)
 
-# Export compile flags to compile_commands.json database. Useful for linters and
-# autocompletion
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 `mkdir cmake || test ! -f cmake/WarningsAndOptions.cmake && cp ~/.vim/integrations/templates/cmake/WarningsAndOptions.cmake cmake/WarningsAndOptions.cmake`
 # Define project_warnings and project_options targets
 include(cmake/WarningsAndOptions.cmake)

@@ -199,13 +199,16 @@ endsnippet
 
 # Skeletons
 snippet _source "Source skeleton file" b
-#include "`!p
-# Assume we are in the root of the project
-# and one level in is src so for src/path/to/file.cpp we get
-# path/to/file.hpp
-snip.rv = f"{'/'.join(path.split('/')[1:-1])}/{fn.split('.')[0]}.hpp"`"
-
-$0
+`!p
+if 'main' in snip.basename or 'prototype' in path:
+    snip.rv = ''
+else:
+    # Assume we are in the root of the project
+    # and one level in is src so for src/path/to/file.cpp we get
+    # path/to/file.hpp
+    path_from_src = '/'.join(path.split('/')[1:-1])
+    divider = '/' if len(path_from_src) > 0 else ''
+    snip.rv = '#include "' + f"{path_from_src}{divider}{fn.split('.')[0]}.hpp" + '"\n\n'`$0
 endsnippet
 
 snippet _header "Header skeleton file" b
