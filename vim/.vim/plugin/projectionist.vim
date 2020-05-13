@@ -5,19 +5,6 @@ let g:loaded_srydell_projectionist = 1
 
 let g:projectionist_heuristics = {
       \   '*': {
-      \     'src/*.cpp': {
-      \       'alternate': [
-      \         'test/{}.cpp',
-      \         'src/{}.hpp',
-      \         'include/{}.hpp',
-      \       ],
-      \       'type': 'source'
-      \     },
-      \     'tests/*.cpp': {
-      \       'alternate': 'src/{}.cpp',
-      \       'skeleton': 'test',
-      \       'type': 'source'
-      \     },
       \     'include/*.hpp': {
       \       'alternate': 'tests/{}.cpp',
       \       'skeleton': 'header',
@@ -28,6 +15,22 @@ let g:projectionist_heuristics = {
       \       'skeleton': 'header',
       \       'type': 'header'
       \     },
+      \     'src/*.cpp': {
+      \       'alternate': [
+      \         'src/{}.hpp',
+      \         'include/{}.hpp',
+      \       ],
+      \       'skeleton': 'source',
+      \       'type': 'source'
+      \     },
+      \     'tests/*.cpp': {
+      \       'alternate': [
+      \         'src/{}.cpp',
+      \       ],
+      \       'skeleton': 'test',
+      \       'type': 'source'
+      \     },
+      \
       \     '*/CMakeLists.txt': {
       \       'skeleton': 'cmakelists'
       \     },
