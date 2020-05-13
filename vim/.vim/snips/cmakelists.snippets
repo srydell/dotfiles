@@ -19,7 +19,7 @@ run_conan(REQUIRES ${1:fmt/6.1.2})
 endsnippet
 
 snippet mod_targetHelpers "Module for creating targets" b
-`mkdir cmake || test ! -f cmake/TargetHelpers.cmake && cp ~/.vim/integrations/templates/cmake/TargetHelpers.cmake cmake/TargetHelpers.cmake`
+`mkdir cmake || test ! -f cmake/TargetHelpers.cmake && cp ~/.vim/integrations/templates/cmake/TargetHelpers.cmake cmake/TargetHelpers.cmake`# Define create_target
 include(cmake/TargetHelpers.cmake)
 
 create_target(TARGET
@@ -46,31 +46,25 @@ project(${1:`!v split(getcwd(), '/')[-1] " Directory name`} VERSION 0.1 LANGUAGE
 include(cmake/WarningsAndOptions.cmake)
 add_warnings(TARGET $1_warnings)
 add_options(TARGET $1_options)
-
 `mkdir cmake || test ! -f cmake/ProjectSettings.cmake && cp ~/.vim/integrations/templates/cmake/ProjectSettings.cmake cmake/ProjectSettings.cmake`
 # Define options such as ccache
 include(cmake/ProjectSettings.cmake)
-
 `mkdir cmake || test ! -f cmake/Sanitizers.cmake && cp ~/.vim/integrations/templates/cmake/Sanitizers.cmake cmake/Sanitizers.cmake`
 include(cmake/Sanitizers.cmake)
-
 `mkdir cmake || test ! -f cmake/StaticAnalyzers.cmake && cp ~/.vim/integrations/templates/cmake/StaticAnalyzers.cmake cmake/StaticAnalyzers.cmake`
 include(cmake/StaticAnalyzers.cmake)
-
 `mkdir cmake || test ! -f cmake/CodeCoverage.cmake && cp ~/.vim/integrations/templates/cmake/CodeCoverage.cmake cmake/CodeCoverage.cmake`
 include(cmake/CodeCoverage.cmake)
 
 add_${2:executable}(${3:$1} ${4:src/${5:main}.cpp})
 target_link_libraries($3
-                      PRIVATE project_warnings project_options)
+                      PRIVATE $1_warnings $1_options)
 set_target_properties($3
                       PROPERTIES
                       CXX_STANDARD_REQUIRED
                       ON
                       CXX_EXTENSIONS
-                      OFF
-                      CXX_STANDARD
-                      ${4:17})$0
+                      OFF)$0
 
 # Only build tests and benchmarks if building this project directly
 if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
