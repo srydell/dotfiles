@@ -84,6 +84,9 @@ set relativenumber
 " Make backspace be able to delete indent and before starting position
 set backspace=indent,eol,start
 
+" Keep the cursor in the middle of the screen
+set scrolloff=999
+
 " Show commands as they are being written
 set showcmd
 
@@ -171,9 +174,6 @@ set undofile
 
 " How many levels are saved in each file
 set undolevels=100
-
-" If possible, show &scrolloff lines below cursor
-set scrolloff=5
 
 " Better display for messages
 set cmdheight=2
@@ -351,9 +351,6 @@ nnoremap L $
 
 " Make cursor still while joining lines. Using mark z
 nnoremap J mzJ`z
-
-" Center around search result
-nnoremap n nzz
 
 " Let vim treat virtual lines as real lines
 " v:count works better with relativenumber
