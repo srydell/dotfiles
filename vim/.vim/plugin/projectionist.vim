@@ -26,6 +26,7 @@ let g:projectionist_heuristics = {
       \     'tests/*.cpp': {
       \       'alternate': [
       \         'src/{}.cpp',
+      \         'src/{}.hpp',
       \       ],
       \       'skeleton': 'test',
       \       'type': 'source'
