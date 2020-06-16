@@ -15,6 +15,7 @@ let g:ale_fixers = {
       \}
 
 let g:ale_linters = {
+      \ 'cmake': ['cmakelint'],
       \ 'cpp': ['cppcheck'],
       \ 'javascript': ['eslint'],
       \ 'python': ['pylint'],
@@ -28,6 +29,7 @@ if filereadable('.cmake-format.yaml')
 else
   let g:ale_cmake_cmakeformat_options = '--enable-markup false'
 endif
+let g:ale_cmake_cmakelint_options = g:ale_cmake_cmakeformat_options
 
 " Appear in the left bar
 let g:ale_sign_error = '●'

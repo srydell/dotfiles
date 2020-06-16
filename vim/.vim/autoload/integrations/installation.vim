@@ -29,7 +29,7 @@ function! integrations#installation#GetPythonPackages() abort
 
   " Link them into bin directory
   " vim-vint gives 'vint' executable (an ugly hack =)
-  for l:package in l:python_packages + ['vint', 'pyls']
+  for l:package in l:python_packages + ['vint', 'pyls', 'cmake-lint', 'cmake-annotate', 'ctest-to']
     if executable(g:integrations_virtualenv . '/bin/' . l:package)
       echomsg 'Linking python executable ' . l:package . ' to ' . g:integrations_dir . '/bin/' . l:package
       execute('silent !ln -s ' . g:integrations_virtualenv . '/bin/' . l:package .
