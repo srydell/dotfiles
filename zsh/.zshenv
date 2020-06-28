@@ -14,6 +14,8 @@ export LC_ALL=en_US.UTF-8
 # This respects .gitignore and the like
 export FZF_DEFAULT_COMMAND='rg --files'
 
+export GOPATH="$HOME/.go"
+export PATH="$PATH:$GOPATH/bin"
 # Place for custom scripts
 export PATH="$HOME/bin:$PATH"
 # Place for custom executables used by vim
