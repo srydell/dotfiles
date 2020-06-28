@@ -18,3 +18,5 @@
 	program = gpg
 [gc]
 	writeCommitGraph = true
+[pull]
+	rebase = true
