@@ -32,6 +32,12 @@ let g:projectionist_heuristics = {
       \       'type': 'source'
       \     },
       \
+      \     '*.in': {
+      \       'alternate': [
+      \         '{}',
+      \       ],
+      \     },
+      \
       \     '*/CMakeLists.txt': {
       \       'skeleton': 'cmakelists'
       \     },

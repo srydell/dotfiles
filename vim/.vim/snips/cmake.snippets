@@ -264,6 +264,10 @@ snippet s "set variable" b
 set(${1:var} ${2:value})$0
 endsnippet
 
+snippet sp "set variable in parent scope" b
+set(${1:var} ${2:value} PARENT_SCOPE)$0
+endsnippet
+
 # Skeletons
 snippet _skel "Skeleton for a cmake script file" b
 include_guard()

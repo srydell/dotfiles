@@ -94,6 +94,8 @@ fi
 # https://github.com/ninja-build/ninja/issues/1251
 if [ "$generator" = "Ninja" ]; then
 	# NOTE: I used commas (,) as separators to avoid interference with the forward slashes (/)
-	sed -i -e 's,\(\.\.\)/,'"$PWD/"',g' "$PWD/build/compile_commands.json"
-	# sed -i "$PWD/build/compile_commands.json" -e 's,\(\.\.\)/,'"$PWD/"',g'
+	if [ -f "$PWD/build/compile_commands.json" ]; then
+		sed -i -e 's,\(\.\.\)/,'"$PWD/"',g' "$PWD/build/compile_commands.json"
+		# sed -i "$PWD/build/compile_commands.json" -e 's,\(\.\.\)/,'"$PWD/"',g'
+	fi
 fi

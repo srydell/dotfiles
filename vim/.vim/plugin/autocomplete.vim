@@ -13,6 +13,7 @@ let g:loaded_srydell_autocomplete = 1
 " 			\'coc-ultisnips',
 " 			\'coc-vimlsp',
 " 			\'coc-cmake',
+" 			\'coc-clangd',
 " 			\)
 
 " Map my 'fake' filetypes to real ones that can be interpreted by coc
