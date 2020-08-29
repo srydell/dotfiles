@@ -40,8 +40,6 @@ export PATH="$PATH:$HOME/.local/bin"
 # unset LATEST_GPGKEY
 
 # Always prompt for gpg password in the terminal instead of gui popup
-# GPG_TTY="$(tty)"
-# export GPG_TTY
 export GPG_TTY=$(tty)
 
 unset DISPLAY
