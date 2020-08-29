@@ -66,8 +66,6 @@ add_${2:executable}(${3:$1} ${4:src/${5:main}.cpp})
 add_warnings(TARGET $3)
 add_options(TARGET $3)
 
-target_link_libraries($3
-                      PRIVATE $1_warnings $1_options)
 set_target_properties($3
                       PROPERTIES
                       CXX_STANDARD_REQUIRED
