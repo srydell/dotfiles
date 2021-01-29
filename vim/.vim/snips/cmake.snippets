@@ -195,17 +195,26 @@ FetchContent_Declare(
 	${1:contentName}
 	GIT_REPOSITORY ${2:https://github.com/${3:srydell/dotfiles}}
 	GIT_TAG        ${4}
-)$0
-endsnippet
+)
 
-snippet fgprop "FetchContent_GetProperties" b
-FetchContent_GetProperties(${1:contentName})$0
+FetchContent_GetProperties($1)
 if(NOT $1_POPULATED)
 	FetchContent_Populate($1)
 
 	# Add the downloaded directories
 	add_subdirectory(${$1_SOURCE_DIR} ${$1_BINARY_DIR})
-endif()
+endif()$0
+endsnippet
+
+snippet fetch "FetchContent" b
+include(FetchContent)
+FetchContent_Declare(
+  ${1:contentName}
+	GIT_REPOSITORY ${2:https://github.com/${3:srydell/dotfiles}}
+	GIT_TAG        ${4}
+)$0
+
+FetchContent_MakeAvailable($1)
 endsnippet
 
 snippet install "Create an install config for a target" b
@@ -266,6 +275,10 @@ endsnippet
 
 snippet sp "set variable in parent scope" b
 set(${1:var} ${2:value} PARENT_SCOPE)$0
+endsnippet
+
+snippet getparentdir "Get the parent directory" b
+get_filename_component(${1:parent_variable} ${2:input_dir} DIRECTORY)$0
 endsnippet
 
 # Skeletons

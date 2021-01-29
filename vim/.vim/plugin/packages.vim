@@ -1,5 +1,5 @@
-command! PackUpdate packadd minpac | source ~/.vim/plugin/packages.vim | redraw | call minpac#update()
-command! PackClean packadd minpac | source ~/.vim/plugin/packages.vim | call minpac#clean()
+command! PackUpdate packadd minpac | call minpac#init() | source ~/.vim/plugin/packages.vim | redraw | call minpac#update()
+command! PackClean packadd minpac | call minpac#init() | source ~/.vim/plugin/packages.vim | call minpac#clean()
 
 " If packages are not handled
 if !isdirectory($HOME . '/.vim/pack')
@@ -16,7 +16,7 @@ endif
 call minpac#init()
 
 " Snippets
-call minpac#add('SirVer/ultisnips')
+call minpac#add('srydell/ultisnips')
 call minpac#add('srydell/vim-skeleton')
 
 call minpac#add('srydell/vim-n-out')
