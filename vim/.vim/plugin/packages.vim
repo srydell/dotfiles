@@ -55,6 +55,7 @@ call minpac#add('maksimr/vim-jsbeautify', {'type': 'opt'})
 
 " Debugging
 call minpac#add('puremourning/vimspector')
+call minpac#add('szw/vim-maximizer')
 
 " Python formatter
 call minpac#add('python/black', {'type': 'opt'})

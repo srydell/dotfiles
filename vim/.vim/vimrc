@@ -54,6 +54,8 @@ let g:slime_default_config = {'socket_name': 'default', 'target_pane': '{right-o
 let g:slime_dont_ask_default = 1
 let g:slime_no_mappings = 1
 
+let g:maximizer_set_default_mapping = 0
+
 " Make it easier to see tabs and newlines
 set list
 set listchars=tab:▸\ ,eol:¬,trail:·
@@ -217,6 +219,8 @@ nnoremap <leader>ff :<C-u>FZF<CR>
 " Find all the TODO/FIXME in current git project
 " :Todo command specified in .vim/plugin/searchtools.vim
 nnoremap <leader>ft :Todo<CR>
+
+nnoremap <leader>fz :MaximizerToggle<CR>
 
 " Search for the current word in the whole directory structure
 nnoremap <leader>* :Grepper -cword -noprompt<CR>

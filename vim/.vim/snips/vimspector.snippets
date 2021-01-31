@@ -1,0 +1,21 @@
+# vimspector.snippets - Snippets for vimspector file type
+
+snippet _skel "Skeleton for vimspector files" b
+{
+  "configurations": {
+    "Launch": {
+      "adapter": "vscode-cpptools",
+      "configuration": {
+        "request": "launch",
+        "program": "${workspaceRoot}/build/${1:bin/test}",
+        "args": [],
+        "cwd": "${workspaceRoot}",
+        "environment": [],
+        "externalConsole": true,
+        "stopAtEntry": false,
+        "MIMode": "gdb"
+      }
+    }
+  }
+}
+endsnippet
