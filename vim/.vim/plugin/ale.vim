@@ -12,6 +12,7 @@ let g:ale_fixers = {
       \ 'cmake': ['cmakeformat'],
       \ 'elixir': ['mix_format'],
       \ 'javascript': ['prettier'],
+      \ 'html': ['html-beautify'],
       \}
 
 let g:ale_linters = {

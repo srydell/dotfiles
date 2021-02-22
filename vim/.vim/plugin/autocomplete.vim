@@ -13,6 +13,7 @@ let g:loaded_srydell_autocomplete = 1
 " 			\'coc-ultisnips',
 " 			\'coc-vimlsp',
 " 			\'coc-cmake',
+" 			\'coc-tailwindcss',
 " 			\'coc-clangd',
 " 			\)
 
