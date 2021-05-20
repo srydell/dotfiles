@@ -57,6 +57,9 @@ call minpac#add('maksimr/vim-jsbeautify', {'type': 'opt'})
 call minpac#add('puremourning/vimspector')
 call minpac#add('szw/vim-maximizer')
 
+" A set of filetype based plugins
+call minpac#add('sheerun/vim-polyglot')
+
 " Python formatter
 call minpac#add('python/black', {'type': 'opt'})
 

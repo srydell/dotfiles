@@ -75,7 +75,7 @@ if has('folding')
   set foldmethod=indent
 
   " Start unfolded
-  set foldlevelstart=2
+  set foldlevelstart=99
   set foldtext=folding#FoldText()
 endif
 
@@ -332,9 +332,9 @@ nnoremap <leader>w :write<CR>
 nnoremap <leader>W :confirm wqall<CR>
 
 " Unfold all folds under cursor
-nnoremap <leader><Space> za
+" nnoremap <leader><Space> za
 " Create fold for visually selected text
-vnoremap <leader><Space> zf
+" vnoremap <leader><Space> zf
 
 " Normally zj/zk moves to folds even if they are open
 nnoremap <silent> <leader>zj :call folding#NextClosedFold('j')<cr>
