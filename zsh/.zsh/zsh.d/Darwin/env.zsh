@@ -9,3 +9,6 @@ export CPPFLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/llvm/include/c++
 
 # Use the real gcc
 export PATH="/usr/local/bin:$PATH"
+
+# Brew related env
+eval "$(/opt/homebrew/bin/brew shellenv)"

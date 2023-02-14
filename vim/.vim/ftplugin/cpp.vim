@@ -3,8 +3,8 @@ if exists('b:did_ftplugin')
 endif
 let b:did_ftplugin = 1
 
-" Tabs are four columns
-setlocal noexpandtab shiftwidth=4 softtabstop=4 tabstop=4
+" Tabs are two columns
+setlocal expandtab shiftwidth=2 softtabstop=2 tabstop=2
 
 " Comment with //
 setlocal commentstring=//\ %s

@@ -16,7 +16,8 @@ install_plugins() {
 	fi
 	plugin_file=$1
 	if ! command -v antibody > /dev/null 2>&1; then
-		install_antibody $HOME/bin
+		curl -L git.io/antigen > $ZDOTDIR/antigen.zsh
+		source $ZDOTDIR/antigen.zsh
 		antibody_bin=$HOME/bin/antibody
 	else
 		antibody_bin=$(command -v antibody)

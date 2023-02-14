@@ -8,6 +8,7 @@
 	},
 	"suggest.snippetIndicator": "~",
 	"diagnostic.displayByAle": false,
-	"coc.preferences.diagnostic.locationlist": true,
+	"suggest.enablePreselect": false,
+	"suggest.noselect": true,
 	"python.jediEnabled": false
 }

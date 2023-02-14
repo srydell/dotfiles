@@ -15,9 +15,15 @@ let g:projectionist_heuristics = {
       \       'skeleton': 'header',
       \       'type': 'header'
       \     },
+      \     'src/*.h': {
+      \       'alternate': 'src/{}.cpp',
+      \       'skeleton': 'header',
+      \       'type': 'header'
+      \     },
       \     'src/*.cpp': {
       \       'alternate': [
       \         'src/{}.hpp',
+      \         'src/{}.h',
       \         'include/{}.hpp',
       \       ],
       \       'skeleton': 'source',

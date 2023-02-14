@@ -13,7 +13,7 @@
 [diff]
 	tool = vimdiff
 [commit]
-	gpgsign = true
+	gpgsign = false
 [gpg]
 	program = gpg
 [gc]

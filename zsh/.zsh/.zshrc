@@ -5,17 +5,30 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Install plugins if not installed
-if [ ! -f $ZDOTDIR/zsh_plugins.sh ]; then
-	fpath+=($ZDOTDIR/installs)
-	autoload -Uz install_plugins
-	install_plugins $ZDOTDIR/zsh_plugins.txt
+if [ ! -f $ZDOTDIR/antigen.sh ]; then
+	# Install antibody
+	# curl -L git.io/antigen > $ZDOTDIR/antigen.zsh
 fi
-source $ZDOTDIR/zsh_plugins.sh
+
+source $ZDOTDIR/antigen.zsh
+export ANTIBODY_HOME=${HOME}/.cache/antibody
+
+antigen bundle zsh-users/zsh-completions
+antigen bundle zsh-users/zsh-autosuggestions
+antigen bundle zsh-users/zsh-syntax-highlighting
+
+# Directory movements
+antigen bundle agkozak/zsh-z
+
+antigen theme romkatv/powerlevel10k
+antigen apply
 
 # Load configs, platform specific files are in zsh.d/$(uname)
 for ZSH_FILE in ${ZDOTDIR:-$HOME}/zsh.d{,/$(uname)}/*.zsh; do
 	source "${ZSH_FILE}"
 done
+
+zstyle ':completion:*' menu select
 
 # Use emacs keybindings even if our EDITOR is set to vi
 bindkey -e

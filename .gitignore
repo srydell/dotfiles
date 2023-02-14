@@ -38,7 +38,6 @@ qutebrowser/.config/qutebrowser/quickmarks
 !qutebrowser
 !ranger
 !rss
-!ssh
 !sway
 !tmux
 !utils
@@ -50,3 +49,4 @@ qutebrowser/.config/qutebrowser/quickmarks
 !.Arch
 !.gitignore
 !README.md
+!ssh/config

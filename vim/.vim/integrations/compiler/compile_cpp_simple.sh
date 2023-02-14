@@ -35,7 +35,7 @@ common_flags="\
 	-Wdate-time \
 	-Wformat=2 \
 	-pthread \
-	-std=c++17 \
+	-std=c++20 \
 	-O3 \
 	"
 
@@ -45,11 +45,7 @@ clang_flags="\
 	"
 
 gcc_flags="\
-	-Wmisleading-indentation \
-	-Wduplicated-cond \
-	-Wduplicated-branches \
-	-Wlogical-op \
-	-Wuseless-cast \
+	-Werror=unused-variable \
 	"
 
 # Save in case of error
