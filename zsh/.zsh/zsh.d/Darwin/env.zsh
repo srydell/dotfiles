@@ -10,5 +10,10 @@ export CPPFLAGS="-I/usr/local/opt/llvm/include -I/usr/local/opt/llvm/include/c++
 # Use the real gcc
 export PATH="/usr/local/bin:$PATH"
 
+# Use LLVM clangd etc
+export PATH="/opt/homebrew/Cellar/llvm/16.0.6/bin:$PATH"
+
+export PATH="/opt/homebrew/opt/conan@1/bin:$PATH"
+
 # Brew related env
 eval "$(/opt/homebrew/bin/brew shellenv)"

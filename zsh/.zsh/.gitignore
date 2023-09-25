@@ -10,7 +10,7 @@
 !.gitignore
 !.p10k.zsh
 !.zshrc
-!zsh_plugins.txt
+!.zsh_plugins.txt
 
 # Directories
 !zsh.d

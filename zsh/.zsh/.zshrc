@@ -5,23 +5,21 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Install plugins if not installed
-if [ ! -f $ZDOTDIR/antigen.sh ]; then
-	# Install antibody
-	# curl -L git.io/antigen > $ZDOTDIR/antigen.zsh
+if [ ! -d $ZDOTDIR/antidote ]; then
+	# Install antidote
+	git clone --depth=1 https://github.com/mattmc3/antidote.git $ZDOTDIR/antidote
+	chmod +x $ZDOTDIR/antidote/antidote
 fi
 
-source $ZDOTDIR/antigen.zsh
-export ANTIBODY_HOME=${HOME}/.cache/antibody
-
-antigen bundle zsh-users/zsh-completions
-antigen bundle zsh-users/zsh-autosuggestions
-antigen bundle zsh-users/zsh-syntax-highlighting
-
-# Directory movements
-antigen bundle agkozak/zsh-z
-
-antigen theme romkatv/powerlevel10k
-antigen apply
+ # Lazy-load antidote and generate the static load file only when needed
+zsh_plugins=${ZDOTDIR:-$HOME}/.zsh_plugins
+if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
+	(
+		source $ZDOTDIR/antidote/antidote.zsh
+		antidote bundle <${zsh_plugins}.txt >${zsh_plugins}.zsh
+	)
+fi
+source ${zsh_plugins}.zsh
 
 # Load configs, platform specific files are in zsh.d/$(uname)
 for ZSH_FILE in ${ZDOTDIR:-$HOME}/zsh.d{,/$(uname)}/*.zsh; do
