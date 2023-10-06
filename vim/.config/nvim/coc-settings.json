@@ -13,5 +13,5 @@
 	"python.jediEnabled": false,
 	"suggest.snippetIndicator": "~",
 	"suggest.enablePreselect": true,
-	"suggest.noselect": false
+	"suggest.noselect": false,
 }
