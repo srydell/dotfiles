@@ -1,0 +1,10 @@
+#!/bin/bash
+
+COUNTER=0
+while "$@"; do
+ COUNTER=$((COUNTER+1))
+ echo "Successful run nr: ${COUNTER}"
+done
+
+echo "Failed on run nr: $((COUNTER+1))"
+
