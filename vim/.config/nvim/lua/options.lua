@@ -1,3 +1,6 @@
+-- Encoding
+vim.opt.encoding = 'utf-8'
+
 -- Make it easier to see tabs, newlines, and trailing spaces
 vim.opt.list = true
 vim.opt.listchars = { tab =  '▸ ', eol =  '¬', trail = '·' }
@@ -24,6 +27,9 @@ vim.opt.backspace = { 'indent', 'eol', 'start' }
 
 -- Keep the cursor in the middle of the screen
 vim.opt.scrolloff = 999
+
+-- Cursor visuals.     Block                  ,  Underscore
+vim.opt.guicursor = { 'n-v-c-sm-i-ci-ve:block', 'r-cr-o:hor20' }
 
 -- Show commands as they are being written
 vim.opt.showcmd = true
@@ -72,7 +78,7 @@ vim.opt.splitbelow = true
 vim.opt.splitright = true
 
 -- Better autocomplete
-vim.opt.completeopt = { 'longest', 'menuone' }
+vim.opt.completeopt = { 'longest', 'menuone', 'noselect', 'preview' }
 
 -- Maximum number of autocomplete items
 vim.opt.pumheight = 6
@@ -113,10 +119,13 @@ vim.opt.cmdheight = 2
 vim.opt.updatetime = 300
 
 -- Don't give |ins-completion-menu| messages.
-vim.opt.shortmess = 'c'
+vim.opt.shortmess:append('c')
 
 -- Always show signcolumns
 vim.opt.signcolumn = 'yes'
 
 -- Use sh. It's faster than bash
 vim.opt.shell = 'sh'
+
+-- Do not highlight searched terms
+vim.opt.hlsearch = false
