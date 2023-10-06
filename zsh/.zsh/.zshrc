@@ -22,7 +22,7 @@ fi
 source ${zsh_plugins}.zsh
 
 # Load configs, platform specific files are in zsh.d/$(uname)
-for ZSH_FILE in ${ZDOTDIR:-$HOME}/zsh.d{,/$(uname)}/*.zsh; do
+for ZSH_FILE in ${ZDOTDIR:-$HOME}/zsh.d{/$(uname),}/*.zsh; do
 	source "${ZSH_FILE}"
 done
 
