@@ -6,8 +6,9 @@ alias mv='mv -i'
 alias mkdir='mkdir -p'
 alias ..='cd ..'
 
-alias v=vim
-alias vi=vim
+alias v=nvim
+alias vi=nvim
+alias vim=nvim
 
 alias irc='ssh -t weeberry "tmux attach" 2> /dev/null'
 

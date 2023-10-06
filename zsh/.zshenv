@@ -7,7 +7,7 @@ source ~/.secrets
 export MANPAGER="/bin/sh -c \"col -b | vim -c 'set filetype=man' -\""
 
 # Make vim default editor
-export VISUAL=vim
+export VISUAL=nvim
 export EDITOR=$VISUAL
 
 export LC_ALL=en_US.UTF-8
