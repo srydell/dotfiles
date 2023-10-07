@@ -1,4 +1,5 @@
 -- Encoding
+--
 vim.opt.encoding = 'utf-8'
 
 -- Make it easier to see tabs, newlines, and trailing spaces
@@ -98,9 +99,10 @@ vim.opt.wildignore = {
 
 -- Let vim store backup/swap/undo files in these directories
 -- The double // will create files with whole path expanded.
-vim.opt.backupdir = '~/.vim/tmp/backup//'
-vim.opt.directory = '~/.vim/tmp/swap//'
-vim.opt.undodir = '~/.vim/tmp/undo//'
+vim.opt.backupdir = os.getenv('HOME') .. '/.config/nvim/tmp/backup//'
+vim.opt.directory = os.getenv('HOME') .. '/.config/nvim/tmp/swap//'
+vim.opt.undodir = os.getenv('HOME') .. '/.config/nvim/tmp/undo//'
+
 
 -- Delete old backup, backup current file
 vim.opt.backup = true
