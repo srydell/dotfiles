@@ -12,9 +12,5 @@ augroup END
 
 scriptencoding utf-8
 
-" Enable builtin matchit feature.
-" Hit '%' on 'if' to jump to 'else'.
-runtime macros/matchit.vim
-
 set laststatus=2
 call statusline#init()

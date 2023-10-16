@@ -3,21 +3,21 @@
 -- <leader><upperCaseLetter> for potentially harmful commands
 
 -- Open buffer and edit
-vim.keymap.set('n', '<leader>ev', ':VimNOut edit ~/.vim/vimrc<CR>')
+vim.keymap.set('n', '<leader>ev', ':VimNOut edit ~/.config/nvim/init.lua<CR>')
 vim.keymap.set('n', '<leader>et', ':VimNOut edit ~/.tmux.conf<CR>')
-vim.keymap.set('n', '<leader>ep', ':VimNOut edit ~/.vim/plugin/projectionist.vim<CR>')
-vim.keymap.set('n', '<leader>ex', ':VimNOut edit ~/.vim/ftplugin/{filetype}/{files}<CR>')
+vim.keymap.set('n', '<leader>ep', ':VimNOut edit ~/.config/nvim/plugin/projectionist.vim<CR>')
+vim.keymap.set('n', '<leader>ex', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}/{files}<CR>')
 
--- Filetype dependent
-vim.keymap.set('n', '<leader>es', ':VimNOut UltiSnipsEdit {filetype}<CR>')
-vim.keymap.set('n', '<leader>ef', ':VimNOut edit ~/.vim/ftplugin/{filetype}.vim<CR>')
-vim.keymap.set('n', '<leader>eaf', ':VimNOut edit ~/.vim/after/ftplugin/{filetype}.vim<CR>')
-vim.keymap.set('n', '<leader>eef', ':VimNOut edit ~/.vim/autoload/extra_filetypes/{filetype}.vim<CR>')
+vim.keymap.set('n', '<leader>es', ':VimNOut edit ~/.config/nvim/luasnip/{filetype}.lua<CR>')
+vim.keymap.set('n', '<leader>eas', ':VimNOut edit ~/.config/nvim/luasnip/all.lua<CR>')
+vim.keymap.set('n', '<leader>ef', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}.vim<CR>')
+vim.keymap.set('n', '<leader>eaf', ':VimNOut edit ~/.config/nvim/after/ftplugin/{filetype}.vim<CR>')
+vim.keymap.set('n', '<leader>eef', ':VimNOut edit ~/.config/nvim/autoload/extra_filetypes/{filetype}.vim<CR>')
 
 -- Compiler
-vim.keymap.set('n', '<leader>ec', ':VimNOut edit ~/.vim/compiler/{compiler}.vim<CR>')
-vim.keymap.set('n', '<leader>ecs', ':VimNOut edit ~/.vim/integrations/compiler/{files}<CR>')
-vim.keymap.set('n', '<leader>eac', ':VimNOut edit ~/.vim/compiler/{files}<CR>')
+vim.keymap.set('n', '<leader>ec', ':VimNOut edit ~/.config/nvim/{compiler}.vim<CR>')
+vim.keymap.set('n', '<leader>ecs', ':VimNOut edit ~/.config/nvim/integrations/compiler/{files}<CR>')
+vim.keymap.set('n', '<leader>eac', ':VimNOut edit ~/.config/nvim/compiler/{files}<CR>')
 
 -- Fuzzy finder - fzf (files)
 vim.keymap.set('n', '<leader>ff', ':<C-u>FZF<CR>')
@@ -82,8 +82,10 @@ vim.keymap.set('n', '<leader>ti', ':VimuxInspectRunner<CR>', { silent = true })
 -- Zoom the tmux runner pane ( [t]mux [f]ullscreen )
 vim.keymap.set('n', '<leader>tf', ':VimuxZoomRunner<CR>', { silent = true })
 
-vim.keymap.set('n', 'm<space>', ':AsyncRun -program=make', { silent = true })
-vim.keymap.set('n', 'm<CR>', ':AsyncRun -program=make<CR>', { silent = true })
+-- vim.keymap.set('n', 'm<space>', ':AsyncRun -program=make', { silent = true })
+-- vim.keymap.set('n', 'm<CR>', ':AsyncRun -program=make<CR>', { silent = true })
+vim.keymap.set('n', 'm<space>', ':make', { silent = true })
+vim.keymap.set('n', 'm<CR>', ':make<CR>', { silent = true })
 
 -- Move through the buffer list
 vim.keymap.set('n', '[b', ':bprevious<CR>', { silent = true })
@@ -100,14 +102,14 @@ vim.keymap.set('n', ']c', ':CompilerNext<CR>', { silent = true })
 vim.keymap.set('n', '[c', ':CompilerPrevious<CR>', { silent = true })
 
 -- Move through the loclist
-vim.keymap.set('n', '<leader>l', ':call utils#ToggleList(--Location List", "l")<CR>', { silent = true })
+vim.keymap.set('n', '<leader>l', ':call utils#ToggleList("Location List", "l")<CR>', { silent = true })
 vim.keymap.set('n', '[l', ':lprevious<CR>', { silent = true })
 vim.keymap.set('n', ']l', ':lnext<CR>', { silent = true })
 vim.keymap.set('n', '[L', ':lfirst<CR>', { silent = true })
 vim.keymap.set('n', ']L', ':llast<CR>', { silent = true })
 
 -- Move through the quickfix list
-vim.keymap.set('n', '<leader>q', ':call utils#ToggleList(--Quickfix List", "c")<CR>', { silent = true })
+vim.keymap.set('n', '<leader>q', ':call utils#ToggleList("Quickfix List", "c")<CR>', { silent = true })
 vim.keymap.set('n', '[q', ':cprevious<CR>', { silent = true })
 vim.keymap.set('n', ']q', ':cnext<CR>', { silent = true })
 vim.keymap.set('n', '[Q', ':cfirst<CR>', { silent = true })
