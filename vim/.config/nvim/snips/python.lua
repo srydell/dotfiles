@@ -1,7 +1,5 @@
-local ls = require('luasnip')
-
 return {
-  ls.snippet(
+  s(
     { trig='f', dscr='Simple function' },
     fmta(
         [[
