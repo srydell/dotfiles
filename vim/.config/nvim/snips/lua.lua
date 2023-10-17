@@ -1,12 +1,10 @@
-local ls = require('luasnip')
-
 return {
 
-  ls.snippet(
+  s(
     { trig='^(%s*)s', regTrig=true, dscr='A generic snippet' },
     fmta(
         [==[
-          ls.snippet(
+          s(
             { trig='^(%s*)<>', regTrig=true, dscr='<>' },
             fmta(
                   [[
@@ -26,7 +24,7 @@ return {
         }
       )
     ),
-  ls.snippet(
+  s(
     { trig='^(%s*)if', regTrig=true, dscr='if statement' },
     fmta(
           [[
@@ -40,7 +38,7 @@ return {
           }
       )
   ),
-  ls.snippet(
+  s(
     { trig='^(%s*)map', regTrig=true,  dscr='Setup a keymap' },
     fmta(
         [==[

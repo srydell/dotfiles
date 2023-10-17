@@ -1,7 +1,5 @@
-local ls = require('luasnip')
-
 return {
-  ls.snippet({ trig='^(%s*)i', regTrig=true, dscr='A generic snippet' },
+  s({ trig='^(%s*)i', regTrig=true, dscr='A generic snippet' },
     fmta(
       [[
         #include <>
@@ -14,7 +12,7 @@ return {
       })
   ),
 
-  ls.snippet(
+  s(
     { trig='^(%s*)f', regTrig=true, dscr='Function' },
     fmta(
           [[
