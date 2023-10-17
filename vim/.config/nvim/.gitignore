@@ -12,5 +12,11 @@
 !init.lua
 
 # Directories
+!after
 !autoload
+!autoload
+!compiler
+!ftplugin
 !lua
+!plugin
+!snips

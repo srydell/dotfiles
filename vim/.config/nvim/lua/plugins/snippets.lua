@@ -5,15 +5,23 @@ return
 	version = 'v2.*', -- Replace <CurrentMajor> by the latest released major (first number of latest release)
 	-- install jsregexp (optional!).
 	build = 'make install_jsregexp',
-  config = function ()
+	config = function ()
 		-- NOTE: Keymaps are defined in cmp-nvim since interactions in popup is weird
 		local ls = require('luasnip')
-		require('luasnip.loaders.from_lua').load({paths = '~/.config/nvim/luasnip/'})
+		require('luasnip.loaders.from_lua').load({paths = '~/.config/nvim/snips/'})
+		vim.keymap.set('n', '<leader><leader>l', function() require('luasnip.loaders.from_lua').load({paths = '~/.config/nvim/snips/'}) end)
 		ls.config.set_config({
+			-- Remember to keep around the last snippet
+			-- and be able to jump into it
+			history = true,
+
+			-- Update dynamic snippets as you type
+			updateevents = 'TextChanged,TextChangedI',
+
 			-- Enable autotriggered snippets
 			enable_autosnippets = true,
 
-			-- Use Tab (or some other key if you prefer) to trigger visual selection
+			-- Trigger visual selection
 			store_selection_keys = '<C-E>',
 		})
 end

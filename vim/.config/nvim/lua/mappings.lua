@@ -8,14 +8,14 @@ vim.keymap.set('n', '<leader>et', ':VimNOut edit ~/.tmux.conf<CR>')
 vim.keymap.set('n', '<leader>ep', ':VimNOut edit ~/.config/nvim/plugin/projectionist.vim<CR>')
 vim.keymap.set('n', '<leader>ex', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}/{files}<CR>')
 
-vim.keymap.set('n', '<leader>es', ':VimNOut edit ~/.config/nvim/luasnip/{filetype}.lua<CR>')
+vim.keymap.set('n', '<leader>es', ':VimNOut edit ~/.config/nvim/snips/{filetype}.lua<CR>')
 vim.keymap.set('n', '<leader>eas', ':VimNOut edit ~/.config/nvim/luasnip/all.lua<CR>')
 vim.keymap.set('n', '<leader>ef', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}.vim<CR>')
 vim.keymap.set('n', '<leader>eaf', ':VimNOut edit ~/.config/nvim/after/ftplugin/{filetype}.vim<CR>')
 vim.keymap.set('n', '<leader>eef', ':VimNOut edit ~/.config/nvim/autoload/extra_filetypes/{filetype}.vim<CR>')
 
 -- Compiler
-vim.keymap.set('n', '<leader>ec', ':VimNOut edit ~/.config/nvim/{compiler}.vim<CR>')
+vim.keymap.set('n', '<leader>ec', ':VimNOut edit ~/.config/nvim/compiler/{compiler}.vim<CR>')
 vim.keymap.set('n', '<leader>ecs', ':VimNOut edit ~/.config/nvim/integrations/compiler/{files}<CR>')
 vim.keymap.set('n', '<leader>eac', ':VimNOut edit ~/.config/nvim/compiler/{files}<CR>')
 

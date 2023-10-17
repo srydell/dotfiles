@@ -55,6 +55,20 @@ return
 							fallback()
 						end
 					end, { 'i', 's' }),
+					['<C-K>'] = cmp.mapping(function(fallback)
+						if ls.choice_active() then
+							ls.change_choice(1)
+						else
+							fallback()
+						end
+					end, { 'i', 's' }),
+					['<C-J>'] = cmp.mapping(function(fallback)
+						if ls.choice_active() then
+							ls.change_choice(-1)
+						else
+							fallback()
+						end
+					end, { 'i', 's' }),
 			}),
 		sources = cmp.config.sources({
 				{ name = 'nvim_lsp' },

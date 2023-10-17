@@ -6,7 +6,6 @@ vim.g.maplocalleader = ' '
 vim.cmd('source ~/.vim/vimrc')
 
 require('packages')
-
 require('mappings')
 require('options')
 require('colorscheme')
