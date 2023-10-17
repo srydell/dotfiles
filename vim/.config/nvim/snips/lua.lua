@@ -1,4 +1,12 @@
 return {
+  s({ trig='^(%s*)r', regTrig=true, dscr='require block. Either getting the return or not' },
+      {
+        c(1, {
+          sn(nil, { t("require('"), i(1), t("')") }),
+          sn(nil, { t("local "), rep(1), t(" = require('"), i(1), t("')") }),
+        }),
+      }
+  ),
 
   s(
     { trig='^(%s*)s', regTrig=true, dscr='A generic snippet' },
@@ -24,6 +32,7 @@ return {
         }
       )
     ),
+
   s(
     { trig='^(%s*)if', regTrig=true, dscr='if statement' },
     fmta(
