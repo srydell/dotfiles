@@ -11,7 +11,7 @@
 [alias]
 	ctags = !.git/hooks/ctags
 [diff]
-	tool = vimdiff
+	tool = 'nvim -d'
 [commit]
 	gpgsign = false
 [gpg]
