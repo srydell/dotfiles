@@ -3,21 +3,22 @@
 -- <leader><upperCaseLetter> for potentially harmful commands
 
 -- Open buffer and edit
-vim.keymap.set('n', '<leader>ev', ':VimNOut edit ~/.config/nvim/init.lua<CR>')
-vim.keymap.set('n', '<leader>et', ':VimNOut edit ~/.tmux.conf<CR>')
-vim.keymap.set('n', '<leader>ep', ':VimNOut edit ~/.config/nvim/plugin/projectionist.vim<CR>')
-vim.keymap.set('n', '<leader>ex', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}/{files}<CR>')
+vim.keymap.set('n', '<leader>ev', ':VimNOut edit ~/.config/nvim/init.lua<CR>', { silent = true })
+vim.keymap.set('n', '<leader>et', ':VimNOut edit ~/.tmux.conf<CR>', { silent = true })
+vim.keymap.set('n', '<leader>ep', ':VimNOut edit ~/.config/nvim/plugin/projectionist.vim<CR>', { silent = true })
+vim.keymap.set('n', '<leader>ex', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}/{files}<CR>', { silent = true })
 
-vim.keymap.set('n', '<leader>es', ':VimNOut edit ~/.config/nvim/snips/{filetype}.lua<CR>')
-vim.keymap.set('n', '<leader>eas', ':VimNOut edit ~/.config/nvim/luasnip/all.lua<CR>')
-vim.keymap.set('n', '<leader>ef', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}.vim<CR>')
-vim.keymap.set('n', '<leader>eaf', ':VimNOut edit ~/.config/nvim/after/ftplugin/{filetype}.vim<CR>')
-vim.keymap.set('n', '<leader>eef', ':VimNOut edit ~/.config/nvim/autoload/extra_filetypes/{filetype}.vim<CR>')
+vim.keymap.set('n', '<leader>es', ':VimNOut edit ~/.config/nvim/snips/{filetype}.lua<CR>', { silent = true })
+vim.keymap.set('n', '<leader>eas', ':VimNOut edit ~/.config/nvim/luasnip/all.lua<CR>', { silent = true })
+vim.keymap.set('n', '<leader>em', ':VimNOut edit ~/.config/nvim/lua/mappings.lua<CR>', { silent = true })
+vim.keymap.set('n', '<leader>ef', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}.vim<CR>', { silent = true })
+vim.keymap.set('n', '<leader>eaf', ':VimNOut edit ~/.config/nvim/after/ftplugin/{filetype}.vim<CR>', { silent = true })
+vim.keymap.set('n', '<leader>eef', ':VimNOut edit ~/.config/nvim/autoload/extra_filetypes/{filetype}.vim<CR>', { silent = true })
 
 -- Compiler
-vim.keymap.set('n', '<leader>ec', ':VimNOut edit ~/.config/nvim/compiler/{compiler}.vim<CR>')
-vim.keymap.set('n', '<leader>ecs', ':VimNOut edit ~/.config/nvim/integrations/compiler/{files}<CR>')
-vim.keymap.set('n', '<leader>eac', ':VimNOut edit ~/.config/nvim/compiler/{files}<CR>')
+vim.keymap.set('n', '<leader>ec', ':VimNOut edit ~/.config/nvim/compiler/{compiler}.vim<CR>', { silent = true })
+vim.keymap.set('n', '<leader>ecs', ':VimNOut edit ~/.config/nvim/integrations/compiler/{files}<CR>', { silent = true })
+vim.keymap.set('n', '<leader>eac', ':VimNOut edit ~/.config/nvim/compiler/{files}<CR>', { silent = true })
 
 -- Fuzzy finder - fzf (files)
 vim.keymap.set('n', '<leader>ff', ':<C-u>FZF<CR>')
@@ -130,17 +131,6 @@ vim.keymap.set('n', '<leader>P', ':setlocal paste<CR>"*P<CR>:setlocal nopaste<CR
 -- Source vimrc
 vim.keymap.set('n', '<leader>sv', ':source $MYVIMRC<CR>')
 
--- Fast substitutions for
--- Word under the cursor in normal mode
--- Visual selection in visual mode (Also copies selection into ")
--- <leader>su for the current paragraph
--- <leader>S for the whole file
--- vim.keymap.set('n', '<leader>su', ':' .. ''' .. '{,' .. ''' .. '}s/\<<C-r><C-w>\>//g<left><left>')
--- vim.keymap.set('n', '<leader>su', ':'{,'}s/\<<C-r><C-w>\>//g<left><left>')
--- xnoremap <leader>su y:'{,'}s/<C-r><C-0>//g<left><left>
--- vim.keymap.set('n', '<leader>S', ':%s/\<<C-r><C-w>\>//g<left><left>')
--- xnoremap <leader>S y:%s/<C-r><C-0>//g<left><left>
-
 -- Write document
 vim.keymap.set('n', '<leader>w', ':write<CR>')
 
@@ -148,11 +138,6 @@ vim.keymap.set('n', '<leader>w', ':write<CR>')
 -- If there are buffers without a name,
 -- or that are readonly, bring up a confirm prompt
 vim.keymap.set('n', '<leader>W', ':confirm wqall<CR>')
-
--- Unfold all folds under cursor
--- vim.keymap.set('n', '<leader><Space> za
--- Create fold for visually selected text
--- vnoremap <leader><Space> zf
 
 -- Normally zj/zk moves to folds even if they are open
 vim.keymap.set('n', '<leader>zj', ':call folding#NextClosedFold("j")<cr>', { silent = true })
