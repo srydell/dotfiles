@@ -9,6 +9,7 @@ alias ..='cd ..'
 alias v=nvim
 alias vi=nvim
 alias vim=nvim
+alias vimdiff='nvim -d'
 
 alias irc='ssh -t weeberry "tmux attach" 2> /dev/null'
 
