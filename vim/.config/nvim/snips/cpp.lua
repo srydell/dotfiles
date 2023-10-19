@@ -6,10 +6,16 @@ return {
       ]],
       {
         c(1, {
-          isn(nil, { t('<'), i(1, 'iostream'), t('>') }, "    "),
-          isn(nil, { t('"'), i(1, 'iostream'), t('"') }, "    "),
+          isn(nil, { t('<'), r(1, 'include'), t('>') }, "    "),
+          isn(nil, { t('"'), r(1, 'include'), t('"') }, "    "),
         }),
-      })
+      }),
+    {
+      stored = {
+          -- key passed to restoreNodes.
+          ["include"] = i(1, "iostream")
+      }
+    }
   ),
 
   s(
