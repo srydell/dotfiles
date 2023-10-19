@@ -86,7 +86,7 @@ require('lazy').setup({
   'mhinz/vim-grepper',
 
   -- Colorscheme
-  'gruvbox-community/gruvbox',
+  "ellisonleao/gruvbox.nvim",
 
   -- Add syntax highlighting for javascript
   'pangloss/vim-javascript',
