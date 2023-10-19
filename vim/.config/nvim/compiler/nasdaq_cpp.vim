@@ -6,8 +6,8 @@ let current_compiler = 'nasdaq_cpp'
 let s:cpo_save = &cpoptions
 set cpoptions&vim
 
-" CompilerSet makeprg=rsync\ \-r\ \-\-progress\ /Users/simryd/code/dsf/src\ bx0052:/newhome/bx0004/simryd/code/dsf
-CompilerSet makeprg=rsync\ \-r\ \-\-progress\ /Users/simryd/code/oal/src\ bx0052:/newhome/bx0004/simryd/code/oal
+CompilerSet makeprg=rsync\ \-r\ \-\-progress\ /Users/simryd/code/dsf/src\ bx0052:/newhome/bx0004/simryd/code/dsf
+" CompilerSet makeprg=rsync\ \-r\ \-\-progress\ /Users/simryd/code/oal/src\ bx0052:/newhome/bx0004/simryd/code/oal
 
 CompilerSet errorformat=
       \%*[^\"]\"%f\"%*\\D%l:%c:\ %m,
