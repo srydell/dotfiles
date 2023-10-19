@@ -32,9 +32,15 @@ return {
   s({ trig='r', wordTrig=true, dscr='require block. Either getting the return or not' },
       {
         c(1, {
-          sn(nil, { t("require('"), i(1), t("')") }),
-          sn(nil, { t("local "), rep(1), t(" = require('"), i(1), t("')") }),
+          sn(nil, { t("require('"), r(1, 'include'), t("')") }),
+          sn(nil, { t("local "), rep(1), t(" = require('"), r(1, 'include'), t("')") }),
         }),
+      },
+      {
+        stored = {
+            -- key passed to restoreNodes.
+            ['include'] = i(1)
+        }
       }
   ),
 

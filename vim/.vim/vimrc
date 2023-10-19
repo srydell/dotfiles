@@ -1,15 +1,3 @@
-" Colorscheme
-function! CustomHighlights() abort
-  " This overrides the current background in the colorscheme to NONE
-  " Is used to get transparency in vim
-  highlight Normal ctermbg=NONE
-endfunction
-
-augroup customColorscheme
-  autocmd!
-  autocmd ColorScheme * call CustomHighlights()
-augroup END
-
 scriptencoding utf-8
 
 set laststatus=2
