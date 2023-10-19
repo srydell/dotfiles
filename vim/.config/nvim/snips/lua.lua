@@ -26,8 +26,10 @@ local parse = require('luasnip.util.parser').parse_snippet
 local ms = ls.multi_snippet
 local k = require('luasnip.nodes.key_indexer').new_key
 
+local helpers = require('snips_helpers')
+
 return {
-  s({ trig='^(%s*)r', regTrig=true, dscr='require block. Either getting the return or not' },
+  s({ trig='r', wordTrig=true, dscr='require block. Either getting the return or not' },
       {
         c(1, {
           sn(nil, { t("require('"), i(1), t("')") }),
@@ -37,11 +39,11 @@ return {
   ),
 
   s(
-    { trig='^(%s*)s', regTrig=true, dscr='A generic snippet' },
+    { trig='s', wordTrig=true, dscr='A generic snippet' },
     fmta(
         [==[
           s(
-            { trig='^(%s*)<>', regTrig=true, dscr='<>' },
+            { trig='<>', wordTrig=true, dscr='<>' },
             fmta(
                   [[
                   <>
@@ -62,7 +64,7 @@ return {
     ),
 
   s(
-    { trig='^(%s*)if', regTrig=true, dscr='if statement' },
+    { trig='if', wordTrig=true, dscr='if statement' },
     fmta(
           [[
           if <> then
@@ -76,7 +78,7 @@ return {
       )
   ),
   s(
-    { trig='^(%s*)map', regTrig=true,  dscr='Setup a keymap' },
+    { trig='map', wordTrig=true,  dscr='Setup a keymap' },
     fmta(
         [==[
           vim.keymap.set('<>', '<>', '<>')

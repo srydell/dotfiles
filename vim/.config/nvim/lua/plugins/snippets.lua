@@ -8,7 +8,7 @@ return
 	config = function ()
 		-- NOTE: Keymaps are defined in cmp-nvim since interactions in popup is weird
 		local ls = require('luasnip')
-		require('luasnip.loaders.from_lua').load({paths = '~/.config/nvim/snips/'})
+		require('luasnip.loaders.from_lua').lazy_load({paths = '~/.config/nvim/snips/'})
 		vim.keymap.set('n', '<leader><leader>l', function() require('luasnip.loaders.from_lua').load({paths = '~/.config/nvim/snips/'}) end)
 		ls.config.set_config({
 			-- Remember to keep around the last snippet

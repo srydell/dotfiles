@@ -1,5 +1,11 @@
 -- vim.opt.termguicolors = true
 vim.opt.background = 'dark'
-vim.go.gruvbox_contrast_dark = 1
+vim.opt.termguicolors = true
+
+local gruvbox = require('gruvbox')
+
+gruvbox.setup({
+    transparent_mode = true,
+  })
 
 vim.cmd('colorscheme gruvbox')

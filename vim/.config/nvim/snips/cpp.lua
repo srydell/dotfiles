@@ -1,4 +1,57 @@
+local helpers = require('snips_helpers')
+local get_visual = helpers.get_visual
+
 return {
+  postfix(".a",
+    { l("std::atomic<" .. l.POSTFIX_MATCH .. ">"), }
+  ),
+
+  s(
+    { trig='pv', wordTrig=true, dscr='print something with name log' },
+    {
+      c(1, {
+          sn(nil, fmt(
+              [[
+                std::cout << "{} = " << {} << '\n';
+              ]], { rep(1), r(1, 'variable') })),
+            sn(nil, fmta(
+              [[
+                fmt::print('<> = {}', <>);
+              ]], { rep(1), r(1, 'variable') })),
+        }
+      ),
+    },
+    {
+      stored = {
+          -- key passed to restoreNodes.
+          ['variable'] = i(1)
+      }
+    }
+  ),
+
+  s(
+    { trig='p', wordTrig=true, dscr='print something' },
+    {
+      c(1, {
+          sn(nil, fmt(
+              [[
+                std::cout << {} << '\n';
+              ]], { r(1, 'variable') })),
+          sn(nil, fmta(
+              [[
+                fmt::print('{}', <>);
+              ]], { r(1, 'variable') })),
+        }
+      ),
+    },
+    {
+      stored = {
+          -- key passed to restoreNodes.
+          ['variable'] = i(1)
+      }
+    }
+  ),
+
   s({ trig='^(%s*)i', regTrig=true, dscr='#include statement' },
     fmta(
       [[
@@ -6,14 +59,14 @@ return {
       ]],
       {
         c(1, {
-          isn(nil, { t('<'), r(1, 'include'), t('>') }, "    "),
-          isn(nil, { t('"'), r(1, 'include'), t('"') }, "    "),
+          sn(nil, { t('<'), r(1, 'include'), t('>') }),
+          sn(nil, { t('"'), r(1, 'include'), t('"') }),
         }),
       }),
     {
       stored = {
           -- key passed to restoreNodes.
-          ["include"] = i(1, "iostream")
+          ['include'] = i(1, 'iostream')
       }
     }
   ),
@@ -77,14 +130,14 @@ return {
                   if (<>) {
                     <>
                   }
-                ]], { i(1), i(2) })),
+                ]], { i(1), d(2, get_visual) })),
           sn(nil, fmta(
                 [[
                   std::smatch <>;
                   if (std::regex_search(<>, <>, <>) {
                     <>
                   }
-                ]], { i(1, 'matches'), i(2, 'string_var'), rep(1), i(3, 'pattern'), i(4) })),
+                ]], { i(1, 'matches'), i(2, 'string_var'), rep(1), i(3, 'pattern'), d(4, get_visual) })),
         }),
       }
   ),
