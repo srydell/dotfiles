@@ -172,6 +172,7 @@ require('lazy').setup({
 
   require('plugins.nvim-cmp'),
   require('plugins.snippets'),
+  require('plugins.cmp_git'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup
