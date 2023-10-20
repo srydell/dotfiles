@@ -21,6 +21,7 @@ vim.opt.rtp:prepend(lazypath)
 --    as they will be available in your neovim runtime.
 require('lazy').setup({
   -- NOTE: First, some plugins that don't require any configuration
+  'nvim-lua/plenary.nvim',
 
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
@@ -33,7 +34,6 @@ require('lazy').setup({
       { 'williamboman/mason-lspconfig.nvim', opts = {} },
 
       -- Useful status updates for LSP
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim', tag = 'legacy', event = 'LspAttach', opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
@@ -86,13 +86,10 @@ require('lazy').setup({
   'mhinz/vim-grepper',
 
   -- Colorscheme
-  "ellisonleao/gruvbox.nvim",
+  { "ellisonleao/gruvbox.nvim", priority = 1000 },
 
   -- Add syntax highlighting for javascript
   'pangloss/vim-javascript',
-
-  -- Operators which comment out text based on filetype
-  'tpope/vim-commentary',
 
   -- Asynchronously run tasks (can be used with :make)
   'skywind3000/asyncrun.vim',
@@ -123,7 +120,7 @@ require('lazy').setup({
   -- Asynchronous Lint Engine
   'w0rp/ale',
 
- -- Move through tmux/vim panes with the same keybindings
+  -- Move through tmux/vim panes with the same keybindings
   'christoomey/vim-tmux-navigator',
 
   -- {
@@ -141,7 +138,7 @@ require('lazy').setup({
   -- },
 
   -- "gc" to comment visual regions/lines
-  -- { 'numToStr/Comment.nvim', opts = {} },
+  { 'numToStr/Comment.nvim', opts = {} },
 
   -- Fuzzy Finder (files, lsp, etc)
   -- {
@@ -176,12 +173,8 @@ require('lazy').setup({
   require('plugins.nvim-cmp'),
   require('plugins.snippets'),
 
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
-  --    up-to-date with whatever is in the kickstart repo.
-  --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --
-  --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  -- { import = 'custom.plugins' },
+  install = {
+    -- try to load one of these colorschemes when starting an installation during startup
+    colorscheme = { 'gruvbox' },
+  },
 }, {})
