@@ -47,5 +47,37 @@ setopt PATH_DIRS        # Path search even on command names with slashes
 unsetopt CASE_GLOB      # Globbing case insensitively
 unsetopt MENU_COMPLETE  # Always display menu, don't directly insert
 
+if [ -f ~/.secrets ]; then
+	source ~/.secrets
+fi
+
+export MANPAGER='nvim +Man!'
+export MANWIDTH=999
+
+# Make vim default editor
+export VISUAL=nvim
+export EDITOR=$VISUAL
+
+export LC_ALL=en_US.UTF-8
+
+# Let fzf fuzzy finder use ripgrep to search for the files.
+# This respects .gitignore and the like
+export FZF_DEFAULT_COMMAND='rg --files'
+
+export GOPATH="$HOME/.go"
+export PATH="$PATH:$GOPATH/bin"
+# Place for custom scripts
+export PATH="$HOME/bin:$PATH"
+# Place for custom executables used by vim
+export PATH="$PATH:$HOME/.vim/integrations/bin"
+# Fuzzy finder binary
+export PATH="$HOME/.vim/pack/minpac/start/fzf/bin/:$PATH"
+
+# Set config path
+export XDG_CONFIG_HOME=$HOME/.config
+
+# pip
+export PATH="$PATH:$HOME/.local/bin"
+
 # To customize prompt, run `p10k configure` or edit ~/.zsh/.p10k.zsh.
 [[ -f ~/.zsh/.p10k.zsh ]] && source ~/.zsh/.p10k.zsh
