@@ -5,9 +5,10 @@ return {
   },
   config = function ()
     require('cmp_git').setup({
-      gitlab = {
+        gitlab = {
+          -- Requires GITLAB_TOKEN environment variable
           hosts = { 'git.nasdaq.com', }
-      }
-    })
+        }
+      })
   end
 }

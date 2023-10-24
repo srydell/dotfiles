@@ -15,7 +15,13 @@ return
   config = function()
     local cmp = require('cmp')
     local ls = require('luasnip')
+
     cmp.setup({
+        -- Disable for not modifiable pages (for manpager)
+        -- See https://github.com/hrsh7th/nvim-cmp/issues/1113
+        enabled = function()
+          return vim.api.nvim_buf_get_option(0, 'modifiable')
+        end,
         snippet = {
           expand = function(args)
             ls.lsp_expand(args.body)
@@ -82,29 +88,32 @@ return
     })
 
     cmp.setup.cmdline(':', {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = cmp.config.sources({
-        { name = 'path' },
-      }, {
-        { name = 'cmdline' },
-      }),
-    })
+      mapping = cmp.mapping.preset.cmdline(),
+      sources = cmp.config.sources({
+          { name = 'path' },
+        }, {
+          { name = 'cmdline' },
+        }),
+      }
+    )
 
     -- Set configuration for specific filetype.
     cmp.setup.filetype('gitcommit', {
       sources = cmp.config.sources({
-          { name = 'git' }, -- You can specify the `git` source if [you were installed it](https://github.com/petertriho/cmp-git).
+            { name = 'git' }, -- You can specify the `git` source if [you were installed it](https://github.com/petertriho/cmp-git).
         }, {
           { name = 'buffer' },
         })
-    })
+      }
+    )
 
     -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
     cmp.setup.cmdline({ "/", "?" }, {
       mapping = cmp.mapping.preset.cmdline(),
       sources = {
-        { name = "buffer" }
+          { name = "buffer" }
+        }
       }
-    })
+    )
   end
 }
