@@ -142,4 +142,16 @@ return {
       }
   ),
 
+  s(
+    { trig='tern', wordTrig=true, dscr='Ternary operator' },
+    fmta(
+      [[
+        <> = <> ? <> : <>;
+      ]],
+      {
+        i(1), i(2), i(3), i(4),
+      }
+    )
+  ),
+
 }

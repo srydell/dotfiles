@@ -51,13 +51,13 @@ return {
           s(
             { trig='<>', wordTrig=true, dscr='<>' },
             fmta(
-                  [[
-                  <>
-                  ]],
-                  {
-                    <>
-                  }
-              )
+              [[
+                <>
+              ]],
+              {
+                <>
+              }
+            )
           ),
         ]==],
         {
@@ -83,6 +83,21 @@ return {
           }
       )
   ),
+
+  s(
+    { trig='for', wordTrig=true, dscr='for loop' },
+    fmta(
+      [[
+        for <>, <> in pairs({ <> }) do
+          <>
+        end
+      ]],
+      {
+        i(1, 'key'), i(2, 'value'), i(3), i(4)
+      }
+    )
+  ),
+
   s(
     { trig='map', wordTrig=true,  dscr='Setup a keymap' },
     fmta(

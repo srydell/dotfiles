@@ -123,20 +123,6 @@ require('lazy').setup({
   -- Move through tmux/vim panes with the same keybindings
   'christoomey/vim-tmux-navigator',
 
-  -- {
-  --   -- Set lualine as statusline
-  --   'nvim-lualine/lualine.nvim',
-  --   -- See `:help lualine.txt`
-  --   opts = {
-  --     options = {
-  --       icons_enabled = false,
-  --       theme = 'onedark',
-  --       component_separators = '|',
-  --       section_separators = '',
-  --     },
-  --   },
-  -- },
-
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
 
@@ -170,9 +156,10 @@ require('lazy').setup({
     build = ':TSUpdate',
   },
 
-  require('plugins.nvim-cmp'),
+  require('plugins.cmp'),
   require('plugins.snippets'),
   require('plugins.cmp_git'),
+  require('plugins.lualine'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup

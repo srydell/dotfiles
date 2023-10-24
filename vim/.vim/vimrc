@@ -1,4 +1,1 @@
 scriptencoding utf-8
-
-set laststatus=2
-call statusline#init()

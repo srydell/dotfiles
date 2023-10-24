@@ -3,7 +3,7 @@ if exists('b:did_ftplugin')
 endif
 let b:did_ftplugin = 1
 
-set tabstop=8
+set tabstop=2
 set nomodifiable
 set nomodified
 set nolist
