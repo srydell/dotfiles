@@ -64,20 +64,11 @@ require('lazy').setup({
   -- Add ftdetect, compiler and other good stuff for elixir
   'elixir-editors/vim-elixir',
 
-  -- html, css, json and javascript formatter
-  'maksimr/vim-jsbeautify',
-
   -- Debugging
   'szw/vim-maximizer',
 
   -- A set of filetype based plugins
   'sheerun/vim-polyglot',
-
-  -- Python formatter
-  'python/black',
-
-  -- Emmet, snippets for html, css
-  'mattn/emmet-vim',
 
   -- Add syntax highlighting for i3 config files
   'mboughaba/i3config.vim',
@@ -88,21 +79,11 @@ require('lazy').setup({
   -- Colorscheme
   { "ellisonleao/gruvbox.nvim", priority = 1000 },
 
-  -- Add syntax highlighting for javascript
-  'pangloss/vim-javascript',
-
-  -- Asynchronously run tasks (can be used with :make)
-  'skywind3000/asyncrun.vim',
-
   -- Add end, fi, endfunction and so on automatically
   'tpope/vim-endwise',
 
   -- Git commands
   'tpope/vim-fugitive',
-
-  -- Helps with keeping a session saved that
-  -- can be restored after a reboot
-  'tpope/vim-obsession',
 
   -- Project configuration
   -- (used to find alternate files and some fancy Ultisnips tricks)
@@ -111,17 +92,11 @@ require('lazy').setup({
   -- Interface for repeating plugin type commands with .
   'tpope/vim-repeat',
 
-  -- Functions for vimL scripting
-  'tpope/vim-scriptease',
-
   -- Operators used to surround text with character
   'tpope/vim-surround',
 
   -- Asynchronous Lint Engine
   'w0rp/ale',
-
-  -- Move through tmux/vim panes with the same keybindings
-  'christoomey/vim-tmux-navigator',
 
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
@@ -160,6 +135,7 @@ require('lazy').setup({
   require('plugins.snippets'),
   require('plugins.cmp_git'),
   require('plugins.lualine'),
+  require('plugins.nvim_tree'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup
