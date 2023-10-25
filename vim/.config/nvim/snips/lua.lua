@@ -29,6 +29,39 @@ local k = require('luasnip.nodes.key_indexer').new_key
 local helpers = require('snips_helpers')
 
 return {
+  s(
+    { trig='f', wordTrig=true, dscr='Function' },
+    {
+      c(1, {
+          sn(nil, fmt(
+              [[
+                local function {}({})
+                  {}
+                end
+              ]], { r(1, 'function_name'), i(2), i(3) })),
+            sn(nil, fmt(
+              [[
+                local {} = function({})
+                  {}
+                end
+              ]], { r(1, 'function_name'), i(2), i(3) })),
+          sn(nil, fmt(
+              [[
+                function {}({})
+                  {}
+                end
+              ]], { r(1, 'function_name'), i(2), i(3) })),
+        }
+      ),
+    },
+    {
+      stored = {
+          -- key passed to restoreNodes.
+          ['function_name'] = i(1, 'f')
+      }
+    }
+  ),
+
   s({ trig='r', wordTrig=true, dscr='require block. Either getting the return or not' },
       {
         c(1, {
