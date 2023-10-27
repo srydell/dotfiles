@@ -6,8 +6,7 @@ return {
     { l("std::atomic<" .. l.POSTFIX_MATCH .. ">"), }
   ),
 
-  s(
-    { trig='pv', wordTrig=true, dscr='print something with name log' },
+  s({ trig='pv', wordTrig=true, dscr='print something with name log' },
     {
       c(1, {
           sn(nil, fmt(
@@ -29,8 +28,7 @@ return {
     }
   ),
 
-  s(
-    { trig='p', wordTrig=true, dscr='print something' },
+  s({ trig='p', wordTrig=true, dscr='print something' },
     {
       c(1, {
           sn(nil, fmt(
@@ -71,8 +69,7 @@ return {
     }
   ),
 
-  s(
-    { trig='^(%s*)f', regTrig=true, dscr='Function' },
+  s({ trig='^(%s*)f', regTrig=true, dscr='Function' },
     fmta(
           [[
             <> <>(<>)
@@ -89,8 +86,7 @@ return {
       )
   ),
 
-  s(
-    { trig='for', wordTrig=true, dscr='for loop' },
+  s({ trig='for', wordTrig=true, dscr='for loop' },
       {
         c(1, {
           sn(nil, fmta( -- Ranged for loop
@@ -104,7 +100,7 @@ return {
                   for (<> <> = 0; <> << <>; <>++) {
                     <>
                   }
-                ]], { i(1, 'size_t'), i(2, 'i'), rep(2), i(3, 'count'), rep(2), i(4) })),
+                ]], { i(1, 'int'), i(2, 'i'), rep(2), i(3, 'count'), rep(2), i(4) })),
           sn(nil, fmta( -- Get '\n' terminated strings
                 [[
                   for (std::string <>; std::getline(<>, <>);) {
@@ -121,8 +117,7 @@ return {
       }
   ),
 
-  s(
-    { trig='if', wordTrig=true, dscr='if statement' },
+  s({ trig='if', wordTrig=true, dscr='if statement' },
       {
         c(1, {
           sn(nil, fmta(
@@ -142,8 +137,7 @@ return {
       }
   ),
 
-  s(
-    { trig='tern', wordTrig=true, dscr='Ternary operator' },
+  s({ trig='tern', wordTrig=true, dscr='Ternary operator' },
     fmta(
       [[
         <> = <> ? <> : <>;

@@ -2,8 +2,20 @@ local helpers = require('snips_helpers')
 local get_visual = helpers.get_visual
 
 return {
-  s(
-    { trig='f', dscr='Simple function' },
+  s({ trig='_skeleton', wordTrig=true, hidden=true, dscr='Skeleton snippet' },
+    fmta(
+      [[
+        def main():
+          <>
+
+        if __name__ == '__main__':
+          main()
+      ]],
+      { i(0) }
+    )
+  ),
+
+  s({ trig='f', dscr='Simple function' },
     fmta(
         [[
           def <>(<>):
@@ -15,8 +27,7 @@ return {
       )
   ),
 
-  s(
-    { trig='if', wordTrig=true, dscr='if statement' },
+  s({ trig='if', wordTrig=true, dscr='if statement' },
       {
         c(1, {
           sn(nil, fmta(
@@ -33,8 +44,7 @@ return {
       }
   ),
 
-  s(
-    { trig='p', wordTrig=true, dscr='print statement' },
+  s({ trig='p', wordTrig=true, dscr='print statement' },
       fmta(
         [[
           print(f"<>")
@@ -43,8 +53,7 @@ return {
       )
   ),
 
-  s(
-    { trig='pv', wordTrig=true, dscr='print variable' },
+  s({ trig='pv', wordTrig=true, dscr='print variable' },
       fmta(
         [[
           print(f"<> = {<>}")
