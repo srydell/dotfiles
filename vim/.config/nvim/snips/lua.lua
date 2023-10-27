@@ -29,8 +29,8 @@ local k = require('luasnip.nodes.key_indexer').new_key
 local helpers = require('snips_helpers')
 
 return {
-  s(
-    { trig='f', wordTrig=true, dscr='Function' },
+
+  s({ trig='f', wordTrig=true, dscr='Function' },
     {
       c(1, {
           sn(nil, fmt(
@@ -77,12 +77,10 @@ return {
       }
   ),
 
-  s(
-    { trig='s', wordTrig=true, dscr='A generic snippet' },
+  s({ trig='s', wordTrig=true, dscr='A generic snippet' },
     fmta(
         [==[
-          s(
-            { trig='<>', wordTrig=true, dscr='<>' },
+          s({ trig='<>', wordTrig=true, dscr='<>' },
             fmta(
               [[
                 <>
@@ -102,8 +100,29 @@ return {
       )
     ),
 
-  s(
-    { trig='if', wordTrig=true, dscr='if statement' },
+  s({ trig='skeleton', wordTrig=true, dscr='A skeleton snippet' },
+    fmta(
+        [==[
+          s({ trig='_skeleton', wordTrig=true, hidden=true, dscr='<>' },
+            fmta(
+              [[
+                <>
+              ]],
+              {
+                <>
+              }
+            )
+          ),
+        ]==],
+        {
+          i(1, 'Skeleton snippet'),
+          i(2, '<>'),
+          i(3, 'i(1),'),
+        }
+      )
+    ),
+
+  s({ trig='if', wordTrig=true, dscr='if statement' },
     fmta(
           [[
           if <> then
@@ -117,8 +136,7 @@ return {
       )
   ),
 
-  s(
-    { trig='for', wordTrig=true, dscr='for loop' },
+  s({ trig='for', wordTrig=true, dscr='for loop' },
     fmta(
       [[
         for <>, <> in pairs({ <> }) do
@@ -131,8 +149,7 @@ return {
     )
   ),
 
-  s(
-    { trig='map', wordTrig=true,  dscr='Setup a keymap' },
+  s({ trig='map', wordTrig=true,  dscr='Setup a keymap' },
     fmta(
         [==[
           vim.keymap.set('<>', '<>', '<>')
@@ -144,4 +161,5 @@ return {
         }
       )
     ),
+
 }
