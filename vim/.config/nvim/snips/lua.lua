@@ -26,7 +26,7 @@ local parse = require('luasnip.util.parser').parse_snippet
 local ms = ls.multi_snippet
 local k = require('luasnip.nodes.key_indexer').new_key
 
-local helpers = require('snips_helpers')
+local helpers = require('srydell.snips.helpers')
 
 return {
 
@@ -100,28 +100,6 @@ return {
       )
     ),
 
-  s({ trig='skeleton', wordTrig=true, dscr='A skeleton snippet' },
-    fmta(
-        [==[
-          s({ trig='_skeleton', wordTrig=true, hidden=true, dscr='<>' },
-            fmta(
-              [[
-                <>
-              ]],
-              {
-                <>
-              }
-            )
-          ),
-        ]==],
-        {
-          i(1, 'Skeleton snippet'),
-          i(2, '<>'),
-          i(3, 'i(1),'),
-        }
-      )
-    ),
-
   s({ trig='if', wordTrig=true, dscr='if statement' },
     fmta(
           [[
@@ -134,6 +112,17 @@ return {
             i(2),
           }
       )
+  ),
+
+  s({ trig='p', wordTrig=true, dscr='print' },
+    fmta(
+      [[
+        print(<>)
+      ]],
+      {
+        i(1),
+      }
+    )
   ),
 
   s({ trig='for', wordTrig=true, dscr='for loop' },

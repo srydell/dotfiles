@@ -1,20 +1,7 @@
-local helpers = require('snips_helpers')
+local helpers = require('srydell.snips.helpers')
 local get_visual = helpers.get_visual
 
 return {
-  s({ trig='_skeleton', wordTrig=true, hidden=true, dscr='Skeleton snippet' },
-    fmta(
-      [[
-        def main():
-          <>
-
-        if __name__ == '__main__':
-          main()
-      ]],
-      { i(0) }
-    )
-  ),
-
   s({ trig='f', dscr='Simple function' },
     fmta(
         [[

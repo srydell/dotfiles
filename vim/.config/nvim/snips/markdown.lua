@@ -1,4 +1,4 @@
-local helpers = require('snips_helpers')
+local helpers = require('srydell.snips.helpers')
 local get_visual = helpers.get_visual
 
 local repeat_capture = function(_, snip)
@@ -21,6 +21,7 @@ return {
     fmt(
       [[
           {} {} {}
+
       ]],
       {
         f(repeat_capture),
