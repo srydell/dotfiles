@@ -131,11 +131,11 @@ require('lazy').setup({
     build = ':TSUpdate',
   },
 
-  require('plugins.cmp'),
-  require('plugins.snippets'),
-  require('plugins.cmp_git'),
-  require('plugins.lualine'),
-  require('plugins.nvim_tree'),
+  require('srydell.plugins.cmp'),
+  require('srydell.plugins.snippets'),
+  require('srydell.plugins.cmp_git'),
+  require('srydell.plugins.lualine'),
+  require('srydell.plugins.nvim_tree'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup

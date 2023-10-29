@@ -7,10 +7,10 @@ vim.g.maplocalleader = ' '
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
-require('packages')
-require('mappings')
-require('options')
-require('colorscheme')
-require('globals')
-require('lsp')
-require('skeleton')
+require('srydell.packages')
+require('srydell.mappings')
+require('srydell.options')
+require('srydell.colorscheme')
+require('srydell.globals')
+require('srydell.lsp')
+require('srydell.snips.skeleton')

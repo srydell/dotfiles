@@ -9,8 +9,8 @@ vim.keymap.set('n', '<leader>ep', ':VimNOut edit ~/.config/nvim/plugin/projectio
 vim.keymap.set('n', '<leader>ex', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}/{files}<CR>', { silent = true })
 
 vim.keymap.set('n', '<leader>es', ':VimNOut edit ~/.config/nvim/snips/{filetype}.lua<CR>', { silent = true })
-vim.keymap.set('n', '<leader>eas', ':VimNOut edit ~/.config/nvim/luasnip/all.lua<CR>', { silent = true })
-vim.keymap.set('n', '<leader>em', ':VimNOut edit ~/.config/nvim/lua/mappings.lua<CR>', { silent = true })
+vim.keymap.set('n', '<leader>eas', ':VimNOut edit ~/.config/nvim/lua/srydell/snips/skeleton/{filetype}.lua<CR>', { silent = true })
+vim.keymap.set('n', '<leader>em', ':VimNOut edit ~/.config/nvim/lua/srydell/mappings.lua<CR>', { silent = true })
 vim.keymap.set('n', '<leader>ef', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}.vim<CR>', { silent = true })
 vim.keymap.set('n', '<leader>eaf', ':VimNOut edit ~/.config/nvim/after/ftplugin/{filetype}.vim<CR>', { silent = true })
 vim.keymap.set('n', '<leader>eef', ':VimNOut edit ~/.config/nvim/autoload/extra_filetypes/{filetype}.vim<CR>', { silent = true })
