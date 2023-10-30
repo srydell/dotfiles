@@ -117,7 +117,7 @@ return {
   s({ trig='p', wordTrig=true, dscr='print' },
     fmta(
       [[
-        print(<>)
+        print('<>')
       ]],
       {
         i(1),
