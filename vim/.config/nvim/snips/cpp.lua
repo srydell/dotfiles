@@ -1,9 +1,24 @@
+local util = require('srydell.util')
 local helpers = require('srydell.snips.helpers')
 local get_visual = helpers.get_visual
 
 return {
   postfix(".a",
     { l("std::atomic<" .. l.POSTFIX_MATCH .. ">"), }
+  ),
+
+  s({ trig='ns', wordTrig=true, dscr='namespace declaration' },
+    fmta(
+      [[
+        namespace <> {
+          <>
+        }
+      ]],
+      {
+        i(1, util.get_namespace(util.get_project())),
+        i(0),
+      }
+    )
   ),
 
   s({ trig='pv', wordTrig=true, dscr='print something with name log' },

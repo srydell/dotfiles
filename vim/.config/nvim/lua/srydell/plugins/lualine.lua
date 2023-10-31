@@ -17,6 +17,13 @@ return
       end
     end
 
+    local function get_compiler()
+      if vim.b.current_compiler then
+        return '[' .. vim.b.current_compiler .. ']'
+      end
+      return '[no compiler]'
+    end
+
     lualine.setup(
       {
         options = {
@@ -65,7 +72,7 @@ return
             }
           },
           lualine_b = { { 'filename', path = 1 } },
-          lualine_c = {},
+          lualine_c = { get_compiler },
           lualine_x = { 'filetype' },
           lualine_y = {},
           lualine_z = { 'location' }

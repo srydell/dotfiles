@@ -28,7 +28,70 @@ local k = require('luasnip.nodes.key_indexer').new_key
 
 local util = require('srydell.util')
 
+-- Get a C-style include guard based on project information
+--
+-- E.g.
+-- INPUT:
+--   {
+--     name = 'dsf',
+--     path = { 'util', 'perf', 'histogram.hpp' }
+--   }
+-- OUTPUT:
+--   'DSF_SRC_UTIL_PERF_HISTOGRAM_HPP'
+--
+local function get_include_guard(project_info)
+  local guard = { string.upper(project_info.name) }
+
+  for i=1,#project_info.path do
+    local path = string.gsub(project_info.path[i], '%.', '_')
+    table.insert(guard, string.upper(path))
+  end
+
+  return table.concat(guard, '_')
+end
+
+local function get_project()
+  return util.get_project_info(util.split(vim.fn.expand('%:p'), '/'))
+end
+
+local function get_license()
+  return
+    [[/*
+      * This file is subject to the terms and conditions defined in
+      * file 'LICENSE.txt', which is part of this source code package.
+      */
+    ]]
+end
+
+local function get_c_style_include_guard(project_info)
+  local license = ''
+  if project_info.name == 'dsf' then
+    license = get_license()
+  end
+
+  local guard = get_include_guard(project_info)
+  local snippet = string.format(
+    [[
+      #ifndef %s
+      #define %s
+      %s
+      namespace %s {
+        <>
+      }
+
+      #endif // ifndef %s
+    ]], guard, guard, license, util.get_namespace(project_info), guard)
+
+  return snippet
+end
+
 local function hpp()
+  local project_info = get_project()
+  if project_info.name and project_info.name == 'dsf' then
+    return s('_skeleton', fmta( get_c_style_include_guard(project_info), { i(0) }))
+  end
+
+  -- Default to simple pragma once
   return s('_skeleton',
     fmta(
       [[
@@ -44,12 +107,21 @@ local function hpp()
 end
 
 local function h()
+  local project_info = get_project()
+  if project_info.name then
+    return s('_skeleton', fmta( get_c_style_include_guard(project_info), { i(0) }))
+  end
+
   return nil
 end
 
 local function cpp()
+  -- local project_info = get_project()
+  -- if project_info.name then
+  -- end
+
   -- Check for 'prototype' in the parent directories
-  if util.contains(util.split(vim.fn.expand('%:p'), '/'), 'prototype') then
+  if string.match(vim.fn.expand('%:p'), 'prototype') then
     return s('_skeleton',
       fmta(
         [[
