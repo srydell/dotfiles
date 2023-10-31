@@ -50,17 +50,20 @@ local function get_include_guard(project_info)
   return table.concat(guard, '_')
 end
 
-local function get_project()
-  return util.get_project_info(util.split(vim.fn.expand('%:p'), '/'))
-end
-
 local function get_license()
   return
     [[/*
-      * This file is subject to the terms and conditions defined in
-      * file 'LICENSE.txt', which is part of this source code package.
-      */
-    ]]
+ * This file is subject to the terms and conditions defined in
+ * file 'LICENSE.txt', which is part of this source code package.
+ */
+]]
+end
+
+local function get_namespace(project_info)
+  return string.format(
+  [[namespace %s {
+  <>
+}]], util.get_namespace(project_info))
 end
 
 local function get_c_style_include_guard(project_info)
@@ -71,22 +74,19 @@ local function get_c_style_include_guard(project_info)
 
   local guard = get_include_guard(project_info)
   local snippet = string.format(
-    [[
-      #ifndef %s
-      #define %s
-      %s
-      namespace %s {
-        <>
-      }
+    [[#ifndef %s
+#define %s
+%s
+%s
 
-      #endif // ifndef %s
-    ]], guard, guard, license, util.get_namespace(project_info), guard)
+#endif // ifndef %s
+    ]], guard, guard, license, get_namespace(project_info), guard)
 
   return snippet
 end
 
-local function hpp()
-  local project_info = get_project()
+local function pp()
+  local project_info = util.get_project()
   if project_info.name and project_info.name == 'dsf' then
     return s('_skeleton', fmta( get_c_style_include_guard(project_info), { i(0) }))
   end
@@ -107,7 +107,7 @@ local function hpp()
 end
 
 local function h()
-  local project_info = get_project()
+  local project_info = util.get_project()
   if project_info.name then
     return s('_skeleton', fmta( get_c_style_include_guard(project_info), { i(0) }))
   end
@@ -116,9 +116,18 @@ local function h()
 end
 
 local function cpp()
-  -- local project_info = get_project()
-  -- if project_info.name then
-  -- end
+  local project_info = util.get_project()
+  if project_info.name then
+    local license = ''
+    if project_info.name == 'dsf' then
+      license = get_license()
+    end
+    local snippet = string.format(
+      [[%s
+%s
+      ]], license, get_namespace(project_info))
+    return s('_skeleton', fmta( snippet, { i(0) }))
+  end
 
   -- Check for 'prototype' in the parent directories
   if string.match(vim.fn.expand('%:p'), 'prototype') then

@@ -41,6 +41,12 @@ require('lazy').setup({
     },
   },
 
+  -- Some UI sugar
+  {
+    'stevearc/dressing.nvim',
+    opts = {},
+  },
+
   'srydell/vim-n-out',
 
   'benmills/vimux',
