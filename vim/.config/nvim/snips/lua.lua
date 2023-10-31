@@ -26,7 +26,19 @@ local parse = require('luasnip.util.parser').parse_snippet
 local ms = ls.multi_snippet
 local k = require('luasnip.nodes.key_indexer').new_key
 
+local util = require('srydell.util')
 local helpers = require('srydell.snips.helpers')
+
+local function latest_split_by_dot(args)
+  local out = args[1][1]
+  local split = util.split(out, '%.')
+  vim.print(split)
+  if #split > 0 then
+    -- Get the last one
+    return split[#split]
+  end
+  return out
+end
 
 return {
 
@@ -65,8 +77,20 @@ return {
   s({ trig='r', wordTrig=true, dscr='require block. Either getting the return or not' },
       {
         c(1, {
-          sn(nil, { t("require('"), r(1, 'include'), t("')") }),
-          sn(nil, { t("local "), rep(1), t(" = require('"), r(1, 'include'), t("')") }),
+          sn(nil, fmt(
+              [[
+                require('{}')
+              ]],
+              { r(1, 'include') }
+            )
+          ),
+          sn(nil, fmt(
+              [[
+                local {} = require('{}')
+              ]],
+              { f(latest_split_by_dot, { 1 }), r(1, 'include') }
+            )
+          ),
         }),
       },
       {
@@ -117,7 +141,7 @@ return {
   s({ trig='p', wordTrig=true, dscr='print' },
     fmta(
       [[
-        print('<>')
+        print(<>)
       ]],
       {
         i(1),
