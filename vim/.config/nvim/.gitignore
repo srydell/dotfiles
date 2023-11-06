@@ -10,6 +10,7 @@
 !.gitignore
 !coc-settings.json
 !init.lua
+!stylua.toml
 
 # Directories
 !after

@@ -21,7 +21,13 @@ return {
       cpp = { 'clang_format' },
       javascript = { { 'prettierd', 'prettier' } },
       lua = { 'stylua' },
-      python = { 'isort', 'black' },
+      python = function(bufnr)
+        if require('conform').get_formatter_info('ruff_format', bufnr).available then
+          return { 'ruff_format' }
+        else
+          return { 'isort', 'black' }
+        end
+      end,
     },
     -- Set up format-on-save
     format_on_save = { timeout_ms = 500, lsp_fallback = true },
