@@ -103,26 +103,42 @@ return {
 
   s({ trig='s', wordTrig=true, dscr='A generic snippet' },
     fmta(
-        [==[
-          s({ trig='<>', wordTrig=true, dscr='<>' },
-            fmta(
-              [[
-                <>
-              ]],
-              {
-                <>
-              }
-            )
-          ),
-        ]==],
-        {
-          i(1, 'trigger'),
-          i(2, 'Some description'),
-          i(3, 'Snipped body'),
-          i(4, 'i(1),'),
-        }
-      )
-    ),
+      [==[
+        s({ trig='<>', wordTrig=true, dscr='<>' },
+          fmta(
+            [[
+              <>
+            ]],
+            {
+              <>
+            }
+          )
+        ),
+      ]==],
+      {
+        i(1, 'trigger'),
+        i(2, 'Some description'),
+        i(3, 'Snipped body'),
+        i(4, 'i(1),'),
+      }
+    )
+  ),
+
+  s({ trig='post', wordTrig=true, dscr='A postfix snippet' },
+    fmta(
+      [==[
+        postfix({ trig='<>', dscr='<>' },
+          { l(<>), }
+        ),
+      ]==],
+      {
+        i(1, 'trigger'),
+        i(2, 'Description'),
+        i(3, 'l.POSTFIX_MATCH'),
+      }
+    )
+  ),
+
 
   s({ trig='if', wordTrig=true, dscr='if statement' },
     fmta(

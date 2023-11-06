@@ -21,7 +21,7 @@ return
       if vim.b.current_compiler then
         return '[' .. vim.b.current_compiler .. ']'
       end
-      return '[no compiler]'
+      return '[No compiler]'
     end
 
     lualine.setup(
@@ -52,7 +52,7 @@ return
             --   'nvim_lsp', 'nvim_diagnostic', 'nvim_workspace_diagnostic', 'coc', 'ale', 'vim_lsp'.
             -- or a function that returns a table as such:
             --   { error=error_cnt, warn=warn_cnt, info=info_cnt, hint=hint_cnt }
-            sources = { 'nvim_diagnostic', 'nvim_lsp', 'ale' },
+            sources = { 'nvim_diagnostic', 'nvim_lsp' },
 
             -- Displays diagnostics for the defined severity types
             sections = { 'error', 'warn', 'info', 'hint' },

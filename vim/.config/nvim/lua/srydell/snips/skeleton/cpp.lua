@@ -85,7 +85,70 @@ local function get_c_style_include_guard(project_info)
   return snippet
 end
 
-local function pp()
+local function cpp_dsf(project_info)
+    local license = get_license()
+    local snippet = string.format(
+      [[%s
+%s
+      ]], license, get_namespace(project_info))
+    return s('_skeleton', fmta( snippet, { i(0) }))
+end
+
+local function cpp_prototype()
+  return s('_skeleton',
+    fmta(
+      [[
+        #include <<iostream>>
+
+        int main() {
+          <>
+        }
+      ]],
+      {
+        i(0)
+      }
+    )
+  )
+end
+
+local function cpp_leetcode()
+  return s('_skeleton',
+    fmta(
+      [[
+        #include <<algorithm>>
+        #include <<iostream>>
+        #include <<map>>
+        #include <<set>>
+        #include <<unordered_map>>
+        #include <<unordered_set>>
+        #include <<vector>>
+
+        using namespace std;
+
+        class Solution {
+          public:
+              <> <>(<>) {
+                <>
+              }
+        };
+
+        int main() {
+          Solution s;
+          s.<>();
+        }
+      ]],
+      {
+        i(1, 'void'),
+        i(2, 'solve'),
+        i(3),
+        i(0),
+        rep(2),
+      }
+    )
+  )
+end
+
+local function hpp()
   local project_info = util.get_project()
   if project_info.name and project_info.name == 'dsf' then
     return s('_skeleton', fmta( get_c_style_include_guard(project_info), { i(0) }))
@@ -117,34 +180,15 @@ end
 
 local function cpp()
   local project_info = util.get_project()
+  vim.print(project_info)
   if project_info.name then
-    local license = ''
     if project_info.name == 'dsf' then
-      license = get_license()
+      return cpp_dsf(project_info)
+    elseif project_info.name == 'prototype' then
+      return cpp_prototype()
+    elseif project_info.name == 'leetcode' then
+      return cpp_leetcode()
     end
-    local snippet = string.format(
-      [[%s
-%s
-      ]], license, get_namespace(project_info))
-    return s('_skeleton', fmta( snippet, { i(0) }))
-  end
-
-  -- Check for 'prototype' in the parent directories
-  if string.match(vim.fn.expand('%:p'), 'prototype') then
-    return s('_skeleton',
-      fmta(
-        [[
-          #include <<iostream>>
-
-          int main() {
-            <>
-          }
-        ]],
-        {
-          i(0)
-        }
-      )
-    )
   end
 
   return nil

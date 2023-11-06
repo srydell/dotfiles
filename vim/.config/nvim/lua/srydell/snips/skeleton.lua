@@ -3,8 +3,8 @@ vim.api.nvim_create_autocmd("BufNewFile", {
     pattern = "*",
     callback = function()
       local status, skeleton = pcall(require, 'srydell.snips.skeleton.' .. vim.bo.ft)
-      if (not status) then
-        print('No skeleton file')
+      if not status then
+        print('No skeleton file for ' .. 'srydell.snips.skeleton.' .. vim.bo.ft)
         return
       end
 
@@ -14,7 +14,6 @@ vim.api.nvim_create_autocmd("BufNewFile", {
       end
 
       -- Expand the skeleton snippet
-      local ls = require('luasnip')
-      ls.snip_expand(skeleton.snip)
+      require('luasnip').snip_expand(skeleton.snip)
     end
   })
