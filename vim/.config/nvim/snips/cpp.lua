@@ -3,8 +3,23 @@ local helpers = require('srydell.snips.helpers')
 local get_visual = helpers.get_visual
 
 return {
-  postfix(".a",
-    { l("std::atomic<" .. l.POSTFIX_MATCH .. ">"), }
+  postfix('.a',
+    { l('std::atomic<' .. l.POSTFIX_MATCH .. '>'), }
+  ),
+
+  s({ trig='str', wordTrig=true, dscr='Struct' },
+    fmta(
+      [[
+        struct <>
+        {
+          <>
+        };
+      ]],
+      {
+        i(1, 'Data'),
+        i(0),
+      }
+    )
   ),
 
   s({ trig='ns', wordTrig=true, dscr='namespace declaration' },
@@ -102,63 +117,67 @@ return {
   ),
 
   s({ trig='for', wordTrig=true, dscr='for loop' },
+    fmta(
+      [[
+        for (<>) {
+          <>
+        }
+      ]],
       {
         c(1, {
           sn(nil, fmta( -- Ranged for loop
                 [[
-                  for (<> <> : <>) {
-                    <>
-                  }
-                ]], { i(1, 'auto const&'), i(2, 'element'), i(3, 'container'), i(0) })),
+                  <> <> : <>
+                ]], { i(1, 'auto const&'), i(2, 'element'), i(3, 'container') })),
           sn(nil, fmta( -- Indexed for loop
                 [[
-                  for (<> <> = 0; <> << <>; <>++) {
-                    <>
-                  }
-                ]], { i(1, 'int'), i(2, 'i'), rep(2), i(3, 'count'), rep(2), i(4) })),
+                  <> <> = 0; <> << <>; <>++
+                ]], { i(1, 'int'), i(2, 'i'), rep(2), i(3, 'count'), rep(2) })),
           sn(nil, fmta( -- Get '\n' terminated strings
                 [[
-                  for (std::string <>; std::getline(<>, <>);) {
-                    <>
-                  }
-                ]], { i(1, 'line'), i(2, 'std::cin'), rep(1), i(3) })),
+                  std::string <>; std::getline(<>, <>);
+                ]], { i(1, 'line'), i(2, 'std::cin'), rep(1) })),
           sn(nil, fmta( -- Iterate over map
                 [[
-                  for (<> [<>, <>] : <>) {
-                    <>
-                  }
-                ]], { i(1, 'auto const&'), i(2, 'key'), i(3, 'value'), i(4, 'map'), i(5) })),
+                  <> [<>, <>] : <>
+                ]], { i(1, 'auto const&'), i(2, 'key'), i(3, 'value'), i(4, 'map') })),
         }),
+        i(0),
       }
+    )
   ),
 
   s({ trig='if', wordTrig=true, dscr='if statement' },
+    fmta(
+      [[
+        if (<>) {
+          <><>
+        }
+      ]],
       {
         c(1, {
           sn(nil, fmta(
                 [[
-                  if (<>) {
-                    <>
-                  }
-                ]], { i(1), d(2, get_visual) })),
+                  <>
+                ]], { i(1) })),
           sn(nil, fmta(
                 [[
-                  std::smatch <>;
-                  if (std::regex_search(<>, <>, <>) {
-                    <>
-                  }
-                ]], { i(1, 'matches'), i(2, 'string_var'), rep(1), i(3, 'pattern'), d(4, get_visual) })),
+                  std::smatch <>; std::regex_search(<>, <>, <>)
+                ]], { i(1, 'matches'), i(2, 'string_to_search'), rep(1), i(3, 'pattern') })),
         }),
+        d(2, get_visual),
+        i(0),
       }
+    )
   ),
 
   s({ trig='tern', wordTrig=true, dscr='Ternary operator' },
     fmta(
       [[
-        <> = <> ? <> : <>;
+        <> ? <> : <>;
       ]],
       {
-        i(1), i(2), i(3), i(4),
+        i(1), i(2), i(3),
       }
     )
   ),

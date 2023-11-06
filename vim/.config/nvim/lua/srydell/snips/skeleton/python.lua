@@ -31,10 +31,11 @@ local function skeleton()
     fmta(
       [[
         def main():
-          <>
+            <>
+
 
         if __name__ == '__main__':
-          main()
+            main()
       ]],
       { i(0) }
     )

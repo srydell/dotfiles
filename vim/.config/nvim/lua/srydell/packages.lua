@@ -101,9 +101,6 @@ require('lazy').setup({
   -- Operators used to surround text with character
   'tpope/vim-surround',
 
-  -- Asynchronous Lint Engine
-  'w0rp/ale',
-
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
 
@@ -142,6 +139,7 @@ require('lazy').setup({
   require('srydell.plugins.cmp_git'),
   require('srydell.plugins.lualine'),
   require('srydell.plugins.nvim_tree'),
+  require('srydell.plugins.conform'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup

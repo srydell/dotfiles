@@ -1,8 +1,20 @@
 -- Enable some language servers with the additional completion capabilities offered by nvim-cmp
--- local servers = { 'clangd', 'pyright', 'lua_ls' }
-local servers = { 'clangd', 'lua_ls' }
+local servers = { 'clangd',   -- C++
+                  'lua_ls',   -- Lua
+                  'neocmake',    -- CMake, requires rust
+                  'pylsp',    -- Python
+                  -- 'bashls',   -- Bash, requires node
+                  -- 'biome',    -- JSON, requires node
+                  -- 'marksman', -- Markdown
+                  -- 'elixirls', -- Elixir
+                }
 
-require('mason').setup()
+require('mason').setup({
+    pip = {
+      install_args = { '--trusted-host', 'pypi.org', '--trusted-host', 'pypi.python.org', '--trusted-host', 'files.pythonhosted.org' }
+    }
+  })
+
 require('mason-lspconfig').setup({
   ensure_installed = servers
 })

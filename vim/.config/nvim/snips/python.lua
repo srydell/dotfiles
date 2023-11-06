@@ -2,33 +2,56 @@ local helpers = require('srydell.snips.helpers')
 local get_visual = helpers.get_visual
 
 return {
+  s({ trig='^(%s*)i', regTrig=true, dscr='import statement' },
+    {
+      c(1, {
+          sn(nil, { t('import '), r(1, 'package') }),
+          sn(nil, { t('from '), r(1, 'package'), t(' import '), i(2) }),
+        }),
+    },
+    {
+      stored = {
+        -- key passed to restoreNodes.
+        ['package'] = i(1, 'statistics')
+      }
+    }
+  ),
+
   s({ trig='f', dscr='Simple function' },
     fmta(
         [[
           def <>(<>):
+              <>
         ]],
         {
           i(1, 'f'),
           i(2),
+          i(0),
         }
       )
   ),
 
   s({ trig='if', wordTrig=true, dscr='if statement' },
+    fmta(
+      [[
+        if <>:
+            <><>
+      ]],
       {
         c(1, {
           sn(nil, fmta(
             [[
-              if <>:
-                <>
-            ]], { i(1), d(2, get_visual) })),
+              <>
+            ]], { i(1) })),
           sn(nil, fmta(
             [[
-              if re.match(<>, <>)
-                <>
-            ]], { i(1, 'pattern'), i(2, 'input'), d(3, get_visual) })),
+              re.match(<>, <>)
+            ]], { i(1, 'pattern'), i(2, 'input') })),
         }),
+        d(2, get_visual),
+        i(0),
       }
+    )
   ),
 
   s({ trig='p', wordTrig=true, dscr='print statement' },

@@ -45,7 +45,7 @@ return
     ls.config.set_config({
         -- Remember to keep around the last snippet
         -- and be able to jump into it
-        history = true,
+        -- history = true,
 
         -- Update dynamic snippets as you type
         updateevents = 'TextChanged,TextChangedI',
