@@ -3,20 +3,20 @@
 	email = simonwrydell@gmail.com
 	signingkey = CF81E4BB370F2809
 [core]
-	editor = nvim
-	quotepath = false
-	commitGraph = true
+    editor = nvim
+    quotepath = false
+    commitGraph = true
 [init]
-	templatedir = ~/.git_template
-[alias]
-	ctags = !.git/hooks/ctags
+    templatedir = ~/.git_template
 [diff]
-	tool = 'nvim -d'
-[commit]
-	gpgsign = false
-[gpg]
-	program = gpg
+    tool = 'nvim -d'
 [gc]
-	writeCommitGraph = true
+    writeCommitGraph = true
 [pull]
-	rebase = true
+    rebase = false
+[alias]
+    lg = log --color --graph \
+        --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' \
+        --abbrev-commit --
+    ctags = !.git/hooks/ctags
+    recap = !git log --all --oneline --no-merges --author=$(git config user.email)
