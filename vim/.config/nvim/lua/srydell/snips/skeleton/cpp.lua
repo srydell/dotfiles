@@ -37,7 +37,7 @@ local util = require('srydell.util')
 --     path = { 'util', 'perf', 'histogram.hpp' }
 --   }
 -- OUTPUT:
---   'DSF_SRC_UTIL_PERF_HISTOGRAM_HPP'
+--   'DSF_UTIL_PERF_HISTOGRAM_HPP'
 --
 local function get_include_guard(project_info)
   local guard = { string.upper(project_info.name) }
@@ -58,16 +58,7 @@ local function get_license()
 ]]
 end
 
-local function get_namespace(project_info)
-  return string.format(
-    [[namespace %s {
-  <>
-}]],
-    util.get_namespace(project_info)
-  )
-end
-
-local function get_c_style_include_guard(project_info)
+local function basic_include_guard_snippet(project_info)
   local license = ''
   if project_info.name == 'dsf' then
     license = get_license()
@@ -78,33 +69,37 @@ local function get_c_style_include_guard(project_info)
     [[#ifndef %s
 #define %s
 %s
-%s
+namespace %s {
+  <>
+}
 
 #endif // ifndef %s
     ]],
     guard,
     guard,
     license,
-    get_namespace(project_info),
+    util.get_namespace(project_info),
     guard
   )
 
-  return snippet
+  return s('_skeleton', fmta(snippet, { i(0) }))
 end
 
-local function cpp_dsf(project_info)
+local function dsf(project_info)
   local license = get_license()
   local snippet = string.format(
     [[%s
-%s
+namespace %s {
+  <>
+}
       ]],
     license,
-    get_namespace(project_info)
+    util.get_namespace(project_info)
   )
   return s('_skeleton', fmta(snippet, { i(0) }))
 end
 
-local function cpp_prototype()
+local function prototype()
   return s(
     '_skeleton',
     fmta(
@@ -122,7 +117,7 @@ local function cpp_prototype()
   )
 end
 
-local function cpp_leetcode()
+local function leetcode()
   return s(
     '_skeleton',
     fmta(
@@ -160,13 +155,7 @@ local function cpp_leetcode()
   )
 end
 
-local function hpp()
-  local project_info = util.get_project()
-  if project_info.name and project_info.name == 'dsf' then
-    return s('_skeleton', fmta(get_c_style_include_guard(project_info), { i(0) }))
-  end
-
-  -- Default to simple pragma once
+local function pragma_once(_)
   return s(
     '_skeleton',
     fmta(
@@ -182,41 +171,39 @@ local function hpp()
   )
 end
 
-local function h()
-  local project_info = util.get_project()
-  if project_info.name then
-    return s('_skeleton', fmta(get_c_style_include_guard(project_info), { i(0) }))
-  end
-
+-- Dummy function for structure
+local function get_nil(_)
   return nil
 end
 
-local projects = {
-  dsf = cpp_dsf,
-  prototype = cpp_prototype,
-  leetcode = cpp_leetcode,
-}
-
-local function cpp()
-  local project_info = util.get_project()
-  vim.print(project_info)
-  if project_info.name and projects[project_info.name] then
-    return projects[project_info.name](project_info)
-  end
-
-  return nil
-end
-
+-- Map over the snippets available
+-- skel.ext.project
 local skel = {
-  hpp = hpp,
-  h = h,
-  cpp = cpp,
+  hpp = {
+    dsf = basic_include_guard_snippet,
+    _fallback = pragma_once,
+  },
+  h = {
+    _fallback = basic_include_guard_snippet,
+  },
+  cpp = {
+    dsf = dsf,
+    prototype = prototype,
+    leetcode = leetcode,
+    _fallback = get_nil,
+  },
 }
 
 local function skeleton()
   local ext = vim.fn.expand('%:e')
   if skel[ext] then
-    return skel[ext]()
+    local project = util.get_project()
+    local name = project.name
+    if name and skel[ext][name] then
+      return skel[ext][name](project)
+    end
+
+    return skel[ext]._fallback(project)
   end
 
   return nil
