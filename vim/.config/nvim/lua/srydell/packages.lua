@@ -1,16 +1,16 @@
 -- Install package manager
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
-local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
+  vim.fn.system({
     'git',
     'clone',
     '--filter=blob:none',
     'https://github.com/folke/lazy.nvim.git',
     '--branch=stable', -- latest stable release
     lazypath,
-  }
+  })
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -83,7 +83,7 @@ require('lazy').setup({
   'mhinz/vim-grepper',
 
   -- Colorscheme
-  { "ellisonleao/gruvbox.nvim", priority = 1000 },
+  { 'ellisonleao/gruvbox.nvim', priority = 1000 },
 
   -- Add end, fi, endfunction and so on automatically
   'tpope/vim-endwise',
@@ -140,6 +140,7 @@ require('lazy').setup({
   require('srydell.plugins.lualine'),
   require('srydell.plugins.nvim_tree'),
   require('srydell.plugins.conform'),
+  require('srydell.plugins.lint'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup
