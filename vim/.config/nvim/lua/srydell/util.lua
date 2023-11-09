@@ -12,7 +12,7 @@ M = {}
 --
 M.split = function(text, delimiter)
   -- This would result in endless loops
-  if string.find("", delimiter, 1) then
+  if string.find('', delimiter, 1) then
     return {}
   end
 
@@ -23,7 +23,7 @@ M.split = function(text, delimiter)
     if first then
       -- found?
       table.insert(split_list, string.sub(text, position, first - 1))
-      position = last+1
+      position = last + 1
     else
       table.insert(split_list, string.sub(text, position))
       break
@@ -43,12 +43,12 @@ end
 --   true
 --
 M.contains = function(tbl, val)
-   for i=1,#tbl do
-      if tbl[i] == val then
-         return true
-      end
-   end
-   return false
+  for i = 1, #tbl do
+    if tbl[i] == val then
+      return true
+    end
+  end
+  return false
 end
 
 --
@@ -68,10 +68,12 @@ M.get_project_info = function(path)
   local name = nil
   local src_path = {}
   local internal_path = false
-  for i=1,#path do
-    if path[i] == 'src' or path[i] == 'include' or path[i] == 'test' then
-      -- The name of the project is the parent directory of the above
-      name = last_directory
+  for i = 1, #path do
+    if not name then
+      if path[i] == 'src' or path[i] == 'include' or path[i] == 'test' then
+        -- The name of the project is the parent directory of the above
+        name = last_directory
+      end
     end
     last_directory = path[i]
 
@@ -87,14 +89,13 @@ M.get_project_info = function(path)
 
   return {
     name = name,
-    path = src_path
+    path = src_path,
   }
 end
 
 M.get_project = function()
   return M.get_project_info(M.split(vim.fn.expand('%:p'), '/'))
 end
-
 
 --
 -- Get namespace based on project information
@@ -111,12 +112,11 @@ end
 M.get_namespace = function(project_info)
   local ns = { project_info.name }
 
-  for i=1,#project_info.path-1 do
+  for i = 1, #project_info.path - 1 do
     table.insert(ns, project_info.path[i])
   end
 
   return table.concat(ns, '::')
 end
-
 
 return M
