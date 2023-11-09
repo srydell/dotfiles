@@ -9,11 +9,21 @@ vim.keymap.set('n', '<leader>ep', ':VimNOut edit ~/.config/nvim/plugin/projectio
 vim.keymap.set('n', '<leader>ex', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}/{files}<CR>', { silent = true })
 
 vim.keymap.set('n', '<leader>es', ':VimNOut edit ~/.config/nvim/snips/{filetype}.lua<CR>', { silent = true })
-vim.keymap.set('n', '<leader>eas', ':VimNOut edit ~/.config/nvim/lua/srydell/snips/skeleton/{filetype}.lua<CR>', { silent = true })
+vim.keymap.set(
+  'n',
+  '<leader>eas',
+  ':VimNOut edit ~/.config/nvim/lua/srydell/snips/skeleton/{filetype}.lua<CR>',
+  { silent = true }
+)
 vim.keymap.set('n', '<leader>em', ':VimNOut edit ~/.config/nvim/lua/srydell/mappings.lua<CR>', { silent = true })
 vim.keymap.set('n', '<leader>ef', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}.vim<CR>', { silent = true })
 vim.keymap.set('n', '<leader>eaf', ':VimNOut edit ~/.config/nvim/after/ftplugin/{filetype}.vim<CR>', { silent = true })
-vim.keymap.set('n', '<leader>eef', ':VimNOut edit ~/.config/nvim/autoload/extra_filetypes/{filetype}.vim<CR>', { silent = true })
+vim.keymap.set(
+  'n',
+  '<leader>eef',
+  ':VimNOut edit ~/.config/nvim/autoload/extra_filetypes/{filetype}.vim<CR>',
+  { silent = true }
+)
 
 -- Compiler
 vim.keymap.set('n', '<leader>ec', ':VimNOut edit ~/.config/nvim/compiler/{compiler}.vim<CR>', { silent = true })
@@ -22,12 +32,6 @@ vim.keymap.set('n', '<leader>eac', ':VimNOut edit ~/.config/nvim/compiler/{files
 
 -- Fuzzy finder - fzf (files)
 vim.keymap.set('n', '<leader>ff', ':<C-u>FZF<CR>')
-
--- Find all the TODO/FIXME in current git project
--- :Todo command specified in .vim/plugin/searchtools.vim
-vim.keymap.set('n', '<leader>ft', ':Todo<CR>')
-
-vim.keymap.set('n', '<leader>fz', ':MaximizerToggle<CR>')
 
 -- Search for the current word in the whole directory structure
 vim.keymap.set('n', '<leader>*', ':Grepper -cword -noprompt<CR>')
@@ -148,9 +152,9 @@ vim.keymap.set('n', '<leader>-', ':wincmd _<cr>:wincmd \\|<cr>', { silent = true
 vim.keymap.set('n', '<leader>=', ':wincmd =<cr>', { silent = true })
 
 -- Send to tmux pane
-vim.keymap.set('n', 'gs', '<Plug>SlimeMotionSend', {remap = true})
-vim.keymap.set('n', 'gss', '<Plug>SlimeLineSend', {remap = true})
-vim.keymap.set('x', 'gs', '<Plug>SlimeRegionSend', {remap = true})
+vim.keymap.set('n', 'gs', '<Plug>SlimeMotionSend', { remap = true })
+vim.keymap.set('n', 'gss', '<Plug>SlimeLineSend', { remap = true })
+vim.keymap.set('x', 'gs', '<Plug>SlimeRegionSend', { remap = true })
 
 -- H moves to beginning of line and L to end of line
 vim.keymap.set('n', 'H', '^')

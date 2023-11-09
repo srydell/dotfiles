@@ -139,7 +139,7 @@ require('lazy').setup({
   require('srydell.plugins.cmp_git'),
   require('srydell.plugins.lualine'),
   require('srydell.plugins.nvim_tree'),
-  require('srydell.plugins.conform'),
+  require('srydell.plugins.formatter'),
   require('srydell.plugins.lint'),
 
   install = {

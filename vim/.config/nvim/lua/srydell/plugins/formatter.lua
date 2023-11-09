@@ -1,3 +1,5 @@
+local util = require('srydell.util')
+
 return {
   'stevearc/conform.nvim',
   event = { 'BufWritePre' },
@@ -30,7 +32,16 @@ return {
       end,
     },
     -- Set up format-on-save
-    format_on_save = { timeout_ms = 500, lsp_fallback = true },
+    format_on_save = function()
+      local project = util.get_project()
+      if project.name == 'dsf' then
+        return
+      end
+
+      -- ...additional logic...
+      return { timeout_ms = 500, lsp_fallback = true }
+    end,
+
     -- Customize formatters
     formatters = {
       shfmt = {
