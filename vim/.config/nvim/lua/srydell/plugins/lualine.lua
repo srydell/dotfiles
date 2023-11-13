@@ -4,7 +4,7 @@ return
   dependencies = {
     { 'nvim-tree/nvim-web-devicons', opts = {} }
   },
-  config = function ()
+  config = function()
     local lualine = require('lualine')
 
     -- Makes the background not change when changing mode
@@ -29,8 +29,8 @@ return
         options = {
           icons_enabled = true,
           theme = custom_gruvbox,
-          component_separators = { left = '', right = ''},
-          section_separators = { left = '', right = ''},
+          component_separators = { left = '', right = '' },
+          section_separators = { left = '', right = '' },
           disabled_filetypes = {
             statusline = {},
             winbar = {},
@@ -45,7 +45,7 @@ return
           }
         },
         sections = {
-          lualine_a = {'branch', {
+          lualine_a = { 'branch', {
             'diagnostics',
 
             -- Table of diagnostic sources, available sources are:
@@ -66,10 +66,10 @@ return
             -- },
 
             symbols = { error = 'E', warn = 'W', info = 'I', hint = 'H' },
-            colored = false,           -- Displays diagnostics status in color if set to true.
+            colored = false,          -- Displays diagnostics status in color if set to true.
             update_in_insert = false, -- Update diagnostics in insert mode.
             always_visible = false,   -- Show diagnostics even if there are none.
-            }
+          }
           },
           lualine_b = { { 'filename', path = 1 } },
           lualine_c = { get_compiler },
