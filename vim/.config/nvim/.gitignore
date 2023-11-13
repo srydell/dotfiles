@@ -8,7 +8,6 @@
 # Except these
 # Files
 !.gitignore
-!coc-settings.json
 !init.lua
 !stylua.toml
 
