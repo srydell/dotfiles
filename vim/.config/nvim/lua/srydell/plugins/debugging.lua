@@ -18,8 +18,34 @@ return {
     end
 
     -- language specific adapters
+    local registry = require('mason-registry')
+
     local dappython = require('dap-python')
-    dappython.setup('~/.local/share/nvim/mason/packages/debugpy/venv/bin/python')
+    dappython.setup(registry.get_package('debugpy'):get_install_path() .. '/venv/bin/python')
+
+    dap.adapters.codelldb = {
+      type = 'server',
+      port = '${port}',
+      executable = {
+        command = registry.get_package('codelldb'):get_install_path() .. '/codelldb',
+        args = { '--port', '${port}' },
+
+        -- On windows you may have to uncomment this:
+        -- detached = false,
+      },
+    }
+    dap.configurations.cpp = {
+      {
+        name = 'Launch file',
+        type = 'codelldb',
+        request = 'launch',
+        program = function()
+          return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+      },
+    }
 
     local function debug_map(key, func)
       vim.keymap.set('n', '<leader>d' .. key, func)
@@ -44,26 +70,5 @@ return {
     debug_map('r', function()
       dap.run_last()
     end)
-
-    -- vim.keymap.set('n', '<Leader>lp', function()
-    --   dap.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))
-    -- end)
-    -- vim.keymap.set('n', '<Leader>dr', function()
-    --   dap.repl.open()
-    -- end)
-    -- vim.keymap.set({ 'n', 'v' }, '<Leader>dh', function()
-    --   require('dap.ui.widgets').hover()
-    -- end)
-    -- vim.keymap.set({ 'n', 'v' }, '<Leader>dp', function()
-    --   require('dap.ui.widgets').preview()
-    -- end)
-    -- vim.keymap.set('n', '<Leader>df', function()
-    --   local widgets = require('dap.ui.widgets')
-    --   widgets.centered_float(widgets.frames)
-    -- end)
-    -- vim.keymap.set('n', '<Leader>ds', function()
-    --   local widgets = require('dap.ui.widgets')
-    --   widgets.centered_float(widgets.scopes)
-    -- end)
   end,
 }
