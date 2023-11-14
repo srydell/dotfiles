@@ -32,12 +32,13 @@ require('lazy').setup({
       -- Automatically install LSPs to stdpath for neovim
       { 'williamboman/mason.nvim', opts = {} },
       { 'williamboman/mason-lspconfig.nvim', opts = {} },
+      { 'WhoIsSethDaniel/mason-tool-installer.nvim', opts = {} },
 
       -- Useful status updates for LSP
       { 'j-hui/fidget.nvim', tag = 'legacy', event = 'LspAttach', opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
-      { 'folke/neodev.nvim', opts = {} },
+      { 'folke/neodev.nvim', opts = { library = { plugins = { 'nvim-dap-ui' }, types = true } } },
     },
   },
 
@@ -141,6 +142,7 @@ require('lazy').setup({
   require('srydell.plugins.nvim_tree'),
   require('srydell.plugins.formatter'),
   require('srydell.plugins.lint'),
+  require('srydell.plugins.debugging'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup
