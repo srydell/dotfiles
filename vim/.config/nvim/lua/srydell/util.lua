@@ -119,4 +119,26 @@ M.get_namespace = function(project_info)
   return table.concat(ns, '::')
 end
 
+--
+-- Merge two list arrays (use vim.tbl_extend for maps
+--
+-- E.g.
+-- INPUT:
+--   { 'srydell', 'github' },
+--   { 'stars', '39' }
+-- OUTPUT:
+--   { 'srydell', 'github' 'stars', '39' }
+--
+M.merge = function(l0, l1)
+  local l = {}
+  for i = 1, #l0 do
+    table.insert(l, l0[i])
+  end
+
+  for i = 1, #l1 do
+    table.insert(l, l1[i])
+  end
+  return l
+end
+
 return M

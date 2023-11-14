@@ -1,22 +1,24 @@
--- Enable some language servers with the additional completion capabilities offered by nvim-cmp
-local servers = { 'clangd',   -- C++
-                  'lua_ls',   -- Lua
-                  'neocmake',    -- CMake, requires rust
-                  'pylsp',    -- Python
-                  -- 'bashls',   -- Bash, requires node
-                  -- 'biome',    -- JSON, requires node
-                  -- 'marksman', -- Markdown
-                  -- 'elixirls', -- Elixir
-                }
+local constants = require('srydell.constants')
 
 require('mason').setup({
-    pip = {
-      install_args = { '--trusted-host', 'pypi.org', '--trusted-host', 'pypi.python.org', '--trusted-host', 'files.pythonhosted.org' }
-    }
-  })
+  pip = {
+    install_args = {
+      '--trusted-host',
+      'pypi.org',
+      '--trusted-host',
+      'pypi.python.org',
+      '--trusted-host',
+      'files.pythonhosted.org',
+    },
+  },
+})
 
-require('mason-lspconfig').setup({
-  ensure_installed = servers
+require('mason-lspconfig').setup()
+
+require('mason-tool-installer').setup({
+  -- a list of all tools you want to ensure are installed upon
+  -- start; they should be the names Mason uses for each tool
+  ensure_installed = constants.tools,
 })
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -24,8 +26,7 @@ capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 local lspconfig = require('lspconfig')
 
-local on_attach = function(_, _)
-end
+local on_attach = function(_, _) end
 
 vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, {})
 vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, {})
@@ -36,7 +37,7 @@ vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, {})
 vim.keymap.set('n', 'gr', vim.lsp.buf.references, {})
 vim.keymap.set('n', 'K', vim.lsp.buf.hover, {})
 
-for _, lsp in ipairs(servers) do
+for _, lsp in ipairs(constants.lsp_servers) do
   lspconfig[lsp].setup({
     -- on_attach = my_custom_on_attach,
     capabilities = capabilities,
@@ -44,13 +45,13 @@ for _, lsp in ipairs(servers) do
   })
 end
 
--- example to setup lua_ls and enable call snippets
+-- setup lua_ls and enable call snippets
 lspconfig['lua_ls'].setup({
   settings = {
     Lua = {
       completion = {
-        callSnippet = "Replace"
-      }
-    }
-  }
+        callSnippet = 'Replace',
+      },
+    },
+  },
 })
