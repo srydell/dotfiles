@@ -30,24 +30,13 @@ vim.keymap.set('n', '<leader>ec', ':VimNOut edit ~/.config/nvim/compiler/{compil
 vim.keymap.set('n', '<leader>ecs', ':VimNOut edit ~/.config/nvim/integrations/compiler/{files}<CR>', { silent = true })
 vim.keymap.set('n', '<leader>eac', ':VimNOut edit ~/.config/nvim/compiler/{files}<CR>', { silent = true })
 
--- Fuzzy finder - fzf (files)
-vim.keymap.set('n', '<leader>ff', ':<C-u>FZF<CR>')
-
--- Search for the current word in the whole directory structure
-vim.keymap.set('n', '<leader>*', ':Grepper -cword -noprompt<CR>')
-
--- Search for the current selection
--- nmap <leader>gs <Plug>(GrepperOperator)
--- xmap <leader>gs <Plug>(GrepperOperator)
-
--- Search for the current word in the whole directory structure
-vim.keymap.set('n', '<leader>/', ':Grepper<CR>')
-
--- function! GitAddCommitPush() abort
---   wa
---   Git add -u
---   Git commit --verbose
--- endfunction
+-- Fuzzy finder
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+vim.keymap.set('n', '<leader>/', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>*', builtin.grep_string, {})
+vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
+vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 
 -- Run git add -u
 vim.keymap.set('n', '<leader>gz', ':call GitAddCommitPush()<CR>')
