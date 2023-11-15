@@ -45,6 +45,8 @@ return {
         type = 'codelldb',
         request = 'launch',
         program = function()
+          -- Use telescope to find executables
+          -- NOTE: Requires fd
           return coroutine.create(function(coro)
             local opts = {}
             pickers
@@ -68,11 +70,18 @@ return {
       },
     }
 
+    vim.fn.sign_define('DapBreakpoint', { text = '●', texthl = 'GruvboxRedBold', linehl = '', numhl = '' })
+    vim.fn.sign_define('DapBreakpointCondition', { text = 'C', texthl = 'GruvboxYellowBold', linehl = '', numhl = '' })
+    vim.fn.sign_define('DapBreakpointRejected', { text = 'R', texthl = 'GruvboxRedBold', linehl = '', numhl = '' })
+    vim.fn.sign_define('DapStopped', { text = '➡', texthl = 'GruvboxGreenBold', linehl = '', numhl = '' })
+    vim.fn.sign_define('DapLogPoint', { text = 'L', texthl = 'GruvboxYellowBold', linehl = '', numhl = '' })
+
     local function debug_map(key, func)
       vim.keymap.set('n', '<leader>d' .. key, func)
     end
 
     -- Mappings
+    -- NOTE: All of them start with <leader>d
     debug_map('c', function()
       dap.continue()
     end)
@@ -90,6 +99,9 @@ return {
     end)
     debug_map('r', function()
       dap.run_last()
+    end)
+    debug_map('x', function()
+      dap.terminate()
     end)
   end,
 }
