@@ -36,16 +36,18 @@ common_flags="\
 	-Wformat=2 \
 	-pthread \
 	-std=c++20 \
-	-O3 \
+	-O0
 	"
 
 clang_flags="\
 	-Wduplicate-enum \
 	-fdiagnostics-absolute-paths \
+	--debug \
 	"
 
 gcc_flags="\
 	-Werror=unused-variable \
+	-d \
 	"
 
 # Save in case of error
