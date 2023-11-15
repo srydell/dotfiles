@@ -58,10 +58,6 @@ require('lazy').setup({
   -- Send code from one pane to another with motions
   'jpalardy/vim-slime',
 
-  -- Fuzzy finder.
-  -- NOTE: The fzf binary is installed in .vim/pack/minpac/start/fzf/bin
-  'junegunn/fzf',
-
   -- Tags management
   'ludovicchabant/vim-gutentags',
 
@@ -79,9 +75,6 @@ require('lazy').setup({
 
   -- Add syntax highlighting for i3 config files
   'mboughaba/i3config.vim',
-
-  -- Asynchronous wrapper around different grep tools (Use multiple at once)
-  'mhinz/vim-grepper',
 
   -- Colorscheme
   { 'ellisonleao/gruvbox.nvim', priority = 1000 },
@@ -105,36 +98,6 @@ require('lazy').setup({
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
 
-  -- Fuzzy Finder (files, lsp, etc)
-  -- {
-  --   'nvim-telescope/telescope.nvim',
-  --   branch = '0.1.x',
-  --   dependencies = {
-  --     'nvim-lua/plenary.nvim',
-  --     -- Fuzzy Finder Algorithm which requires local dependencies to be built.
-  --     -- Only load if `make` is available. Make sure you have the system
-  --     -- requirements installed.
-  --     {
-  --       'nvim-telescope/telescope-fzf-native.nvim',
-  --       -- NOTE: If you are having trouble with this installation,
-  --       --       refer to the README for telescope-fzf-native for more instructions.
-  --       build = 'make',
-  --       cond = function()
-  --         return vim.fn.executable 'make' == 1
-  --       end,
-  --     },
-  --   },
-  -- },
-
-  {
-    -- Highlight, edit, and navigate code
-    'nvim-treesitter/nvim-treesitter',
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
-    },
-    build = ':TSUpdate',
-  },
-
   require('srydell.plugins.cmp'),
   require('srydell.plugins.snippets'),
   require('srydell.plugins.cmp_git'),
@@ -143,6 +106,8 @@ require('lazy').setup({
   require('srydell.plugins.formatter'),
   require('srydell.plugins.lint'),
   require('srydell.plugins.debugging'),
+  require('srydell.plugins.telescope'),
+  require('srydell.plugins.treesitter'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup
