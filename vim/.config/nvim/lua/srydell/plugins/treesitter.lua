@@ -29,7 +29,6 @@ return {
       },
       sync_install = false,
       highlight = { enable = true },
-      indent = { enable = true },
       playground = {
         enable = true,
         disable = {},
@@ -53,6 +52,7 @@ return {
         use_virtual_text = true,
         lint_events = { 'BufWrite', 'CursorHold' },
       },
+      -- indent = { enable = true },
     })
   end,
 }
