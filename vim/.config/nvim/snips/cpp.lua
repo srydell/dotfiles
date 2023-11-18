@@ -5,6 +5,40 @@ local get_visual = helpers.get_visual
 return {
   postfix('.a', { l('std::atomic<' .. l.POSTFIX_MATCH .. '>') }),
 
+  postfix('.v', { l('std::vector<' .. l.POSTFIX_MATCH .. '>') }),
+
+  s(
+    { trig = 'nocopy', wordTrig = true, dscr = 'No copy constructors' },
+    fmta(
+      [[
+        <>(<> &&) = delete;
+        <> & operator=(<> &&) = delete;
+      ]],
+      {
+        i(1, 'Class'),
+        rep(1),
+        rep(1),
+        rep(1),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'nomove', wordTrig = true, dscr = 'No move constructors' },
+    fmta(
+      [[
+        <>(<> const &) = delete;
+        <> & operator=(<> const &) = delete;
+      ]],
+      {
+        i(1, 'Class'),
+        rep(1),
+        rep(1),
+        rep(1),
+      }
+    )
+  ),
+
   s(
     { trig = 'str', wordTrig = true, dscr = 'Struct' },
     fmta(
