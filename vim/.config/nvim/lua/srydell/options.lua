@@ -1,17 +1,16 @@
 local home = os.getenv('HOME')
-for option, value in pairs(
-{
+for option, value in pairs({
   encoding = 'utf-8',
 
   -- Make it easier to see tabs, newlines, and trailing spaces
   list = true,
-  listchars = { tab =  '▸ ', eol =  '¬', trail = '·' },
+  listchars = { tab = '▸ ', eol = '¬', trail = '·' },
 
   -- BOX DRAWINGS HEAVY VERTICAL (U+2503, UTF-8: E2 94 83)
   -- MIDDLE DOT (U+00B7, UTF-8: C2 B7)
   -- Draw the vertical border between vim splits as a continuous line
   -- Draw the character used to fill out the fold
-  fillchars = { vert = '┃', fold = '·'},
+  fillchars = { vert = '┃', fold = '·' },
 
   -- Not as cool as syntax, but faster
   foldmethod = 'indent',
@@ -88,15 +87,25 @@ for option, value in pairs(
 
   -- Completion with commands
   wildmenu = true,
-  wildmode = {'longest', 'full'},
+  wildmode = { 'longest', 'full' },
 
   -- Ignore the following
   wildignore = {
-    '*.o', '*.a', '*.aux',
-    '*.out', '*.toc', '__pycache__',
-    '.git', '*.sw?', '*.DS_Store',
-    '*.pyc', '*.jpg', '*.bmp',
-    '*.jpeg', '*.gif', '*.png'
+    '*.o',
+    '*.a',
+    '*.aux',
+    '*.out',
+    '*.toc',
+    '__pycache__',
+    '.git',
+    '*.sw?',
+    '*.DS_Store',
+    '*.pyc',
+    '*.jpg',
+    '*.bmp',
+    '*.jpeg',
+    '*.gif',
+    '*.png',
   },
 
   -- Let vim store backup/swap/undo files in these directories
@@ -104,7 +113,6 @@ for option, value in pairs(
   backupdir = home .. '/.config/nvim/tmp/backup//',
   directory = home .. '/.config/nvim/tmp/swap//',
   undodir = home .. '/.config/nvim/tmp/undo//',
-
 
   -- Delete old backup, backup current file
   backup = true,
@@ -136,4 +144,3 @@ end
 
 -- Don't give |ins-completion-menu| messages.
 vim.opt.shortmess:append('c')
-
