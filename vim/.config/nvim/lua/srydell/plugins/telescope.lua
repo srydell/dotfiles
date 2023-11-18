@@ -17,4 +17,22 @@ return {
       end,
     },
   },
+
+  config = function()
+    local actions = require('telescope.actions')
+    require('telescope').setup({
+      defaults = {
+        file_ignore_patterns = { 'node_modules', '%.git' },
+        path_display = {
+          truncate = 1,
+        },
+        mappings = {
+          i = {
+            ['<C-j>'] = actions.move_selection_next,
+            ['<C-k>'] = actions.move_selection_previous,
+          },
+        },
+      },
+    })
+  end,
 }
