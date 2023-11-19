@@ -1,6 +1,17 @@
-local util = require('srydell.util')
 local helpers = require('srydell.snips.helpers')
+local query = require('srydell.treesitter.query')
+local util = require('srydell.util')
+
 local get_visual = helpers.get_visual
+
+local function get_surrounding_classname()
+  local class = query.get_class_info()
+  vim.print(class)
+  if class then
+    return sn(nil, { i(1, class.name) })
+  end
+  return sn(nil, { i(1, 'Class') })
+end
 
 return {
   postfix('.a', { l('std::atomic<' .. l.POSTFIX_MATCH .. '>') }),
@@ -15,7 +26,7 @@ return {
         <> & operator=(<> &&) = delete;
       ]],
       {
-        i(1, 'Class'),
+        d(1, get_surrounding_classname),
         rep(1),
         rep(1),
         rep(1),
@@ -31,7 +42,7 @@ return {
         <> & operator=(<> const &) = delete;
       ]],
       {
-        i(1, 'Class'),
+        d(1, get_surrounding_classname),
         rep(1),
         rep(1),
         rep(1),
