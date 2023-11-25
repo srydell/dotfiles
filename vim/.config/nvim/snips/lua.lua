@@ -42,66 +42,91 @@ end
 
 return {
 
-  s({ trig='f', wordTrig=true, dscr='Function' },
-    {
-      c(1, {
-          sn(nil, fmt(
-              [[
-                local function {}({})
-                  {}
-                end
-              ]], { r(1, 'function_name'), i(2), i(3) })),
-            sn(nil, fmt(
-              [[
-                local {} = function({})
-                  {}
-                end
-              ]], { r(1, 'function_name'), i(2), i(3) })),
-          sn(nil, fmt(
-              [[
-                function {}({})
-                  {}
-                end
-              ]], { r(1, 'function_name'), i(2), i(3) })),
-        }
+  s({ trig = 'f', wordTrig = true, dscr = 'Function' }, {
+    c(1, {
+      sn(
+        nil,
+        fmt(
+          [[
+            local function {}({})
+              {}
+            end
+          ]],
+          { r(1, 'function_name'), i(2), i(3) }
+        )
       ),
+      sn(
+        nil,
+        fmt(
+          [[
+            local {} = function({})
+              {}
+            end
+          ]],
+          { r(1, 'function_name'), i(2), i(3) }
+        )
+      ),
+      sn(
+        nil,
+        fmt(
+          [[
+            function {}({})
+              {}
+            end
+          ]],
+          { r(1, 'function_name'), i(2), i(3) }
+        )
+      ),
+    }),
+  }, {
+    stored = {
+      -- key passed to restoreNodes.
+      ['function_name'] = i(1, 'f'),
     },
-    {
-      stored = {
-          -- key passed to restoreNodes.
-          ['function_name'] = i(1, 'f')
-      }
-    }
-  ),
+  }),
 
-  s({ trig='r', wordTrig=true, dscr='require block. Either getting the return or not' },
-      {
-        c(1, {
-          sn(nil, fmt(
-              [[
-                require('{}')
-              ]],
-              { r(1, 'include') }
-            )
-          ),
-          sn(nil, fmt(
-              [[
-                local {} = require('{}')
-              ]],
-              { f(latest_split_by_dot, { 1 }), r(1, 'include') }
-            )
-          ),
-        }),
-      },
-      {
-        stored = {
-            -- key passed to restoreNodes.
-            ['include'] = i(1)
-        }
-      }
-  ),
+  s({ trig = 'r', wordTrig = true, dscr = 'require block. Either getting the return or not' }, {
+    c(1, {
+      sn(
+        nil,
+        fmt(
+          [[
+            require('{}')
+          ]],
+          { r(1, 'include') }
+        )
+      ),
+      sn(
+        nil,
+        fmt(
+          [[
+            local {} = require('{}')
+          ]],
+          { f(latest_split_by_dot, { 1 }), r(1, 'include') }
+        )
+      ),
+      sn(
+        nil,
+        fmt(
+          [[
+            local status, {} = pcall(require, '{}')
+            if not status then
+              return
+            end
+          ]],
+          { f(latest_split_by_dot, { 1 }), r(1, 'include') }
+        )
+      ),
+    }),
+  }, {
+    stored = {
+      -- key passed to restoreNodes.
+      ['include'] = i(1),
+    },
+  }),
 
-  s({ trig='s', wordTrig=true, dscr='A generic snippet' },
+  s(
+    { trig = 's', wordTrig = true, dscr = 'A generic snippet' },
     fmta(
       [==[
         s({ trig='<>', wordTrig=true, dscr='<>' },
@@ -124,7 +149,8 @@ return {
     )
   ),
 
-  s({ trig='post', wordTrig=true, dscr='A postfix snippet' },
+  s(
+    { trig = 'post', wordTrig = true, dscr = 'A postfix snippet' },
     fmta(
       [==[
         postfix({ trig='<>', dscr='<>' },
@@ -139,22 +165,23 @@ return {
     )
   ),
 
-
-  s({ trig='if', wordTrig=true, dscr='if statement' },
+  s(
+    { trig = 'if', wordTrig = true, dscr = 'if statement' },
     fmta(
-          [[
-          if <> then
-            <>
-          end
-          ]],
-          {
-            i(1, 'statement'),
-            i(2),
-          }
-      )
+      [[
+        if <> then
+          <>
+        end
+      ]],
+      {
+        i(1, 'statement'),
+        i(2),
+      }
+    )
   ),
 
-  s({ trig='p', wordTrig=true, dscr='print' },
+  s(
+    { trig = 'p', wordTrig = true, dscr = 'print' },
     fmta(
       [[
         print(<>)
@@ -165,30 +192,34 @@ return {
     )
   ),
 
-  s({ trig='for', wordTrig=true, dscr='for loop' },
+  s(
+    { trig = 'for', wordTrig = true, dscr = 'for loop' },
     fmta(
       [[
-        for <>, <> in pairs({ <> }) do
+        for <>, <> in ipairs(<>) do
           <>
         end
       ]],
       {
-        i(1, 'key'), i(2, 'value'), i(3), i(4)
+        i(1, 'key'),
+        i(2, 'value'),
+        i(3),
+        i(4),
       }
     )
   ),
 
-  s({ trig='map', wordTrig=true,  dscr='Setup a keymap' },
+  s(
+    { trig = 'map', wordTrig = true, dscr = 'Setup a keymap' },
     fmta(
-        [==[
+      [==[
           vim.keymap.set('<>', '<>', '<>')
         ]==],
-        {
-          i(1, 'n'),
-          i(2, 'keys'),
-          i(3, 'command'),
-        }
-      )
-    ),
-
+      {
+        i(1, 'n'),
+        i(2, 'keys'),
+        i(3, 'command'),
+      }
+    )
+  ),
 }
