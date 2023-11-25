@@ -25,7 +25,7 @@ return {
   -- All tools
   tools = util.merge(servers, {
     'ruff', -- Python formatter/linter
-    'shellcheck', -- Shell linter
+    -- 'shellcheck', -- Shell linter
     'stylua', -- Lua formatter
   }),
 }
