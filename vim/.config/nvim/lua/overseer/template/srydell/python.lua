@@ -1,7 +1,7 @@
 return {
   name = 'python',
   builder = function()
-    local python = require('srydell.compiler.python')
+    local python = require('srydell.compiler.helpers.python')
     return {
       cmd = { 'python3' },
       args = {

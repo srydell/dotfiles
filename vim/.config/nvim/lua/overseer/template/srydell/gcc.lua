@@ -9,7 +9,7 @@ return {
     },
   },
   builder = function(params)
-    local cpp = require('srydell.compiler.cpp')
+    local cpp = require('srydell.compiler.helpers.cpp')
     local full_path = vim.fn.expand('%:p')
     local executable = 'build/bin/' .. vim.fn.expand('%:t:r')
     return {
