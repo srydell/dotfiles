@@ -35,7 +35,7 @@ require('lazy').setup({
       { 'WhoIsSethDaniel/mason-tool-installer.nvim', opts = {} },
 
       -- Useful status updates for LSP
-      { 'j-hui/fidget.nvim', tag = 'legacy', event = 'LspAttach', opts = {} },
+      { 'j-hui/fidget.nvim', event = 'LspAttach', opts = {} },
 
       -- Additional lua configuration, makes nvim stuff amazing!
       { 'folke/neodev.nvim', opts = { library = { plugins = { 'nvim-dap-ui' }, types = true } } },
@@ -108,6 +108,7 @@ require('lazy').setup({
   require('srydell.plugins.debugging'),
   require('srydell.plugins.telescope'),
   require('srydell.plugins.treesitter'),
+  require('srydell.plugins.overseer'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup

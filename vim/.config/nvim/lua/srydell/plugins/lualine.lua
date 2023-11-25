@@ -1,11 +1,11 @@
-return
-{
+return {
   'nvim-lualine/lualine.nvim',
   dependencies = {
-    { 'nvim-tree/nvim-web-devicons', opts = {} }
+    { 'nvim-tree/nvim-web-devicons', opts = {} },
   },
   config = function()
     local lualine = require('lualine')
+    local overseer = require('overseer')
 
     -- Makes the background not change when changing mode
     -- What an insane feature
@@ -24,35 +24,36 @@ return
       return '[No compiler]'
     end
 
-    lualine.setup(
-      {
-        options = {
-          icons_enabled = true,
-          theme = custom_gruvbox,
-          component_separators = { left = '', right = '' },
-          section_separators = { left = '', right = '' },
-          disabled_filetypes = {
-            statusline = {},
-            winbar = {},
-          },
-          ignore_focus = {},
-          always_divide_middle = true,
-          globalstatus = false,
-          refresh = {
-            statusline = 1000,
-            tabline = 1000,
-            winbar = 1000,
-          }
+    lualine.setup({
+      options = {
+        icons_enabled = true,
+        theme = custom_gruvbox,
+        component_separators = { left = '', right = '' },
+        section_separators = { left = '', right = '' },
+        disabled_filetypes = {
+          statusline = {},
+          winbar = {},
         },
-        sections = {
-          lualine_a = { 'branch', {
+        ignore_focus = {},
+        always_divide_middle = true,
+        globalstatus = false,
+        refresh = {
+          statusline = 1000,
+          tabline = 1000,
+          winbar = 1000,
+        },
+      },
+      sections = {
+        lualine_a = {
+          'branch',
+          {
             'diagnostics',
 
             -- Table of diagnostic sources, available sources are:
             --   'nvim_lsp', 'nvim_diagnostic', 'nvim_workspace_diagnostic', 'coc', 'ale', 'vim_lsp'.
             -- or a function that returns a table as such:
             --   { error=error_cnt, warn=warn_cnt, info=info_cnt, hint=hint_cnt }
-            sources = { 'nvim_diagnostic', 'nvim_lsp' },
+            sources = { 'nvim_diagnostic' },
 
             -- Displays diagnostics for the defined severity types
             sections = { 'error', 'warn', 'info', 'hint' },
@@ -66,30 +67,46 @@ return
             -- },
 
             symbols = { error = 'E', warn = 'W', info = 'I', hint = 'H' },
-            colored = false,          -- Displays diagnostics status in color if set to true.
+            colored = false, -- Displays diagnostics status in color if set to true.
             update_in_insert = false, -- Update diagnostics in insert mode.
-            always_visible = false,   -- Show diagnostics even if there are none.
-          }
+            always_visible = false, -- Show diagnostics even if there are none.
           },
-          lualine_b = { { 'filename', path = 1 } },
-          lualine_c = { get_compiler },
-          lualine_x = { 'filetype' },
-          lualine_y = {},
-          lualine_z = { 'location' }
         },
-        inactive_sections = {
-          lualine_a = {},
-          lualine_b = {},
-          lualine_c = {},
-          lualine_x = {},
-          lualine_y = {},
-          lualine_z = {}
+        lualine_b = { { 'filename', path = 1 } },
+        lualine_c = { get_compiler },
+        lualine_x = {
+          {
+            'overseer',
+            label = '', -- Prefix for task counts
+            colored = true, -- Color the task icons and counts
+            symbols = {
+              [overseer.STATUS.FAILURE] = '󰅚 ',
+              [overseer.STATUS.CANCELED] = ' ',
+              [overseer.STATUS.SUCCESS] = '󰄴 ',
+              [overseer.STATUS.RUNNING] = '󰑮 ',
+            },
+            unique = true, -- Unique-ify non-running task count by name
+            name = nil, -- List of task names to search for
+            name_not = false, -- When true, invert the name search
+            status = nil, -- List of task statuses to display
+            status_not = false, -- When true, invert the status search
+          },
         },
-        tabline = {},
-        winbar = {},
-        inactive_winbar = {},
-        extensions = {}
-      }
-    )
-  end
+        lualine_y = { 'filetype' },
+        lualine_z = { 'location' },
+      },
+      inactive_sections = {
+        lualine_a = {},
+        lualine_b = {},
+        lualine_c = {},
+        lualine_x = {},
+        lualine_y = {},
+        lualine_z = {},
+      },
+      tabline = {},
+      winbar = {},
+      inactive_winbar = {},
+      extensions = {},
+    })
+  end,
 }
