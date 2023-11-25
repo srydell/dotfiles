@@ -223,7 +223,6 @@ local function skeleton()
   end
 
   local full_path = vim.fn.expand('%:p')
-  string.find
   if string.find(full_path, 'lua/overseer/template/srydell') then
     return get_overseer_template()
   end
