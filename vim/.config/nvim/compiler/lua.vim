@@ -6,9 +6,7 @@ let current_compiler = 'lua'
 let s:cpo_save = &cpoptions
 set cpoptions&vim
 
-CompilerSet errorformat=
-      \%*\\sFile\ \"%f\"\\,\ line\ %l\\,\ %m,
-      \%*\\sFile\ \"%f\"\\,\ line\ %l,
+CompilerSet errorformat=%s:\ %f:%l:%m
 CompilerSet makeprg=lua\ %
 
 let &cpoptions = s:cpo_save
