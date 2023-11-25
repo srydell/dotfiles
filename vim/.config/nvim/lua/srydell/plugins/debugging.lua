@@ -80,6 +80,9 @@ return {
       vim.keymap.set('n', '<leader>d' .. key, func)
     end
 
+    vim.keymap.set('n', '<F10>', dap.step_over)
+    vim.keymap.set('n', '<F5>', dap.continue)
+
     -- Mappings
     -- NOTE: All of them start with <leader>d
     debug_map('c', function()
