@@ -76,10 +76,13 @@ vim.keymap.set('n', '<leader>ti', ':VimuxInspectRunner<CR>', { silent = true })
 -- Zoom the tmux runner pane ( [t]mux [f]ullscreen )
 vim.keymap.set('n', '<leader>tf', ':VimuxZoomRunner<CR>', { silent = true })
 
--- vim.keymap.set('n', 'm<space>', ':AsyncRun -program=make', { silent = true })
--- vim.keymap.set('n', 'm<CR>', ':AsyncRun -program=make<CR>', { silent = true })
-vim.keymap.set('n', 'm<space>', ':make', { silent = true })
-vim.keymap.set('n', 'm<CR>', ':make<CR>', { silent = true })
+local common = require('srydell.compiler.common')
+vim.keymap.set('n', 'm<CR>', common.run, { silent = true })
+-- vim.keymap.set('n', 'm<space>', ':make', { silent = true })
+
+-- Move through the valid compilers. Set by b:valid_compilers
+vim.keymap.set('n', ']c', common.go_to_next_compiler, { silent = true })
+vim.keymap.set('n', '[c', common.go_to_previous_compiler, { silent = true })
 
 -- Move through the buffer list
 vim.keymap.set('n', '[b', ':bprevious<CR>', { silent = true })
@@ -90,10 +93,6 @@ vim.keymap.set('n', ']B', ':blast<CR>', { silent = true })
 -- How I think about alternative files
 vim.keymap.set('n', '[a', ':A<CR>', { silent = true })
 vim.keymap.set('n', ']a', ':A<CR>', { silent = true })
-
--- Move through the valid compilers. Set by b:valid_compilers
-vim.keymap.set('n', ']c', ':CompilerNext<CR>', { silent = true })
-vim.keymap.set('n', '[c', ':CompilerPrevious<CR>', { silent = true })
 
 -- Move through the loclist
 vim.keymap.set('n', '<leader>l', ':call utils#ToggleList("Location List", "l")<CR>', { silent = true })

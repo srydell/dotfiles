@@ -1,7 +1,13 @@
 return {
   name = 'rsync',
   desc = 'rsync over files to bx machine and rerun last command',
-  builder = function()
+  params = {
+    project = {
+      type = 'string',
+      optional = false,
+    },
+  },
+  builder = function(params)
     return {
       cmd = { 'rsync' },
       args = {
@@ -11,8 +17,8 @@ return {
         'build',
         '-r',
         '--progress',
-        '/Users/simryd/code/dsf/src',
-        'bx0052:/newhome/bx0004/simryd/code/dsf',
+        '/Users/simryd/code/' .. params.project .. '/src',
+        'bx0052:/newhome/bx0004/simryd/code/' .. params.project,
       },
       components = {
         {
