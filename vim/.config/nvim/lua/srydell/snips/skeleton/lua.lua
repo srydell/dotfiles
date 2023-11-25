@@ -92,7 +92,6 @@ local function get_overseer_template()
                 components = { 'default' },
               }
             end,
-            condition = { },
           }
         ]==],
       {
@@ -103,8 +102,6 @@ local function get_overseer_template()
     )
   )
 end
-
-local a = {}
 
 local function get_overseer_component()
   local choices = {}
@@ -201,18 +198,42 @@ local function get_overseer_component()
   )
 end
 
+local function get_srydell_compilers()
+  return s(
+    { trig = '_skeleton', wordTrig = true, hidden = true, dscr = 'Skeleton snippet' },
+    fmta(
+      [==[
+        local function get_compilers()
+          return { { name = '<>', tasks = { '<>' } } }
+        end
+
+        return get_compilers()
+      ]==],
+      {
+        i(1, 'To show in status line'),
+        i(2, 'Name corresponding to overseer template'),
+      }
+    )
+  )
+end
+
 local function skeleton()
   if vim.fn.expand('%:p:h:t') == 'skeleton' then
     return get_skeleton_template()
   end
 
   local full_path = vim.fn.expand('%:p')
+  string.find
   if string.find(full_path, 'lua/overseer/template/srydell') then
     return get_overseer_template()
   end
 
   if string.find(full_path, 'lua/overseer/component/srydell') then
     return get_overseer_component()
+  end
+
+  if string.find(full_path, 'lua/srydell/compiler/filetype') then
+    return get_srydell_compilers()
   end
 
   -- No skeleton for plain lua

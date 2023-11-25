@@ -27,15 +27,16 @@ local ms = ls.multi_snippet
 local k = require('luasnip.nodes.key_indexer').new_key
 
 local function skeleton()
-  return s({ trig='_skeleton', wordTrig=true, hidden=true, dscr='Skeleton snippet' },
+  return s(
+    { trig = '_skeleton', wordTrig = true, hidden = true, dscr = 'Skeleton snippet' },
     fmta(
       [[
-        def main():
-            <>
+          def main():
+              <>
 
 
-        if __name__ == '__main__':
-            main()
+          if __name__ == '__main__':
+              main()
       ]],
       { i(0) }
     )
@@ -43,5 +44,5 @@ local function skeleton()
 end
 
 return {
-  snip = skeleton()
+  snip = skeleton(),
 }
