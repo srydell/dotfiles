@@ -1,3 +1,5 @@
+local util = require('srydell.util')
+
 local M = {}
 
 -- Errorformat for gcc/clang
@@ -23,11 +25,8 @@ M.get_errorformat = function()
     .. [[%DMaking %*\a in %f,]]
 end
 
-M.get_args = function(compiler, full_path_to_file, out_executable)
-  local args = {
-    full_path_to_file,
-    '-o',
-    out_executable,
+M.get_flags = function(compiler)
+  local flags = {
     -- Common flags:
     '-Wall',
     '-Werror',
@@ -61,11 +60,11 @@ M.get_args = function(compiler, full_path_to_file, out_executable)
       '-Werror=unused-variable',
     }
   end
+  return util.merge(flags, extra_flags)
+end
 
-  for _, flag in ipairs(extra_flags) do
-    table.insert(args, flag)
-  end
-  return args
+M.get_args = function(compiler, full_path_to_file, out_executable)
+  return util.merge({ full_path_to_file, '-o', out_executable }, M.get_flags(compiler))
 end
 
 return M
