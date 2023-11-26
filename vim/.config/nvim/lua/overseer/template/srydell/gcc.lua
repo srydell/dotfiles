@@ -23,6 +23,8 @@ return {
           errorformat = cpp.get_errorformat(),
         },
         { 'srydell.on_end_run_or_debug', executable = executable, will_do = params.will_do },
+        -- NOTE: Since clangd is used, use the flags for clang to create compile_flags.txt
+        { 'srydell.on_end_create_compile_flags_txt', flags = table.concat(cpp.get_flags('clang'), '\n') },
         'default',
       },
     }
