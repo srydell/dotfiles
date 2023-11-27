@@ -24,9 +24,7 @@ return {
         {
           'srydell.on_status_run_command',
           status = 'SUCCESS',
-          command = function()
-            vim.cmd('VimuxRunCommand "!!"')
-          end,
+          command = 'VimuxRunCommand "!!"',
         },
         'default',
       },
