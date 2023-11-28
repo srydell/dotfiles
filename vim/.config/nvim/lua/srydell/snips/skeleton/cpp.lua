@@ -37,7 +37,7 @@ local function get_license()
 ]]
 end
 
-local function basic_include_guard_snippet(project_info)
+local function basic_include_guard(project_info)
   local license = ''
   if project_info.name == 'dsf' then
     license = get_license()
@@ -151,7 +151,7 @@ local function pragma_once(_)
 end
 
 -- Dummy function for structure
-local function get_nil(_)
+local function no_op(_)
   return nil
 end
 
@@ -159,17 +159,17 @@ end
 -- skel.ext.project
 local skel = {
   hpp = {
-    dsf = basic_include_guard_snippet,
+    dsf = basic_include_guard,
     _fallback = pragma_once,
   },
   h = {
-    _fallback = basic_include_guard_snippet,
+    _fallback = basic_include_guard,
   },
   cpp = {
     dsf = dsf,
     prototype = prototype,
     leetcode = leetcode,
-    _fallback = get_nil,
+    _fallback = no_op,
   },
 }
 

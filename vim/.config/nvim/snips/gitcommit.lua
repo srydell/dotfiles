@@ -10,22 +10,28 @@ local function get_branch_name()
 end
 
 local function get_issue_summary()
+  local jira_url = os.getenv('JIRA_URL')
+  if not jira_url then
+    print('No JIRA_URL environment variable')
+    return ''
+  end
   local branch = get_branch_name()
-  local output = io.popen(
-    string.format([[
+  local output = io.popen(string.format(
+    [[
     curl --silent --request GET \
       -H "Authorization: Bearer $JIRA_API_TOKEN" \
-      --url "https://jira.global.org.nasdaqomx.com/rest/api/2/issue/%s" | jq --raw-output '.fields.summary'
-    ]], branch)
-  ):read()
+      --url "%s/rest/api/2/issue/%s" | jq --raw-output '.fields.summary'
+    ]],
+    jira_url,
+    branch
+  )):read()
 
   return output
 end
 
-return
-{
+return {
   s(
-    { trig='commit', wordTrig=true, dscr='Commit message' },
+    { trig = 'commit', wordTrig = true, dscr = 'Commit message' },
     fmta(
       [[
         <>: <>
