@@ -1,9 +1,14 @@
 return {
   'mfussenegger/nvim-dap',
-  dependencies = { 'rcarriga/nvim-dap-ui', 'mfussenegger/nvim-dap-python' },
+  dependencies = {
+    'rcarriga/nvim-dap-ui',
+    'mfussenegger/nvim-dap-python',
+    'wojciech-kulik/xcodebuild.nvim',
+  },
   config = function()
     local dap = require('dap')
     local dapui = require('dapui')
+    local xcodebuild = require('xcodebuild.dap')
     dapui.setup()
 
     -- Open dapui on debugging started
@@ -70,6 +75,43 @@ return {
       },
     }
 
+    dap.configurations.swift = {
+      {
+        name = 'iOS App Debugger',
+        type = 'codelldb_ios',
+        request = 'attach',
+        program = xcodebuild.get_program_path,
+        -- alternatively, you can wait for the process manually
+        -- pid = xcodebuild.wait_for_pid,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+        waitFor = true,
+      },
+    }
+
+    dap.adapters.codelldb_ios = {
+      type = 'server',
+      port = '13000',
+      executable = {
+        command = registry.get_package('codelldb'):get_install_path() .. '/codelldb',
+        args = {
+          '--port',
+          '13000',
+          '--liblldb',
+          -- make sure that this path is correct on your side
+          '/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB',
+        },
+      },
+    }
+
+    -- disables annoying warning that requires hitting enter
+    local orig_notify = require('dap.utils').notify
+    require('dap.utils').notify = function(msg, log_level)
+      if not string.find(msg, 'Either the adapter is slow') then
+        orig_notify(msg, log_level)
+      end
+    end
+
     vim.fn.sign_define('DapBreakpoint', { text = '●', texthl = 'GruvboxRedBold', linehl = '', numhl = '' })
     vim.fn.sign_define('DapBreakpointCondition', { text = 'C', texthl = 'GruvboxYellowBold', linehl = '', numhl = '' })
     vim.fn.sign_define('DapBreakpointRejected', { text = 'R', texthl = 'GruvboxRedBold', linehl = '', numhl = '' })
@@ -86,6 +128,10 @@ return {
     -- Mappings
     -- NOTE: All of them start with <leader>d
     debug_map('c', function()
+      if not dap.session() and vim.bo.ft == 'swift' then
+        xcodebuild.build_and_debug()
+        return
+      end
       dap.continue()
     end)
     debug_map('s', function()
