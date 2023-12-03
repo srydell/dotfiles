@@ -8,6 +8,7 @@
 # Except these
 # Files
 !.gitignore
+!.luacheckrc
 !init.lua
 !stylua.toml
 

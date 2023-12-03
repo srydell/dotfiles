@@ -30,6 +30,7 @@ return {
           return { 'isort', 'black' }
         end
       end,
+      swift = { 'swiftformat_ext' },
     },
     -- Set up format-on-save
     format_on_save = function()
@@ -46,6 +47,29 @@ return {
     formatters = {
       shfmt = {
         prepend_args = { '-i', '2' },
+      },
+      swiftformat_ext = {
+        command = 'swiftformat',
+        args = function()
+          return {
+            '--config',
+            util.find_config('.swiftformat') or '~/.config/nvim/.swiftformat', -- update fallback path if needed
+            '--stdinpath',
+            '$FILENAME',
+          }
+        end,
+        range_args = function(ctx)
+          return {
+            '--config',
+            util.find_config('.swiftformat') or '~/.config/nvim/.swiftformat', -- update fallback path if needed
+            '--linerange',
+            ctx.range.start[1] .. ',' .. ctx.range['end'][1],
+          }
+        end,
+        stdin = true,
+        condition = function(ctx)
+          return vim.fs.basename(ctx.filename) ~= 'README.md'
+        end,
       },
     },
   },
