@@ -7,15 +7,17 @@ local function get_compilers()
   end
 
   if util.contains({ 'dsf', 'oal' }, project.name) then
-    return { { name = 'rsync bx', tasks = { { 'rsync', project = project.name } } } }
+    return {
+      { name = 'rsync bx', tasks = { { 'rsync', project = project.name } }, type = 'overseer' },
+    }
   end
 
   if util.contains({ 'prototype', 'leetcode' }, project.name) then
     return {
-      { name = 'clang++ 🔨', tasks = { { 'clang++', will_do = 'RUN' } } },
-      { name = 'clang++ 🐛', tasks = { { 'clang++', will_do = 'DEBUG' } } },
-      { name = 'g++ 🔨', tasks = { { 'g++', will_do = 'RUN' } } },
-      { name = 'g++ 🐛', tasks = { { 'g++', will_do = 'DEBUG' } } },
+      { name = 'clang++ 🔨', tasks = { { 'clang++', will_do = 'RUN' } }, type = 'overseer' },
+      { name = 'clang++ 🐛', tasks = { { 'clang++', will_do = 'DEBUG' } }, type = 'overseer' },
+      { name = 'g++ 🔨', tasks = { { 'g++', will_do = 'RUN' } }, type = 'overseer' },
+      { name = 'g++ 🐛', tasks = { { 'g++', will_do = 'DEBUG' } }, type = 'overseer' },
     }
   end
 
