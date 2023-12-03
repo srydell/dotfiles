@@ -109,6 +109,7 @@ require('lazy').setup({
   require('srydell.plugins.telescope'),
   require('srydell.plugins.treesitter'),
   require('srydell.plugins.overseer'),
+  require('srydell.plugins.harpoon'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup
