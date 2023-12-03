@@ -204,7 +204,7 @@ local function get_srydell_compilers()
     fmta(
       [==[
         local function get_compilers()
-          return { { name = '<>', tasks = { '<>' } } }
+          return { { name = '<>', tasks = { '<>' }, type = 'overseer' } }
         end
 
         return get_compilers()

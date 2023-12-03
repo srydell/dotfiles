@@ -9,6 +9,10 @@ return {
     local dap = require('dap')
     local dapui = require('dapui')
     local xcodebuild = require('xcodebuild.dap')
+    -- language specific adapters
+    local registry = require('mason-registry')
+    local dappython = require('dap-python')
+
     dapui.setup()
 
     -- Open dapui on debugging started
@@ -21,11 +25,6 @@ return {
     dap.listeners.before.event_exited['dapui_config'] = function()
       dapui.close()
     end
-
-    -- language specific adapters
-    local registry = require('mason-registry')
-
-    local dappython = require('dap-python')
     dappython.setup(registry.get_package('debugpy'):get_install_path() .. '/venv/bin/python')
 
     dap.adapters.codelldb = {
