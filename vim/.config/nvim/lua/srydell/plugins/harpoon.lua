@@ -9,6 +9,10 @@ return {
     -- Project specific
     local project = vim.fn.getcwd()
 
+    -- Removes the list alltogether
+    vim.keymap.set('n', '<leader>xF', function()
+      harpoon:list(project):clear()
+    end)
     vim.keymap.set('n', '<leader>xf', function()
       harpoon:list(project):append()
     end)
