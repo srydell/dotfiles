@@ -32,7 +32,6 @@ local helpers = require('srydell.snips.helpers')
 local function latest_split_by_dot(args)
   local out = args[1][1]
   local split = util.split(out, '%.')
-  vim.print(split)
   if #split > 0 then
     -- Get the last one
     return split[#split]
