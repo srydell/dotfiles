@@ -2,6 +2,7 @@ local lsp_servers = {
   'clangd', -- C++
   'lua_ls', -- Lua
   'neocmake', -- CMake, requires rust
+  -- 'perlnavigator', -- perl, requires node
   'pylsp', -- Python
   -- 'bashls',   -- Bash, requires node
   -- 'biome',    -- JSON, requires node
@@ -14,6 +15,12 @@ local debug_servers = {
   'debugpy',
 }
 
+local formatters = {
+  'ruff', -- Python formatter/linter
+  -- 'shellcheck', -- Shell linter
+  'stylua', -- Lua formatter
+}
+
 local util = require('srydell.util')
 
 local servers = util.merge(lsp_servers, debug_servers)
@@ -23,9 +30,5 @@ return {
   debug_servers = debug_servers,
 
   -- All tools
-  tools = util.merge(servers, {
-    'ruff', -- Python formatter/linter
-    -- 'shellcheck', -- Shell linter
-    'stylua', -- Lua formatter
-  }),
+  tools = util.merge(servers, formatters),
 }
