@@ -108,12 +108,17 @@ return {
         nil,
         fmt(
           [[
-            local status, {} = pcall(require, '{}')
-            if not status then
+            local has_{}, {} = pcall(require, '{}')
+            if not has_{} then
               return
             end
           ]],
-          { f(latest_split_by_dot, { 1 }), r(1, 'include') }
+          {
+            f(latest_split_by_dot, { 1 }),
+            f(latest_split_by_dot, { 1 }),
+            r(1, 'include'),
+            f(latest_split_by_dot, { 1 }),
+          }
         )
       ),
     }),
