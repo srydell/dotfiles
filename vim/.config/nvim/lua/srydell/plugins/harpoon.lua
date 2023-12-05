@@ -9,9 +9,13 @@ return {
     -- Project specific
     local project = vim.fn.getcwd()
 
-    -- Removes the list alltogether
-    vim.keymap.set('n', '<leader>xF', function()
+    -- Removes the list alltogether drop f
+    vim.keymap.set('n', '<leader>xdF', function()
       harpoon:list(project):clear()
+    end)
+    -- Removes one file from list
+    vim.keymap.set('n', '<leader>xdf', function()
+      harpoon:list(project):remove()
     end)
     vim.keymap.set('n', '<leader>xf', function()
       harpoon:list(project):append()
