@@ -175,14 +175,14 @@ return {
   ),
 
   s(
-    { trig = '^(%s*)f', regTrig = true, dscr = 'Function' },
+    { trig = 'f', wordTrig = true, dscr = 'Function' },
     fmta(
       [[
-            <> <>(<>)
-            {
-              <>
-            }
-          ]],
+        <> <>(<>)
+        {
+          <>
+        }
+      ]],
       {
         i(1, 'int'),
         i(2, 'f'),

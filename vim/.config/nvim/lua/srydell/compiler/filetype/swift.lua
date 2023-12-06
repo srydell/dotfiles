@@ -1,5 +1,3 @@
--- local xcodebuild = require('xcodebuild')
-
 -- vim.keymap.set('n', '<leader>xl', '<cmd>XcodebuildToggleLogs<cr>', { desc = 'Toggle Xcodebuild Logs' })
 -- vim.keymap.set('n', '<leader>xb', '<cmd>XcodebuildBuild<cr>', { desc = 'Build Project' })
 -- vim.keymap.set('n', '<leader>xr', '<cmd>XcodebuildBuildRun<cr>', { desc = 'Build & Run Project' })
@@ -11,11 +9,20 @@
 
 local actions = require('xcodebuild.actions')
 local xcode_dap = require('xcodebuild.dap')
+local constants = require('srydell.constants')
 
 local function get_compilers()
   return {
-    { name = 'ios 🔨', tasks = actions.build_and_run, type = 'function' },
-    { name = 'ios 🐛', tasks = xcode_dap.build_and_debug, type = 'function' },
+    {
+      name = 'ios ' .. constants.icons.building,
+      tasks = actions.build_and_run,
+      type = 'function',
+    },
+    {
+      name = 'ios ' .. constants.icons.debugging,
+      tasks = xcode_dap.build_and_debug,
+      type = 'function',
+    },
   }
 end
 

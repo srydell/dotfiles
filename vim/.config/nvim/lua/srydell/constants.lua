@@ -31,4 +31,9 @@ return {
 
   -- All tools
   tools = util.merge(servers, formatters),
+
+  icons = {
+    debugging = '🐛',
+    building = '🛠',
+  },
 }
