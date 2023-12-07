@@ -6,17 +6,63 @@ local get_visual = helpers.get_visual
 
 local function get_surrounding_classname()
   local class = query.get_class_info()
-  vim.print(class)
   if class then
     return sn(nil, { i(1, class.name) })
   end
   return sn(nil, { i(1, 'Class') })
 end
 
+-- In a header file -> ';'
+-- In a source file -> ' {\n<indent>\n}'
+local function get_definition_or_declaration()
+  local extension = vim.fn.expand('%:e')
+  if extension == 'h' or extension == 'hpp' then
+    return sn(nil, { t(';') })
+  end
+  return sn(
+    nil,
+    fmta(' ' .. [[
+        {
+          <>
+        }
+      ]], {
+      i(1),
+    })
+  )
+end
+
 return {
   postfix('.a', { l('std::atomic<' .. l.POSTFIX_MATCH .. '>') }),
 
   postfix('.v', { l('std::vector<' .. l.POSTFIX_MATCH .. '>') }),
+
+  s(
+    { trig = 'constructor', wordTrig = true, dscr = 'Create a constructor' },
+    fmta(
+      [[
+        <>(<>)<>
+      ]],
+      {
+        d(1, get_surrounding_classname),
+        i(2),
+        d(3, get_definition_or_declaration),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'destructor', wordTrig = true, dscr = 'Create a destructor' },
+    fmta(
+      [[
+        ~<>(<>)<>
+      ]],
+      {
+        d(1, get_surrounding_classname),
+        i(2),
+        d(3, get_definition_or_declaration),
+      }
+    )
+  ),
 
   s(
     { trig = 'nocopy', wordTrig = true, dscr = 'No copy constructors' },
@@ -103,8 +149,8 @@ return {
         nil,
         fmt(
           [[
-                std::cout << "{} = " << {} << '\n';
-              ]],
+            std::cout << "{} = " << {} << '\n';
+          ]],
           { rep(1), r(1, 'variable') }
         )
       ),
@@ -112,8 +158,8 @@ return {
         nil,
         fmta(
           [[
-                fmt::print('<> = {}', <>);
-              ]],
+            fmt::print('<> = {}', <>);
+          ]],
           { rep(1), r(1, 'variable') }
         )
       ),
@@ -131,8 +177,8 @@ return {
         nil,
         fmt(
           [[
-                std::cout << {} << '\n';
-              ]],
+            std::cout << {} << '\n';
+          ]],
           { r(1, 'variable') }
         )
       ),
@@ -140,8 +186,8 @@ return {
         nil,
         fmta(
           [[
-                fmt::print('{}', <>);
-              ]],
+            fmt::print('{}', <>);
+          ]],
           { r(1, 'variable') }
         )
       ),
@@ -206,8 +252,8 @@ return {
             nil,
             fmta( -- Ranged for loop
               [[
-                  <> <> : <>
-                ]],
+                <> <> : <>
+              ]],
               { i(1, 'auto const&'), i(2, 'element'), i(3, 'container') }
             )
           ),
@@ -215,8 +261,8 @@ return {
             nil,
             fmta( -- Indexed for loop
               [[
-                  <> <> = 0; <> << <>; <>++
-                ]],
+                <> <> = 0; <> << <>; <>++
+              ]],
               { i(1, 'int'), i(2, 'i'), rep(2), i(3, 'count'), rep(2) }
             )
           ),
@@ -224,8 +270,8 @@ return {
             nil,
             fmta( -- Get '\n' terminated strings
               [[
-                  std::string <>; std::getline(<>, <>);
-                ]],
+                std::string <>; std::getline(<>, <>);
+              ]],
               { i(1, 'line'), i(2, 'std::cin'), rep(1) }
             )
           ),
@@ -233,8 +279,8 @@ return {
             nil,
             fmta( -- Iterate over map
               [[
-                  <> [<>, <>] : <>
-                ]],
+                <> [<>, <>] : <>
+              ]],
               { i(1, 'auto const&'), i(2, 'key'), i(3, 'value'), i(4, 'map') }
             )
           ),
@@ -258,8 +304,8 @@ return {
             nil,
             fmta(
               [[
-                  <>
-                ]],
+                <>
+              ]],
               { i(1) }
             )
           ),
@@ -267,8 +313,8 @@ return {
             nil,
             fmta(
               [[
-                  std::smatch <>; std::regex_search(<>, <>, <>)
-                ]],
+                std::smatch <>; std::regex_search(<>, <>, <>)
+              ]],
               { i(1, 'matches'), i(2, 'string_to_search'), rep(1), i(3, 'pattern') }
             )
           ),
