@@ -9,6 +9,10 @@ return {
     -- Project specific
     local project = vim.fn.getcwd()
 
+    vim.keymap.set('n', '<leader>xx', function()
+      harpoon.ui:toggle_quick_menu(harpoon:list(project))
+    end)
+
     -- Removes the list alltogether drop f
     vim.keymap.set('n', '<leader>xdF', function()
       harpoon:list(project):clear()
@@ -19,9 +23,6 @@ return {
     end)
     vim.keymap.set('n', '<leader>xf', function()
       harpoon:list(project):append()
-    end)
-    vim.keymap.set('n', '<C-e>', function()
-      harpoon.ui:toggle_quick_menu(harpoon:list(project))
     end)
 
     vim.keymap.set('n', ']f', function()
