@@ -16,5 +16,10 @@ return {
     overseer.setup({
       templates = templates,
     })
+
+    -- local function toggle()
+    --   overseer.toggle({ direction = 'bottom' })
+    -- end
+    -- vim.keymap.set('n', '<leader>op', toggle)
   end,
 }

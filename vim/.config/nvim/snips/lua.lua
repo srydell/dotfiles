@@ -76,6 +76,17 @@ return {
           { r(1, 'function_name'), i(2), i(3) }
         )
       ),
+      sn(
+        nil,
+        fmt(
+          [[
+            M.{} = function({})
+              {}
+            end
+          ]],
+          { r(1, 'function_name'), i(2), i(3) }
+        )
+      ),
     }),
   }, {
     stored = {
