@@ -33,6 +33,11 @@ local on_attach = function(_, bufnr)
   -- opts.desc = 'Show line diagnostics'
   -- vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float, opts)
 
+  -- if vim.bo.ft == 'cpp' then
+  --   require('clangd_extensions.inlay_hints').setup_autocmd()
+  --   require('clangd_extensions.inlay_hints').set_inlay_hints()
+  -- end
+
   opts.desc = 'Rename declarator'
   vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
   opts.desc = 'Apply code action'

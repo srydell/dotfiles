@@ -111,6 +111,7 @@ require('lazy').setup({
   require('srydell.plugins.overseer'),
   require('srydell.plugins.harpoon'),
   require('srydell.plugins.xcodebuild'),
+  require('srydell.plugins.clangd_extensions'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup
