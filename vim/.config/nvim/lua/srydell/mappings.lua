@@ -151,10 +151,9 @@ vim.keymap.set('n', 'L', '$')
 -- Make cursor still while joining lines. Using mark z
 vim.keymap.set('n', 'J', 'mzJ`z')
 
--- Let vim treat virtual lines as real lines
--- v:count works better with relativenumber
-vim.keymap.set('n', '<expr>', 'j v:count ? "j" : "gj"')
-vim.keymap.set('n', '<expr>', 'k v:count ? "k" : "gk"')
+-- Let vim treat virtual lines like real lines
+vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 vim.keymap.set('n', 'gj', 'j')
 vim.keymap.set('n', 'gk', 'k')
 
