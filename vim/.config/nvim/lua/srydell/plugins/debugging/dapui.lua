@@ -8,30 +8,30 @@ M.setup = function()
       {
         elements = {
           {
-            id = 'stacks',
+            id = 'breakpoints',
             size = 0.5,
           },
           {
-            id = 'breakpoints',
+            id = 'watches',
             size = 0.5,
           },
         },
         position = 'left',
-        size = 40,
+        size = 20,
       },
       {
         elements = {
           {
             id = 'scopes',
-            size = 0.5,
+            size = 0.75,
           },
           {
             id = 'console',
-            size = 0.5,
+            size = 0.25,
           },
         },
         position = 'bottom',
-        size = 10,
+        size = 15,
       },
     },
   })

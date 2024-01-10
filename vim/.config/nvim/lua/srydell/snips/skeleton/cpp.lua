@@ -21,8 +21,8 @@ local util = require('srydell.util')
 local function get_include_guard(project_info)
   local guard = { string.upper(project_info.name) }
 
-  for i = 1, #project_info.path do
-    local path = string.gsub(project_info.path[i], '%.', '_')
+  for j = 1, #project_info.path do
+    local path = string.gsub(project_info.path[j], '%.', '_')
     table.insert(guard, string.upper(path))
   end
 
@@ -103,8 +103,13 @@ local function leetcode()
       [[
         #include <<algorithm>>
         #include <<iostream>>
+        #include <<limits>>
         #include <<map>>
+        #include <<numeric>>
+        #include <<queue>>
         #include <<set>>
+        #include <<stack>>
+        #include <<string>>
         #include <<unordered_map>>
         #include <<unordered_set>>
         #include <<vector>>
@@ -119,8 +124,14 @@ local function leetcode()
         };
 
         int main() {
-          Solution s;
-          s.<>();
+          Solution solution;
+
+          {
+            auto ans = solution.<>();
+            std::cout <<<< "Got:      " <<<< ans <<<< '\n';
+            std::cout <<<< "Expected: " <<<< 0 <<<< '\n';
+          }
+
         }
       ]],
       {

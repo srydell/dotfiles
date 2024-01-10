@@ -1,33 +1,4 @@
-local ls = require('luasnip')
-local s = ls.snippet
-local sn = ls.snippet_node
-local isn = ls.indent_snippet_node
-local t = ls.text_node
-local i = ls.insert_node
-local f = ls.function_node
-local c = ls.choice_node
-local d = ls.dynamic_node
-local r = ls.restore_node
-local events = require('luasnip.util.events')
-local ai = require('luasnip.nodes.absolute_indexer')
-local extras = require('luasnip.extras')
-local l = extras.lambda
-local rep = extras.rep
-local p = extras.partial
-local m = extras.match
-local n = extras.nonempty
-local dl = extras.dynamic_lambda
-local fmt = require('luasnip.extras.fmt').fmt
-local fmta = require('luasnip.extras.fmt').fmta
-local conds = require('luasnip.extras.expand_conditions')
-local postfix = require('luasnip.extras.postfix').postfix
-local types = require('luasnip.util.types')
-local parse = require('luasnip.util.parser').parse_snippet
-local ms = ls.multi_snippet
-local k = require('luasnip.nodes.key_indexer').new_key
-
 local util = require('srydell.util')
-local helpers = require('srydell.snips.helpers')
 
 local function latest_split_by_dot(args)
   local out = args[1][1]
@@ -40,7 +11,6 @@ local function latest_split_by_dot(args)
 end
 
 return {
-
   s({ trig = 'f', wordTrig = true, dscr = 'Function' }, {
     c(1, {
       sn(
@@ -234,6 +204,40 @@ return {
         i(1, 'n'),
         i(2, 'keys'),
         i(3, 'command'),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'augroup', wordTrig = true, dscr = 'Autogroup' },
+    fmta(
+      [[
+        local <> = vim.api.nvim_create_augroup('<>', { clear = false })
+      ]],
+      {
+        rep(1),
+        i(1),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'aucmd', wordTrig = true, dscr = 'Autocommand' },
+    fmta(
+      [[
+        vim.api.nvim_create_autocmd({ <> }, {
+          pattern = '<>',
+          group = <>,
+          callback = function()
+            <>
+          end,
+        })
+      ]],
+      {
+        i(1, "'BufNewFile'"),
+        i(2, '*.hpp'),
+        i(3, 'mygroup'),
+        i(0),
       }
     )
   ),

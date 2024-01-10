@@ -9,6 +9,7 @@
 # Files
 !.gitignore
 !.luacheckrc
+!filetype.lua
 !init.lua
 !stylua.toml
 

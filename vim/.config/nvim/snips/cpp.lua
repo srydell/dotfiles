@@ -233,7 +233,7 @@ return {
         i(1, 'int'),
         i(2, 'f'),
         i(3),
-        i(4),
+        i(0),
       }
     )
   ),
@@ -263,7 +263,7 @@ return {
               [[
                 <> <> = 0; <> << <>; <>++
               ]],
-              { i(1, 'int'), i(2, 'i'), rep(2), i(3, 'count'), rep(2) }
+              { i(1, 'size_t'), i(2, 'i'), rep(2), i(3, 'count'), rep(2) }
             )
           ),
           sn(
@@ -336,6 +336,27 @@ return {
         i(2),
         i(3),
       }
+    )
+  ),
+
+  s(
+    { trig = 'svec', wordTrig = true, dscr = 'Stringify vector' },
+    fmta(
+      [[
+        template <<typename T>> string str(vector<<T>> const &v) {
+          std::stringstream ss;
+          ss <<<< '[';
+          for (size_t i = 0; i << v.size(); i++) {
+            ss <<<< v[i];
+            if (i << v.size() - 1) {
+              ss <<<< ", ";
+            }
+          }
+          ss <<<< ']';
+          return ss.str();
+        }
+    ]],
+      {}
     )
   ),
 }
