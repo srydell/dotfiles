@@ -130,6 +130,7 @@ local function leetcode()
             auto ans = solution.<>();
             std::cout <<<< "Got:      " <<<< ans <<<< '\n';
             std::cout <<<< "Expected: " <<<< 0 <<<< '\n';
+            std::cout << "-------------------------------------" << '\n';
           }
 
         }
