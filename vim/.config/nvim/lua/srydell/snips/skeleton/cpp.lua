@@ -106,8 +106,10 @@ local function leetcode()
         #include <<limits>>
         #include <<map>>
         #include <<numeric>>
+        #include <<optional>>
         #include <<queue>>
         #include <<set>>
+        #include <<sstream>>
         #include <<stack>>
         #include <<string>>
         #include <<unordered_map>>
@@ -127,6 +129,7 @@ local function leetcode()
           Solution solution;
 
           {
+            std::cout <<<< "Input:    " <<<< 0 <<<< '\n';
             auto ans = solution.<>();
             std::cout <<<< "Got:      " <<<< ans <<<< '\n';
             std::cout <<<< "Expected: " <<<< 0 <<<< '\n';

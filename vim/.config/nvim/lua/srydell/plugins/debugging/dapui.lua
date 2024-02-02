@@ -8,16 +8,16 @@ M.setup = function()
       {
         elements = {
           {
-            id = 'breakpoints',
+            id = 'watches',
             size = 0.5,
           },
           {
-            id = 'watches',
+            id = 'repl',
             size = 0.5,
           },
         },
         position = 'left',
-        size = 20,
+        size = 40,
       },
       {
         elements = {
@@ -31,7 +31,7 @@ M.setup = function()
           },
         },
         position = 'bottom',
-        size = 15,
+        size = 25,
       },
     },
   })

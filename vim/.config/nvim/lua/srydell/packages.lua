@@ -98,6 +98,8 @@ require('lazy').setup({
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
 
+  { 'mfussenegger/nvim-jdtls' },
+
   require('srydell.plugins.cmp'),
   require('srydell.plugins.snippets'),
   require('srydell.plugins.cmp_git'),

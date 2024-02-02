@@ -1,5 +1,6 @@
 local lsp_servers = {
   'clangd', -- C++
+  'jdtls', -- Java
   'lua_ls', -- Lua
   'neocmake', -- CMake, requires rust
   -- 'perlnavigator', -- perl, requires node
@@ -13,6 +14,8 @@ local lsp_servers = {
 local debug_servers = {
   'codelldb',
   'debugpy',
+  'java-debug-adapter',
+  'java-test',
 }
 
 local formatters = {

@@ -37,7 +37,7 @@ return {
   postfix('.v', { l('std::vector<' .. l.POSTFIX_MATCH .. '>') }),
 
   s(
-    { trig = 'constructor', wordTrig = true, dscr = 'Create a constructor' },
+    { trig = 'ctor', wordTrig = true, dscr = 'Create a constructor' },
     fmta(
       [[
         <>(<>)<>
@@ -51,7 +51,7 @@ return {
   ),
 
   s(
-    { trig = 'destructor', wordTrig = true, dscr = 'Create a destructor' },
+    { trig = 'dtor', wordTrig = true, dscr = 'Create a destructor' },
     fmta(
       [[
         ~<>(<>)<>
@@ -221,6 +221,21 @@ return {
   ),
 
   s(
+    { trig = 'while', wordTrig = true, dscr = 'while statement' },
+    fmta(
+      [[
+        while (<>) {
+          <>
+        }
+      ]],
+      {
+        i(1, 'true'),
+        i(0),
+      }
+    )
+  ),
+
+  s(
     { trig = 'f', wordTrig = true, dscr = 'Function' },
     fmta(
       [[
@@ -355,7 +370,137 @@ return {
           ss <<<< ']';
           return ss.str();
         }
-    ]],
+      ]],
+      {}
+    )
+  ),
+
+  s(
+    { trig = 'snode', wordTrig = true, dscr = 'Stringify ListNode' },
+    fmta(
+      [[
+        string str(ListNode const *head) {
+          std::stringstream ss;
+          ss <<<< '[';
+
+          while (head) {
+            ss <<<< head->>val;
+            if (head->>next) {
+              ss <<<< ", ";
+            }
+            head = head->>next;
+          }
+
+          ss <<<< ']';
+          return ss.str();
+        }
+      ]],
+      {}
+    )
+  ),
+
+  s(
+    { trig = 'cnode', wordTrig = true, dscr = 'Create ListNode' },
+    fmta(
+      [[
+        ListNode *create(vector<<int>> const &v) {
+          ListNode *head = new ListNode();
+          ListNode *current = head;
+          for (size_t i = 0; i << v.size(); i++) {
+            current->>val = v[i];
+            if (i != v.size() - 1) {
+              current->>next = new ListNode();
+            }
+            current = current->>next;
+          }
+          return head;
+        }
+      ]],
+      {}
+    )
+  ),
+
+  s(
+    { trig = 'treenode', wordTrig = true, dscr = 'Leetcode TreeNode helpers' },
+    fmta(
+      [[
+        struct TreeNode {
+          int val;
+          TreeNode *left;
+          TreeNode *right;
+          TreeNode() : val(0), left(nullptr), right(nullptr) {}
+          TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+          TreeNode(int x, TreeNode *left, TreeNode *right)
+              : val(x), left(left), right(right) {}
+        };
+
+        std::string str(TreeNode const *root) {
+          std::stringstream ss;
+          ss <<<< '[';
+          if (!root) {
+            ss <<<< ']';
+            return ss.str();
+          }
+
+          std::queue<<TreeNode const *>> nodes;
+          nodes.push(root);
+          while (!nodes.empty()) {
+            auto current = nodes.front();
+            nodes.pop();
+
+            ss <<<< current->>val <<<< ", ";
+            if (current->>left) {
+              nodes.push(current->>left);
+            } else {
+              ss <<<< "null, ";
+            }
+
+            if (current->>right) {
+              nodes.push(current->>right);
+            } else {
+              ss <<<< "null, ";
+            }
+          }
+          string out = ss.str();
+          if (out.back() == ' ') {
+            // Remove ", "
+            out.pop_back();
+            out.pop_back();
+          }
+
+          out.push_back(']');
+          return out;
+        }
+
+        TreeNode *create(vector<<optional<<int>>>> const &v) {
+          if (v.empty() || !v[0].has_value()) {
+            return nullptr;
+          }
+          TreeNode *root = new TreeNode(v[0].value());
+          std::queue<<TreeNode *>> nodes;
+          nodes.push(root);
+          size_t i = 1;
+          while (i << v.size()) {
+            TreeNode *current = nodes.front();
+            nodes.pop();
+            if (i << v.size()) {
+              if (v[i]) {
+                current->>left = new TreeNode(v[i].value());
+                nodes.push(current->>left);
+              }
+              i++;
+            }
+            if (i << v.size()) {
+              if (v[i]) {
+                current->>right = new TreeNode(v[i].value());
+                nodes.push(current->>right);
+              }
+              i++;
+            }
+          }
+          return root;
+        }
+      ]],
       {}
     )
   ),

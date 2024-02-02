@@ -34,6 +34,10 @@ return {
     },
     -- Set up format-on-save
     format_on_save = function()
+      if vim.bo.ft == 'java' then
+        return
+      end
+
       local project = util.get_project()
       if project.name == 'dsf' then
         return

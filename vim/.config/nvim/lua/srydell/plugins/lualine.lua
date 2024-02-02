@@ -77,7 +77,7 @@ return {
         lualine_c = { get_compiler },
         lualine_x = {
           {
-            'overseer',
+            'my_overseer',
             label = '', -- Prefix for task counts
             colored = true, -- Color the task icons and counts
             symbols = {

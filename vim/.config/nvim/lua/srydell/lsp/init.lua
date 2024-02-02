@@ -1,5 +1,7 @@
 local constants = require('srydell.constants')
 
+local util = require('srydell.util')
+
 require('mason').setup({
   pip = {
     install_args = {
@@ -22,7 +24,7 @@ require('mason-tool-installer').setup({
 })
 
 local lspconfig = require('lspconfig')
-local util = require('lspconfig.util')
+local lsp_util = require('lspconfig.util')
 local cmp_nvim_lsp = require('cmp_nvim_lsp')
 local capabilities = cmp_nvim_lsp.default_capabilities()
 
@@ -54,11 +56,14 @@ local on_attach = function(_, bufnr)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
 end
 
+local no_auto_setup = { 'sourcekit', 'lua_ls', 'jdtls' }
 for _, lsp in ipairs(constants.lsp_servers) do
-  lspconfig[lsp].setup({
-    capabilities = capabilities,
-    on_attach = on_attach,
-  })
+  if not util.contains(no_auto_setup, lsp) then
+    lspconfig[lsp].setup({
+      capabilities = capabilities,
+      on_attach = on_attach,
+    })
+  end
 end
 
 -- setup sourcekit
@@ -70,10 +75,10 @@ lspconfig['sourcekit'].setup({
   },
   filetypes = { 'swift' },
   root_dir = function(filename, _)
-    return util.root_pattern('buildServer.json')(filename)
-      or util.root_pattern('*.xcodeproj', '*.xcworkspace')(filename)
-      or util.find_git_ancestor(filename)
-      or util.root_pattern('Package.swift')(filename)
+    return lsp_util.root_pattern('buildServer.json')(filename)
+      or lsp_util.root_pattern('*.xcodeproj', '*.xcworkspace')(filename)
+      or lsp_util.find_git_ancestor(filename)
+      or lsp_util.root_pattern('Package.swift')(filename)
   end,
 })
 

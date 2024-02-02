@@ -13,3 +13,8 @@
 --   local row1, col1, row2, col2 = node:range() -- range of the capture
 --   -- ... use the info here ...
 -- end
+
+vim.opt.expandtab = true
+vim.opt.shiftwidth = 2
+vim.opt.softtabstop = 2
+vim.opt.tabstop = 2
