@@ -33,10 +33,12 @@ vim.keymap.set('n', '<leader>eac', ':VimNOut edit ~/.config/nvim/compiler/{files
 -- Fuzzy finder
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>/', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>*', builtin.grep_string, {})
-vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+
+-- Run git add -u
+vim.keymap.set('n', '<leader>gb', ':Git blame<CR>')
 
 -- Run git add -u
 vim.keymap.set('n', '<leader>gz', ':call GitAddCommitPush()<CR>')

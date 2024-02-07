@@ -239,16 +239,13 @@ return {
     { trig = 'f', wordTrig = true, dscr = 'Function' },
     fmta(
       [[
-        <> <>(<>)
-        {
-          <>
-        }
+        <> <>(<>)<>
       ]],
       {
         i(1, 'int'),
         i(2, 'f'),
         i(3),
-        i(0),
+        d(4, get_definition_or_declaration),
       }
     )
   ),

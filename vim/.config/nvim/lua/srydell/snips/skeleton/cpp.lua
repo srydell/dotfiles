@@ -64,7 +64,59 @@ namespace %s {
   return s('_skeleton', fmta(snippet, { i(0) }))
 end
 
+local function get_test_name(filename)
+  -- Assume filename is on form 'test_blahblah.cpp'
+  filename = string.sub(filename, 6)
+  -- Now 'blahblah.cpp'
+  filename = string.sub(filename, 1, #filename - 4)
+  -- Now 'blahblah'
+  return filename
+end
+
+local function get_test_include_path(project_info, test_name)
+  local index = util.index_of(project_info.path, 'test')
+  if not index then
+    index = #project_info.path
+  end
+  index = index - 1
+
+  -- util/round.h
+  local include_path = table.concat(project_info.path, '/', 1, index) .. '/' .. test_name .. '.h'
+  return include_path
+end
+
+local function dsf_test(project_info, filename)
+  local license = get_license()
+  local test_name = get_test_name(filename)
+  local include_path = get_test_include_path(project_info, test_name)
+  local snippet = string.format(
+    [[%s
+#include "%s"
+
+#include <<boost/test/data/test_case.hpp>>
+#include <<boost/test/unit_test.hpp>>
+
+BOOST_AUTO_TEST_SUITE(%s)
+
+BOOST_AUTO_TEST_CASE(<>)
+{
+  <>
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+      ]],
+    license,
+    include_path,
+    test_name
+  )
+  return s('_skeleton', fmta(snippet, { i(1), i(0) }))
+end
+
 local function dsf(project_info)
+  local filename = project_info.path[#project_info.path]
+  if string.match(filename, 'test_') then
+    return dsf_test(project_info, filename)
+  end
   local license = get_license()
   local snippet = string.format(
     [[%s
