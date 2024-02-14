@@ -50,10 +50,6 @@ for option, value in pairs({
   -- Auto write on :make
   autowrite = true,
 
-  -- Autoindent new lines to match previous line
-  -- Autoindent when creating new lines
-  autoindent = true,
-
   -- Make vim exit visual mode without delay
   timeoutlen = 1000,
   ttimeoutlen = 0,

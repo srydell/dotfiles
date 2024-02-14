@@ -61,17 +61,8 @@ require('lazy').setup({
   -- Tags management
   'ludovicchabant/vim-gutentags',
 
-  -- Reads .editorconfig
-  'editorconfig/editorconfig-vim',
-
   -- Add ftdetect, compiler and other good stuff for elixir
   'elixir-editors/vim-elixir',
-
-  -- Debugging
-  'szw/vim-maximizer',
-
-  -- A set of filetype based plugins
-  'sheerun/vim-polyglot',
 
   -- Add syntax highlighting for i3 config files
   'mboughaba/i3config.vim',
@@ -86,7 +77,7 @@ require('lazy').setup({
   'tpope/vim-fugitive',
 
   -- Project configuration
-  -- (used to find alternate files and some fancy Ultisnips tricks)
+  -- used to find alternate files
   'tpope/vim-projectionist',
 
   -- Interface for repeating plugin type commands with .
@@ -98,6 +89,7 @@ require('lazy').setup({
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
 
+  -- Java debugger
   { 'mfussenegger/nvim-jdtls' },
 
   require('srydell.plugins.cmp'),
