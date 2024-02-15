@@ -18,6 +18,7 @@ return {
         '-r',
         '--progress',
         '/Users/simryd/code/' .. params.project .. '/src',
+        '/Users/simryd/code/' .. params.project .. '/scripts',
         'bx0052:/newhome/bx0004/simryd/code/' .. params.project,
       },
       components = {

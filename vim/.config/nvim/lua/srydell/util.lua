@@ -141,11 +141,19 @@ M.merge = function(l0, l1)
   return l
 end
 
+-- Return the first index with the given value (or nil if not found).
+function M.index_of(array, value)
+  for i, v in ipairs(array) do
+    if v == value then
+      return i
+    end
+  end
+  return nil
+end
+
 local cachedConfig = {}
 local searchedForConfig = {}
 
--- Find config file
--- Caches each run
 function M.find_config(filename)
   if searchedForConfig[filename] then
     return cachedConfig[filename]
@@ -177,16 +185,6 @@ function M.find_config(filename)
   end
 
   return cachedConfig[filename]
-end
-
--- Return the first index with the given value (or nil if not found).
-function M.index_of(array, value)
-  for i, v in ipairs(array) do
-    if v == value then
-      return i
-    end
-  end
-  return nil
 end
 
 return M

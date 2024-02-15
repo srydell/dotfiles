@@ -54,24 +54,24 @@ return {
       },
       swiftformat_ext = {
         command = 'swiftformat',
-        args = function()
+        args = function(self, _)
           return {
             '--config',
-            util.find_config('.swiftformat') or '~/.config/nvim/.swiftformat', -- update fallback path if needed
+            util.find_config('.swiftformat') or '~/.config/nvim/.swiftformat',
             '--stdinpath',
             '$FILENAME',
           }
         end,
-        range_args = function(ctx)
+        range_args = function(self, ctx)
           return {
             '--config',
-            util.find_config('.swiftformat') or '~/.config/nvim/.swiftformat', -- update fallback path if needed
+            util.find_config('.swiftformat') or '~/.config/nvim/.swiftformat',
             '--linerange',
             ctx.range.start[1] .. ',' .. ctx.range['end'][1],
           }
         end,
         stdin = true,
-        condition = function(ctx)
+        condition = function(self, ctx)
           return vim.fs.basename(ctx.filename) ~= 'README.md'
         end,
       },

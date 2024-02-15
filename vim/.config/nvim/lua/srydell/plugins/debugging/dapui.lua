@@ -55,11 +55,11 @@ M.setup = function()
     end
   end
 
-  vim.fn.sign_define('DapBreakpoint', { text = '●', texthl = 'GruvboxRedBold', linehl = '', numhl = '' })
-  vim.fn.sign_define('DapBreakpointCondition', { text = 'C', texthl = 'GruvboxYellowBold', linehl = '', numhl = '' })
-  vim.fn.sign_define('DapBreakpointRejected', { text = 'R', texthl = 'GruvboxRedBold', linehl = '', numhl = '' })
-  vim.fn.sign_define('DapStopped', { text = '➡', texthl = 'GruvboxGreenBold', linehl = '', numhl = '' })
-  vim.fn.sign_define('DapLogPoint', { text = 'L', texthl = 'GruvboxYellowBold', linehl = '', numhl = '' })
+  vim.fn.sign_define('DapBreakpoint', { text = '', texthl = 'DiagnosticError', linehl = '', numhl = '' })
+  vim.fn.sign_define('DapBreakpointRejected', { text = '', texthl = 'DiagnosticError', linehl = '', numhl = '' })
+  vim.fn.sign_define('DapBreakpointCondition', { text = '', texthl = 'DiagnosticInfo', linehl = '', numhl = '' })
+  vim.fn.sign_define('DapStopped', { text = '', texthl = 'DiagnosticOk', linehl = '', numhl = '' })
+  vim.fn.sign_define('DapLogPoint', { text = '', texthl = 'DiagnosticInfo', linehl = '', numhl = '' })
 end
 
 return M

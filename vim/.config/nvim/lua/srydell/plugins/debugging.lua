@@ -55,6 +55,14 @@ return {
     vim.keymap.set('n', '<F10>', dap.step_over)
     vim.keymap.set('n', '<F5>', dap.continue)
 
+    local function terminate_debug_session()
+      if dap.session() then
+        dap.terminate()
+      end
+      require('xcodebuild.actions').cancel()
+      require('dapui').close()
+    end
+
     debug_map('b', toggle_breakpoint)
     debug_map('i', dap.step_into)
     debug_map('l', set_log_breakpoint)
@@ -62,6 +70,6 @@ return {
     debug_map('r', dap.run_last)
     debug_map('s', dap.step_over)
     debug_map('t', dapui.toggle)
-    debug_map('x', dap.terminate)
+    debug_map('x', terminate_debug_session)
   end,
 }
