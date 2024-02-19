@@ -15,8 +15,8 @@ local lsp_servers = {
 local debug_servers = {
   'codelldb',
   'debugpy',
-  'java-debug-adapter',
-  'java-test',
+  -- 'java-debug-adapter',
+  -- 'java-test',
 }
 
 local formatters = {
