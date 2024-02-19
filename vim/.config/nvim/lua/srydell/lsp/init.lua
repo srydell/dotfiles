@@ -56,7 +56,7 @@ local on_attach = function(_, bufnr)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
 end
 
-local no_auto_setup = { 'sourcekit', 'lua_ls', 'jdtls' }
+local no_auto_setup = { 'sourcekit', 'lua_ls', 'jdtls', 'ruby-lsp' }
 for _, lsp in ipairs(constants.lsp_servers) do
   if not util.contains(no_auto_setup, lsp) then
     lspconfig[lsp].setup({
@@ -93,4 +93,9 @@ lspconfig['lua_ls'].setup({
       },
     },
   },
+})
+
+lspconfig['ruby_ls'].setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
 })
