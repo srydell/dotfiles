@@ -15,6 +15,20 @@ return {
     end
     overseer.setup({
       templates = templates,
+      component_aliases = {
+        -- Most tasks are initialized with the default components
+        -- Overwrite them to only notify on failure
+        default = {
+          { 'display_duration', detail_level = 2 },
+          'on_output_summarize',
+          'on_exit_set_status',
+          {
+            'on_complete_notify',
+            statuses = { 'FAILURE' },
+          },
+          'on_complete_dispose',
+        },
+      },
     })
 
     local function toggle()
