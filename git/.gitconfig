@@ -8,8 +8,11 @@
     commitGraph = true
 [init]
     templatedir = ~/.git_template
+    defaultBranch = main
 [diff]
-    tool = 'nvim -d'
+    tool = nvimdiff
+[difftool]
+    prompt = false
 [gc]
     writeCommitGraph = true
 [pull]
