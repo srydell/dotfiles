@@ -1,6 +1,6 @@
 return {
   name = 'rsync',
-  desc = 'rsync over files to bx machine and rerun last command',
+  desc = 'rsync over files to remote or bx machine and rerun last command',
   params = {
     project = {
       type = 'string',
@@ -8,6 +8,8 @@ return {
     },
   },
   builder = function(params)
+    local remote = os.getenv('REMOTE_MACHINE') or 'bx0052'
+
     return {
       cmd = { 'rsync' },
       args = {
@@ -19,7 +21,7 @@ return {
         '--progress',
         '/Users/simryd/code/' .. params.project .. '/src',
         '/Users/simryd/code/' .. params.project .. '/scripts',
-        'bx0052:/newhome/bx0004/simryd/code/' .. params.project,
+        remote .. ':/home/simryd/code/' .. params.project,
       },
       components = {
         {

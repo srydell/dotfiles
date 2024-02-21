@@ -6,10 +6,11 @@ local function get_compilers()
     return {}
   end
 
+  local constants = require('srydell.constants')
   if util.contains({ 'dsf', 'oal' }, project.name) then
     return {
       {
-        name = 'rsync bx',
+        name = 'rsync ' .. constants.icons.building,
         tasks = { { 'rsync', project = project.name } },
         type = 'overseer',
       },
@@ -17,7 +18,6 @@ local function get_compilers()
   end
 
   if util.contains({ 'prototype', 'leetcode' }, project.name) then
-    local constants = require('srydell.constants')
     return {
       {
         name = 'clang++ ' .. constants.icons.building,
