@@ -1,4 +1,37 @@
+local helpers = require('srydell.snips.helpers')
+
+local get_visual = helpers.get_visual
+
 return {
+  s(
+    { trig = 'state', wordTrig = true, dscr = '@State variable' },
+    fmta(
+      [[
+        @State private var <>: <>
+      ]],
+      {
+        i(1, 'variableName'),
+        i(2, 'Bool = false'),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'btn', wordTrig = true, dscr = 'Basic button' },
+    fmta(
+      [[
+        Button(action: {
+          <>
+        }) {
+          <>
+        }
+      ]],
+      {
+        i(1),
+        i(2),
+      }
+    )
+  ),
 
   s(
     { trig = '(%a)st', regTrig = true, dscr = 'Stack' },
@@ -12,7 +45,7 @@ return {
         f(function(_, snip)
           return string.upper(snip.captures[1])
         end, {}),
-        i(0),
+        d(1, get_visual),
         f(function(_, snip)
           return string.upper(snip.captures[1]) .. 'STACK'
         end, {}),
