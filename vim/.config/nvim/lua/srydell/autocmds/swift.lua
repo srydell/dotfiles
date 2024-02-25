@@ -15,6 +15,7 @@ vim.api.nvim_create_autocmd({ 'BufNewFile' }, {
     local actions = require('xcodebuild.actions')
     local filepath = vim.fn.expand('%:p')
     if is_xcode_project(filepath) then
+      actions.add_current_group()
       actions.add_file_to_targets(filepath, actions.get_project_targets())
     end
   end,

@@ -29,7 +29,6 @@ local k = require('luasnip.nodes.key_indexer').new_key
 local function skeleton()
   -- NOTE: without extension so OnboardingView.swift -> OnboardingView
   local filename = vim.fn.expand('%:t:r')
-  print(filename)
   if string.match(filename, 'View') then
     local text = string.format(
       [[

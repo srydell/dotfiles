@@ -3,6 +3,21 @@ local helpers = require('srydell.snips.helpers')
 local get_visual = helpers.get_visual
 
 return {
+
+  s(
+    { trig = 'appstorage', wordTrig = true, dscr = '@AppStorage variable' },
+    fmta(
+      [[
+        @AppStorage("<>") var <>: <>
+      ]],
+      {
+        rep(1),
+        i(1, 'variableName'),
+        i(2, 'Bool = false'),
+      }
+    )
+  ),
+
   s(
     { trig = 'state', wordTrig = true, dscr = '@State variable' },
     fmta(
@@ -12,6 +27,19 @@ return {
       {
         i(1, 'variableName'),
         i(2, 'Bool = false'),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'link', wordTrig = true, dscr = 'Link' },
+    fmta(
+      [[
+        Link("<>", destination: URL(string: <>)!)
+      ]],
+      {
+        i(1, 'Wikipedia'),
+        i(2, '"https://wikipedia.com"'),
       }
     )
   ),
@@ -61,6 +89,22 @@ return {
       ]],
       {
         i(1),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'foreach', wordTrig = true, dscr = 'ForEach' },
+    fmta(
+      [[
+        ForEach(<>) { <> in
+          <>
+        }
+      ]],
+      {
+        i(1, 'items'),
+        i(2, 'item'),
+        i(0),
       }
     )
   ),
