@@ -45,7 +45,7 @@ M.get_flags = function(compiler)
     '-Wdate-time',
     '-Wformat=2',
     '-pthread',
-    '-std=c++20',
+    '-std=c++23',
   }
   local extra_flags = {}
   if compiler == 'clang' then

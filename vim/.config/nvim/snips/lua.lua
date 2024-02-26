@@ -114,7 +114,8 @@ return {
     { trig = 's', wordTrig = true, dscr = 'A generic snippet' },
     fmta(
       [==[
-        s({ trig='<>', wordTrig=true, dscr='<>' },
+        s(
+          { trig = '<>', wordTrig = true, dscr = '<>' },
           fmta(
             [[
               <>

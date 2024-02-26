@@ -352,6 +352,22 @@ return {
   ),
 
   s(
+    { trig = 'enum', wordTrig = true, dscr = 'enum class' },
+    fmta(
+      [[
+        enum class <>
+        {
+          <>
+        };
+      ]],
+      {
+        i(1, 'Enum'),
+        i(0),
+      }
+    )
+  ),
+
+  s(
     { trig = 'svec', wordTrig = true, dscr = 'Stringify vector' },
     fmta(
       [[
