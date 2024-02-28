@@ -26,10 +26,10 @@ local parse = require('luasnip.util.parser').parse_snippet
 local ms = ls.multi_snippet
 local k = require('luasnip.nodes.key_indexer').new_key
 
--- ['./hi.cpp', './dir'] -> ['hi.cpp', 'dir']
-local function trim_relative(list)
+-- ['./hi.cpp', './dir'] -> ['!hi.cpp', '!dir']
+local function trim_relative_add_bang(list)
   for i = 1, #list do
-    list[i] = string.sub(list[i], 3, -1)
+    list[i] = '!' .. string.sub(list[i], 3, -1)
   end
   return list
 end
@@ -38,8 +38,8 @@ local function skeleton()
   -- Get all files and directories in CWD
   local scan = require('plenary.scandir')
   local cwd = vim.fn.expand('.')
-  local directories = trim_relative(scan.scan_dir(cwd, { hidden = true, depth = 1, only_dirs = true }))
-  local files = trim_relative(scan.scan_dir(cwd, { hidden = true, depth = 1, add_dirs = false }))
+  local directories = trim_relative_add_bang(scan.scan_dir(cwd, { hidden = true, depth = 1, only_dirs = true }))
+  local files = trim_relative_add_bang(scan.scan_dir(cwd, { hidden = true, depth = 1, add_dirs = false }))
 
   return s(
     { trig = 'skeleton', dscr = 'Skeleton snippet' },
