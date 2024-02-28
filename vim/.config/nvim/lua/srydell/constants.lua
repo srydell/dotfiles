@@ -3,8 +3,10 @@ local lsp_servers = {
   'jdtls', -- Java
   'lua_ls', -- Lua
   'neocmake', -- CMake, requires rust
-  -- 'perlnavigator', -- perl, requires node
   'pylsp', -- Python
+  'helm-ls',
+  'yaml-language-server',
+  -- 'perlnavigator', -- perl, requires node
   -- 'ruby-lsp', -- Ruby
   -- 'bashls',   -- Bash, requires node
   -- 'biome',    -- JSON, requires node

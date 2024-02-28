@@ -56,7 +56,7 @@ local on_attach = function(_, bufnr)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
 end
 
-local no_auto_setup = { 'sourcekit', 'lua_ls', 'jdtls', 'ruby-lsp' }
+local no_auto_setup = { 'sourcekit', 'lua_ls', 'jdtls', 'ruby-lsp', 'helm-ls', 'yaml-language-server' }
 for _, lsp in ipairs(constants.lsp_servers) do
   if not util.contains(no_auto_setup, lsp) then
     lspconfig[lsp].setup({
@@ -94,6 +94,22 @@ lspconfig['lua_ls'].setup({
     },
   },
 })
+
+-- setup helm-ls
+lspconfig['helm_ls'].setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+  settings = {
+    ['helm-ls'] = {
+      yamlls = {
+        path = 'yaml-language-server',
+      },
+    },
+  },
+})
+
+-- setup yamlls
+lspconfig['yamlls'].setup({})
 
 lspconfig['ruby_ls'].setup({
   capabilities = capabilities,

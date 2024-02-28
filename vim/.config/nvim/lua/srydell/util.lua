@@ -120,7 +120,7 @@ M.get_namespace = function(project_info)
 end
 
 --
--- Merge two list arrays (use vim.tbl_extend for maps
+-- Merge two list arrays (use vim.tbl_extend for maps)
 --
 -- E.g.
 -- INPUT:

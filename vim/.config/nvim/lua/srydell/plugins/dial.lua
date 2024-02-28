@@ -5,57 +5,66 @@ return {
   },
   config = function()
     local augend = require('dial.augend')
-    require('dial.config').augends:register_group({
-      default = {
-        augend.integer.alias.decimal,
-        augend.integer.alias.hex,
-        augend.date.new({
-          pattern = '%Y/%m/%d',
-          default_kind = 'day',
-        }),
-        augend.date.new({
-          pattern = '%Y-%m-%d',
-          default_kind = 'day',
-        }),
-        augend.date.new({
-          pattern = '%m/%d',
-          default_kind = 'day',
-          only_valid = true,
-        }),
-        augend.date.new({
-          pattern = '%H:%M',
-          default_kind = 'day',
-          only_valid = true,
-        }),
-        augend.constant.alias.ja_weekday_full,
-        augend.constant.alias.bool,
-        augend.semver.alias.semver,
-      },
+    local config = require('dial.config')
+    local util = require('srydell.util')
+    local default = {
+      augend.integer.alias.decimal_int,
+      augend.integer.alias.hex,
+      augend.date.new({
+        pattern = '%Y/%m/%d',
+        default_kind = 'day',
+      }),
+      augend.date.new({
+        pattern = '%Y-%m-%d',
+        default_kind = 'day',
+      }),
+      augend.date.new({
+        pattern = '%m/%d',
+        default_kind = 'day',
+        only_valid = true,
+      }),
+      augend.date.new({
+        pattern = '%H:%M',
+        default_kind = 'day',
+        only_valid = true,
+      }),
+      augend.constant.alias.ja_weekday_full,
+      augend.semver.alias.semver,
+    }
+
+    config.augends:register_group({
+      default = util.merge({ augend.constant.alias.bool }, default),
     })
 
+    config.augends:on_filetype({
+      python = util.merge({ augend.constant.new({ elements = { 'True', 'False' } }) }, default),
+      markdown = util.merge({ augend.misc.alias.markdown_header }, default),
+    })
+
+    local manip = require('dial.map').manipulate
     vim.keymap.set('n', '<C-a>', function()
-      require('dial.map').manipulate('increment', 'normal')
+      manip('increment', 'normal')
     end)
     vim.keymap.set('n', '<C-x>', function()
-      require('dial.map').manipulate('decrement', 'normal')
+      manip('decrement', 'normal')
     end)
     vim.keymap.set('n', 'g<C-a>', function()
-      require('dial.map').manipulate('increment', 'gnormal')
+      manip('increment', 'gnormal')
     end)
     vim.keymap.set('n', 'g<C-x>', function()
-      require('dial.map').manipulate('decrement', 'gnormal')
+      manip('decrement', 'gnormal')
     end)
     vim.keymap.set('v', '<C-a>', function()
-      require('dial.map').manipulate('increment', 'visual')
+      manip('increment', 'visual')
     end)
     vim.keymap.set('v', '<C-x>', function()
-      require('dial.map').manipulate('decrement', 'visual')
+      manip('decrement', 'visual')
     end)
     vim.keymap.set('v', 'g<C-a>', function()
-      require('dial.map').manipulate('increment', 'gvisual')
+      manip('increment', 'gvisual')
     end)
     vim.keymap.set('v', 'g<C-x>', function()
-      require('dial.map').manipulate('decrement', 'gvisual')
+      manip('decrement', 'gvisual')
     end)
   end,
 }

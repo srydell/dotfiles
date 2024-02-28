@@ -86,6 +86,10 @@ require('lazy').setup({
   -- Operators used to surround text with character
   'tpope/vim-surround',
 
+  -- To set filetype for helm files
+  -- ft = 'helm' is important to not start yamlls
+  { 'towolf/vim-helm', ft = 'helm' },
+
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
 
