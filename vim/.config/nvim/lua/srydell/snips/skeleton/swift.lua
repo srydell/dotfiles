@@ -26,10 +26,23 @@ local parse = require('luasnip.util.parser').parse_snippet
 local ms = ls.multi_snippet
 local k = require('luasnip.nodes.key_indexer').new_key
 
+local util = require('srydell.util')
+
+local function isView()
+  local filename = vim.fn.expand('%:p')
+  vim.print(filename)
+  if string.find(filename, 'Views?') then
+    print('Filename contains Views?')
+    return true
+  end
+
+  print('Not a view')
+  return false
+end
+
 local function skeleton()
-  -- NOTE: without extension so OnboardingView.swift -> OnboardingView
   local filename = vim.fn.expand('%:t:r')
-  if string.match(filename, 'View') then
+  if isView() then
     local text = string.format(
       [[
 import SwiftUI

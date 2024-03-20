@@ -5,6 +5,35 @@ local get_visual = helpers.get_visual
 return {
 
   s(
+    { trig = 'link', wordTrig = true, dscr = 'NavigationLink' },
+    fmta(
+      [[
+        NavigationLink {
+          <>
+        } label: {
+          <>
+        }
+      ]],
+      {
+        i(1),
+        d(2, get_visual),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'i', wordTrig = true, dscr = 'import statement' },
+    fmta(
+      [[
+        import <>
+      ]],
+      {
+        i(1, 'SwiftUI'),
+      }
+    )
+  ),
+
+  s(
     { trig = 'appstorage', wordTrig = true, dscr = '@AppStorage variable' },
     fmta(
       [[
