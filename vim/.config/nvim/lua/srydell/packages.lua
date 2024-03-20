@@ -111,7 +111,7 @@ require('lazy').setup({
   require('srydell.plugins.xcodebuild'),
   require('srydell.plugins.clangd_extensions'),
   require('srydell.plugins.dial'),
-  -- require('srydell.plugins.trouble'),
+  -- require('srydell.plugins.copilot'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup

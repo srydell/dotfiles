@@ -2,6 +2,65 @@ local helpers = require('srydell.snips.helpers')
 local get_visual = helpers.get_visual
 
 return {
+  s(
+    { trig = 'str', wordTrig = true, dscr = 'data class' },
+    fmta(
+      [[
+        @dataclass
+        class <>:
+            <>
+      ]],
+      {
+        i(1, 'Data'),
+        i(0),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'cls', wordTrig = true, dscr = 'Class' },
+    fmta(
+      [[
+        class <>:
+            <>
+      ]],
+      {
+        i(1, 'ClassName'),
+        i(0),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'for', wordTrig = true, dscr = 'for loop' },
+    fmta(
+      [[
+        for <> in <>:
+            <>
+      ]],
+      {
+        i(1, 'thing'),
+        i(2, 'things'),
+        i(0),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'with', wordTrig = true, dscr = 'with open' },
+    fmta(
+      [[
+        with open("<>") as <>:
+            <>
+      ]],
+      {
+        i(1, 'filename.txt'),
+        i(2, 'f'),
+        i(0),
+      }
+    )
+  ),
+
   s({ trig = '^(%s*)i', regTrig = true, dscr = 'import statement' }, {
     c(1, {
       sn(nil, { t('import '), r(1, 'package') }),
@@ -18,9 +77,9 @@ return {
     { trig = 'f', dscr = 'Simple function' },
     fmta(
       [[
-          def <>(<>):
-              <>
-        ]],
+        def <>(<>):
+            <>
+      ]],
       {
         i(1, 'f'),
         i(2),
@@ -42,8 +101,8 @@ return {
             nil,
             fmta(
               [[
-              <>
-            ]],
+                <>
+              ]],
               { i(1) }
             )
           ),
@@ -51,8 +110,8 @@ return {
             nil,
             fmta(
               [[
-              re.match(<>, <>)
-            ]],
+                re.match(<>, <>)
+              ]],
               { i(1, 'pattern'), i(2, 'input') }
             )
           ),
@@ -64,26 +123,11 @@ return {
   ),
 
   s(
-    { trig = 'for', wordTrig = true, dscr = 'for loop' },
-    fmta(
-      [[
-        for <> in <>:
-            <>
-      ]],
-      {
-        i(1, 'item'),
-        i(2, 'items'),
-        i(0),
-      }
-    )
-  ),
-
-  s(
     { trig = 'p', wordTrig = true, dscr = 'print statement' },
     fmta(
       [[
-          print(f"<>")
-        ]],
+        print(<>)
+      ]],
       { i(1) }
     )
   ),
@@ -92,8 +136,8 @@ return {
     { trig = 'pv', wordTrig = true, dscr = 'print variable' },
     fmta(
       [[
-          print(f"<> = {<>}")
-        ]],
+        print(f"<> = {<>}")
+      ]],
       { rep(1), i(1) }
     )
   ),

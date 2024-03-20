@@ -1,6 +1,7 @@
 return {
   'mfussenegger/nvim-dap',
   dependencies = {
+    'nvim-neotest/nvim-nio',
     'rcarriga/nvim-dap-ui',
     'mfussenegger/nvim-dap-python',
     'wojciech-kulik/xcodebuild.nvim',
