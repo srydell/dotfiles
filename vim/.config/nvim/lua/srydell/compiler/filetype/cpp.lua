@@ -6,11 +6,16 @@ local function get_compilers()
     return {}
   end
 
-  local constants = require('srydell.constants')
-  if util.contains({ 'dsf', 'oal' }, project.name) then
+  local icons = require('srydell.constants').icons
+  if util.contains({ 'dsf', 'oal', 'SPSCQueue' }, project.name) then
     return {
       {
-        name = 'rsync ' .. constants.icons.building,
+        name = 'git ' .. icons.up .. icons.down .. ' ' .. icons.building,
+        tasks = { { 'git push' } },
+        type = 'overseer',
+      },
+      {
+        name = 'rsync ' .. icons.building,
         tasks = { { 'rsync', project = project.name } },
         type = 'overseer',
       },
@@ -20,22 +25,22 @@ local function get_compilers()
   if util.contains({ 'prototype', 'leetcode' }, project.name) then
     return {
       {
-        name = 'clang++ ' .. constants.icons.building,
+        name = 'clang++ ' .. icons.building,
         tasks = { { 'clang++', will_do = 'RUN' } },
         type = 'overseer',
       },
       {
-        name = 'clang++ ' .. constants.icons.debugging,
+        name = 'clang++ ' .. icons.debugging,
         tasks = { { 'clang++', will_do = 'DEBUG' } },
         type = 'overseer',
       },
       {
-        name = 'g++ ' .. constants.icons.building,
+        name = 'g++ ' .. icons.building,
         tasks = { { 'g++', will_do = 'RUN' } },
         type = 'overseer',
       },
       {
-        name = 'g++ ' .. constants.icons.debugging,
+        name = 'g++ ' .. icons.debugging,
         tasks = { { 'g++', will_do = 'DEBUG' } },
         type = 'overseer',
       },

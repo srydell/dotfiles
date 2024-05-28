@@ -39,7 +39,7 @@ return {
       end
 
       local project = util.get_project()
-      if project.name == 'dsf' then
+      if project.name == 'dsf' or project.name == 'oal' then
         return
       end
 

@@ -14,14 +14,17 @@ return {
       cmd = { 'rsync' },
       args = {
         '--exclude',
-        "'.git'",
+        params.project .. '/.git',
         '--exclude',
-        'build',
+        params.project .. '/build',
+        '--exclude',
+        params.project .. '/data',
+        '--exclude',
+        params.project .. '/temp',
         '-r',
         '--progress',
-        '/Users/simryd/code/' .. params.project .. '/src',
-        '/Users/simryd/code/' .. params.project .. '/scripts',
-        remote .. ':/home/simryd/code/' .. params.project,
+        '/Users/simryd/code/' .. params.project,
+        remote .. ':/home/simryd/code/',
       },
       components = {
         {

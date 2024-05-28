@@ -37,6 +37,24 @@ return {
   postfix('.v', { l('std::vector<' .. l.POSTFIX_MATCH .. '>') }),
 
   s(
+    { trig = 'try', wordTrig = true, dscr = 'try catch statement' },
+    fmta(
+      [[
+        try {
+          <>
+        } catch (<>) {
+          <>
+        }
+      ]],
+      {
+        i(1),
+        i(2, 'std::exception const & e'),
+        i(0),
+      }
+    )
+  ),
+
+  s(
     { trig = 'ctor', wordTrig = true, dscr = 'Create a constructor' },
     fmta(
       [[
@@ -142,6 +160,44 @@ return {
       }
     )
   ),
+
+  s({ trig = 'log', wordTrig = true, dscr = 'log something' }, {
+    c(1, {
+      sn(
+        nil,
+        fmta(
+          [[
+            DSF_LOG(oal::log_<>, "<>");
+          ]],
+          { r(1, 'log_level'), r(2, 'text') }
+        )
+      ),
+      sn(
+        nil,
+        fmta(
+          [[
+            DSF_FLOG(oal::log_<>, "<>", <>);
+          ]],
+          { r(1, 'log_level'), r(2, 'text'), i(3) }
+        )
+      ),
+      sn(
+        nil,
+        fmta(
+          [[
+            OAL_LOG(oal::log_<>, "<>");
+          ]],
+          { r(1, 'log_level'), r(2, 'text') }
+        )
+      ),
+    }),
+  }, {
+    stored = {
+      -- key passed to restoreNodes.
+      ['log_level'] = i(1, 'info'),
+      ['text'] = i(2),
+    },
+  }),
 
   s({ trig = 'pv', wordTrig = true, dscr = 'print something with name log' }, {
     c(1, {

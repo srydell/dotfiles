@@ -16,3 +16,11 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
     end
   end,
 })
+
+vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
+  pattern = 'wscript',
+  group = filetype_detect,
+  callback = function()
+    vim.cmd('set filetype=python')
+  end,
+})
