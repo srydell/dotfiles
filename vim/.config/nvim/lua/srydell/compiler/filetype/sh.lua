@@ -1,6 +1,6 @@
 local function get_compilers()
   return {
-    { name = 'sh run', tasks = { 'sh' }, type = 'overseer' },
+    { name = 'sh run', tasks = { 'sh' } },
   }
 end
 

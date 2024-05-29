@@ -11,7 +11,6 @@ local function get_compilers()
       {
         name = 'rsync ' .. constants.icons.building,
         tasks = { { 'rsync', project = project.name } },
-        type = 'overseer',
       },
     }
   end

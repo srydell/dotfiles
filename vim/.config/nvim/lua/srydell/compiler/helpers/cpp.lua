@@ -49,7 +49,8 @@ M.get_flags = function(compiler)
   }
   local extra_flags = {}
   if compiler == 'clang' then
-    extra_flags = { '--debug', '-fsanitize=address', '-Wduplicate-enum', '-fdiagnostics-absolute-paths' }
+    -- extra_flags = { '--debug', '-fsanitize=address', '-Wduplicate-enum', '-fdiagnostics-absolute-paths' }
+    extra_flags = { '--debug', '-fsanitize=thread', '-Wduplicate-enum', '-fdiagnostics-absolute-paths' }
   elseif compiler == 'gcc' then
     extra_flags = {
       '-g',

@@ -6,19 +6,29 @@ local function get_compilers()
   return {
     {
       name = 'ios ' .. constants.icons.building,
-      tasks = function()
-        actions.build_and_run()
-        vim.cmd('LspRestart')
-      end,
-      type = 'function',
+      tasks = {
+        {
+          'lua function',
+          f = function()
+            actions.build_and_run()
+            vim.cmd('LspRestart')
+            return true
+          end,
+        },
+      },
     },
     {
       name = 'ios ' .. constants.icons.debugging,
-      tasks = function()
-        xcode_dap.build_and_debug()
-        vim.cmd('LspRestart')
-      end,
-      type = 'function',
+      tasks = {
+        {
+          'lua function',
+          f = function()
+            xcode_dap.build_and_debug()
+            vim.cmd('LspRestart')
+            return true
+          end,
+        },
+      },
     },
   }
 end

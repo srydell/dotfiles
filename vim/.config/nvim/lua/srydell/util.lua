@@ -187,4 +187,12 @@ function M.find_config(filename)
   return cachedConfig[filename]
 end
 
+function M.ternary(cond, trueStatement, falseStatement)
+  if cond then
+    return trueStatement
+  else
+    return falseStatement
+  end
+end
+
 return M

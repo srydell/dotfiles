@@ -1,6 +1,6 @@
 local function get_compilers()
   return {
-    { name = 'python run', tasks = { 'python' }, type = 'overseer' },
+    { name = 'python run', tasks = { 'python' } },
   }
 end
 

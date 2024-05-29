@@ -12,12 +12,10 @@ local function get_compilers()
       {
         name = 'git ' .. icons.up .. icons.down .. ' ' .. icons.building,
         tasks = { { 'git push' } },
-        type = 'overseer',
       },
       {
         name = 'rsync ' .. icons.building,
         tasks = { { 'rsync', project = project.name } },
-        type = 'overseer',
       },
     }
   end
@@ -27,22 +25,18 @@ local function get_compilers()
       {
         name = 'clang++ ' .. icons.building,
         tasks = { { 'clang++', will_do = 'RUN' } },
-        type = 'overseer',
       },
       {
         name = 'clang++ ' .. icons.debugging,
         tasks = { { 'clang++', will_do = 'DEBUG' } },
-        type = 'overseer',
       },
       {
         name = 'g++ ' .. icons.building,
         tasks = { { 'g++', will_do = 'RUN' } },
-        type = 'overseer',
       },
       {
         name = 'g++ ' .. icons.debugging,
         tasks = { { 'g++', will_do = 'DEBUG' } },
-        type = 'overseer',
       },
     }
   end

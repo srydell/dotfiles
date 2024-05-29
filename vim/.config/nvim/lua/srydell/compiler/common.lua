@@ -10,19 +10,15 @@ M.run = function()
     return
   end
 
-  if compiler.type == 'overseer' then
-    local overseer = require('overseer')
-    local task = overseer.new_task({
-      name = compiler.name,
-      strategy = {
-        'orchestrator',
-        tasks = compiler.tasks,
-      },
-    })
-    task:start()
-  elseif compiler.type == 'function' then
-    compiler.tasks()
-  end
+  local overseer = require('overseer')
+  local task = overseer.new_task({
+    name = compiler.name,
+    strategy = {
+      'orchestrator',
+      tasks = compiler.tasks,
+    },
+  })
+  task:start()
 end
 
 -- Internal function to make sure vim.bo.srydell_current_compiler has a value
