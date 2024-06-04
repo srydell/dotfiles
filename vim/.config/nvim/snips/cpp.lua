@@ -424,6 +424,35 @@ return {
   ),
 
   s(
+    { trig = 'require', wordTrig = true, dscr = 'Require that' },
+    fmta(
+      [[
+        BOOST_REQUIRE_EQUAL(<>, <>);
+      ]],
+      {
+        i(1, 'true'),
+        i(2, 'false'),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'test', wordTrig = true, dscr = 'Test case' },
+    fmta(
+      [[
+        BOOST_AUTO_TEST_CASE(<>)
+        {
+          <>
+        }
+      ]],
+      {
+        i(1, 'name_of_the_test'),
+        i(0),
+      }
+    )
+  ),
+
+  s(
     { trig = 'svec', wordTrig = true, dscr = 'Stringify vector' },
     fmta(
       [[
