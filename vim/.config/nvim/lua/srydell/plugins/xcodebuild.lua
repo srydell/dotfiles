@@ -6,6 +6,14 @@ return {
   },
   config = function()
     require('xcodebuild').setup({
+      oil_nvim = {
+        enabled = true, -- enable updating Xcode project files when using oil.nvim
+        guess_target = true, -- guess target for the new file based on the file path
+        should_update_project = function(_) -- argument path can lead to directory or file
+          -- it could be useful if you mix Xcode project with SPM for example
+          return true
+        end,
+      },
       logs = {
         auto_open_on_success_tests = false,
         auto_open_on_failed_tests = false,

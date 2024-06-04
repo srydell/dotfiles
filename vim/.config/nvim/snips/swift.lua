@@ -74,6 +74,19 @@ return {
   ),
 
   s(
+    { trig = 'binding', wordTrig = true, dscr = '@Binding variable' },
+    fmta(
+      [[
+        @Binding var <>: <>
+      ]],
+      {
+        i(1, 'variableName'),
+        i(2, 'Bool'),
+      }
+    )
+  ),
+
+  s(
     { trig = 'btn', wordTrig = true, dscr = 'Basic button' },
     fmta(
       [[

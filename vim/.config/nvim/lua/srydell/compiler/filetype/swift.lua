@@ -11,7 +11,6 @@ local function get_compilers()
           'lua function',
           f = function()
             actions.build_and_run()
-            vim.cmd('LspRestart')
             return true
           end,
         },
@@ -24,7 +23,6 @@ local function get_compilers()
           'lua function',
           f = function()
             xcode_dap.build_and_debug()
-            vim.cmd('LspRestart')
             return true
           end,
         },

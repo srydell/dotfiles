@@ -110,8 +110,3 @@ lspconfig['helm_ls'].setup({
 
 -- setup yamlls
 lspconfig['yamlls'].setup({})
-
-lspconfig['ruby_ls'].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})

@@ -2,6 +2,21 @@ local helpers = require('srydell.snips.helpers')
 local get_visual = helpers.get_visual
 
 return {
+
+  s(
+    { trig = 'ctor', wordTrig = true, dscr = 'Constructor' },
+    fmta(
+      [[
+        def __init__(self<>):
+            <>
+      ]],
+      {
+        i(1, ', data'),
+        i(0),
+      }
+    )
+  ),
+
   s(
     { trig = 'str', wordTrig = true, dscr = 'data class' },
     fmta(
