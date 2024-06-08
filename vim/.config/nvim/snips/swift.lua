@@ -5,6 +5,38 @@ local get_visual = helpers.get_visual
 return {
 
   s(
+    { trig = 'enum', wordTrig = true, dscr = 'enum' },
+    fmta(
+      [[
+        enum <> {
+          case <>
+        }
+      ]],
+      {
+        i(1, 'EnumName'),
+        i(0, 'firstCase'),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'switch', wordTrig = true, dscr = 'switch enum' },
+    fmta(
+      [[
+        switch <> {
+        case <>:
+          <>
+        }
+      ]],
+      {
+        i(1, 'enumVariable'),
+        i(2, 'firstCase'),
+        i(0),
+      }
+    )
+  ),
+
+  s(
     { trig = 'link', wordTrig = true, dscr = 'NavigationLink' },
     fmta(
       [[

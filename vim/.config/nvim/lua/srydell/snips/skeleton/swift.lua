@@ -53,10 +53,8 @@ struct %s: View {
   }
 }
 
-struct %s_Previews: PreviewProvider {
-  static var previews: some View {
-    %s()
-  }
+#Preview {
+  return %s()
 }
         ]],
       filename,
