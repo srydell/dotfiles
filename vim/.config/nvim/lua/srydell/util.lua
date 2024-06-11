@@ -97,6 +97,10 @@ M.get_project = function()
   return M.get_project_info(M.split(vim.fn.expand('%:p'), '/'))
 end
 
+M.parent_dir_contains = function(directory)
+  return M.contains(M.split(vim.fn.expand('%:p'), '/'), directory)
+end
+
 --
 -- Get namespace based on project information
 --
