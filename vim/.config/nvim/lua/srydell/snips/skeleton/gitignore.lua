@@ -52,6 +52,7 @@ local function skeleton()
 # Ignore all files named (wherever they are):
 .DS_Store
 .log
+tags
 
 # Except these
 # Files

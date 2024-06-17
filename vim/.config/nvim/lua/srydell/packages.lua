@@ -36,9 +36,6 @@ require('lazy').setup({
 
       -- Useful status updates for LSP
       { 'j-hui/fidget.nvim', event = 'LspAttach', opts = {} },
-
-      -- Additional lua configuration, makes nvim stuff amazing!
-      { 'folke/neodev.nvim', opts = { library = { plugins = { 'nvim-dap-ui' }, types = true } } },
     },
   },
 
@@ -111,6 +108,7 @@ require('lazy').setup({
   require('srydell.plugins.xcodebuild'),
   require('srydell.plugins.clangd_extensions'),
   require('srydell.plugins.dial'),
+  require('srydell.plugins.lazydev'),
   -- require('srydell.plugins.copilot'),
 
   install = {
