@@ -38,10 +38,7 @@ vim.keymap.set('n', '<leader>/', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>*', builtin.grep_string, {})
 
 -- Run git add -u
-vim.keymap.set('n', '<leader>gb', ':Git blame<CR>')
-
--- Run git add -u
-vim.keymap.set('n', '<leader>gz', ':call GitAddCommitPush()<CR>')
+vim.keymap.set('n', '<leader>gb', ':Git blame<CR>', { silent = true })
 
 -- Run git add -u
 vim.keymap.set('n', '<leader>gu', ':Git add -u<CR>')
