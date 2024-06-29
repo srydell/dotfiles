@@ -38,8 +38,7 @@ return {
         return
       end
 
-      local project = util.get_project()
-      if project.name == 'dsf' or project.name == 'oal' then
+      if util.parent_dir_contains('dsf') or util.parent_dir_contains('oal') then
         return
       end
 

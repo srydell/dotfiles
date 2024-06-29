@@ -32,7 +32,7 @@ function M.setup()
   local lombok_path = path_to_jdtls .. '/lombok.jar'
 
   -- 💀
-  local path_to_jar = path_to_jdtls .. '/plugins/org.eclipse.equinox.launcher_1.6.700.v20231214-2017.jar'
+  local path_to_jar = path_to_jdtls .. '/plugins/org.eclipse.equinox.launcher_1.6.800.v20240330-1250.jar'
   -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                          ^^^^^^^^^^^^^^^^^^^^^^
 
   local bundles = {
@@ -146,13 +146,13 @@ function M.setup()
       references = {
         includeDecompiledSources = true,
       },
-      -- format = {
-      --   enabled = true,
-      --   settings = {
-      --     url = vim.fn.stdpath('config') .. '/lang_servers/intellij-java-google-style.xml',
-      --     profile = 'GoogleStyle',
-      --   },
-      -- },
+      format = {
+        enabled = false,
+        -- settings = {
+        --   url = vim.fn.stdpath('config') .. '/lang_servers/intellij-java-google-style.xml',
+        --   profile = 'GoogleStyle',
+        -- },
+      },
       eclipse = {
         downloadSources = true,
       },
@@ -223,13 +223,12 @@ function M.setup()
   }
 
   config.on_attach = on_attach
+  local extendedClientCapabilities = jdtls.extendedClientCapabilities
+  extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
   config.capabilities = capabilities
   config.on_init = function(client, _)
     client.notify('workspace/didChangeConfiguration', { settings = config.settings })
   end
-
-  local extendedClientCapabilities = require('jdtls').extendedClientCapabilities
-  extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
 
   config.init_options = {
     bundles = bundles,

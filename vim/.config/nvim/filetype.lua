@@ -24,3 +24,13 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
     vim.cmd('set filetype=python')
   end,
 })
+
+vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
+  pattern = 'pom.xml',
+  group = filetype_detect,
+  callback = function()
+    local jdtls = require('srydell.lsp.jdtls')
+
+    jdtls.setup()
+  end,
+})
