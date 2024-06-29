@@ -50,7 +50,7 @@ return {
       harpoon:list(project):remove()
     end)
     vim.keymap.set('n', '<leader>xf', function()
-      harpoon:list(project):append()
+      harpoon:list(project):add()
     end)
 
     vim.keymap.set('n', ']f', function()

@@ -56,7 +56,7 @@ local on_attach = function(_, bufnr)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
 end
 
-local no_auto_setup = { 'sourcekit', 'lua_ls', 'jdtls', 'ruby-lsp', 'helm-ls', 'yaml-language-server' }
+local no_auto_setup = { 'lua_ls', 'jdtls', 'ruby-lsp', 'helm-ls', 'yaml-language-server' }
 for _, lsp in ipairs(constants.lsp_servers) do
   if not util.contains(no_auto_setup, lsp) then
     lspconfig[lsp].setup({
@@ -68,7 +68,13 @@ end
 
 -- setup sourcekit
 lspconfig['sourcekit'].setup({
-  capabilities = capabilities,
+  capabilities = util.merge({
+    workspace = {
+      didChangeWatchedFiles = {
+        dynamicRegistration = true,
+      },
+    },
+  }, capabilities),
   on_attach = on_attach,
   cmd = {
     '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp',
