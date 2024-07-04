@@ -3,6 +3,36 @@ local helpers = require('srydell.snips.helpers')
 local get_visual = helpers.get_visual
 
 return {
+  s(
+    { trig = 'while', wordTrig = true, dscr = 'while loop' },
+    fmta(
+      [[
+        while <> {
+          <>
+        }
+      ]],
+      {
+        i(1, 'true'),
+        i(0),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'for', wordTrig = true, dscr = 'for loop' },
+    fmta(
+      [[
+        for <> in <> {
+          <>
+        }
+      ]],
+      {
+        i(1, 'variable'),
+        i(2, 'range'),
+        i(0),
+      }
+    )
+  ),
 
   s(
     { trig = 'enum', wordTrig = true, dscr = 'enum' },
@@ -216,13 +246,14 @@ return {
     { trig = 'f', wordTrig = true, dscr = 'function' },
     fmta(
       [[
-        func <>(<>) {
+        func <>(<>) ->> <> {
           <>
         }
       ]],
       {
         i(1, 'f'),
         i(2),
+        i(3, 'Void'),
         i(0),
       }
     )

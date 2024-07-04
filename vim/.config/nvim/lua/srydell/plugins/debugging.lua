@@ -53,7 +53,9 @@ return {
     end
 
     -- Shortcuts
+    vim.keymap.set('n', '<F11>', dap.step_into)
     vim.keymap.set('n', '<F10>', dap.step_over)
+    vim.keymap.set('n', '<F9>', toggle_breakpoint)
     vim.keymap.set('n', '<F5>', dap.continue)
 
     local function terminate_debug_session()
