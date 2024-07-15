@@ -6,8 +6,7 @@ return {
   config = function()
     local oil = require('oil')
 
-    -- Toggle visibility of nvim tree
-    vim.keymap.set('n', '<leader><leader>t', '<CMD>Oil<CR>', { desc = 'Toggle neovim tree' })
+    vim.keymap.set('n', '<leader>O', '<CMD>Oil<CR>', { desc = 'Toggle oil on the current directory' })
 
     oil.setup()
   end,

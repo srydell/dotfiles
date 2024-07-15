@@ -1,5 +1,20 @@
 return {
   s(
+    { trig = 'while', wordTrig = true, dscr = 'while loop' },
+    fmta(
+      [[
+        while <>
+        do
+          <>
+        done
+      ]],
+      {
+        i(1, 'true'),
+        i(0),
+      }
+    )
+  ),
+  s(
     { trig = 'p', wordTrig = true, dscr = 'Print statement' },
     fmta(
       [[

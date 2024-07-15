@@ -14,16 +14,18 @@ return {
     local breakpoint_db = require('srydell.plugins.debugging.breakpoint_db')
 
     -- language specific adapters
-    local dappython = require('dap-python')
+    local dap_python = require('dap-python')
+    local dap_cpp = require('srydell.plugins.debugging.cpp')
+    local dap_swift = require('srydell.plugins.debugging.swift')
+
+    -- UI
     local my_dapui = require('srydell.plugins.debugging.dapui')
-    local dapcpp = require('srydell.plugins.debugging.cpp')
-    local dapswift = require('srydell.plugins.debugging.swift')
 
     my_dapui.setup()
 
-    dapcpp.setup()
-    dapswift.setup()
-    dappython.setup(registry.get_package('debugpy'):get_install_path() .. '/venv/bin/python')
+    dap_cpp.setup()
+    dap_swift.setup()
+    dap_python.setup(registry.get_package('debugpy'):get_install_path() .. '/venv/bin/python')
 
     breakpoint_db.setup()
 

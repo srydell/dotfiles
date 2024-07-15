@@ -37,18 +37,19 @@ return {
   ),
 
   s(
-    { trig = 'link', wordTrig = true, dscr = 'NavigationLink' },
+    { trig = 'linknav', wordTrig = true, dscr = 'NavigationLink' },
     fmta(
       [[
         NavigationLink {
           <>
         } label: {
-          <>
+          <><>
         }
       ]],
       {
         i(1),
         d(2, get_visual),
+        i(0),
       }
     )
   ),
@@ -93,7 +94,7 @@ return {
   ),
 
   s(
-    { trig = 'link', wordTrig = true, dscr = 'Link' },
+    { trig = 'linkurl', wordTrig = true, dscr = 'Link' },
     fmta(
       [[
         Link("<>", destination: URL(string: <>)!)
@@ -255,11 +256,12 @@ return {
     fmta(
       [[
         if <> {
-          <>
+          <><>
         }
       ]],
       {
         i(1, 'true'),
+        d(2, get_visual),
         i(0),
       }
     )
