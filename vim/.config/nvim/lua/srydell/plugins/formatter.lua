@@ -48,6 +48,9 @@ return {
 
     -- Customize formatters
     formatters = {
+      stylua = {
+        prepend_args = { '--config-path', vim.fn.stdpath('config') .. '/stylua.toml' },
+      },
       shfmt = {
         prepend_args = { '-i', '2' },
       },
