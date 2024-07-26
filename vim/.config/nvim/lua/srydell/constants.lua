@@ -1,17 +1,17 @@
 local lsp_servers = {
   'clangd', -- C++
+  -- 'elixirls', -- Elixir
+  'helm-ls', -- Helm
   'jdtls', -- Java
   'lua_ls', -- Lua
   'neocmake', -- CMake, requires rust
   'pylsp', -- Python
-  'helm-ls',
-  'yaml-language-server',
+  'yaml-language-server', -- YAML
   -- 'perlnavigator', -- perl, requires node
   -- 'ruby-lsp', -- Ruby
   -- 'bashls',   -- Bash, requires node
   -- 'biome',    -- JSON, requires node
   -- 'marksman', -- Markdown
-  -- 'elixirls', -- Elixir
 }
 
 local debug_servers = {

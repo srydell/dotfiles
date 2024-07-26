@@ -65,6 +65,39 @@ return {
     },
   }),
 
+  s(
+    { trig = 'c', wordTrig = true, dscr = 'conditional node' },
+    fmta(
+      [==[
+        c(1, {
+          sn(
+            nil,
+            fmta(
+              [[
+                <<>>
+              ]],
+              {
+                r(1, 'include')
+              }
+            )
+          ),
+          sn(
+            nil,
+            fmta(
+              [[
+                <<>>
+              ]],
+              {
+                r(1, 'include')
+              }
+            )
+          ),
+        }),
+      ]==],
+      {}
+    )
+  ),
+
   s({ trig = 'r', wordTrig = true, dscr = 'require block. Either getting the return or not' }, {
     c(1, {
       sn(

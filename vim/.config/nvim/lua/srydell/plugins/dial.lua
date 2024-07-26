@@ -3,6 +3,7 @@ return {
   dependencies = {
     'nvim-lua/plenary.nvim',
   },
+  event = 'VeryLazy',
   config = function()
     local augend = require('dial.augend')
     local config = require('dial.config')

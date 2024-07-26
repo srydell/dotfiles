@@ -1,5 +1,6 @@
 return {
   'stevearc/overseer.nvim',
+  event = 'VeryLazy',
   config = function()
     local overseer = require('overseer')
     local util = require('srydell.util')
