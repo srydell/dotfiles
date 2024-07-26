@@ -2,6 +2,20 @@ local helpers = require('srydell.snips.helpers')
 local get_visual = helpers.get_visual
 
 return {
+  s(
+    { trig = 'str', wordTrig = true, dscr = 'define a struct' },
+    fmta(
+      [[
+        defmodule <> do
+          defstruct <>
+        end
+      ]],
+      {
+        i(1, 'User'),
+        i(2, 'name: "John", age: 27'),
+      }
+    )
+  ),
 
   s({ trig = 'map', wordTrig = true, dscr = 'map' }, {
     c(1, {
@@ -85,55 +99,46 @@ return {
     },
   }),
 
-  s(
-    { trig = 'f', wordTrig = true, dscr = 'module function' },
-    fmta(
-      [[
-        <>
-      ]],
-      {
-        c(1, {
-          sn(
-            nil,
-            fmta(
-              [[
+  s({ trig = 'f', wordTrig = true, dscr = 'module function' }, {
+    c(1, {
+      sn(
+        nil,
+        fmta(
+          [[
                 def <>(<>) do
                   <>
                 end
               ]],
-              {
-                r(1, 'function_name'),
-                r(2, 'args'),
-                i(0),
-              }
-            )
-          ),
-          sn(
-            nil,
-            fmta(
-              [[
+          {
+            r(1, 'function_name'),
+            r(2, 'args'),
+            i(0),
+          }
+        )
+      ),
+      sn(
+        nil,
+        fmta(
+          [[
                 defp <>(<>) do
                   <>
                 end
               ]],
-              {
-                r(1, 'function_name'),
-                r(2, 'args'),
-                i(0),
-              }
-            )
-          ),
-        }),
-      }
-    ),
-    {
-      stored = {
-        -- key passed to restoreNodes.
-        ['function_name'] = i(1, 'f'),
-        ['args'] = i(2),
-      },
-    }
-  ),
+          {
+            r(1, 'function_name'),
+            r(2, 'args'),
+            i(0),
+          }
+        )
+      ),
+    }),
+  }, {
+    stored = {
+      -- key passed to restoreNodes.
+      ['function_name'] = i(1, 'f'),
+      ['args'] = i(2),
+    },
+  }),
 
   s(
     { trig = 'f', wordTrig = true, dscr = 'function' },
