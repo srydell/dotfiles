@@ -40,6 +40,16 @@ return {
     config.augends:on_filetype({
       python = util.merge({ augend.constant.new({ elements = { 'True', 'False' } }) }, default),
       markdown = util.merge({ augend.misc.alias.markdown_header }, default),
+
+      cpp = util.merge({
+        augend.constant.new({
+          elements = {
+            'memory_order_relaxed',
+            'memory_order_acquire',
+            'memory_order_release',
+          },
+        }),
+      }, default),
     })
 
     local manip = require('dial.map').manipulate

@@ -32,6 +32,24 @@ local function get_definition_or_declaration()
 end
 
 return {
+  s(
+    { trig = 'post', wordTrig = true, dscr = 'Post to a context' },
+    fmta(
+      [[
+        post(ExecutorContext::<>, <>,
+          [<>]() {
+            <><>
+        });
+      ]],
+      {
+        i(1, 'Out'),
+        i(2, 'm_executor'),
+        i(3),
+        d(4, get_visual),
+        i(0),
+      }
+    )
+  ),
   postfix('.a', { l('std::atomic<' .. l.POSTFIX_MATCH .. '>') }),
 
   postfix('.v', { l('std::vector<' .. l.POSTFIX_MATCH .. '>') }),

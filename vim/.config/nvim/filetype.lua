@@ -26,6 +26,14 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
 })
 
 vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
+  pattern = '*.tsan',
+  group = filetype_detect,
+  callback = function()
+    vim.cmd('set filetype=tsan')
+  end,
+})
+
+vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
   pattern = 'pom.xml',
   group = filetype_detect,
   callback = function()

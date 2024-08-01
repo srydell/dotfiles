@@ -59,7 +59,7 @@ return {
         args = function(self, _)
           return {
             '--config',
-            util.find_config('.swiftformat') or '~/.config/nvim/.swiftformat',
+            util.find_config('.swiftformat') or vim.fn.stdpath('config') .. '/.swiftformat',
             '--stdinpath',
             '$FILENAME',
           }

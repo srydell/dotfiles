@@ -2,6 +2,21 @@ local helpers = require('srydell.snips.helpers')
 local get_visual = helpers.get_visual
 
 return {
+
+  s(
+    { trig = 'for', wordTrig = true, dscr = 'For generator' },
+    fmta(
+      [[
+        for <> <<- <>, do: <>
+      ]],
+      {
+        i(1, 'n'),
+        i(2, '0..5'),
+        i(0),
+      }
+    )
+  ),
+
   s(
     { trig = 'str', wordTrig = true, dscr = 'define a struct' },
     fmta(

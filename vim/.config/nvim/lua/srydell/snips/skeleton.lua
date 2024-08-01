@@ -1,5 +1,3 @@
-local nvim_skeleton = vim.api.nvim_create_augroup('nvim-skeleton', { clear = true })
-
 local function expand_skeleton()
   local status, skeleton = pcall(require, 'srydell.snips.skeleton.' .. vim.bo.ft)
   if not status then
@@ -16,9 +14,10 @@ local function expand_skeleton()
   require('luasnip').snip_expand(skeleton.snip)
 end
 
+local nvim_skeleton = vim.api.nvim_create_augroup('nvim-skeleton', { clear = true })
 vim.api.nvim_create_autocmd('BufNewFile', {
-  group = nvim_skeleton,
   pattern = '*',
+  group = nvim_skeleton,
   callback = expand_skeleton,
 })
 
