@@ -11,6 +11,21 @@ local function latest_split_by_dot(args)
 end
 
 return {
+  s(
+    { trig = 'while', wordTrig = true, dscr = 'while loop' },
+    fmta(
+      [[
+        while <> do
+          <>
+        end
+      ]],
+      {
+        i(1, 'true'),
+        i(0),
+      }
+    )
+  ),
+
   s({ trig = 'f', wordTrig = true, dscr = 'Function' }, {
     c(1, {
       sn(
