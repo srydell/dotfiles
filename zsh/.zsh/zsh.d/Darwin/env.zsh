@@ -13,7 +13,12 @@ export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 export LDFLAGS="-L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/llvm/include/c++/v1/"
 
-export PATH="/opt/homebrew/opt/conan@1/bin:$PATH"
+# export PATH="/opt/homebrew/opt/conan@1/bin:$PATH"
+export PATH="$HOME/.rubies/ruby-3.3.0/bin:$PATH"
 
 # Brew related env
 eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Ruby
+source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
+source /opt/homebrew/opt/chruby/share/chruby/auto.sh

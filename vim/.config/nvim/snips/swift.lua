@@ -4,6 +4,20 @@ local get_visual = helpers.get_visual
 
 return {
   s(
+    { trig = 'ext', wordTrig = true, dscr = 'extension' },
+    fmta(
+      [[
+        extension <> {
+          <>
+        }
+      ]],
+      {
+        i(1, 'ClassName'),
+        i(0),
+      }
+    )
+  ),
+  s(
     { trig = 'while', wordTrig = true, dscr = 'while loop' },
     fmta(
       [[

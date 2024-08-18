@@ -76,6 +76,8 @@ return {
     debug_map('r', dap.run_last)
     debug_map('s', dap.step_over)
     debug_map('t', dapui.toggle)
+    debug_map('u', dap.up)
+    debug_map('d', dap.down)
     debug_map('x', terminate_debug_session)
   end,
 }

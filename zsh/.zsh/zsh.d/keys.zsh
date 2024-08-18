@@ -8,8 +8,8 @@ eval $(keychain --eval  --quiet --ignore-missing --agents ssh --inherit any id_r
 # unset LATEST_GPGKEY
 
 # Always prompt for gpg password in the terminal instead of gui popup
-export GPG_TTY=$(tty)
+# export GPG_TTY=$(tty)
 
-unset DISPLAY
+# unset DISPLAY
 
-gpg-connect-agent updatestartuptty /bye > /dev/null
+# gpg-connect-agent updatestartuptty /bye > /dev/null
