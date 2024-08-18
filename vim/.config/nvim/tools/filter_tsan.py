@@ -13,6 +13,13 @@ def parse_args():
         help="The name of the file to filter.",
     )
     parser.add_argument(
+        "--keep-containing",
+        metavar="keep_containing",
+        type=str,
+        required=False,
+        help="If a stack trace contains this string, it is kept.",
+    )
+    parser.add_argument(
         "--remove-containing",
         metavar="remove_containing",
         type=str,
@@ -142,6 +149,8 @@ def to_json(tsan_output: [str]):
             thread = write_or_read.group(8)
             if thread is None:
                 thread = write_or_read.group(9)
+                # Also has to register main thread to be part of this warning
+                data["thread_names"][thread] = thread
             stack["header"] = line.strip()
             stack["thread"] = thread
             continue
@@ -160,6 +169,8 @@ def to_json(tsan_output: [str]):
             thread = location_is.group(3)
             if thread is None:
                 thread = location_is.group(2)
+                # Also has to register main thread to be part of this warning
+                data["thread_names"][thread] = thread
 
             stack["header"] = line.strip()
             stack["thread"] = thread
@@ -181,6 +192,8 @@ def to_json(tsan_output: [str]):
                 thread_name = thread_name.strip("'")
                 # Register this thread as a known name
                 data["thread_names"][thread] = thread_name
+            else:
+                data["thread_names"][thread] = thread
 
             stack["header"] = line.strip()
             stack["thread"] = thread
@@ -189,11 +202,20 @@ def to_json(tsan_output: [str]):
     return data
 
 
+def should_skip(line: str, args) -> bool:
+    if args.remove_containing:
+        if args.remove_containing in line:
+            return True
+
+    return False
+
+
 def main():
     args = parse_args()
     with open(args.filename) as f:
         in_tsan = False
         skip = False
+        found_containing = args.keep_containing is None
         tsan_output = []
         # Only used when as_json flag is set
         all_json_traces = []
@@ -207,15 +229,17 @@ def main():
                 tsan_output.append(line)
 
             # Should we dismiss this stack frames?
-            if args.remove_containing:
-                if args.remove_containing in line:
-                    in_tsan = False
-                    tsan_output = []
-                    skip = True
+            if should_skip(line, args):
+                in_tsan = False
+                skip = True
+                tsan_output = []
+
+            if not found_containing:
+                found_containing = args.keep_containing in line
 
             # End of a TSAN stack frames
             if "SUMMARY" in line:
-                if not skip:
+                if not skip and found_containing:
                     if args.as_json:
                         all_json_traces.append(to_json(tsan_output))
                     else:
@@ -224,6 +248,7 @@ def main():
                 # Reset for the next stack frames
                 in_tsan = False
                 skip = False
+                found_containing = args.keep_containing is None
                 tsan_output = []
 
         if args.as_json:

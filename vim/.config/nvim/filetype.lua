@@ -12,7 +12,15 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
     local project = util.get_project()
 
     if project.name == 'dsf' then
-      vim.cmd('set filetype=json5')
+      local directory = vim.fn.expand('%:p:h:t')
+      if directory == 'test_scenarios' then
+        vim.cmd('set filetype=json5')
+      end
+    else
+      local filename = vim.fn.expand('%:p:t')
+      if filename:match('log_.+') ~= nil then
+        vim.cmd('set filetype=scenario')
+      end
     end
   end,
 })

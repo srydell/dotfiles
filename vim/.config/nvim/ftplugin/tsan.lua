@@ -1,4 +1,5 @@
-local function filter_tsan(filter, as_json)
+local function filter_tsan(opts)
+  opts = opts or {}
   local cmd = {
     'python3',
     vim.fn.stdpath('config') .. '/tools/filter_tsan.py',
@@ -6,12 +7,17 @@ local function filter_tsan(filter, as_json)
     vim.fn.expand('%:p'),
   }
 
-  if filter then
+  if opts.remove_containing then
     table.insert(cmd, '--remove-containing')
-    table.insert(cmd, filter)
+    table.insert(cmd, opts.remove_containing)
   end
 
-  if as_json then
+  if opts.keep_containing then
+    table.insert(cmd, '--keep-containing')
+    table.insert(cmd, opts.keep_containing)
+  end
+
+  if opts.as_json then
     table.insert(cmd, '--as-json')
   end
 
@@ -19,8 +25,7 @@ local function filter_tsan(filter, as_json)
 end
 
 local function run_and_set(cmd)
-  local filtered_content = vim.fn.systemlist(cmd)
-  vim.api.nvim_buf_set_lines(0, 0, -1, true, filtered_content)
+  vim.api.nvim_buf_set_lines(0, 0, -1, true, vim.fn.systemlist(cmd))
 end
 
 local function no_filter()
@@ -29,21 +34,30 @@ local function no_filter()
 end
 
 local function remove_containing()
-  local cmd = filter_tsan(vim.fn.input('Remove containing: '))
+  local cmd = filter_tsan({ remove_containing = vim.fn.input('Remove containing: ') })
   run_and_set(cmd)
   vim.api.nvim_command('write')
 end
 
+local function keep_containing()
+  local cmd = filter_tsan({ keep_containing = vim.fn.input('Keep containing: ') })
+  run_and_set(cmd)
+  vim.api.nvim_command('write')
+end
+
+-- Returns a list of thread names
+-- Input = { T11 = 'main', T12 = 'event_listener' }
+-- Output = '{main, event_listener}'
 local function get_thread_names(thread_names)
-  local out = ''
+  local names = ''
   for _, thread_name in pairs(thread_names) do
-    if out == '' then
-      out = thread_name
+    if names == '' then
+      names = thread_name
     else
-      out = out .. ' ' .. thread_name
+      names = names .. ' ' .. thread_name
     end
   end
-  return '{' .. out .. '}'
+  return '{' .. names .. '}'
 end
 
 local function get_valid_file(filename)
@@ -75,11 +89,10 @@ local function get_valid_file(filename)
   return { exists = exists, name = filename }
 end
 
-local function set_quickfix_list()
-  local filter = nil
-  local as_json = true
+local function load_tsan_into_quickfix()
+  -- Run filter_tsan on the current buffer
   local output =
-    vim.json.decode(vim.fn.system(filter_tsan(filter, as_json)), { luanil = { object = true, array = true } })
+    vim.json.decode(vim.fn.system(filter_tsan({ as_json = true })), { luanil = { object = true, array = true } })
 
   -- The interface for qlist is:
   -- items = {
@@ -140,6 +153,7 @@ local function set_quickfix_list()
     table.insert(items, { text = tsan_warning['summary'] })
   end
 
+  -- Replace the current quickfix list with this one
   local id = vim.fn.getqflist({ id = 0 }).id
   vim.fn.setqflist({}, 'r', { id = id, title = 'TSAN output', items = items })
 
@@ -147,6 +161,109 @@ local function set_quickfix_list()
   vim.cmd('copen')
 end
 
+local function is_stack_trace(text)
+  -- Stack traces start with '#<number> '
+  return text:match('#%d+ ') ~= nil or text:match('failed to restore the stack') ~= nil
+end
+
+local function goto_stack(increment)
+  local qlist = vim.fn.getqflist()
+  local current_index = vim.fn.getqflist({ idx = 0 }).idx
+  local line = qlist[current_index]
+  if is_stack_trace(line.text) then
+    -- search until no stack trace
+    while is_stack_trace(line.text) do
+      current_index = current_index + increment
+      line = qlist[current_index]
+      -- End of qlist
+      if line == nil then
+        return
+      end
+    end
+  end
+
+  -- search until next stack trace
+  while not is_stack_trace(line.text) do
+    current_index = current_index + increment
+    line = qlist[current_index]
+    -- End of qlist
+    if line == nil then
+      return
+    end
+  end
+
+  -- if we're going up, we are now at the bottom of the trace (e.g. #15)
+  -- Have to get to #0
+  if increment == -1 then
+    while is_stack_trace(line.text) do
+      current_index = current_index + increment
+      line = qlist[current_index]
+      -- End of qlist
+      if line == nil then
+        return
+      end
+    end
+    -- Go down to #0 again
+    current_index = current_index + 1
+  end
+
+  -- Goto our new stack trace
+  vim.cmd('cc ' .. current_index)
+end
+
+local function goto_previous_stack()
+  goto_stack(-1)
+end
+
+local function goto_next_stack()
+  goto_stack(1)
+end
+
+local function is_tsan_warning(text)
+  return text:match('WARNING: ThreadSanitizer:') ~= nil
+end
+
+local function goto_tsan_warning(increment)
+  local qlist = vim.fn.getqflist()
+  local current_index = vim.fn.getqflist({ idx = 0 }).idx
+  local line = qlist[current_index]
+
+  if is_tsan_warning(line.text) then
+    current_index = current_index + increment
+    line = qlist[current_index]
+    -- End of qlist
+    if line == nil then
+      return
+    end
+  end
+
+  -- search until we find a new warning
+  while not is_tsan_warning(line.text) do
+    current_index = current_index + increment
+    line = qlist[current_index]
+    -- End of qlist
+    if line == nil then
+      return
+    end
+  end
+
+  -- Goto our new tsan warning
+  vim.cmd('cc ' .. current_index)
+end
+
+local function goto_next_tsan_warning()
+  goto_tsan_warning(1)
+end
+
+local function goto_previous_tsan_warning()
+  goto_tsan_warning(-1)
+end
+
 vim.keymap.set('n', '<leader>aa', no_filter)
 vim.keymap.set('n', '<leader>af', remove_containing)
-vim.keymap.set('n', '<leader>aq', set_quickfix_list)
+vim.keymap.set('n', '<leader>ac', keep_containing)
+vim.keymap.set('n', '<leader>aq', load_tsan_into_quickfix)
+vim.keymap.set('n', ']s', goto_next_stack)
+vim.keymap.set('n', '[s', goto_previous_stack)
+vim.keymap.set('n', ']w', goto_next_tsan_warning)
+vim.keymap.set('n', '[w', goto_previous_tsan_warning)

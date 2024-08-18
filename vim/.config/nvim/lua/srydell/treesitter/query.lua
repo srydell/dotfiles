@@ -6,6 +6,9 @@ M.get_parent_node_from_cursor = function(node_type)
   local ts_locals = require('nvim-treesitter.locals')
 
   local curr_node = ts_utils.get_node_at_cursor()
+  if curr_node == nil then
+    return nil
+  end
 
   -- NOTE: 0 is the current buffer
   local scope = ts_locals.get_scope_tree(curr_node, 0)

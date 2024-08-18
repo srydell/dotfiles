@@ -44,6 +44,12 @@ return {
       cpp = util.merge({
         augend.constant.new({
           elements = {
+            'true',
+            'false',
+          },
+        }),
+        augend.constant.new({
+          elements = {
             'memory_order_relaxed',
             'memory_order_acquire',
             'memory_order_release',

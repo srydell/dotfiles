@@ -20,7 +20,7 @@ return {
     local function get_compiler()
       local compiler = require('srydell.compiler.common').get_current_compiler()
       if not compiler then
-        return '[No compiler]'
+        return '[]'
       end
       return '[' .. compiler.name .. ']'
     end

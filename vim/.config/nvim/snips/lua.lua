@@ -214,17 +214,37 @@ return {
     )
   ),
 
-  s(
-    { trig = 'p', wordTrig = true, dscr = 'print' },
-    fmta(
-      [[
-        print(<>)
-      ]],
-      {
-        i(1),
-      }
-    )
-  ),
+  s({ trig = 'p', wordTrig = true, dscr = 'print' }, {
+    c(1, {
+      sn(
+        nil,
+        fmta(
+          [[
+            vim.print(<>)
+          ]],
+          {
+            r(1, 'to_print'),
+          }
+        )
+      ),
+      sn(
+        nil,
+        fmta(
+          [[
+            print(<>)
+          ]],
+          {
+            r(1, 'to_print'),
+          }
+        )
+      ),
+    }),
+  }, {
+    stored = {
+      -- key passed to restoreNodes.
+      ['to_print'] = i(1),
+    },
+  }),
 
   s(
     { trig = 'for', wordTrig = true, dscr = 'for loop' },

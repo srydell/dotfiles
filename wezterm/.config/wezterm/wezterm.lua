@@ -37,6 +37,7 @@ return {
   },
   mouse_bindings = {
     -- Ctrl-click will open the link under the mouse cursor
+    -- https://google.se
     {
       event = { Up = { streak = 1, button = 'Left' } },
       mods = 'CTRL',

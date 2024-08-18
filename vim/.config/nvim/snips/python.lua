@@ -137,15 +137,37 @@ return {
     )
   ),
 
-  s(
-    { trig = 'p', wordTrig = true, dscr = 'print statement' },
-    fmta(
-      [[
-        print(<>)
-      ]],
-      { i(1) }
-    )
-  ),
+  s({ trig = 'p', wordTrig = true, dscr = 'print statement' }, {
+    c(1, {
+      sn(
+        nil,
+        fmta(
+          [[
+              print(<>)
+            ]],
+          {
+            r(1, 'to_be_printed'),
+          }
+        )
+      ),
+      sn(
+        nil,
+        fmta(
+          [[
+              print(f"<>")
+            ]],
+          {
+            r(1, 'to_be_printed'),
+          }
+        )
+      ),
+    }),
+  }, {
+    stored = {
+      -- key passed to restoreNodes.
+      ['to_be_printed'] = i(1),
+    },
+  }),
 
   s(
     { trig = 'pv', wordTrig = true, dscr = 'print variable' },
