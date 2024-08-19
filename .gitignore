@@ -23,6 +23,7 @@ qutebrowser/.config/qutebrowser/quickmarks
 
 # Directories
 !X11
+!aerospace
 !alacritty
 !bash
 !bin
