@@ -109,6 +109,7 @@ require('lazy').setup({
   require('srydell.plugins.clangd_extensions'),
   require('srydell.plugins.dial'),
   require('srydell.plugins.lazydev'),
+  require('srydell.plugins.quicker'),
   -- require('srydell.plugins.copilot'),
 
   install = {

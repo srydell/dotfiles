@@ -109,7 +109,7 @@ local function make_atomic_load()
   local ts_utils = require('nvim-treesitter.ts_utils')
 
   local function is_variable(node)
-    return node:type() == 'identifier'
+    return node:type() == 'identifier' or node:type() == 'field_identifier'
   end
 
   local curr_node = ts_utils.get_node_at_cursor()
