@@ -33,6 +33,58 @@ end
 
 return {
   s(
+    { trig = 'switch', wordTrig = true, dscr = 'switch statement' },
+    fmta(
+      [[
+        switch (<>) {
+          <>
+        }
+      ]],
+      {
+        i(1),
+        d(2, function(_)
+          local ts_cpp = require('srydell.treesitter.cpp')
+
+          local enum = ts_cpp.find_enum_from_type()
+          if enum == nil then
+            return sn(
+              nil,
+              fmta(
+                [[
+                case <>: {
+                  <>
+                }
+              ]],
+                { i(1, '0'), i(2, 'return;') }
+              )
+            )
+          end
+
+          local cases = {}
+          local nodes = {}
+          for index, value in ipairs(enum.values) do
+            table.insert(
+              cases,
+              string.format(
+                [[
+case %s::%s: {
+  <>
+}]],
+                enum.name,
+                value
+              )
+            )
+
+            table.insert(nodes, i(index, 'return;'))
+          end
+
+          return sn(nil, fmta(table.concat(cases, '\n'), nodes))
+        end, { 1 }),
+      }
+    )
+  ),
+
+  s(
     { trig = 'post', wordTrig = true, dscr = 'Post to a context' },
     fmta(
       [[
