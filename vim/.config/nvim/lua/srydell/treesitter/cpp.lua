@@ -5,6 +5,45 @@ local function get_node_text(node, buffer)
   return vim.treesitter.get_node_text(node, buffer)
 end
 
+-- Go up the treesitter tree until stop condition is met
+local function search_up_until(node, stop_condition)
+  if node == nil then
+    return
+  end
+
+  while node do
+    if stop_condition(node) then
+      return node
+    end
+
+    node = node:parent()
+  end
+end
+
+-- Go down the treesitter tree until stop condition is met
+-- Visit the nodes in breadth first
+local function search_down_until(node, stop_condition)
+  if node == nil then
+    return
+  end
+
+  local nodes = { node }
+
+  while node and not vim.tbl_isempty(nodes) do
+    node = table.remove(nodes, 1)
+
+    if stop_condition(node) then
+      return node
+    end
+
+    for child, _ in node:iter_children() do
+      if node ~= nil then
+        table.insert(nodes, child)
+      end
+    end
+  end
+end
+
 -- Wrap a treesitter node on the current line in text as
 -- node_text -> before .. node_text .. after
 -- This assumes that the node is on the current line of the cursor
@@ -133,16 +172,11 @@ function M.make_atomic_load()
     return node:type() == 'identifier' or node:type() == 'field_identifier' or node:type() == 'parameter_declaration'
   end
 
-  local curr_node = ts_utils.get_node_at_cursor()
-  while curr_node do
-    if is_variable(curr_node) then
-      wrap_node_in(curr_node, '', '.load(std::memory_order_acquire)')
-      return
-    end
-
-    -- Go up in the stack
-    curr_node = curr_node:parent()
+  local variable = search_up_until(ts_utils.get_node_at_cursor(), is_variable)
+  if variable == nil then
+    return
   end
+  wrap_node_in(variable, '', '.load(std::memory_order_acquire)')
 end
 
 -- Make the type under the cursor atomic. I.e.
@@ -155,16 +189,12 @@ function M.make_atomic()
     return node:type() == 'primitive_type' or node:type() == 'type_identifier'
   end
 
-  local curr_node = ts_utils.get_node_at_cursor()
-  while curr_node do
-    if is_type(curr_node) then
-      wrap_node_in(curr_node, 'std::atomic<', '>')
-      return
-    end
-
-    -- Go up in the stack
-    curr_node = curr_node:parent()
+  local type = search_up_until(ts_utils.get_node_at_cursor(), is_type)
+  if type == nil then
+    return
   end
+
+  wrap_node_in(type, 'std::atomic<', '>')
 end
 
 local function is_enum(node)
@@ -194,20 +224,19 @@ end
 local function get_enum_under_cursor()
   local ts_utils = require('nvim-treesitter.ts_utils')
 
-  local curr_node = ts_utils.get_node_at_cursor()
-  while curr_node do
-    if is_enum(curr_node) then
-      local enum = parse_enum(curr_node)
-
-      -- Early exit
-      if enum.name == nil or enum.values == nil then
-        return
-      end
-      return enum, curr_node
-    end
-    curr_node = curr_node:parent()
+  local enum_node = search_up_until(ts_utils.get_node_at_cursor(), is_enum)
+  if enum_node == nil then
+    return
   end
-  return nil, nil
+
+  local enum = parse_enum(enum_node)
+
+  -- Early exit
+  if enum.name == nil or enum.values == nil then
+    return nil, nil
+  end
+
+  return enum, enum_node
 end
 
 function M.make_enum_print()
@@ -408,28 +437,6 @@ local function get_type_info_under_cursor()
   end
 
   return nil
-end
-
-local function search_down_until(node, stop_condition)
-  if node == nil then
-    return
-  end
-
-  local nodes = { node }
-
-  while node and not vim.tbl_isempty(nodes) do
-    node = table.remove(nodes, 1)
-
-    if stop_condition(node) then
-      return node
-    end
-
-    for child, _ in node:iter_children() do
-      if node ~= nil then
-        table.insert(nodes, child)
-      end
-    end
-  end
 end
 
 function M.find_enum_from_type()
