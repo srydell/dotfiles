@@ -376,7 +376,7 @@ function M.make_enum_switch()
   add_text_after(node, enum_switch)
 end
 
-local function get_typeinfo_under_cursor()
+local function get_type_info_under_cursor()
   local type_definition =
     vim.lsp.buf_request_sync(0, 'textDocument/typeDefinition', vim.lsp.util.make_position_params(), 1000)
   if not type_definition or vim.tbl_isempty(type_definition) then
@@ -411,22 +411,29 @@ local function get_typeinfo_under_cursor()
 end
 
 local function search_down_until(node, stop_condition)
+  if node == nil then
+    return
+  end
+
   local nodes = { node }
 
-  while node do
+  while node and not vim.tbl_isempty(nodes) do
     node = table.remove(nodes, 1)
+
     if stop_condition(node) then
       return node
     end
 
     for child, _ in node:iter_children() do
-      table.insert(nodes, child)
+      if node ~= nil then
+        table.insert(nodes, child)
+      end
     end
   end
 end
 
 function M.find_enum_from_type()
-  local type_info = get_typeinfo_under_cursor()
+  local type_info = get_type_info_under_cursor()
   if type_info == nil then
     return
   end
@@ -444,11 +451,24 @@ function M.find_enum_from_type()
   local type_name = lines[1]:sub(type_info.start_char + 1, type_info.end_char)
 
   local is_our_enum = function(node)
-    return is_enum(node) and vim.treesitter.get_node_text(node, buffer):find(type_name) ~= nil
+    if is_enum(node) then
+      local text = vim.treesitter.get_node_text(node, buffer)
+      if text == nil then
+        return false
+      end
+
+      return text:find(type_name) ~= nil
+    end
+    return false
   end
 
   local trees = vim.treesitter.get_parser(buffer, 'cpp'):parse()
   for _, tree in ipairs(trees) do
+    local root = tree:root()
+    if root == nil then
+      return
+    end
+
     local enum_node = search_down_until(tree:root(), is_our_enum)
     if enum_node == nil then
       return
