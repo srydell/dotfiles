@@ -503,35 +503,40 @@ function M.get_includes()
     end
   end
 
+  local function add_include(text, node)
+    if node:type() == 'string_literal' then
+      -- E.g. "myLib/stuff.h"
+      -- or "local_stuff.h"
+      if text:find('/') == nil then
+        table.insert(includes['internal_same_dir'], { text, node })
+      else
+        table.insert(includes['internal'], { text, node })
+      end
+    else
+      -- E.g. <vector>
+      -- or <boost/program_options.hpp>
+      if text:find('/') == nil then
+        table.insert(includes['system'], { text, node })
+      else
+        table.insert(includes['external'], { text, node })
+      end
+    end
+  end
+
   local function collect_include(node)
     if node:type() == 'preproc_include' then
       for child, name in node:iter_children() do
         if name ~= nil and name == 'path' then
           local text = get_node_text(child, 0)
-          if child:type() == 'string_literal' then
-            -- E.g. "myLib/stuff.h"
-            -- Avoid alignment headers
-            if text:find('align_int8.h') == nil and text:find('align_restore.h') == nil then
-              if text:find('/') == nil then
-                table.insert(includes['internal_same_dir'], { text, child })
-              else
-                table.insert(includes['internal'], { text, child })
-              end
-              compare_location(child)
-            end
-          else
-            -- E.g. <vector>
-            -- or <boost/program_options.hpp>
-            if text:find('/') == nil then
-              table.insert(includes['system'], { text, child })
-            else
-              table.insert(includes['external'], { text, child })
-            end
+          -- Avoid alignment headers
+          if text:find('align_int8.h') == nil and text:find('align_restore.h') == nil then
             compare_location(child)
+            add_include(text, child)
           end
         end
       end
     end
+    -- Do not stop the search
     return false
   end
 
@@ -559,9 +564,9 @@ function M.get_includes()
 
   -- Create the new include lines
   local lines = {}
-  for _, category in ipairs({'internal_same_dir', 'internal', 'external', 'system'}) do
+  for _, category in ipairs({ 'internal_same_dir', 'internal', 'external', 'system' }) do
     -- Don't add a newline between internal_same_dir and internal
-    if category ~= 'internal' then
+    if category ~= 'internal' and #includes[category] > 0 then
       table.insert(lines, '')
     end
     for _, text_and_node in ipairs(includes[category]) do
