@@ -1,6 +1,6 @@
 local ts_cpp = require('srydell.treesitter.cpp')
 
-vim.keymap.set('n', '<leader>gr', ts_cpp.find_enum_from_type)
+vim.keymap.set('n', '<leader>gro', ts_cpp.get_includes)
 
 -- 'r' is for refactor
 vim.keymap.set('n', '<leader>raa', ts_cpp.make_atomic)

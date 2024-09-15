@@ -484,4 +484,96 @@ function M.find_enum_from_type()
   end
 end
 
+function M.get_includes()
+  local includes = { external = {}, system = {}, internal = {}, internal_same_dir = {} }
+  local locations = { start_row = nil, end_row = nil }
+
+  local function compare_location(node)
+    local row, _, _, _ = vim.treesitter.get_node_range(node)
+    if locations.start_row == nil then
+      locations.start_row = row
+    else
+      locations.start_row = math.min(row, locations.start_row)
+    end
+
+    if locations.end_row == nil then
+      locations.end_row = row
+    else
+      locations.end_row = math.max(row, locations.end_row)
+    end
+  end
+
+  local function collect_include(node)
+    if node:type() == 'preproc_include' then
+      for child, name in node:iter_children() do
+        if name ~= nil and name == 'path' then
+          local text = get_node_text(child, 0)
+          if child:type() == 'string_literal' then
+            -- E.g. "myLib/stuff.h"
+            -- Avoid alignment headers
+            if text:find('align_int8.h') == nil and text:find('align_restore.h') == nil then
+              if text:find('/') == nil then
+                table.insert(includes['internal_same_dir'], { text, child })
+              else
+                table.insert(includes['internal'], { text, child })
+              end
+              compare_location(child)
+            end
+          else
+            -- E.g. <vector>
+            -- or <boost/program_options.hpp>
+            if text:find('/') == nil then
+              table.insert(includes['system'], { text, child })
+            else
+              table.insert(includes['external'], { text, child })
+            end
+            compare_location(child)
+          end
+        end
+      end
+    end
+    return false
+  end
+
+  local trees = vim.treesitter.get_parser(0, 'cpp'):parse()
+  for _, tree in ipairs(trees) do
+    local root = tree:root()
+    if root == nil then
+      return
+    end
+
+    search_down_until(root, collect_include)
+  end
+
+  -- No includes
+  if locations.start_row == nil or locations.end_row == nil then
+    return
+  end
+
+  -- Sort the include within their category
+  for _, includes_and_nodes in pairs(includes) do
+    table.sort(includes_and_nodes, function(inc_a, inc_b)
+      return inc_a[1] < inc_b[1]
+    end)
+  end
+
+  -- Create the new include lines
+  local lines = {}
+  for _, category in ipairs({'internal_same_dir', 'internal', 'external', 'system'}) do
+    -- Don't add a newline between internal_same_dir and internal
+    if category ~= 'internal' then
+      table.insert(lines, '')
+    end
+    for _, text_and_node in ipairs(includes[category]) do
+      table.insert(lines, '#include ' .. text_and_node[1])
+    end
+  end
+
+  -- Pop the first newline
+  table.remove(lines, 1)
+
+  -- Replace the current include block with the new one
+  vim.api.nvim_buf_set_lines(0, locations.start_row, locations.end_row + 1, true, lines)
+end
+
 return M
