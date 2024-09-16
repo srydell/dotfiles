@@ -484,7 +484,7 @@ function M.find_enum_from_type()
   end
 end
 
-function M.get_includes()
+function M.divide_and_sort_includes()
   local includes = { external = {}, system = {}, internal = {}, internal_same_dir = {} }
   local locations = { start_row = nil, end_row = nil }
 
@@ -575,10 +575,81 @@ function M.get_includes()
   end
 
   -- Pop the first newline
-  table.remove(lines, 1)
+  if not vim.tbl_isempty(lines) and lines[1] == '' then
+    table.remove(lines, 1)
+  end
 
   -- Replace the current include block with the new one
   vim.api.nvim_buf_set_lines(0, locations.start_row, locations.end_row + 1, true, lines)
+end
+
+M.correct_include_guard = function()
+  local guard = { ifdef = nil, define = nil }
+  local function is_identifier(node)
+    return node:type() == 'identifier'
+  end
+
+  local function get_guard(node)
+    -- Either
+    -- #ifndef MY_GUARD
+    -- or
+    -- #if !defined(MY_GUARD)
+    if node:type() == 'preproc_ifdef' or node:type() == 'preproc_if' then
+      local identifier = search_down_until(node, is_identifier)
+      guard.ifdef = identifier
+    elseif node:type() == 'preproc_def' then
+      local identifier = search_down_until(node, is_identifier)
+      guard.define = identifier
+    end
+
+    -- Stop when both found
+    return false
+    -- return guard.ifdef ~= nil and guard.define ~= nil
+  end
+
+  local trees = vim.treesitter.get_parser(0, 'cpp'):parse()
+  for _, tree in ipairs(trees) do
+    local root = tree:root()
+    if root == nil then
+      return
+    end
+
+    search_down_until(root, get_guard)
+  end
+
+  -- No include guard
+  if guard.ifdef == nil or guard.define == nil then
+    return
+  end
+
+  local function get_row(node)
+    local row, _, _, _ = vim.treesitter.get_node_range(node)
+    return row
+  end
+
+  -- Existing include guards are not separated by lines
+  if get_row(guard.define) ~= get_row(guard.ifdef) + 1 then
+    return
+  end
+
+  local util = require('srydell.util')
+  local include_guard = util.get_include_guard(util.get_project())
+  if include_guard == '' then
+    return
+  end
+
+  -- Put in the new include guard
+  -- Have to divide it up as otherwise
+  -- there is a change in the node range before the second node is checked
+  local to_change = {}
+  for _, node in pairs(guard) do
+    table.insert(to_change, { vim.treesitter.get_node_range(node) })
+  end
+
+  for _, value in ipairs(to_change) do
+    local start_row, start_col, end_row, end_col = unpack(value)
+    vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, { include_guard })
+  end
 end
 
 return M

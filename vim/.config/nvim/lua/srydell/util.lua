@@ -65,11 +65,11 @@ end
 --
 M.get_project_info = function(path)
   local last_directory = ''
-  local name = nil
+  local name = ''
   local src_path = {}
   local internal_path = false
   for i = 1, #path do
-    if not name then
+    if name == '' then
       if path[i] == 'src' or path[i] == 'include' or path[i] == 'test' then
         -- The name of the project is the parent directory of the above
         name = last_directory
@@ -82,7 +82,7 @@ M.get_project_info = function(path)
       table.insert(src_path, path[i])
     end
 
-    if name then
+    if name ~= '' then
       internal_path = true
     end
   end
@@ -121,6 +121,28 @@ M.get_namespace = function(project_info)
   end
 
   return table.concat(ns, '::')
+end
+
+-- Get a C-style include guard based on project information
+--
+-- E.g.
+-- INPUT:
+--   {
+--     name = 'dsf',
+--     path = { 'util', 'perf', 'histogram.hpp' }
+--   }
+-- OUTPUT:
+--   'DSF_UTIL_PERF_HISTOGRAM_HPP'
+--
+M.get_include_guard = function(project_info)
+  local guard = { string.upper(project_info.name) }
+
+  for j = 1, #project_info.path do
+    local path = string.gsub(project_info.path[j], '%.', '_')
+    table.insert(guard, string.upper(path))
+  end
+
+  return table.concat(guard, '_')
 end
 
 --

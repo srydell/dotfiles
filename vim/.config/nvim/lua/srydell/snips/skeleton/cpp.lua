@@ -7,28 +7,6 @@ local fmta = require('luasnip.extras.fmt').fmta
 
 local util = require('srydell.util')
 
--- Get a C-style include guard based on project information
---
--- E.g.
--- INPUT:
---   {
---     name = 'dsf',
---     path = { 'util', 'perf', 'histogram.hpp' }
---   }
--- OUTPUT:
---   'DSF_UTIL_PERF_HISTOGRAM_HPP'
---
-local function get_include_guard(project_info)
-  local guard = { string.upper(project_info.name) }
-
-  for j = 1, #project_info.path do
-    local path = string.gsub(project_info.path[j], '%.', '_')
-    table.insert(guard, string.upper(path))
-  end
-
-  return table.concat(guard, '_')
-end
-
 local function get_license()
   return [[/*
  * This file is subject to the terms and conditions defined in
@@ -43,7 +21,7 @@ local function basic_include_guard(project_info)
     license = get_license()
   end
 
-  local guard = get_include_guard(project_info)
+  local guard = util.get_include_guard(project_info)
   local snippet = string.format(
     [[#ifndef %s
 #define %s
