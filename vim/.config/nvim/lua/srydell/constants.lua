@@ -7,6 +7,7 @@ local lsp_servers = {
   'neocmake', -- CMake, requires rust
   'pylsp', -- Python
   'yaml-language-server', -- YAML
+  'texlab',
   -- 'perlnavigator', -- perl, requires node
   -- 'ruby-lsp', -- Ruby
   -- 'bashls',   -- Bash, requires node

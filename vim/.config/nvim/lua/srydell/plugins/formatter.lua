@@ -31,6 +31,7 @@ return {
         end
       end,
       swift = { 'swiftformat_ext' },
+      tex = { 'tex_fmt' },
     },
     -- Set up format-on-save
     format_on_save = function()
@@ -50,6 +51,12 @@ return {
     formatters = {
       stylua = {
         prepend_args = { '--config-path', vim.fn.stdpath('config') .. '/stylua.toml' },
+      },
+      tex_fmt = {
+        -- https://github.com/WGUNDERWOOD/tex-fmt/releases/tag/v0.4.3
+        command = 'tex-fmt',
+        args = { '--stdin' },
+        stdin = true,
       },
       shfmt = {
         prepend_args = { '-i', '2' },

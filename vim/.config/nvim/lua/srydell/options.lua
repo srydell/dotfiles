@@ -19,7 +19,7 @@ for option, value in pairs({
   foldlevelstart = 99,
   -- foldtext = folding#FoldText()
 
-  -- Show absolute current row
+  -- Show absolute rows
   number = true,
   relativenumber = false,
 
@@ -94,6 +94,7 @@ for option, value in pairs({
     '*.toc',
     '__pycache__',
     '.git',
+    'build',
     '*.sw?',
     '*.DS_Store',
     '*.pyc',
