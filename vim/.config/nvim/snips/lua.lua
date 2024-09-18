@@ -1,4 +1,6 @@
 local util = require('srydell.util')
+local helpers = require('srydell.snips.helpers')
+local get_visual = helpers.get_visual
 
 local function latest_split_by_dot(args)
   local out = args[1][1]
@@ -16,11 +18,12 @@ return {
     fmta(
       [[
         while <> do
-          <>
+          <><>
         end
       ]],
       {
         i(1, 'true'),
+        d(2, get_visual),
         i(0),
       }
     )
@@ -204,12 +207,13 @@ return {
     fmta(
       [[
         if <> then
-          <>
+          <><>
         end
       ]],
       {
         i(1, 'statement'),
-        i(2),
+        d(2, get_visual),
+        i(0),
       }
     )
   ),
@@ -251,14 +255,15 @@ return {
     fmta(
       [[
         for <>, <> in ipairs(<>) do
-          <>
+          <><>
         end
       ]],
       {
         i(1, 'key'),
         i(2, 'value'),
         i(3),
-        i(4),
+        d(4, get_visual),
+        i(0),
       }
     )
   ),

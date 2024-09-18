@@ -19,9 +19,9 @@ for option, value in pairs({
   foldlevelstart = 99,
   -- foldtext = folding#FoldText()
 
-  -- Show absolute current row and relative rows from that
+  -- Show absolute current row
   number = true,
-  relativenumber = true,
+  relativenumber = false,
 
   -- Make backspace be able to delete indent and before starting position
   backspace = { 'indent', 'eol', 'start' },

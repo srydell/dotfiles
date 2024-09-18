@@ -503,6 +503,19 @@ function M.divide_and_sort_includes()
     end
   end
 
+  local function is_system(text)
+    -- sys/* are system files on Linux/MacOS
+    if text:find('sys/') ~= nil then
+      return true
+    end
+
+    -- Otherwise they should not have '/' or be some specific C library
+    if text:find('/') == nil and text:find('oal') == nil then
+      return true
+    end
+    return false
+  end
+
   local function add_include(text, node)
     if node:type() == 'string_literal' then
       -- E.g. "myLib/stuff.h"
@@ -515,7 +528,7 @@ function M.divide_and_sort_includes()
     else
       -- E.g. <vector>
       -- or <boost/program_options.hpp>
-      if text:find('/') == nil then
+      if is_system(text) then
         table.insert(includes['system'], { text, node })
       else
         table.insert(includes['external'], { text, node })
