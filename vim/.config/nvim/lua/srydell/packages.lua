@@ -95,7 +95,6 @@ require('lazy').setup({
 
   require('srydell.plugins.cmp'),
   require('srydell.plugins.snippets'),
-  require('srydell.plugins.cmp_git'),
   require('srydell.plugins.lualine'),
   require('srydell.plugins.oil'),
   require('srydell.plugins.formatter'),
