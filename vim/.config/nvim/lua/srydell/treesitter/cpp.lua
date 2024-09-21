@@ -132,6 +132,7 @@ function M.make_atomic_store()
         replace_node_with(curr_node, left .. '.fetch_sub(' .. right .. ', std::memory_order_acq_rel)')
       end
 
+      M.add_include('<atomic>')
       return
     elseif is_increment(curr_node) then
       -- E.g. a++;
@@ -151,6 +152,7 @@ function M.make_atomic_store()
         replace_node_with(curr_node, argument .. '.fetch_sub(1, std::memory_order_acq_rel)')
       end
 
+      M.add_include('<atomic>')
       return
     end
 
@@ -177,6 +179,7 @@ function M.make_atomic_load()
     return
   end
   wrap_node_in(variable, '', '.load(std::memory_order_acquire)')
+  M.add_include('<atomic>')
 end
 
 -- Make the type under the cursor atomic. I.e.
@@ -195,6 +198,7 @@ function M.make_atomic()
   end
 
   wrap_node_in(type, 'std::atomic<', '>')
+  M.add_include('<atomic>')
 end
 
 local function is_enum(node)
@@ -516,7 +520,7 @@ function M.divide_and_sort_includes()
     return false
   end
 
-  local function add_include(text, node)
+  local function append_include(text, node)
     if node:type() == 'string_literal' then
       -- E.g. "myLib/stuff.h"
       -- or "local_stuff.h"
@@ -544,7 +548,7 @@ function M.divide_and_sort_includes()
           -- Avoid alignment headers
           if text:find('align_int8.h') == nil and text:find('align_restore.h') == nil then
             compare_location(child)
-            add_include(text, child)
+            append_include(text, child)
           end
         end
       end
@@ -663,6 +667,56 @@ M.correct_include_guard = function()
     local start_row, start_col, end_row, end_col = unpack(value)
     vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, { include_guard })
   end
+end
+
+-- Add an include to the list of includes in the current file
+-- E.g. add_include('<atomic>')
+-- Checks if it was there before and uses divide_and_sort_includes
+-- to tidy the includes after
+M.add_include = function(include)
+  if include == nil then
+    return
+  end
+
+  local function get_row(node)
+    local row, _, _, _ = vim.treesitter.get_node_range(node)
+    return row
+  end
+
+  -- Get all the existing includes
+  local existing_includes = {}
+  local first_row = 0
+  local function collect_include(node)
+    if node:type() == 'preproc_include' then
+      for child, name in node:iter_children() do
+        if name ~= nil and name == 'path' then
+          existing_includes[get_node_text(child, 0)] = true
+          first_row = math.min(first_row, get_row(node))
+        end
+      end
+    end
+    -- Do not stop the search
+    return false
+  end
+
+  local trees = vim.treesitter.get_parser(0, 'cpp'):parse()
+  for _, tree in ipairs(trees) do
+    local root = tree:root()
+    if root == nil then
+      return
+    end
+
+    search_down_until(root, collect_include)
+  end
+
+  if existing_includes[include] == true then
+    -- Already there
+    return
+  end
+
+  vim.api.nvim_buf_set_lines(0, first_row + 1, first_row + 1, true, { '#include ' .. include })
+
+  M.divide_and_sort_includes()
 end
 
 return M
