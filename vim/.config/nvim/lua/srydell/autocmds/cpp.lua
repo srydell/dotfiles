@@ -5,6 +5,10 @@ vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
   group = srydell_cpp,
   callback = function()
     local ts_cpp = require('srydell.treesitter.cpp')
+    -- Include what is used
+    ts_cpp.include_necessary_types()
+
+    -- Sort and divide them reasonably
     ts_cpp.divide_and_sort_includes()
   end,
 })

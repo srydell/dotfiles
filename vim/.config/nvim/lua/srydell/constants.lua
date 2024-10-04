@@ -12,7 +12,7 @@ local lsp_servers = {
   -- 'ruby-lsp', -- Ruby
   -- 'bashls',   -- Bash, requires node
   -- 'biome',    -- JSON, requires node
-  -- 'marksman', -- Markdown
+  'marksman', -- Markdown
 }
 
 local debug_servers = {

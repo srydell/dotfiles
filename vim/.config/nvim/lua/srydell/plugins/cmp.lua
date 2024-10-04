@@ -6,7 +6,6 @@ return {
     'hrsh7th/cmp-cmdline',
     'hrsh7th/cmp-nvim-lsp',
     'hrsh7th/cmp-nvim-lua',
-    'petertriho/cmp-git',
     'rcarriga/cmp-dap',
     'saadparwaiz1/cmp_luasnip',
     'L3MON4D3/LuaSnip',
@@ -20,8 +19,8 @@ return {
       -- Disable for not modifiable pages (for manpager)
       -- See https://github.com/hrsh7th/nvim-cmp/issues/1113
       enabled = function()
-        local dap_req = vim.api.nvim_buf_get_option(0, 'buftype') ~= 'prompt' or require('cmp_dap').is_dap_buffer()
-        local modifiable = vim.api.nvim_buf_get_option(0, 'modifiable')
+        local dap_req = vim.api.nvim_get_option_value('buftype', {}) ~= 'prompt' or require('cmp_dap').is_dap_buffer()
+        local modifiable = vim.api.nvim_get_option_value('modifiable', {})
         return dap_req and modifiable
       end,
       snippet = {
@@ -108,8 +107,6 @@ return {
     -- Set configuration for specific filetype.
     cmp.setup.filetype('gitcommit', {
       sources = cmp.config.sources({
-        { name = 'git' }, -- You can specify the `git` source if [you were installed it](https://github.com/petertriho/cmp-git).
-      }, {
         { name = 'buffer' },
       }),
     })

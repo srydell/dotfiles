@@ -5,6 +5,11 @@ local function get_node_text(node, buffer)
   return vim.treesitter.get_node_text(node, buffer)
 end
 
+local function get_row(node)
+  local row, _, _, _ = vim.treesitter.get_node_range(node)
+  return row
+end
+
 -- Go up the treesitter tree until stop condition is met
 local function search_up_until(node, stop_condition)
   if node == nil then
@@ -47,7 +52,7 @@ end
 -- Wrap a treesitter node on the current line in text as
 -- node_text -> before .. node_text .. after
 -- This assumes that the node is on the current line of the cursor
-local function wrap_node_in(node, before, after)
+local function wrap_node_in(before, node, after)
   local _, start_node_col, _, end_node_col = vim.treesitter.get_node_range(node)
   local line = vim.api.nvim_get_current_line()
 
@@ -132,7 +137,6 @@ function M.make_atomic_store()
         replace_node_with(curr_node, left .. '.fetch_sub(' .. right .. ', std::memory_order_acq_rel)')
       end
 
-      M.add_include('<atomic>')
       return
     elseif is_increment(curr_node) then
       -- E.g. a++;
@@ -152,7 +156,6 @@ function M.make_atomic_store()
         replace_node_with(curr_node, argument .. '.fetch_sub(1, std::memory_order_acq_rel)')
       end
 
-      M.add_include('<atomic>')
       return
     end
 
@@ -178,8 +181,7 @@ function M.make_atomic_load()
   if variable == nil then
     return
   end
-  wrap_node_in(variable, '', '.load(std::memory_order_acquire)')
-  M.add_include('<atomic>')
+  wrap_node_in('', variable, '.load(std::memory_order_acquire)')
 end
 
 -- Make the type under the cursor atomic. I.e.
@@ -197,8 +199,7 @@ function M.make_atomic()
     return
   end
 
-  wrap_node_in(type, 'std::atomic<', '>')
-  M.add_include('<atomic>')
+  wrap_node_in('std::atomic<', type, '>')
 end
 
 local function is_enum(node)
@@ -287,6 +288,7 @@ void print(%s e) {
   add_text_after(node, enum_printer_function)
 end
 
+-- Create a stringify enum switch function over all the cases based on the enum under the cursor
 function M.make_enum_stringify()
   local enum, node = get_enum_under_cursor()
 
@@ -330,6 +332,7 @@ std::string to_string(%s e) {
   add_text_after(node, enum_stringify_function)
 end
 
+-- Create a binary enum switch function over all the cases based on the enum under the cursor
 function M.make_enum_binary()
   local enum, node = get_enum_under_cursor()
 
@@ -370,6 +373,7 @@ std::string to_string(uint32_t event) {
   add_text_after(node, enum_binary_stringify)
 end
 
+-- Create a simple enum switch over all the cases based on the enum under the cursor
 function M.make_enum_switch()
   local enum, node = get_enum_under_cursor()
 
@@ -409,6 +413,8 @@ function M.make_enum_switch()
   add_text_after(node, enum_switch)
 end
 
+-- Do a LSP typeDefinition check for the type under the cursor
+-- Return a simplified version of the output
 local function get_type_info_under_cursor()
   local type_definition =
     vim.lsp.buf_request_sync(0, 'textDocument/typeDefinition', vim.lsp.util.make_position_params(), 1000)
@@ -443,6 +449,8 @@ local function get_type_info_under_cursor()
   return nil
 end
 
+-- Do a type check via LSP to find the enum that is under the cursor
+-- Reads the file via treesitter that contains the enum.
 function M.find_enum_from_type()
   local type_info = get_type_info_under_cursor()
   if type_info == nil then
@@ -488,6 +496,15 @@ function M.find_enum_from_type()
   end
 end
 
+-- Read the current includes
+-- Divide them and sort them internally in the following groups:
+--
+-- #include "same_dir.h"
+-- #include "other/directory.h"
+--
+-- #include <external/includes.h>
+--
+-- #include <system_includes>
 function M.divide_and_sort_includes()
   local includes = { external = {}, system = {}, internal = {}, internal_same_dir = {} }
   local locations = { start_row = nil, end_row = nil }
@@ -600,6 +617,11 @@ function M.divide_and_sort_includes()
   vim.api.nvim_buf_set_lines(0, locations.start_row, locations.end_row + 1, true, lines)
 end
 
+-- Read the include guard if there is one.
+-- Correct it so that it follows the standard below:
+-- PROJECT_PATH_TO_FILE_EXTENSION
+-- e.g
+-- MYPROJECT_INCLUDE_API_H
 M.correct_include_guard = function()
   local guard = { ifdef = nil, define = nil }
   local function is_identifier(node)
@@ -639,11 +661,6 @@ M.correct_include_guard = function()
     return
   end
 
-  local function get_row(node)
-    local row, _, _, _ = vim.treesitter.get_node_range(node)
-    return row
-  end
-
   -- Existing include guards are not separated by lines
   if get_row(guard.define) ~= get_row(guard.ifdef) + 1 then
     return
@@ -670,11 +687,11 @@ M.correct_include_guard = function()
 end
 
 -- Add an include to the list of includes in the current file
--- E.g. add_include('<atomic>')
+-- E.g. add_include({ '<atomic>' })
 -- Checks if it was there before and uses divide_and_sort_includes
 -- to tidy the includes after
-M.add_include = function(include)
-  if include == nil then
+M.add_include = function(includes)
+  if includes == nil or vim.tbl_isempty(includes) then
     return
   end
 
@@ -685,13 +702,17 @@ M.add_include = function(include)
 
   -- Get all the existing includes
   local existing_includes = {}
-  local first_row = 0
+  local first_row = nil
   local function collect_include(node)
     if node:type() == 'preproc_include' then
       for child, name in node:iter_children() do
         if name ~= nil and name == 'path' then
           existing_includes[get_node_text(child, 0)] = true
-          first_row = math.min(first_row, get_row(node))
+          if first_row == nil then
+            first_row = get_row(node)
+          else
+            first_row = math.min(first_row, get_row(node))
+          end
         end
       end
     end
@@ -709,14 +730,262 @@ M.add_include = function(include)
     search_down_until(root, collect_include)
   end
 
-  if existing_includes[include] == true then
-    -- Already there
+  local includes_to_add = {}
+  for _, include in ipairs(includes) do
+    if existing_includes[include] ~= true then
+      -- Already there
+      table.insert(includes_to_add, '#include ' .. include)
+    end
+  end
+
+  local function get_first_empty_row()
+    for number, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 50, false)) do
+      if line == '' then
+        return number
+      end
+    end
+    return 0
+  end
+
+  if first_row == nil then
+    -- No includes, find the first empty line to add them
+    local first_empty_row = get_first_empty_row()
+    if first_empty_row == nil then
+      return
+    end
+    first_row = first_empty_row
+  end
+
+  vim.api.nvim_buf_set_lines(0, first_row, first_row, true, includes_to_add)
+end
+
+-- Look through the types in the current file.
+-- Include the necessary standard library headers for those types.
+-- Avoid doubles.
+M.include_necessary_types = function()
+  local known_includes = require('srydell.treesitter.types_to_headers')
+
+  local unique_includes = {}
+  local function collect_types(node)
+    if node:type() == 'qualified_identifier' then
+      local type = get_node_text(node, 0)
+
+      -- Remove template part
+      -- i.e. std::vector<int> -> std::vector
+      local template = type:find('<', 1, true)
+      if template then
+        type = type:sub(1, template - 1)
+      end
+
+      local include = known_includes[type]
+      if include ~= nil then
+        unique_includes[include] = true
+      end
+    end
+  end
+
+  local trees = vim.treesitter.get_parser(0, 'cpp'):parse()
+  for _, tree in ipairs(trees) do
+    local root = tree:root()
+    if root == nil then
+      return
+    end
+
+    search_down_until(root, collect_types)
+  end
+
+  local includes = {}
+  for include, _ in pairs(unique_includes) do
+    table.insert(includes, include)
+  end
+
+  M.add_include(includes)
+end
+
+local is_class_or_struct = function(node)
+  return node:type() == 'class_specifier' or node:type() == 'struct_specifier'
+end
+
+local function get_class_name(class_node, buffer)
+  for child, name in class_node:iter_children() do
+    if name == 'name' then
+      return get_node_text(child, buffer)
+    end
+  end
+end
+
+-- Look for a class under the cursor.
+-- Return the name as a string
+M.get_class_name_under_cursor = function()
+  local ts_utils = require('nvim-treesitter.ts_utils')
+
+  local class_node = search_up_until(ts_utils.get_node_at_cursor(), is_class_or_struct)
+  if class_node == nil then
     return
   end
 
-  vim.api.nvim_buf_set_lines(0, first_row + 1, first_row + 1, true, { '#include ' .. include })
-
-  M.divide_and_sort_includes()
+  return get_class_name(class_node, 0)
 end
+
+-- Look at the line where the cursor is.
+-- Return the indentation of that line as a string.
+local function get_indentation()
+  local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
+  -- Go up 10 lines to try and get a line containing indentation
+  local lines = vim.api.nvim_buf_get_lines(0, math.max(row - 11, 0), row, false)
+  for i = #lines, 1, -1 do
+    local indentation, _ = lines[i]:match('^(%s*)(.*)')
+    if indentation ~= '' then
+      return indentation
+    end
+  end
+  return ''
+end
+
+-- If there is a class where the cursor is:
+-- Create deleted move constructors
+M.make_class_no_move = function()
+  local name = M.get_class_name_under_cursor()
+  if name == nil then
+    return
+  end
+
+  local indentation = get_indentation()
+
+  local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
+  local no_move = {
+    string.format('%s No move', indentation),
+    string.format('%s%s(%s const &) = delete;', indentation, name, name),
+    string.format('%s%s & operator=(%s const &) = delete;', indentation, name, name),
+  }
+
+  vim.api.nvim_buf_set_lines(0, row, row, true, no_move)
+end
+
+-- If there is a class where the cursor is:
+-- Create deleted copy constructors
+M.make_class_no_copy = function()
+  local name = M.get_class_name_under_cursor()
+  if name == nil then
+    return
+  end
+
+  local indentation = get_indentation()
+
+  local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
+  local no_copy = {
+    string.format('%s No copy', indentation),
+    string.format('%s%s(%s &&) = delete;', indentation, name, name),
+    string.format('%s%s & operator=(%s &&) = delete;', indentation, name, name),
+  }
+
+  vim.api.nvim_buf_set_lines(0, row, row, true, no_copy)
+end
+
+-- Look for an alternative file
+-- source file (.cpp) -> header (.h|.hpp)
+-- header file (.h|.hpp) -> source (.cpp)
+-- Return nil if no alternative file found
+M.get_alternative_file = function()
+  local base = vim.fn.expand('%:p:r')
+  if vim.fn.expand('%:e') == 'cpp' then
+    -- Looking for a header
+    if vim.fn.filereadable(base .. '.h') then
+      return base .. '.h'
+    elseif vim.fn.filereadable(base .. '.hpp') then
+      return base .. '.hpp'
+    end
+  else
+    -- Looking for a source file
+    local source = base .. '.cpp'
+    if vim.fn.filereadable(source) then
+      return source
+    elseif vim.fn.filereadable(source:gsub('src', 'include')) then
+      return source:gsub('src', 'include')
+    end
+  end
+end
+
+M.get_classes_from_alternative_file = function()
+  local alt_file = M.get_alternative_file()
+  if alt_file == nil then
+    return {}
+  end
+
+  local buffer = vim.fn.bufadd(alt_file)
+  vim.fn.bufload(buffer)
+
+  local function is_forward_declared(class_node)
+    local row = get_row(class_node)
+    local lines = vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)
+    return lines[1]:find(';') ~= nil
+  end
+
+  local classes = {}
+  local function collect_classes(node)
+    if is_class_or_struct(node) then
+      local name = get_class_name(node, buffer)
+      if name ~= nil then
+        if not is_forward_declared(node) then
+          table.insert(classes, name)
+        end
+      end
+    end
+
+    -- Continue searching
+    return false
+  end
+
+  local trees = vim.treesitter.get_parser(buffer, 'cpp'):parse()
+  for _, tree in ipairs(trees) do
+    local root = tree:root()
+    if root == nil then
+      return
+    end
+
+    search_down_until(tree:root(), collect_classes)
+    return classes
+  end
+end
+
+M.make_class_constructor = function()
+  local name = M.get_class_name_under_cursor()
+  if name == nil then
+    return
+  end
+
+  local ls = require('luasnip')
+  local fmta = require('luasnip.extras.fmt').fmta
+  local ctor_snippet = ls.snippet(
+    { trig = '_' },
+    fmta(
+      [[
+        Snipped <> body
+      ]],
+      {
+        ls.i(1, 'hi'),
+      }
+    )
+  )
+
+  local indentation = get_indentation()
+
+  local pos = vim.api.nvim_win_get_cursor(0)
+  -- Create a blank line to start from
+  vim.api.nvim_buf_set_lines(0, pos[1], pos[1], false, { indentation })
+  -- Start at the indentation of the class
+  pos[2] = #indentation
+  ls.snip_expand(ctor_snippet, { pos = pos })
+
+  -- local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
+  -- local no_copy = {
+  --   string.format('%s%s(%s &&) = delete;', indentation, name, name),
+  --   string.format('%s%s & operator=(%s &&) = delete;', indentation, name, name),
+  -- }
+  --
+  -- vim.api.nvim_buf_set_lines(0, row, row, true, no_copy)
+end
+
+vim.keymap.set('n', '<leader>gro', M.make_class_constructor)
 
 return M
