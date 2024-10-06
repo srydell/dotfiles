@@ -25,9 +25,12 @@ local function get_potential_function_names()
 
   local function_nodes = {}
 
-  local class_names = cpp_ts.get_classes_from_alternative_file()
-  for _, class_name in ipairs(class_names) do
-    table.insert(function_nodes, sn(nil, { t(class_name .. '::'), r(1, 'function_name') }))
+  local buffer, classes = cpp_ts.get_classes_from_alternative_file()
+  if buffer ~= nil and classes ~= nil then
+    for _, class_node in ipairs(classes) do
+      local class_name = cpp_ts.get_class_name(class_node, buffer)
+      table.insert(function_nodes, sn(nil, { t(class_name .. '::'), r(1, 'function_name') }))
+    end
   end
   table.insert(function_nodes, sn(nil, { r(1, 'function_name') }))
 

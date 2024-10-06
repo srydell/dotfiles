@@ -617,6 +617,10 @@ function M.divide_and_sort_includes()
   vim.api.nvim_buf_set_lines(0, locations.start_row, locations.end_row + 1, true, lines)
 end
 
+local function is_identifier(node)
+  return node:type() == 'identifier'
+end
+
 -- Read the include guard if there is one.
 -- Correct it so that it follows the standard below:
 -- PROJECT_PATH_TO_FILE_EXTENSION
@@ -624,9 +628,6 @@ end
 -- MYPROJECT_INCLUDE_API_H
 M.correct_include_guard = function()
   local guard = { ifdef = nil, define = nil }
-  local function is_identifier(node)
-    return node:type() == 'identifier'
-  end
 
   local function get_guard(node)
     -- Either
@@ -806,7 +807,8 @@ local is_class_or_struct = function(node)
   return node:type() == 'class_specifier' or node:type() == 'struct_specifier'
 end
 
-local function get_class_name(class_node, buffer)
+M.get_class_name = function(class_node, buffer)
+  buffer = buffer or 0
   for child, name in class_node:iter_children() do
     if name == 'name' then
       return get_node_text(child, buffer)
@@ -824,7 +826,7 @@ M.get_class_name_under_cursor = function()
     return
   end
 
-  return get_class_name(class_node, 0)
+  return M.get_class_name(class_node)
 end
 
 -- Look at the line where the cursor is.
@@ -906,14 +908,8 @@ M.get_alternative_file = function()
   end
 end
 
-M.get_classes_from_alternative_file = function()
-  local alt_file = M.get_alternative_file()
-  if alt_file == nil then
-    return {}
-  end
-
-  local buffer = vim.fn.bufadd(alt_file)
-  vim.fn.bufload(buffer)
+local function get_classes_in_file(buffer)
+  buffer = buffer or 0
 
   local function is_forward_declared(class_node)
     local row = get_row(class_node)
@@ -924,11 +920,8 @@ M.get_classes_from_alternative_file = function()
   local classes = {}
   local function collect_classes(node)
     if is_class_or_struct(node) then
-      local name = get_class_name(node, buffer)
-      if name ~= nil then
-        if not is_forward_declared(node) then
-          table.insert(classes, name)
-        end
+      if not is_forward_declared(node) then
+        table.insert(classes, node)
       end
     end
 
@@ -948,42 +941,261 @@ M.get_classes_from_alternative_file = function()
   end
 end
 
-M.make_class_constructor = function()
-  local name = M.get_class_name_under_cursor()
-  if name == nil then
+local function load_alternative_file()
+  local alt_file = M.get_alternative_file()
+  if alt_file == nil then
     return
   end
 
+  local buffer = vim.fn.bufadd(alt_file)
+  vim.fn.bufload(buffer)
+
+  return buffer
+end
+
+-- Returns a list of  class nodes
+M.get_classes_from_alternative_file = function()
+  local buffer = load_alternative_file()
+  if buffer == nil then
+    return nil, nil
+  end
+
+  local classes = get_classes_in_file(buffer)
+  return buffer, classes
+end
+
+local function make_class_constructor_within_class_boundary(class_name, indentation, is_source)
   local ls = require('luasnip')
   local fmta = require('luasnip.extras.fmt').fmta
-  local ctor_snippet = ls.snippet(
-    { trig = '_' },
-    fmta(
-      [[
-        Snipped <> body
-      ]],
-      {
-        ls.i(1, 'hi'),
-      }
-    )
-  )
 
-  local indentation = get_indentation()
+  local ctor = {}
+  if is_source then
+    -- Implementation
+    local ctor_str = [[
+    %s(<>) {
+      <>
+    }
+  ]]
+    ctor = fmta(ctor_str:format(class_name), {
+      ls.i(1),
+      ls.i(0),
+    })
+  else
+    -- Declaration
+    local ctor_str = [[
+    %s(<>);
+  ]]
+    ctor = fmta(ctor_str:format(class_name), {
+      ls.i(1),
+    })
+  end
 
   local pos = vim.api.nvim_win_get_cursor(0)
   -- Create a blank line to start from
   vim.api.nvim_buf_set_lines(0, pos[1], pos[1], false, { indentation })
   -- Start at the indentation of the class
   pos[2] = #indentation
-  ls.snip_expand(ctor_snippet, { pos = pos })
+  ls.snip_expand(ls.snippet({}, ctor), { pos = pos })
+end
 
-  -- local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
-  -- local no_copy = {
-  --   string.format('%s%s(%s &&) = delete;', indentation, name, name),
-  --   string.format('%s%s & operator=(%s &&) = delete;', indentation, name, name),
-  -- }
-  --
-  -- vim.api.nvim_buf_set_lines(0, row, row, true, no_copy)
+local function clean_params(params_node, buffer)
+  if params_node:type() ~= 'parameter_list' then
+    vim.notify('Tried to clean a parameter list with a TS node of the wrong type.', vim.log.levels.ERROR)
+    return ''
+  end
+
+  buffer = buffer or 0
+  local params = '('
+  local function concatenate_params(node)
+    -- Simple parameter or with a default value
+    if node:type() == 'parameter_declaration' or node:type() == 'optional_parameter_declaration' then
+      -- The whole parameter - e.g. 'std::string const & s = "hi"'
+      local name = search_down_until(node, is_identifier)
+      if name ~= nil then
+        local start_row, start_col, _, _ = vim.treesitter.get_node_range(node)
+        local _, start_name_col, end_row, _ = vim.treesitter.get_node_range(name)
+        -- Remove anything after the name
+        -- This includes default parmeters
+        local parameter = vim.api.nvim_buf_get_text(buffer, start_row, start_col, end_row, start_name_col, {})
+        params = params .. parameter[1] .. ','
+      else
+        -- No name parameter
+      end
+    end
+  end
+
+  search_down_until(params_node, concatenate_params)
+  -- Remove the last ','
+  -- and close the parenthesis
+  if params:sub(#params, #params) == ',' then
+    params = params:sub(1, -2)
+  end
+  params = params .. ')'
+  -- Remove the whitespace to make it posseble to match against
+  -- (you could have differently formatted constructor params)
+  params = params:gsub('%s+', '')
+  return params
+end
+
+-- Get info about classes and their unimplemented functions
+local function get_declared_constructors(class_node, buffer)
+  buffer = buffer or 0
+  local ctors = {}
+
+  -- Will be set before calling collect_declared_constructors
+  local class_name = ''
+  local function collect_declared_constructors(node)
+    if node:type() == 'function_declarator' then
+      -- Only interested in not implemented constructors
+      if node:parent():type() == 'function_definition' then
+        return false
+      end
+
+      local is_constructor = false
+      for child, name in node:iter_children() do
+        if name == 'declarator' and get_node_text(child, buffer) == class_name then
+          is_constructor = true
+        end
+
+        if is_constructor and name == 'parameters' then
+          table.insert(ctors, class_name .. '::' .. class_name .. clean_params(child, buffer))
+        end
+      end
+    end
+
+    -- Continue searching
+    return false
+  end
+
+  for child, name in class_node:iter_children() do
+    if name == 'name' then
+      class_name = get_node_text(child, buffer)
+    elseif name == 'body' then
+      search_down_until(child, collect_declared_constructors)
+    end
+  end
+
+  return ctors
+end
+
+-- Return a table with not implemented constructors
+-- Includes both the current and the alternative file
+local function get_all_declared_class_constructors()
+  local constructors = {}
+
+  local function append(new_info)
+    -- What does the function declaration of the missing constructor look like?
+    for _, ctor in pairs(new_info) do
+      constructors[ctor] = true
+    end
+  end
+
+  -- Go through the classes in this file
+  local classes = get_classes_in_file()
+  if classes ~= nil and vim.tbl_isempty(classes) then
+    for _, class_node in ipairs(classes) do
+      append(get_declared_constructors(class_node))
+    end
+  end
+
+  -- local buffer = load_alternative_file()
+  local buffer, remote_classes = M.get_classes_from_alternative_file()
+  if buffer ~= nil and remote_classes ~= nil and not vim.tbl_isempty(remote_classes) then
+    for _, class_node in ipairs(remote_classes) do
+      append(get_declared_constructors(class_node, buffer))
+    end
+  end
+
+  return constructors
+end
+
+-- Look through the buffer for functions that are implemented
+-- If they are in the input 'functions', remove them
+local function filter_not_implemented_functions(functions, buffer)
+  buffer = buffer or 0
+
+  local function collect_missing_functions(node)
+    if node:type() == 'function_declarator' then
+      -- Only interested in implemented functions
+      if node:parent():type() ~= 'function_definition' then
+        return false
+      end
+
+      local function_key = ''
+      for child, name in node:iter_children() do
+        if name == 'declarator' then
+          function_key = function_key .. get_node_text(child, buffer)
+        end
+
+        if name == 'parameters' then
+          function_key = function_key .. clean_params(child, buffer)
+        end
+      end
+
+      -- Remove from the functions
+      functions[function_key] = nil
+    end
+
+    -- Continue searching
+    return false
+  end
+
+  local trees = vim.treesitter.get_parser(buffer, 'cpp'):parse()
+  for _, tree in ipairs(trees) do
+    local root = tree:root()
+    if root == nil then
+      return
+    end
+
+    search_down_until(tree:root(), collect_missing_functions)
+  end
+
+  return functions
+end
+
+-- When called within a class boundary:
+--   When header file:
+--     Create a declaration.
+--   When source file:
+--     Create a implementation.
+--
+-- When called outside a class boundary:
+--   When header file:
+--     Do nothing.
+--   When source file:
+--     Look in the corresponding header file
+--     for classes.
+--     Give the not implemented constructors
+--     as options.
+M.make_class_constructor = function()
+  local indentation = get_indentation()
+  if #indentation == 0 then
+    -- Default guess
+    indentation = string.rep(' ', vim.opt.shiftwidth:get())
+  end
+
+  local extension = vim.fn.expand('%:e')
+  local is_source = extension == 'cpp' or extension == 'cxx'
+  local class_name = M.get_class_name_under_cursor()
+  if class_name == nil then
+    if not is_source then
+      -- Do nothing if not within a class and in a header
+      return
+    end
+
+    -- Declared but not defined
+    local declared_ctors = get_all_declared_class_constructors()
+    -- Match those against the existing functions
+    -- Output example:
+    -- {
+    --   ["Data::Data()"] = true,
+    --   ["Data::Data(int)"] = true
+    -- }
+    local not_implemented_ctors = filter_not_implemented_functions(declared_ctors)
+    vim.print(not_implemented_ctors)
+  else
+    make_class_constructor_within_class_boundary(class_name, indentation, is_source)
+  end
 end
 
 vim.keymap.set('n', '<leader>gro', M.make_class_constructor)
