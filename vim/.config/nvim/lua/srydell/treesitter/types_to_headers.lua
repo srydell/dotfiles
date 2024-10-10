@@ -1488,4 +1488,7 @@ return {
   ['std::this_thread'] = '<thread>',
   ['std::thread'] = '<thread>',
   ['std::yield'] = '<thread>',
+  ['std::chrono'] = '<chrono>',
+  ['std::views'] = '<ranges>',
+  ['std::filesystem'] = '<filesystem>',
 }

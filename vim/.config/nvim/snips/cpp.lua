@@ -18,23 +18,23 @@ end
 -- If it is a member function, find all the potential classes
 -- it could belong to and add them as conditionals
 local function get_potential_function_names()
-  if cpp_ts.get_class_name_under_cursor() ~= nil then
-    -- In a class already, don't look for other classes
-    return sn(nil, { i(1, 'f') })
-  end
+  -- if cpp_ts.get_class_name_under_cursor() ~= nil then
+  -- In a class already, don't look for other classes
+  return sn(nil, { i(1, 'f') })
+  -- end
 
-  local function_nodes = {}
+  -- local function_nodes = {}
 
-  local buffer, classes = cpp_ts.get_classes_from_alternative_file()
-  if buffer ~= nil and classes ~= nil then
-    for _, class_node in ipairs(classes) do
-      local class_name = cpp_ts.get_class_name(class_node, buffer)
-      table.insert(function_nodes, sn(nil, { t(class_name .. '::'), r(1, 'function_name') }))
-    end
-  end
-  table.insert(function_nodes, sn(nil, { r(1, 'function_name') }))
+  -- local buffer, classes = cpp_ts.get_classes_from_alternative_file()
+  -- if buffer ~= nil and classes ~= nil then
+  --   for _, class_node in ipairs(classes) do
+  --     local class_name = cpp_ts.get_class_name(class_node, buffer)
+  --     table.insert(function_nodes, sn(nil, { t(class_name .. '::'), r(1, 'function_name') }))
+  --   end
+  -- end
+  -- table.insert(function_nodes, sn(nil, { r(1, 'function_name') }))
 
-  return sn(nil, { c(1, function_nodes) })
+  -- return sn(nil, { c(1, function_nodes) })
 end
 
 -- In a header file -> ';'

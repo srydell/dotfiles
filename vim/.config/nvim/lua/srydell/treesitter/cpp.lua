@@ -49,6 +49,22 @@ local function search_down_until(node, stop_condition)
   end
 end
 
+local function search_down_from_root_until(stop_condition, buffer)
+  buffer = buffer or 0
+  local trees = vim.treesitter.get_parser(buffer, 'cpp'):parse()
+  for _, tree in ipairs(trees) do
+    local root = tree:root()
+    if root == nil then
+      return
+    end
+
+    local end_node = search_down_until(tree:root(), stop_condition)
+    if end_node then
+      return end_node
+    end
+  end
+end
+
 -- Wrap a treesitter node on the current line in text as
 -- node_text -> before .. node_text .. after
 -- This assumes that the node is on the current line of the cursor
@@ -74,12 +90,12 @@ local function replace_node_with(node, text)
   local line = vim.api.nvim_get_current_line()
 
   -- The text that was there before
-  local to_be_removed = line:sub(start_node_col + 1, end_node_col)
+  -- local to_be_removed = line:sub(start_node_col + 1, end_node_col)
 
   local new_line = line:sub(1, start_node_col) .. text .. line:sub(end_node_col + 1, -1)
 
   -- Replace the current line with the wrapped text
-  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
   vim.api.nvim_buf_set_lines(0, row - 1, row, true, { new_line })
 
   -- Move the cursor the inserted amount. Feels more natural to me.
@@ -97,6 +113,111 @@ local function add_text_after(node, text, offset)
 
   -- Replace the current line with the wrapped text
   vim.api.nvim_buf_set_lines(0, end_node_row + 1 + offset, end_node_row + 1 + offset, true, lines)
+end
+
+local function is_identifier(node)
+  return node:type() == 'identifier'
+end
+
+local is_function = function(node)
+  return node:type() == 'function_declarator'
+end
+
+local is_class_or_struct = function(node)
+  return node:type() == 'class_specifier' or node:type() == 'struct_specifier'
+end
+
+local is_function_implementation = function(function_node)
+  -- Only interested in not implemented constructors
+  local function is_implementation(node)
+    return node:type() == 'function_definition'
+  end
+  local implementation = search_up_until(function_node, is_implementation)
+  return implementation ~= nil
+end
+
+-- Removes the name and the default parameter values from the parameters
+local function clean_params(params_node, buffer)
+  buffer = buffer or 0
+  local params = '('
+  local function concatenate_params(node)
+    -- Simple parameter or with a default value
+    if node:type() == 'parameter_declaration' or node:type() == 'optional_parameter_declaration' then
+      -- The whole parameter - e.g. 'std::string const & s = "hi"'
+      local name = search_down_until(node, is_identifier)
+      if name ~= nil then
+        local start_row, start_col, _, _ = vim.treesitter.get_node_range(node)
+        local _, start_name_col, end_row, _ = vim.treesitter.get_node_range(name)
+        -- Remove anything after the name
+        -- This includes default parmeters
+        local parameter = vim.api.nvim_buf_get_text(buffer, start_row, start_col, end_row, start_name_col, {})
+        params = params .. parameter[1] .. ','
+      else
+        -- No name parameter
+        if node:type() == 'parameter_declaration' then
+          -- Take the whole param name
+          params = params .. get_node_text(node, buffer) .. ','
+        else
+          -- Optional parameter with no name? Yikes.
+          -- Remove anything after the '='
+          local param_name = get_node_text(node, buffer)
+          param_name = param_name:sub(1, param_name:find('=') - 1)
+          params = params .. param_name .. ','
+        end
+      end
+    end
+  end
+
+  search_down_until(params_node, concatenate_params)
+  -- Remove the last ','
+  -- and close the parenthesis
+  if params:sub(#params, #params) == ',' then
+    params = params:sub(1, -2)
+  end
+  params = params .. ')'
+  -- Remove the whitespace to make it possible to match against
+  -- (you could have differently formatted constructor params)
+  params = params:gsub('%s+', '')
+  return params
+end
+
+local function get_compressed_function_name(function_node, buffer)
+  buffer = buffer or 0
+
+  local compressed_name = ''
+  -- Try to find the return value
+  -- Note: For constructors/destructors this is ''
+  for child, name in function_node:parent():iter_children() do
+    -- The return type is the type of the function
+    if name == 'type' then
+      compressed_name = get_node_text(child, buffer) .. ' '
+    end
+  end
+
+  local class_node = search_up_until(function_node, is_class_or_struct)
+  local class_prefix = ''
+  if class_node ~= nil then
+    class_prefix = M.get_class_name(class_node, buffer) .. '::'
+  end
+
+  for child, name in function_node:iter_children() do
+    -- Name of the function
+    if
+      child:type() == 'identifier'
+      or child:type() == 'field_identifier'
+      or child:type() == 'qualified_identifier'
+      or child:type() == 'destructor_name'
+    then
+      compressed_name = compressed_name .. class_prefix .. get_node_text(child, buffer)
+    end
+
+    -- Parameters
+    if child:type() == 'parameter_list' then
+      compressed_name = compressed_name .. clean_params(child, buffer)
+    end
+  end
+
+  return compressed_name
 end
 
 -- variable = 54 -> variable.store(54, std::memory_order_release)
@@ -481,19 +602,11 @@ function M.find_enum_from_type()
     return false
   end
 
-  local trees = vim.treesitter.get_parser(buffer, 'cpp'):parse()
-  for _, tree in ipairs(trees) do
-    local root = tree:root()
-    if root == nil then
-      return
-    end
-
-    local enum_node = search_down_until(tree:root(), is_our_enum)
-    if enum_node == nil then
-      return
-    end
-    return parse_enum(enum_node, buffer)
+  local enum_node = search_down_from_root_until(is_our_enum, buffer)
+  if enum_node == nil then
+    return
   end
+  return parse_enum(enum_node, buffer)
 end
 
 -- Read the current includes
@@ -574,15 +687,7 @@ function M.divide_and_sort_includes()
     return false
   end
 
-  local trees = vim.treesitter.get_parser(0, 'cpp'):parse()
-  for _, tree in ipairs(trees) do
-    local root = tree:root()
-    if root == nil then
-      return
-    end
-
-    search_down_until(root, collect_include)
-  end
+  search_down_from_root_until(collect_include)
 
   -- No includes
   if locations.start_row == nil or locations.end_row == nil then
@@ -617,10 +722,6 @@ function M.divide_and_sort_includes()
   vim.api.nvim_buf_set_lines(0, locations.start_row, locations.end_row + 1, true, lines)
 end
 
-local function is_identifier(node)
-  return node:type() == 'identifier'
-end
-
 -- Read the include guard if there is one.
 -- Correct it so that it follows the standard below:
 -- PROJECT_PATH_TO_FILE_EXTENSION
@@ -647,15 +748,7 @@ M.correct_include_guard = function()
     -- return guard.ifdef ~= nil and guard.define ~= nil
   end
 
-  local trees = vim.treesitter.get_parser(0, 'cpp'):parse()
-  for _, tree in ipairs(trees) do
-    local root = tree:root()
-    if root == nil then
-      return
-    end
-
-    search_down_until(root, get_guard)
-  end
+  search_down_from_root_until(get_guard)
 
   -- No include guard
   if guard.ifdef == nil or guard.define == nil then
@@ -721,15 +814,7 @@ M.add_include = function(includes)
     return false
   end
 
-  local trees = vim.treesitter.get_parser(0, 'cpp'):parse()
-  for _, tree in ipairs(trees) do
-    local root = tree:root()
-    if root == nil then
-      return
-    end
-
-    search_down_until(root, collect_include)
-  end
+  search_down_from_root_until(collect_include)
 
   local includes_to_add = {}
   for _, include in ipairs(includes) do
@@ -785,15 +870,7 @@ M.include_necessary_types = function()
     end
   end
 
-  local trees = vim.treesitter.get_parser(0, 'cpp'):parse()
-  for _, tree in ipairs(trees) do
-    local root = tree:root()
-    if root == nil then
-      return
-    end
-
-    search_down_until(root, collect_types)
-  end
+  search_down_from_root_until(collect_types)
 
   local includes = {}
   for include, _ in pairs(unique_includes) do
@@ -801,10 +878,6 @@ M.include_necessary_types = function()
   end
 
   M.add_include(includes)
-end
-
-local is_class_or_struct = function(node)
-  return node:type() == 'class_specifier' or node:type() == 'struct_specifier'
 end
 
 M.get_class_name = function(class_node, buffer)
@@ -908,6 +981,23 @@ M.get_alternative_file = function()
   end
 end
 
+local function get_functions_in_file(buffer)
+  buffer = buffer or 0
+
+  local functions = {}
+  local function collect_classes(node)
+    if is_class_or_struct(node) then
+      table.insert(functions, node)
+    end
+
+    -- Continue searching
+    return false
+  end
+
+  search_down_from_root_until(collect_classes, buffer)
+  return functions
+end
+
 local function get_classes_in_file(buffer)
   buffer = buffer or 0
 
@@ -929,16 +1019,8 @@ local function get_classes_in_file(buffer)
     return false
   end
 
-  local trees = vim.treesitter.get_parser(buffer, 'cpp'):parse()
-  for _, tree in ipairs(trees) do
-    local root = tree:root()
-    if root == nil then
-      return
-    end
-
-    search_down_until(tree:root(), collect_classes)
-    return classes
-  end
+  search_down_from_root_until(collect_classes, buffer)
+  return classes
 end
 
 local function load_alternative_file()
@@ -951,17 +1033,6 @@ local function load_alternative_file()
   vim.fn.bufload(buffer)
 
   return buffer
-end
-
--- Returns a list of  class nodes
-M.get_classes_from_alternative_file = function()
-  local buffer = load_alternative_file()
-  if buffer == nil then
-    return nil, nil
-  end
-
-  local classes = get_classes_in_file(buffer)
-  return buffer, classes
 end
 
 local function make_class_constructor_within_class_boundary(class_name, indentation, is_source)
@@ -998,45 +1069,6 @@ local function make_class_constructor_within_class_boundary(class_name, indentat
   ls.snip_expand(ls.snippet({}, ctor), { pos = pos })
 end
 
-local function clean_params(params_node, buffer)
-  if params_node:type() ~= 'parameter_list' then
-    vim.notify('Tried to clean a parameter list with a TS node of the wrong type.', vim.log.levels.ERROR)
-    return ''
-  end
-
-  buffer = buffer or 0
-  local params = '('
-  local function concatenate_params(node)
-    -- Simple parameter or with a default value
-    if node:type() == 'parameter_declaration' or node:type() == 'optional_parameter_declaration' then
-      -- The whole parameter - e.g. 'std::string const & s = "hi"'
-      local name = search_down_until(node, is_identifier)
-      if name ~= nil then
-        local start_row, start_col, _, _ = vim.treesitter.get_node_range(node)
-        local _, start_name_col, end_row, _ = vim.treesitter.get_node_range(name)
-        -- Remove anything after the name
-        -- This includes default parmeters
-        local parameter = vim.api.nvim_buf_get_text(buffer, start_row, start_col, end_row, start_name_col, {})
-        params = params .. parameter[1] .. ','
-      else
-        -- No name parameter
-      end
-    end
-  end
-
-  search_down_until(params_node, concatenate_params)
-  -- Remove the last ','
-  -- and close the parenthesis
-  if params:sub(#params, #params) == ',' then
-    params = params:sub(1, -2)
-  end
-  params = params .. ')'
-  -- Remove the whitespace to make it posseble to match against
-  -- (you could have differently formatted constructor params)
-  params = params:gsub('%s+', '')
-  return params
-end
-
 -- Get info about classes and their unimplemented functions
 local function get_declared_constructors(class_node, buffer)
   buffer = buffer or 0
@@ -1058,7 +1090,10 @@ local function get_declared_constructors(class_node, buffer)
         end
 
         if is_constructor and name == 'parameters' then
-          table.insert(ctors, class_name .. '::' .. class_name .. clean_params(child, buffer))
+          ctors[class_name .. '::' .. class_name .. clean_params(child, buffer)] = {
+            constructor_node = node,
+            buffer = buffer,
+          }
         end
       end
     end
@@ -1083,26 +1118,16 @@ end
 local function get_all_declared_class_constructors()
   local constructors = {}
 
-  local function append(new_info)
-    -- What does the function declaration of the missing constructor look like?
-    for _, ctor in pairs(new_info) do
-      constructors[ctor] = true
-    end
-  end
-
-  -- Go through the classes in this file
-  local classes = get_classes_in_file()
-  if classes ~= nil and vim.tbl_isempty(classes) then
-    for _, class_node in ipairs(classes) do
-      append(get_declared_constructors(class_node))
-    end
-  end
-
-  -- local buffer = load_alternative_file()
-  local buffer, remote_classes = M.get_classes_from_alternative_file()
-  if buffer ~= nil and remote_classes ~= nil and not vim.tbl_isempty(remote_classes) then
-    for _, class_node in ipairs(remote_classes) do
-      append(get_declared_constructors(class_node, buffer))
+  local buffers = { 0, load_alternative_file() }
+  for _, buffer in ipairs(buffers) do
+    local classes = get_classes_in_file(buffer)
+    if classes ~= nil then
+      for _, class_node in ipairs(classes) do
+        local ctors = get_declared_constructors(class_node, buffer)
+        for ctor, info in pairs(ctors) do
+          constructors[ctor] = info
+        end
+      end
     end
   end
 
@@ -1111,7 +1136,7 @@ end
 
 -- Look through the buffer for functions that are implemented
 -- If they are in the input 'functions', remove them
-local function filter_not_implemented_functions(functions, buffer)
+local function remove_implemented_functions(functions, buffer)
   buffer = buffer or 0
 
   local function collect_missing_functions(node)
@@ -1140,17 +1165,126 @@ local function filter_not_implemented_functions(functions, buffer)
     return false
   end
 
-  local trees = vim.treesitter.get_parser(buffer, 'cpp'):parse()
-  for _, tree in ipairs(trees) do
-    local root = tree:root()
-    if root == nil then
-      return
-    end
+  search_down_from_root_until(collect_missing_functions, buffer)
+  return functions
+end
 
-    search_down_until(tree:root(), collect_missing_functions)
+local function build_parameter_snippet(function_node, buffer)
+  local function is_parameters(node)
+    return node:type() == 'parameter_list'
+  end
+  local parameters = search_down_until(function_node, is_parameters)
+
+  if parameters == nil then
+    return
   end
 
-  return functions
+  local function remove_default_value(param, name)
+    if param:type() ~= 'optional_parameter_declaration' then
+      return get_node_text(param, buffer)
+    end
+
+    local text = get_node_text(param, buffer)
+    -- Remove the default value part
+    -- Note, there has to be one as this is an optional_parameter_declaration
+    text = text:sub(1, text:find('=') - 1)
+    -- Remove trailing whitespace
+    text = text:gsub('%s+$', '')
+    return text
+  end
+
+  local ls = require('luasnip')
+
+  local insert_nodes = {}
+  local all_params = '('
+  local function concatenate_params(node)
+    -- Simple parameter or with a default value
+    if node:type() == 'parameter_declaration' or node:type() == 'optional_parameter_declaration' then
+      local name = search_down_until(node, is_identifier)
+      local parameter = remove_default_value(node, name)
+      -- Escape for luasnip.fmta
+      parameter = parameter:gsub('<', '<<')
+      parameter = parameter:gsub('>', '>>')
+
+      if name ~= nil then
+        all_params = all_params .. parameter .. ', '
+      else
+        -- No name parameter
+        -- Add a insert node
+        all_params = all_params .. parameter .. ' <>, '
+        local count = #insert_nodes + 1
+        table.insert(insert_nodes, ls.insert_node(count))
+      end
+    end
+  end
+  search_down_until(parameters, concatenate_params)
+
+  -- Remove the last ', '
+  -- and close the parenthesis
+  if all_params:sub(#all_params - 1, #all_params) == ', ' then
+    all_params = all_params:sub(1, -3)
+  end
+  all_params = all_params .. ')'
+
+  return { params = all_params, snip_nodes = insert_nodes }
+end
+
+-- constructor_name = 'MyClass::MyClass'
+-- info = { constructor_node: TSNode, buffer: Int }
+local function build_constructor_snippet(constructor_name, info)
+  local ls = require('luasnip')
+  local fmta = require('luasnip.extras.fmt').fmta
+  local sn = ls.snippet_node
+
+  local param_snippet = build_parameter_snippet(info.constructor_node, info.buffer)
+  if param_snippet == nil then
+    return
+  end
+
+  local insert_count = #param_snippet.snip_nodes
+  -- For getting into the body
+  table.insert(param_snippet.snip_nodes, ls.insert_node(insert_count + 1))
+  -- To be able to switch between the options
+  table.insert(param_snippet.snip_nodes, ls.insert_node(insert_count + 2))
+
+  local snip_body = string.format(
+    [[%s%s {
+  <><>
+}]],
+    constructor_name,
+    param_snippet.params
+  )
+
+  return sn(nil, fmta(snip_body, param_snippet.snip_nodes))
+end
+
+local function make_class_constructor_outside_of_class_boundary(possible_constructors)
+  local snip_choices = {}
+  for name, info in pairs(possible_constructors) do
+    -- Remove the parameter list
+    -- MyClass::MyClass(int i) -> MyClass::MyClass
+    name = name:sub(1, name:find('%(') - 1)
+    local snippet = build_constructor_snippet(name, info)
+
+    if snippet ~= nil then
+      table.insert(snip_choices, snippet)
+    end
+  end
+
+  if vim.tbl_isempty(snip_choices) then
+    return
+  end
+
+  local ls = require('luasnip')
+  local snippet = ls.snippet({}, {
+    ls.choice_node(1, snip_choices),
+  })
+
+  local pos = vim.api.nvim_win_get_cursor(0)
+  -- Create a blank line to start from
+  vim.api.nvim_buf_set_lines(0, pos[1], pos[1], false, { '' })
+  pos[2] = 0
+  ls.snip_expand(snippet, { pos = pos })
 end
 
 -- When called within a class boundary:
@@ -1188,16 +1322,51 @@ M.make_class_constructor = function()
     -- Match those against the existing functions
     -- Output example:
     -- {
-    --   ["Data::Data()"] = true,
-    --   ["Data::Data(int)"] = true
+    --   ["Data::Data()"] = {
+    --     constructor_node = node,
+    --     buffer = buffer
+    --   }
+    --   ["Data::Data(int)"] = {
+    --     constructor_node = node,
+    --     buffer = buffer
+    --   }
     -- }
-    local not_implemented_ctors = filter_not_implemented_functions(declared_ctors)
-    vim.print(not_implemented_ctors)
+    local not_implemented_ctors = remove_implemented_functions(declared_ctors)
+    make_class_constructor_outside_of_class_boundary(not_implemented_ctors)
   else
     make_class_constructor_within_class_boundary(class_name, indentation, is_source)
   end
 end
 
-vim.keymap.set('n', '<leader>gro', M.make_class_constructor)
+local function find_not_implemented_functions()
+  local declared_functions = {}
+  local implemented_functions = {}
+
+  local buffers = { 0, load_alternative_file() }
+  for _, buffer in ipairs(buffers) do
+    local function collect_functions(node)
+      if is_function(node) then
+        if is_function_implementation(node) then
+          implemented_functions[get_compressed_function_name(node, buffer)] = true
+        else
+          declared_functions[get_compressed_function_name(node, buffer)] = true
+        end
+      end
+    end
+
+    search_down_from_root_until(collect_functions, buffer)
+  end
+
+  for f, _ in pairs(implemented_functions) do
+    -- Remove the found implementations
+    declared_functions[f] = nil
+  end
+  vim.print('Not implemented functions:')
+  vim.print(declared_functions)
+  vim.print('Implemented functions:')
+  vim.print(implemented_functions)
+end
+
+vim.keymap.set('n', '<leader>gro', find_not_implemented_functions)
 
 return M
