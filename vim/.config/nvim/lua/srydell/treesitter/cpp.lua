@@ -128,12 +128,21 @@ local is_class_or_struct = function(node)
 end
 
 local is_function_implementation = function(function_node)
-  -- Only interested in not implemented constructors
   local function is_implementation(node)
+    -- Implemented function
     return node:type() == 'function_definition'
   end
+
   local implementation = search_up_until(function_node, is_implementation)
   return implementation ~= nil
+end
+
+M.is_in_function = function()
+  local ts_utils = require('nvim-treesitter.ts_utils')
+  local function in_function(node)
+    return node:type() == 'function_definition'
+  end
+  return search_up_until(ts_utils.get_node_at_cursor(), in_function) ~= nil
 end
 
 -- Removes the name and the default parameter values from the parameters
@@ -176,7 +185,7 @@ local function clean_params(params_node, buffer)
   end
   params = params .. ')'
   -- Remove the whitespace to make it possible to match against
-  -- (you could have differently formatted constructor params)
+  -- (you could have differently formatted params)
   params = params:gsub('%s+', '')
   return params
 end
@@ -694,6 +703,14 @@ function M.divide_and_sort_includes()
     return
   end
 
+  -- If code is found between the includes
+  -- -> give up
+  for _, line in ipairs(vim.api.nvim_buf_get_lines(0, locations.start_row, locations.end_row, false)) do
+    if line ~= '' and line:find('^#include') == nil then
+      return
+    end
+  end
+
   -- Sort the include within their category
   for _, includes_and_nodes in pairs(includes) do
     table.sort(includes_and_nodes, function(inc_a, inc_b)
@@ -1035,7 +1052,8 @@ local function load_alternative_file()
   return buffer
 end
 
-local function make_class_constructor_within_class_boundary(class_name, indentation, is_source)
+-- Definer means either constructor or destructor
+local function make_definer_within_class_boundary(class_name, indentation, is_source)
   local ls = require('luasnip')
   local fmta = require('luasnip.extras.fmt').fmta
 
@@ -1067,106 +1085,6 @@ local function make_class_constructor_within_class_boundary(class_name, indentat
   -- Start at the indentation of the class
   pos[2] = #indentation
   ls.snip_expand(ls.snippet({}, ctor), { pos = pos })
-end
-
--- Get info about classes and their unimplemented functions
-local function get_declared_constructors(class_node, buffer)
-  buffer = buffer or 0
-  local ctors = {}
-
-  -- Will be set before calling collect_declared_constructors
-  local class_name = ''
-  local function collect_declared_constructors(node)
-    if node:type() == 'function_declarator' then
-      -- Only interested in not implemented constructors
-      if node:parent():type() == 'function_definition' then
-        return false
-      end
-
-      local is_constructor = false
-      for child, name in node:iter_children() do
-        if name == 'declarator' and get_node_text(child, buffer) == class_name then
-          is_constructor = true
-        end
-
-        if is_constructor and name == 'parameters' then
-          ctors[class_name .. '::' .. class_name .. clean_params(child, buffer)] = {
-            constructor_node = node,
-            buffer = buffer,
-          }
-        end
-      end
-    end
-
-    -- Continue searching
-    return false
-  end
-
-  for child, name in class_node:iter_children() do
-    if name == 'name' then
-      class_name = get_node_text(child, buffer)
-    elseif name == 'body' then
-      search_down_until(child, collect_declared_constructors)
-    end
-  end
-
-  return ctors
-end
-
--- Return a table with not implemented constructors
--- Includes both the current and the alternative file
-local function get_all_declared_class_constructors()
-  local constructors = {}
-
-  local buffers = { 0, load_alternative_file() }
-  for _, buffer in ipairs(buffers) do
-    local classes = get_classes_in_file(buffer)
-    if classes ~= nil then
-      for _, class_node in ipairs(classes) do
-        local ctors = get_declared_constructors(class_node, buffer)
-        for ctor, info in pairs(ctors) do
-          constructors[ctor] = info
-        end
-      end
-    end
-  end
-
-  return constructors
-end
-
--- Look through the buffer for functions that are implemented
--- If they are in the input 'functions', remove them
-local function remove_implemented_functions(functions, buffer)
-  buffer = buffer or 0
-
-  local function collect_missing_functions(node)
-    if node:type() == 'function_declarator' then
-      -- Only interested in implemented functions
-      if node:parent():type() ~= 'function_definition' then
-        return false
-      end
-
-      local function_key = ''
-      for child, name in node:iter_children() do
-        if name == 'declarator' then
-          function_key = function_key .. get_node_text(child, buffer)
-        end
-
-        if name == 'parameters' then
-          function_key = function_key .. clean_params(child, buffer)
-        end
-      end
-
-      -- Remove from the functions
-      functions[function_key] = nil
-    end
-
-    -- Continue searching
-    return false
-  end
-
-  search_down_from_root_until(collect_missing_functions, buffer)
-  return functions
 end
 
 local function build_parameter_snippet(function_node, buffer)
@@ -1229,14 +1147,14 @@ local function build_parameter_snippet(function_node, buffer)
   return { params = all_params, snip_nodes = insert_nodes }
 end
 
--- constructor_name = 'MyClass::MyClass'
--- info = { constructor_node: TSNode, buffer: Int }
-local function build_constructor_snippet(constructor_name, info)
+-- name = 'MyClass::MyClass' or 'Stuff get_stuff'
+-- info = { node: TSNode, buffer: Int }
+local function build_function_snippet(name, info)
   local ls = require('luasnip')
   local fmta = require('luasnip.extras.fmt').fmta
   local sn = ls.snippet_node
 
-  local param_snippet = build_parameter_snippet(info.constructor_node, info.buffer)
+  local param_snippet = build_parameter_snippet(info.node, info.buffer)
   if param_snippet == nil then
     return
   end
@@ -1251,20 +1169,21 @@ local function build_constructor_snippet(constructor_name, info)
     [[%s%s {
   <><>
 }]],
-    constructor_name,
+    name,
     param_snippet.params
   )
 
   return sn(nil, fmta(snip_body, param_snippet.snip_nodes))
 end
 
-local function make_class_constructor_outside_of_class_boundary(possible_constructors)
+-- Definer means either constructor or destructor
+local function make_definer_outside_of_class_boundary(possible_constructors)
   local snip_choices = {}
   for name, info in pairs(possible_constructors) do
     -- Remove the parameter list
     -- MyClass::MyClass(int i) -> MyClass::MyClass
     name = name:sub(1, name:find('%(') - 1)
-    local snippet = build_constructor_snippet(name, info)
+    local snippet = build_function_snippet(name, info)
 
     if snippet ~= nil then
       table.insert(snip_choices, snippet)
@@ -1287,21 +1206,77 @@ local function make_class_constructor_outside_of_class_boundary(possible_constru
   ls.snip_expand(snippet, { pos = pos })
 end
 
--- When called within a class boundary:
---   When header file:
---     Create a declaration.
---   When source file:
---     Create a implementation.
---
--- When called outside a class boundary:
---   When header file:
---     Do nothing.
---   When source file:
---     Look in the corresponding header file
---     for classes.
---     Give the not implemented constructors
---     as options.
-M.make_class_constructor = function()
+local function find_not_implemented_functions()
+  local declared_functions = {}
+  local implemented_functions = {}
+
+  local buffers = { 0, load_alternative_file() }
+  for _, buffer in ipairs(buffers) do
+    local function collect_functions(node)
+      if is_function(node) then
+        local name = get_compressed_function_name(node, buffer)
+        if is_function_implementation(node) then
+          implemented_functions[name] = {
+            node = node,
+            buffer = buffer,
+          }
+        else
+          declared_functions[name] = {
+            node = node,
+            buffer = buffer,
+          }
+        end
+      end
+    end
+
+    search_down_from_root_until(collect_functions, buffer)
+  end
+
+  for f, _ in pairs(implemented_functions) do
+    -- Remove the found implementations
+    declared_functions[f] = nil
+  end
+
+  -- Return the not implemented functions
+  return declared_functions
+end
+
+local function keep_only_destructors(functions)
+  local filtered = {}
+  for function_name, info in pairs(functions) do
+    -- Remove the parameter list
+    -- void f(int i) -> void f
+    local name = function_name:sub(1, function_name:find('%(') - 1)
+
+    -- Check if there is a space (return type)
+    -- or if it contains a '~' (destructor)
+    if name:find(' ') == nil and name:find('~') ~= nil then
+      filtered[function_name] = info
+    end
+  end
+  return filtered
+end
+
+local function keep_only_constructors(functions)
+  local filtered = {}
+  for function_name, info in pairs(functions) do
+    -- Remove the parameter list
+    -- void f(int i) -> void f
+    local name = function_name:sub(1, function_name:find('%(') - 1)
+
+    -- Check if there is a space (return type)
+    -- or if it contains a '~' (destructor)
+    if name:find(' ') == nil and name:find('~') == nil then
+      filtered[function_name] = info
+    end
+  end
+  return filtered
+end
+
+-- Could be either constructor or destructor
+-- Filter on is a function that removes functions that are not either
+-- constructor or destructor
+local function make_class_definer(is_constructor)
   local indentation = get_indentation()
   if #indentation == 0 then
     -- Default guess
@@ -1318,55 +1293,63 @@ M.make_class_constructor = function()
     end
 
     -- Declared but not defined
-    local declared_ctors = get_all_declared_class_constructors()
-    -- Match those against the existing functions
-    -- Output example:
-    -- {
-    --   ["Data::Data()"] = {
-    --     constructor_node = node,
-    --     buffer = buffer
-    --   }
-    --   ["Data::Data(int)"] = {
-    --     constructor_node = node,
-    --     buffer = buffer
-    --   }
-    -- }
-    local not_implemented_ctors = remove_implemented_functions(declared_ctors)
-    make_class_constructor_outside_of_class_boundary(not_implemented_ctors)
-  else
-    make_class_constructor_within_class_boundary(class_name, indentation, is_source)
-  end
-end
-
-local function find_not_implemented_functions()
-  local declared_functions = {}
-  local implemented_functions = {}
-
-  local buffers = { 0, load_alternative_file() }
-  for _, buffer in ipairs(buffers) do
-    local function collect_functions(node)
-      if is_function(node) then
-        if is_function_implementation(node) then
-          implemented_functions[get_compressed_function_name(node, buffer)] = true
-        else
-          declared_functions[get_compressed_function_name(node, buffer)] = true
-        end
-      end
+    local filter_on = nil
+    if is_constructor then
+      filter_on = keep_only_constructors
+    else
+      filter_on = keep_only_destructors
     end
-
-    search_down_from_root_until(collect_functions, buffer)
+    local without_implementation = filter_on(find_not_implemented_functions())
+    make_definer_outside_of_class_boundary(without_implementation)
+  else
+    if not is_constructor then
+      class_name = '~' .. class_name
+    end
+    make_definer_within_class_boundary(class_name, indentation, is_source)
   end
-
-  for f, _ in pairs(implemented_functions) do
-    -- Remove the found implementations
-    declared_functions[f] = nil
-  end
-  vim.print('Not implemented functions:')
-  vim.print(declared_functions)
-  vim.print('Implemented functions:')
-  vim.print(implemented_functions)
 end
 
-vim.keymap.set('n', '<leader>gro', find_not_implemented_functions)
+-- When called within a class boundary:
+--   When header file:
+--     Create a declaration.
+--   When source file:
+--     Create a implementation.
+--
+-- When called outside a class boundary:
+--   When header file:
+--     Do nothing.
+--   When source file:
+--     Look in the corresponding header file
+--     for classes.
+--     Give the not implemented constructors
+--     as options.
+M.make_class_constructor = function()
+  local is_constructor = true
+  make_class_definer(is_constructor)
+end
+
+M.make_class_destructor = function()
+  local is_constructor = false
+  make_class_definer(is_constructor)
+end
+
+M.get_snippets_from_not_implemented_functions = function()
+  local functions_missing_implementations = find_not_implemented_functions()
+
+  -- Create the actual snippets
+  local snip_choices = {}
+  for name, info in pairs(functions_missing_implementations) do
+    -- Remove the parameter list
+    -- void f(int i) -> void f
+    name = name:sub(1, name:find('%(') - 1)
+    local snippet = build_function_snippet(name, info)
+
+    if snippet ~= nil then
+      table.insert(snip_choices, snippet)
+    end
+  end
+
+  return snip_choices
+end
 
 return M

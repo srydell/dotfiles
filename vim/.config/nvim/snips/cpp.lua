@@ -4,6 +4,67 @@ local util = require('srydell.util')
 
 local get_visual = helpers.get_visual
 
+-- In a header file -> ';'
+-- In a source file -> ' {\n<indent>\n}'
+local function get_definition_or_declaration()
+  local extension = vim.fn.expand('%:e')
+  if extension == 'h' or extension == 'hpp' then
+    return sn(nil, { t(';') })
+  end
+  return sn(
+    nil,
+    fmta(' ' .. [[
+        {
+          <>
+        }
+      ]], {
+      i(1),
+    })
+  )
+end
+
+local function get_function()
+  local functions = {}
+  if cpp_ts.is_in_function() then
+    -- Lambda
+    functions = {
+      sn(
+        nil,
+        fmta(
+          [[
+            auto <> = [<>](<>) {
+              <>
+            };
+          ]],
+          { r(1, 'function_name'), i(2), i(3), i(0) }
+        )
+      ),
+    }
+  else
+    functions = cpp_ts.get_snippets_from_not_implemented_functions()
+    -- Always add a simple function
+    table.insert(
+      functions,
+      sn(
+        nil,
+        fmta(
+          [[
+              <> <>(<>)<>
+            ]],
+          {
+            i(1, 'void'),
+            r(2, 'function_name'),
+            i(3),
+            d(4, get_definition_or_declaration),
+          }
+        )
+      )
+    )
+  end
+
+  return sn(nil, c(1, functions))
+end
+
 local function get_surrounding_classname()
   local class = cpp_ts.get_class_name_under_cursor()
   if class then
@@ -35,25 +96,6 @@ local function get_potential_function_names()
   -- table.insert(function_nodes, sn(nil, { r(1, 'function_name') }))
 
   -- return sn(nil, { c(1, function_nodes) })
-end
-
--- In a header file -> ';'
--- In a source file -> ' {\n<indent>\n}'
-local function get_definition_or_declaration()
-  local extension = vim.fn.expand('%:e')
-  if extension == 'h' or extension == 'hpp' then
-    return sn(nil, { t(';') })
-  end
-  return sn(
-    nil,
-    fmta(' ' .. [[
-        {
-          <>
-        }
-      ]], {
-      i(1),
-    })
-  )
 end
 
 return {
@@ -394,13 +436,10 @@ case %s::%s: {
     { trig = 'f', wordTrig = true, dscr = 'Function' },
     fmta(
       [[
-        <> <>(<>)<>
+        <>
       ]],
       {
-        i(1, 'void'),
-        d(2, get_potential_function_names),
-        i(3),
-        d(4, get_definition_or_declaration),
+        d(1, get_function),
       }
     ),
     {
