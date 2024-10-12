@@ -1,7 +1,3 @@
--- if vim.fn.did_filetype() then
---   return
--- end
-
 local filetype_detect = vim.api.nvim_create_augroup('filetype_detect', { clear = false })
 
 vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
@@ -9,14 +5,14 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
   group = filetype_detect,
   callback = function()
     local util = require('srydell.util')
-    local project = util.get_project()
 
-    if project.name == 'dsf' then
+    if util.current_path_contains('dsf') then
       local directory = vim.fn.expand('%:p:h:t')
       if directory == 'test_scenarios' then
         vim.cmd('set filetype=json5')
+        return
       end
-    else
+
       local filename = vim.fn.expand('%:p:t')
       if filename:match('log_.+') ~= nil then
         vim.cmd('set filetype=scenario')

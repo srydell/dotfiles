@@ -1,6 +1,6 @@
-local util = require('srydell.util')
-
 local function get_compilers()
+  local util = require('srydell.util')
+
   local project = util.get_project()
   if not project.name then
     return {}

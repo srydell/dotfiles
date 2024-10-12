@@ -39,7 +39,7 @@ return {
         return
       end
 
-      if util.parent_dir_contains('dsf') or util.parent_dir_contains('oal') then
+      if util.current_path_contains('dsf') or util.current_path_contains('oal') then
         return
       end
 

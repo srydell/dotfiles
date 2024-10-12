@@ -115,6 +115,23 @@ local function add_text_after(node, text, offset)
   vim.api.nvim_buf_set_lines(0, end_node_row + 1 + offset, end_node_row + 1 + offset, true, lines)
 end
 
+-- A version of the ts_utils one that reparses the tree
+-- Useful when you're trying to act on something that you have not saved yet.
+-- Use when not caring about performance
+local function get_node_at_cursor(winnr)
+  winnr = winnr or 0
+  local cursor = vim.api.nvim_win_get_cursor(winnr)
+  local cursor_range = { cursor[1] - 1, cursor[2] }
+
+  local buf = vim.api.nvim_win_get_buf(winnr)
+  local trees = vim.treesitter.get_parser(buf, 'cpp'):parse()
+  for _, tree in ipairs(trees) do
+    local root = tree:root()
+
+    return root:named_descendant_for_range(cursor_range[1], cursor_range[2], cursor_range[1], cursor_range[2])
+  end
+end
+
 local function is_identifier(node)
   return node:type() == 'identifier'
 end
@@ -138,11 +155,15 @@ local is_function_implementation = function(function_node)
 end
 
 M.is_in_function = function()
-  local ts_utils = require('nvim-treesitter.ts_utils')
+  local node_at_cursor = get_node_at_cursor()
+  if node_at_cursor == nil then
+    return
+  end
+
   local function in_function(node)
     return node:type() == 'function_definition'
   end
-  return search_up_until(ts_utils.get_node_at_cursor(), in_function) ~= nil
+  return search_up_until(node_at_cursor, in_function) ~= nil
 end
 
 -- Removes the name and the default parameter values from the parameters
@@ -798,17 +819,12 @@ M.correct_include_guard = function()
 end
 
 -- Add an include to the list of includes in the current file
--- E.g. add_include({ '<atomic>' })
+-- E.g. add_includes({ '<atomic>' })
 -- Checks if it was there before and uses divide_and_sort_includes
 -- to tidy the includes after
-M.add_include = function(includes)
+M.add_includes = function(includes)
   if includes == nil or vim.tbl_isempty(includes) then
     return
-  end
-
-  local function get_row(node)
-    local row, _, _, _ = vim.treesitter.get_node_range(node)
-    return row
   end
 
   -- Get all the existing includes
@@ -857,6 +873,9 @@ M.add_include = function(includes)
       return
     end
     first_row = first_empty_row
+    -- If there were no includes before,
+    -- also add an extra empty row after it
+    table.insert(includes_to_add, '')
   end
 
   vim.api.nvim_buf_set_lines(0, first_row, first_row, true, includes_to_add)
@@ -894,7 +913,7 @@ M.include_necessary_types = function()
     table.insert(includes, include)
   end
 
-  M.add_include(includes)
+  M.add_includes(includes)
 end
 
 M.get_class_name = function(class_node, buffer)
@@ -996,48 +1015,6 @@ M.get_alternative_file = function()
       return source:gsub('src', 'include')
     end
   end
-end
-
-local function get_functions_in_file(buffer)
-  buffer = buffer or 0
-
-  local functions = {}
-  local function collect_classes(node)
-    if is_class_or_struct(node) then
-      table.insert(functions, node)
-    end
-
-    -- Continue searching
-    return false
-  end
-
-  search_down_from_root_until(collect_classes, buffer)
-  return functions
-end
-
-local function get_classes_in_file(buffer)
-  buffer = buffer or 0
-
-  local function is_forward_declared(class_node)
-    local row = get_row(class_node)
-    local lines = vim.api.nvim_buf_get_lines(buffer, row, row + 1, false)
-    return lines[1]:find(';') ~= nil
-  end
-
-  local classes = {}
-  local function collect_classes(node)
-    if is_class_or_struct(node) then
-      if not is_forward_declared(node) then
-        table.insert(classes, node)
-      end
-    end
-
-    -- Continue searching
-    return false
-  end
-
-  search_down_from_root_until(collect_classes, buffer)
-  return classes
 end
 
 local function load_alternative_file()
@@ -1177,9 +1154,10 @@ local function build_function_snippet(name, info)
 end
 
 -- Definer means either constructor or destructor
-local function make_definer_outside_of_class_boundary(possible_constructors)
+local function make_definer_outside_of_class_boundary(definers)
   local snip_choices = {}
-  for name, info in pairs(possible_constructors) do
+  for _, f in ipairs(definers) do
+    local name, info = unpack(f)
     -- Remove the parameter list
     -- MyClass::MyClass(int i) -> MyClass::MyClass
     name = name:sub(1, name:find('%(') - 1)
@@ -1237,13 +1215,23 @@ local function find_not_implemented_functions()
     declared_functions[f] = nil
   end
 
+  -- To sort and flatten the result
+  local missing_implementations = {}
+  for f, info in pairs(declared_functions) do
+    table.insert(missing_implementations, { f, info })
+  end
+  table.sort(missing_implementations, function(f_a, f_b)
+    return f_a[1] < f_b[1]
+  end)
+
   -- Return the not implemented functions
-  return declared_functions
+  return missing_implementations
 end
 
 local function keep_only_destructors(functions)
   local filtered = {}
-  for function_name, info in pairs(functions) do
+  for _, f in ipairs(functions) do
+    local function_name, _ = unpack(f)
     -- Remove the parameter list
     -- void f(int i) -> void f
     local name = function_name:sub(1, function_name:find('%(') - 1)
@@ -1251,7 +1239,7 @@ local function keep_only_destructors(functions)
     -- Check if there is a space (return type)
     -- or if it contains a '~' (destructor)
     if name:find(' ') == nil and name:find('~') ~= nil then
-      filtered[function_name] = info
+      table.insert(filtered, f)
     end
   end
   return filtered
@@ -1259,7 +1247,8 @@ end
 
 local function keep_only_constructors(functions)
   local filtered = {}
-  for function_name, info in pairs(functions) do
+  for _, f in ipairs(functions) do
+    local function_name, _ = unpack(f)
     -- Remove the parameter list
     -- void f(int i) -> void f
     local name = function_name:sub(1, function_name:find('%(') - 1)
@@ -1267,7 +1256,7 @@ local function keep_only_constructors(functions)
     -- Check if there is a space (return type)
     -- or if it contains a '~' (destructor)
     if name:find(' ') == nil and name:find('~') == nil then
-      filtered[function_name] = info
+      table.insert(filtered, f)
     end
   end
   return filtered
@@ -1338,7 +1327,8 @@ M.get_snippets_from_not_implemented_functions = function()
 
   -- Create the actual snippets
   local snip_choices = {}
-  for name, info in pairs(functions_missing_implementations) do
+  for _, f in ipairs(functions_missing_implementations) do
+    local name, info = unpack(f)
     -- Remove the parameter list
     -- void f(int i) -> void f
     name = name:sub(1, name:find('%(') - 1)

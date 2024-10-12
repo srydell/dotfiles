@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_SUITE_END()
   return s('_skeleton', fmta(snippet, { i(1), i(0) }))
 end
 
-local function dsf(project_info)
+local function dsf_cpp(project_info)
   local filename = project_info.path[#project_info.path]
   if string.match(filename, 'test_') then
     return dsf_test(project_info, filename)
@@ -211,7 +211,7 @@ local skel = {
     _fallback = basic_include_guard,
   },
   cpp = {
-    dsf = dsf,
+    dsf = dsf_cpp,
     prototype = prototype,
     leetcode = leetcode,
     _fallback = no_op,

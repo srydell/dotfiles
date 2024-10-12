@@ -63,7 +63,7 @@ end
 --     path = { 'util', 'perf', 'histogram.hpp' }
 --   }
 --
-M.get_project_info = function(path)
+local function get_project_info(path)
   local last_directory = ''
   local name = ''
   local src_path = {}
@@ -94,11 +94,11 @@ M.get_project_info = function(path)
 end
 
 M.get_project = function()
-  return M.get_project_info(M.split(vim.fn.expand('%:p'), '/'))
+  return get_project_info(M.split(vim.fn.expand('%:p'), '/'))
 end
 
-M.parent_dir_contains = function(directory)
-  return M.contains(M.split(vim.fn.expand('%:p'), '/'), directory)
+M.current_path_contains = function(directory)
+  return vim.fn.expand('%:p'):find(directory) ~= nil
 end
 
 --

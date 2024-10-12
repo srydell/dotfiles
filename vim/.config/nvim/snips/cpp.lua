@@ -1,5 +1,4 @@
 local helpers = require('srydell.snips.helpers')
-local cpp_ts = require('srydell.treesitter.cpp')
 local util = require('srydell.util')
 
 local get_visual = helpers.get_visual
@@ -25,8 +24,11 @@ end
 
 local function get_function()
   local functions = {}
+  local add_simple_function = true
+  local cpp_ts = require('srydell.treesitter.cpp')
   if cpp_ts.is_in_function() then
-    -- Lambda
+    -- Lambda only possible
+    add_simple_function = false
     functions = {
       sn(
         nil,
@@ -40,17 +42,20 @@ local function get_function()
         )
       ),
     }
-  else
+  elseif cpp_ts.get_class_name_under_cursor() == nil then
     functions = cpp_ts.get_snippets_from_not_implemented_functions()
-    -- Always add a simple function
+  end
+
+  if add_simple_function then
+    -- A simple function
     table.insert(
       functions,
       sn(
         nil,
         fmta(
           [[
-              <> <>(<>)<>
-            ]],
+                <> <>(<>)<>
+              ]],
           {
             i(1, 'void'),
             r(2, 'function_name'),
@@ -66,36 +71,12 @@ local function get_function()
 end
 
 local function get_surrounding_classname()
+  local cpp_ts = require('srydell.treesitter.cpp')
   local class = cpp_ts.get_class_name_under_cursor()
   if class then
     return sn(nil, { t(class) })
   end
   return sn(nil, { i(1, 'Class') })
-end
-
--- A function could either be:
--- 1. A free function
--- 2. A member function
--- If it is a member function, find all the potential classes
--- it could belong to and add them as conditionals
-local function get_potential_function_names()
-  -- if cpp_ts.get_class_name_under_cursor() ~= nil then
-  -- In a class already, don't look for other classes
-  return sn(nil, { i(1, 'f') })
-  -- end
-
-  -- local function_nodes = {}
-
-  -- local buffer, classes = cpp_ts.get_classes_from_alternative_file()
-  -- if buffer ~= nil and classes ~= nil then
-  --   for _, class_node in ipairs(classes) do
-  --     local class_name = cpp_ts.get_class_name(class_node, buffer)
-  --     table.insert(function_nodes, sn(nil, { t(class_name .. '::'), r(1, 'function_name') }))
-  --   end
-  -- end
-  -- table.insert(function_nodes, sn(nil, { r(1, 'function_name') }))
-
-  -- return sn(nil, { c(1, function_nodes) })
 end
 
 return {

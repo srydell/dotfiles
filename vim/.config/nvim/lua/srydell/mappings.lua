@@ -89,7 +89,7 @@ vim.keymap.set('n', ']b', ':bnext<CR>', { silent = true })
 vim.keymap.set('n', '[B', ':bfirst<CR>', { silent = true })
 vim.keymap.set('n', ']B', ':blast<CR>', { silent = true })
 
--- How I think about alternative files
+-- Alternative files
 vim.keymap.set('n', '[a', ':A<CR>', { silent = true })
 vim.keymap.set('n', ']a', ':A<CR>', { silent = true })
 
