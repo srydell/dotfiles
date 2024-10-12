@@ -95,14 +95,29 @@ local function dsf_cpp(project_info)
   if string.match(filename, 'test_') then
     return dsf_test(project_info, filename)
   end
+
+  local include = ''
+  local cpp_util = require('srydell.util.cpp')
+  local header = cpp_util.get_alternative_include_guess()
+  if header ~= '' then
+    include = string.format(
+      [[
+
+#include "%s"
+]],
+      header
+    )
+  end
+
   local license = get_license()
   local snippet = string.format(
-    [[%s
+    [[%s%s
 namespace %s {
   <>
 }
       ]],
     license,
+    include,
     util.get_namespace(project_info)
   )
   return s('_skeleton', fmta(snippet, { i(0) }))

@@ -100,4 +100,26 @@ M.get_alternative_file = function()
   return nil
 end
 
+M.get_alternative_include_guess = function()
+  if not is_source() then
+    return ''
+  end
+
+  local alt_file = M.get_alternative_file()
+  if alt_file == nil then
+    return ''
+  end
+
+  -- In a best guess order
+  for _, include_dir in ipairs({ 'src', 'include', 'source', 'inc' }) do
+    local i, j = alt_file:find(include_dir)
+    if i ~= nil and j ~= nil then
+      -- /Users/me/src/module/hello.cpp -> module/hello.hpp
+      return alt_file:sub(j + 2)
+    end
+  end
+
+  return ''
+end
+
 return M
