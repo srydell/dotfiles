@@ -3,6 +3,15 @@ local util = require('srydell.util')
 
 local get_visual = helpers.get_visual
 
+local function guess_class_name()
+  -- Without extension
+  -- src/hello.cpp -> hello
+  local filename = vim.fn.expand('%:t:r')
+  -- hello -> Hello
+  local class_name = filename:sub(1, 1):upper() .. filename:sub(2)
+  return sn(nil, { i(1, class_name) })
+end
+
 -- In a header file -> ';'
 -- In a source file -> ' {\n<indent>\n}'
 local function get_definition_or_declaration()
@@ -242,7 +251,7 @@ case %s::%s: {
         };
       ]],
       {
-        i(1, 'Data'),
+        d(1, guess_class_name),
         d(2, get_visual),
         i(0),
       }
@@ -259,7 +268,7 @@ case %s::%s: {
         };
       ]],
       {
-        i(1, 'Data'),
+        d(1, guess_class_name),
         d(2, get_visual),
         i(0),
       }
