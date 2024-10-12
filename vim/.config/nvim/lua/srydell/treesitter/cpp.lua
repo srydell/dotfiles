@@ -769,10 +769,7 @@ M.correct_include_guard = function()
   local guard = { ifdef = nil, define = nil }
 
   local function get_guard(node)
-    -- Either
     -- #ifndef MY_GUARD
-    -- or
-    -- #if !defined(MY_GUARD)
     if node:type() == 'preproc_ifdef' or node:type() == 'preproc_if' then
       local identifier = search_down_until(node, is_identifier)
       guard.ifdef = identifier
@@ -993,32 +990,9 @@ M.make_class_no_copy = function()
   vim.api.nvim_buf_set_lines(0, row, row, true, no_copy)
 end
 
--- Look for an alternative file
--- source file (.cpp) -> header (.h|.hpp)
--- header file (.h|.hpp) -> source (.cpp)
--- Return nil if no alternative file found
-M.get_alternative_file = function()
-  local base = vim.fn.expand('%:p:r')
-  if vim.fn.expand('%:e') == 'cpp' then
-    -- Looking for a header
-    if vim.fn.filereadable(base .. '.h') then
-      return base .. '.h'
-    elseif vim.fn.filereadable(base .. '.hpp') then
-      return base .. '.hpp'
-    end
-  else
-    -- Looking for a source file
-    local source = base .. '.cpp'
-    if vim.fn.filereadable(source) then
-      return source
-    elseif vim.fn.filereadable(source:gsub('src', 'include')) then
-      return source:gsub('src', 'include')
-    end
-  end
-end
-
 local function load_alternative_file()
-  local alt_file = M.get_alternative_file()
+  local cpp_util = require('srydell.util.cpp')
+  local alt_file = cpp_util.get_alternative_file()
   if alt_file == nil then
     return
   end
