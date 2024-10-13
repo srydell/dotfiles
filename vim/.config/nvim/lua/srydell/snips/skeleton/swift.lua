@@ -26,17 +26,12 @@ local parse = require('luasnip.util.parser').parse_snippet
 local ms = ls.multi_snippet
 local k = require('luasnip.nodes.key_indexer').new_key
 
-local util = require('srydell.util')
-
 local function isView()
   local filename = vim.fn.expand('%:p')
-  vim.print(filename)
-  if string.find(filename, 'Views?') then
-    print('Filename contains Views?')
+  if string.find(filename, 'View') then
     return true
   end
 
-  print('Not a view')
   return false
 end
 

@@ -51,9 +51,7 @@ local function split_into_parts()
         actions.select_default:replace(function()
           actions.close(prompt_bufnr)
           local selection = action_state.get_selected_entry()
-          vim.print(selection)
           local file = util.split(selection[1], ',')[1]
-          vim.print(file)
           vim.cmd('edit ' .. file)
         end)
         return true

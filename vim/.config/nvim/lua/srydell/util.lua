@@ -1,4 +1,4 @@
-M = {}
+local M = {}
 
 --
 -- Return the table with strings splitting input string str by input string delimiter
@@ -93,10 +93,6 @@ local function get_project_info(path)
   }
 end
 
-M.get_project = function()
-  return get_project_info(M.split(vim.fn.expand('%:p'), '/'))
-end
-
 M.current_path_contains = function(directory)
   return vim.fn.expand('%:p'):find(directory) ~= nil
 end
@@ -143,6 +139,10 @@ M.get_include_guard = function(project_info)
   end
 
   return table.concat(guard, '_')
+end
+
+M.get_project = function()
+  return get_project_info(M.split(vim.fn.expand('%:p'), '/'))
 end
 
 --

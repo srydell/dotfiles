@@ -25,12 +25,12 @@ return {
             exe:start()
           else
             local dap = require('dap')
-            if dap.configurations[vim.bo.ft] then
-              local config = dap.configurations[vim.bo.ft][1]
+            if dap.configurations[vim.bo.filetype] then
+              local config = dap.configurations[vim.bo.filetype][1]
               config.program = params.executable
               dap.run(config)
             else
-              vim.print('There is no dap configuration for filetype = ' .. vim.bo.ft)
+              vim.print('There is no dap configuration for filetype = ' .. vim.bo.filetype)
             end
           end
         end

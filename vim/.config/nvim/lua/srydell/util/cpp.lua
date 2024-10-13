@@ -1,4 +1,4 @@
-M = {}
+local M = {}
 
 local function append_header_extensions(base)
   return { base .. '.h', base .. '.hpp' }
