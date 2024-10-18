@@ -41,6 +41,8 @@ return {
       python = util.merge({ augend.constant.new({ elements = { 'True', 'False' } }) }, default),
       markdown = util.merge({ augend.misc.alias.markdown_header }, default),
 
+      cmake = util.merge({ augend.constant.new({ elements = { 'ON', 'OFF' } }) }, default),
+
       cpp = util.merge({
         augend.constant.new({
           elements = {

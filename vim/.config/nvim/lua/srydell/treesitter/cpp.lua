@@ -136,12 +136,24 @@ local function is_identifier(node)
   return node:type() == 'identifier'
 end
 
+local function is_parameters(node)
+  return node:type() == 'parameter_list'
+end
+
 local is_function = function(node)
   return node:type() == 'function_declarator'
 end
 
 local is_class_or_struct = function(node)
   return node:type() == 'class_specifier' or node:type() == 'struct_specifier'
+end
+
+local is_function_name = function(node)
+  return node:type() == 'identifier' -- Simple free function
+    or node:type() == 'field_identifier' -- Class function
+    or node:type() == 'qualified_identifier' -- Function with namespace qualifier
+    or node:type() == 'destructor_name' -- Destructor
+    or node:type() == 'operator_name' -- Operator
 end
 
 local is_function_implementation = function(function_node)
@@ -211,18 +223,103 @@ local function clean_params(params_node, buffer)
   return params
 end
 
+local function get_function_qualifiers(function_node, buffer)
+  local parameters_node = search_down_until(function_node, is_parameters)
+  if parameters_node == nil then
+    return ''
+  end
+
+  -- Everything after the parameter node to the end of the function node
+  local _, _, end_row, end_col = vim.treesitter.get_node_range(function_node)
+  local _, _, start_row, start_col = vim.treesitter.get_node_range(parameters_node)
+
+  local qualifiers = vim.api.nvim_buf_get_text(buffer, start_row, start_col, end_row, end_col, {})[1]
+  if qualifiers == nil then
+    return ''
+  end
+
+  -- Remove leading & trailing whitespace
+  qualifiers = qualifiers:gsub('^%s*', '')
+  qualifiers = qualifiers:gsub('%s*$', '')
+  return qualifiers
+end
+
+local function remove_declaration_only_qualifiers(qualifiers)
+  -- Should not include things that are only in the declaration
+  qualifiers = qualifiers:gsub('final', '')
+  qualifiers = qualifiers:gsub('override', '')
+  qualifiers = qualifiers:gsub('noexcept', '')
+
+  -- Remove whitespace
+  qualifiers = qualifiers:gsub('^%s*', '')
+  qualifiers = qualifiers:gsub('%s*$', '')
+  return qualifiers
+end
+
+local function get_function_qualifiers_for_snippet(function_node, buffer)
+  local qualifiers = get_function_qualifiers(function_node, buffer)
+
+  -- Should not include things that are only in the declaration
+  qualifiers = remove_declaration_only_qualifiers(qualifiers)
+  if qualifiers ~= '' then
+    -- For simplicity in the snippet
+    qualifiers = ' ' .. qualifiers
+  end
+  return qualifiers
+end
+
+local function get_return_type(function_node, buffer)
+  -- Give up
+  local function_name_node = search_down_until(function_node, is_function_name)
+  if function_name_node == nil then
+    return ''
+  end
+
+  local function is_function_root(node)
+    return node:type() == 'declaration' or node:type() == 'field_declaration' or node:type() == 'function_definition'
+  end
+
+  local function_root = search_up_until(function_node, is_function_root)
+  if function_root == nil then
+    return ''
+  end
+
+  local start_row, start_col, _, _ = vim.treesitter.get_node_range(function_root)
+  local _, start_name_col, end_row, _ = vim.treesitter.get_node_range(function_name_node)
+  local return_type = vim.api.nvim_buf_get_text(buffer, start_row, start_col, end_row, start_name_col, {})[1]
+  return return_type:gsub('%s+$', '')
+end
+
+local function remove_declaration_only_return_qualifiers(return_type)
+  -- Should not include things that are only in the declaration
+  return_type = return_type:gsub('inline', '')
+  return_type = return_type:gsub('static', '')
+  return_type = return_type:gsub('virtual', '')
+
+  -- Remove whitespace
+  return_type = return_type:gsub('^%s*', '')
+  return_type = return_type:gsub('%s*$', '')
+  return return_type
+end
+
+local function get_function_return_for_snippet(function_node, buffer)
+  local return_type = get_return_type(function_node, buffer)
+
+  -- Should not include things that are only in the declaration
+  return_type = remove_declaration_only_return_qualifiers(return_type)
+  if return_type ~= '' then
+    -- For simplicity in the snippet
+    return_type = return_type .. ' '
+  end
+  return return_type
+end
+
+-- function_node:type() == 'function_declarator'
+-- buffer is optional integer defaults to 0 (current buffer)
 local function get_compressed_function_name(function_node, buffer)
   buffer = buffer or 0
 
   local compressed_name = ''
-  -- Try to find the return value
-  -- Note: For constructors/destructors this is ''
-  for child, name in function_node:parent():iter_children() do
-    -- The return type is the type of the function
-    if name == 'type' then
-      compressed_name = get_node_text(child, buffer) .. ' '
-    end
-  end
 
   local class_node = search_up_until(function_node, is_class_or_struct)
   local class_prefix = ''
@@ -230,21 +327,31 @@ local function get_compressed_function_name(function_node, buffer)
     class_prefix = M.get_class_name(class_node, buffer) .. '::'
   end
 
-  for child, name in function_node:iter_children() do
+  for child, _ in function_node:iter_children() do
     -- Name of the function
-    if
-      child:type() == 'identifier'
-      or child:type() == 'field_identifier'
-      or child:type() == 'qualified_identifier'
-      or child:type() == 'destructor_name'
-    then
+    if is_function_name(child) then
       compressed_name = compressed_name .. class_prefix .. get_node_text(child, buffer)
     end
 
-    -- Parameters
-    if child:type() == 'parameter_list' then
+    if is_parameters(child) then
       compressed_name = compressed_name .. clean_params(child, buffer)
     end
+  end
+
+  -- Try to find the return value
+  -- This is at the end as we need the start of the function name
+  -- Note: For constructors/destructors this is ''
+  local return_type = get_return_type(function_node, buffer)
+  return_type = remove_declaration_only_return_qualifiers(return_type):gsub('%s+', '')
+  if return_type ~= '' then
+    compressed_name = return_type .. ' ' .. compressed_name
+  end
+
+  -- E.g. 'const' in 'int f() const'
+  local qualifiers = get_function_qualifiers(function_node, buffer)
+  qualifiers = remove_declaration_only_qualifiers(qualifiers):gsub('%s+', '')
+  if qualifiers ~= '' then
+    compressed_name = compressed_name .. ' ' .. qualifiers
   end
 
   return compressed_name
@@ -1039,16 +1146,13 @@ local function make_definer_within_class_boundary(class_name, indentation, is_so
 end
 
 local function build_parameter_snippet(function_node, buffer)
-  local function is_parameters(node)
-    return node:type() == 'parameter_list'
-  end
   local parameters = search_down_until(function_node, is_parameters)
 
   if parameters == nil then
     return
   end
 
-  local function remove_default_value(param, name)
+  local function remove_default_value(param)
     if param:type() ~= 'optional_parameter_declaration' then
       return get_node_text(param, buffer)
     end
@@ -1070,7 +1174,7 @@ local function build_parameter_snippet(function_node, buffer)
     -- Simple parameter or with a default value
     if node:type() == 'parameter_declaration' or node:type() == 'optional_parameter_declaration' then
       local name = search_down_until(node, is_identifier)
-      local parameter = remove_default_value(node, name)
+      local parameter = remove_default_value(node)
       -- Escape for luasnip.fmta
       parameter = parameter:gsub('<', '<<')
       parameter = parameter:gsub('>', '>>')
@@ -1100,28 +1204,39 @@ end
 
 -- name = 'MyClass::MyClass' or 'Stuff get_stuff'
 -- info = { node: TSNode, buffer: Int }
-local function build_function_snippet(name, info)
+local function build_function_snippet(info)
   local ls = require('luasnip')
   local fmta = require('luasnip.extras.fmt').fmta
   local sn = ls.snippet_node
+
+  local function_name_node = search_down_until(info.node, is_function_name)
+  if function_name_node == nil then
+    return
+  end
+  local function_name = get_node_text(function_name_node, info.buffer)
 
   local param_snippet = build_parameter_snippet(info.node, info.buffer)
   if param_snippet == nil then
     return
   end
 
+  local return_type = get_function_return_for_snippet(info.node, info.buffer)
+  local qualifiers = get_function_qualifiers_for_snippet(info.node, info.buffer)
+
   local insert_count = #param_snippet.snip_nodes
-  -- For getting into the body
+  -- For getting into the {}
   table.insert(param_snippet.snip_nodes, ls.insert_node(insert_count + 1))
   -- To be able to switch between the options
   table.insert(param_snippet.snip_nodes, ls.insert_node(insert_count + 2))
 
   local snip_body = string.format(
-    [[%s%s {
+    [[%s%s%s%s {
   <><>
 }]],
-    name,
-    param_snippet.params
+    return_type,
+    function_name,
+    param_snippet.params,
+    qualifiers
   )
 
   return sn(nil, fmta(snip_body, param_snippet.snip_nodes))
@@ -1131,11 +1246,10 @@ end
 local function make_definer_outside_of_class_boundary(definers)
   local snip_choices = {}
   for _, f in ipairs(definers) do
-    local name, info = unpack(f)
+    local _, info = unpack(f)
     -- Remove the parameter list
     -- MyClass::MyClass(int i) -> MyClass::MyClass
-    name = name:sub(1, name:find('%(') - 1)
-    local snippet = build_function_snippet(name, info)
+    local snippet = build_function_snippet(info)
 
     if snippet ~= nil then
       table.insert(snip_choices, snippet)
@@ -1198,9 +1312,16 @@ local function find_not_implemented_functions()
     return f_a[1] < f_b[1]
   end)
 
+  vim.print('Implemented:')
+  vim.print(implemented_functions)
+  vim.print('Missing:')
+  vim.print(missing_implementations)
+
   -- Return the not implemented functions
   return missing_implementations
 end
+
+vim.keymap.set('n', '<leader>gro', find_not_implemented_functions)
 
 local function keep_only_destructors(functions)
   local filtered = {}
@@ -1302,11 +1423,8 @@ M.get_snippets_from_not_implemented_functions = function()
   -- Create the actual snippets
   local snip_choices = {}
   for _, f in ipairs(functions_missing_implementations) do
-    local name, info = unpack(f)
-    -- Remove the parameter list
-    -- void f(int i) -> void f
-    name = name:sub(1, name:find('%(') - 1)
-    local snippet = build_function_snippet(name, info)
+    local _, info = unpack(f)
+    local snippet = build_function_snippet(info)
 
     if snippet ~= nil then
       table.insert(snip_choices, snippet)
