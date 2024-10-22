@@ -6,7 +6,6 @@
 vim.keymap.set('n', '<leader>ev', ':VimNOut edit ~/.config/nvim/init.lua<CR>', { silent = true })
 vim.keymap.set('n', '<leader>et', ':VimNOut edit ~/.tmux.conf<CR>', { silent = true })
 vim.keymap.set('n', '<leader>ep', ':VimNOut edit ~/.config/nvim/plugin/projectionist.lua<CR>', { silent = true })
-vim.keymap.set('n', '<leader>ex', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}/{files}<CR>', { silent = true })
 
 vim.keymap.set('n', '<leader>es', ':VimNOut edit ~/.config/nvim/snips/{filetype}.lua<CR>', { silent = true })
 vim.keymap.set(
@@ -33,6 +32,7 @@ vim.keymap.set('n', '<leader>eac', ':VimNOut edit ~/.config/nvim/compiler/{files
 -- Fuzzy finder
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+vim.keymap.set('n', '<leader>fz', builtin.current_buffer_fuzzy_find, {})
 vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>/', builtin.live_grep, {})
 vim.keymap.set('n', '<leader>*', builtin.grep_string, {})

@@ -3,7 +3,7 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- Disable netrw since using nvim-tree
+-- Disable netrw since using Oil
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 

@@ -717,7 +717,9 @@ function M.find_enum_from_type()
 
   -- Load the buffer that contains the source enum
   local buffer = vim.fn.bufadd(type_info.file)
-  vim.fn.bufload(buffer)
+  if not vim.fn.bufloaded(buffer) then
+    vim.fn.bufload(buffer)
+  end
 
   -- Get the lines containing the enum declaration. E.g.
   -- 'enum class MyEnum {'
@@ -1105,7 +1107,9 @@ local function load_alternative_file()
   end
 
   local buffer = vim.fn.bufadd(alt_file)
-  vim.fn.bufload(buffer)
+  if not vim.fn.bufloaded(buffer) then
+    vim.fn.bufload(buffer)
+  end
 
   return buffer
 end
