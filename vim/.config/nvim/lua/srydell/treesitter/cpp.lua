@@ -10,7 +10,9 @@ local function get_row(node)
   return row
 end
 
--- Go up the treesitter tree until stop condition is met
+-- Go up the treesitter tree until stop condition is met.
+-- stop_condition is a function that takes a node and returns
+-- false if the search should continue and true if it should stop.
 local function search_up_until(node, stop_condition)
   if node == nil then
     return
@@ -25,8 +27,10 @@ local function search_up_until(node, stop_condition)
   end
 end
 
--- Go down the treesitter tree until stop condition is met
--- Visit the nodes in breadth first
+-- Go down the treesitter tree from node until stop condition is met.
+-- Visit the nodes in breadth first.
+-- stop_condition is a function that takes a node and returns
+-- false if the search should continue and true if it should stop.
 local function search_down_until(node, stop_condition)
   if node == nil then
     return
@@ -42,13 +46,15 @@ local function search_down_until(node, stop_condition)
     end
 
     for child, _ in node:iter_children() do
-      if node ~= nil then
-        table.insert(nodes, child)
-      end
+      table.insert(nodes, child)
     end
   end
 end
 
+-- Parse the buffer content and search down from the root
+-- until a stop condition is met or there are no more nodes.
+-- stop_condition is a function that takes a node and returns
+-- false if the search should continue and true if it should stop.
 local function search_down_from_root_until(stop_condition, buffer)
   buffer = buffer or 0
   local trees = vim.treesitter.get_parser(buffer, 'cpp'):parse()
@@ -85,6 +91,8 @@ local function wrap_node_in(before, node, after)
   vim.api.nvim_win_set_cursor(0, { row, col + before:len() })
 end
 
+-- Takes the text that the node is currently containing and
+-- replaces it with text in the current buffer.
 local function replace_node_with(node, text)
   local _, start_node_col, _, end_node_col = vim.treesitter.get_node_range(node)
   local line = vim.api.nvim_get_current_line()
@@ -102,6 +110,8 @@ local function replace_node_with(node, text)
   -- vim.api.nvim_win_set_cursor(0, { row, col + (text:len() - to_be_removed:len()) })
 end
 
+-- Add text after the end of the node.
+-- Can add an extra padding of rows (offset).
 local function add_text_after(node, text, offset)
   offset = offset or 0
   local _, _, end_node_row, _ = vim.treesitter.get_node_range(node)
@@ -132,12 +142,18 @@ local function get_node_at_cursor(winnr)
   end
 end
 
+-- A set of is_* functions to be used when searching for nodes.
+
 local function is_identifier(node)
   return node:type() == 'identifier'
 end
 
 local function is_parameters(node)
   return node:type() == 'parameter_list'
+end
+
+local function is_parameter(node)
+  return node:type() == 'parameter_declaration' or node:type() == 'optional_parameter_declaration'
 end
 
 local is_function = function(node)
@@ -156,6 +172,7 @@ local is_function_name = function(node)
     or node:type() == 'operator_name' -- Operator
 end
 
+-- Assumes the input function_node is function_node:type() == 'function_declarator'
 local is_function_implementation = function(function_node)
   local function is_implementation(node)
     -- Implemented function
@@ -166,7 +183,40 @@ local is_function_implementation = function(function_node)
   return implementation ~= nil
 end
 
-M.is_in_function = function()
+-- Goes through a node of type qualified_identifier
+-- If it is a template, go through each template argument and see if
+-- it is considered 'primitive'. Primitive args are 'int', 'double', etc.
+-- If all of them are, return true. Else, return false
+local function are_all_template_args_primitive(qualified_identifier)
+  local template_type = qualified_identifier:field('name')[1]
+  if template_type == nil then
+    return false
+  end
+
+  local arguments = template_type:field('arguments')[1]
+  if arguments == nil then
+    return false
+  end
+
+  for arg, _ in arguments:iter_children() do
+    if arg:type() == 'type_descriptor' then
+      -- Check the internal type
+      local type = arg:field('type')[1]
+      if type == nil then
+        return false
+      end
+      if type:type() ~= 'primitive_type' then
+        return false
+      end
+    end
+  end
+
+  return true
+end
+
+-- Check wether the node under the cursor is within a function or not.
+-- If it is, return the function node.
+M.get_surrounding_function = function()
   local node_at_cursor = get_node_at_cursor()
   if node_at_cursor == nil then
     return
@@ -175,16 +225,18 @@ M.is_in_function = function()
   local function in_function(node)
     return node:type() == 'function_definition'
   end
-  return search_up_until(node_at_cursor, in_function) ~= nil
+  return search_up_until(node_at_cursor, in_function)
 end
 
--- Removes the name and the default parameter values from the parameters
+-- Removes the name and the default parameter values from the parameters.
+-- Also removes whitespace to make it easier to compare parameters as strings.
+-- I.e. (std::string my_string, int i = 5) -> (std::string,int)
 local function clean_params(params_node, buffer)
   buffer = buffer or 0
   local params = '('
   local function concatenate_params(node)
     -- Simple parameter or with a default value
-    if node:type() == 'parameter_declaration' or node:type() == 'optional_parameter_declaration' then
+    if is_parameter(node) then
       -- The whole parameter - e.g. 'std::string const & s = "hi"'
       local name = search_down_until(node, is_identifier)
       if name ~= nil then
@@ -223,6 +275,10 @@ local function clean_params(params_node, buffer)
   return params
 end
 
+-- Return if the function is const etc.
+-- Assumes function_node:type() == 'function_declarator'
+-- E.g.
+--   int f() const -> 'const'
 local function get_function_qualifiers(function_node, buffer)
   local parameters_node = search_down_until(function_node, is_parameters)
   if parameters_node == nil then
@@ -269,8 +325,9 @@ local function get_function_qualifiers_for_snippet(function_node, buffer)
 end
 
 local function get_return_type(function_node, buffer)
-  -- Give up
   local function_name_node = search_down_until(function_node, is_function_name)
+
+  -- Give up
   if function_name_node == nil then
     return ''
   end
@@ -987,6 +1044,16 @@ M.add_includes = function(includes)
   vim.api.nvim_buf_set_lines(0, first_row, first_row, true, includes_to_add)
 end
 
+-- Remove template part
+-- i.e. std::vector<int> -> std::vector
+local function remove_template(type_string)
+  local template = type_string:find('<', 1, true)
+  if template then
+    type_string = type_string:sub(1, template - 1)
+  end
+  return type_string
+end
+
 -- Look through the types in the current file.
 -- Include the necessary standard library headers for those types.
 -- Avoid doubles.
@@ -996,14 +1063,11 @@ M.include_necessary_types = function()
   local unique_includes = {}
   local function collect_types(node)
     if node:type() == 'qualified_identifier' then
-      local type = get_node_text(node, 0)
+      local type = get_node_text(node)
 
       -- Remove template part
       -- i.e. std::vector<int> -> std::vector
-      local template = type:find('<', 1, true)
-      if template then
-        type = type:sub(1, template - 1)
-      end
+      type = remove_template(type)
 
       local include = known_includes[type]
       if include ~= nil then
@@ -1176,7 +1240,7 @@ local function build_parameter_snippet(function_node, buffer)
   local all_params = '('
   local function concatenate_params(node)
     -- Simple parameter or with a default value
-    if node:type() == 'parameter_declaration' or node:type() == 'optional_parameter_declaration' then
+    if is_parameter(node) then
       local name = search_down_until(node, is_identifier)
       local parameter = remove_default_value(node)
       -- Escape for luasnip.fmta
@@ -1312,20 +1376,19 @@ local function find_not_implemented_functions()
   for f, info in pairs(declared_functions) do
     table.insert(missing_implementations, { f, info })
   end
+  -- Sort them by name to make it more predictable
   table.sort(missing_implementations, function(f_a, f_b)
     return f_a[1] < f_b[1]
   end)
 
-  vim.print('Implemented:')
-  vim.print(implemented_functions)
-  vim.print('Missing:')
-  vim.print(missing_implementations)
+  -- vim.print('Implemented:')
+  -- vim.print(implemented_functions)
+  -- vim.print('Missing:')
+  -- vim.print(missing_implementations)
 
   -- Return the not implemented functions
   return missing_implementations
 end
-
-vim.keymap.set('n', '<leader>gro', find_not_implemented_functions)
 
 local function keep_only_destructors(functions)
   local filtered = {}
@@ -1437,5 +1500,205 @@ M.get_snippets_from_not_implemented_functions = function()
 
   return snip_choices
 end
+
+local function find_loop_variable()
+  local f = M.get_surrounding_function()
+  if f == nil then
+    return
+  end
+
+  -- Contains the guess for a loop variable
+  local guesses = { single = {}, double = {}, best = {} }
+
+  local function store_guess(type, name, iterable_type, primitive_args)
+    local guess = { type = type, name = name, iterable_type = iterable_type, primitive_args = primitive_args }
+    vim.print(guess)
+    guesses.best = guess
+    guesses[iterable_type] = guess
+  end
+
+  local containers = {
+    ['std::array'] = 'single',
+    ['std::vector'] = 'single',
+    ['std::inplace_vector'] = 'single',
+    ['std::deque'] = 'single',
+    ['std::forward_list'] = 'single',
+    ['std::list'] = 'single',
+    ['std::set'] = 'single',
+    ['std::map'] = 'double',
+    ['std::multiset'] = 'single',
+    ['std::multimap'] = 'double',
+    ['std::unordered_set'] = 'single',
+    ['std::unordered_map'] = 'double',
+    ['std::unordered_multiset'] = 'single',
+    ['std::unordered_multimap'] = 'double',
+    ['std::stack'] = '',
+    ['std::queue'] = '',
+    ['std::priority_queue'] = '',
+    ['std::flat_set'] = 'single',
+    ['std::flat_map'] = 'double',
+    ['std::flat_multiset'] = 'single',
+    ['std::flat_multimap'] = 'double',
+    ['std::span'] = 'single',
+    ['std::mdspan'] = 'single',
+  }
+
+  local function get_iterable_type(type_string)
+    type_string = remove_template(type_string)
+    return containers[type_string] or ''
+  end
+
+  local function parse_parameters(node)
+    if is_parameter(node) then
+      local type_node = node:field('type')[1]
+      local typename = get_node_text(type_node)
+      local iterable_type = get_iterable_type(typename)
+      if iterable_type == '' then
+        return false
+      end
+      local identifier = get_node_text(node:field('declarator')[1])
+      vim.print('Arg type: ' .. typename)
+      vim.print('Arg name: ' .. identifier)
+      vim.print('Arg iterable: ' .. get_iterable_type(typename))
+
+      -- Save it to guesses
+      store_guess(typename, identifier, iterable_type, are_all_template_args_primitive(type_node))
+    end
+  end
+
+  -- The first row that we can get variables to loop over from
+  local cursor_row, _ = unpack(vim.api.nvim_win_get_cursor(0))
+  local function look_for_loop_types(node)
+    if get_row(node) >= cursor_row then
+      return true
+    end
+
+    if node:type() == 'parameter_list' then
+      search_down_until(node, parse_parameters)
+    elseif node:type() == 'declaration' then
+      local type_node = node:field('type')[1]
+      local typename = get_node_text(type_node)
+      local iterable_type = get_iterable_type(typename)
+      if iterable_type == '' then
+        return false
+      end
+
+      -- One of
+      -- std::vector<int> v; // declarator(identifier)
+      -- std::vector<int> v = {1, 2, 3}; // declarator(declarator(identifier))
+      local declarator = node:field('declarator')[1]
+      local identifier = ''
+      if declarator:type() == 'identifier' then
+        identifier = get_node_text(declarator)
+      else
+        local inner_declarator = declarator:field('declarator')[1]
+        if inner_declarator:type() == 'identifier' then
+          identifier = get_node_text(inner_declarator)
+        end
+      end
+
+      vim.print('Decl type: ' .. typename)
+      vim.print('Decl name: ' .. identifier)
+      vim.print('Decl iterable: ' .. get_iterable_type(typename))
+
+      -- Save it to guesses
+      store_guess(typename, identifier, iterable_type, are_all_template_args_primitive(type_node))
+    end
+  end
+
+  -- vim.print(get_node_text(get_node_at_cursor(0)))
+  search_down_until(f, look_for_loop_types)
+
+  return guesses
+end
+
+local function swap(table, pos1, pos2)
+  table[pos1], table[pos2] = table[pos2], table[pos1]
+  return table
+end
+
+M.get_for_loop_choices_for_snippet = function()
+  local ls = require('luasnip')
+  local fmta = require('luasnip.extras.fmt').fmta
+  local sn = ls.snippet_node
+  local i = ls.insert_node
+  local c = ls.choice_node
+  local extras = require('luasnip.extras')
+  local rep = extras.rep
+  local variable_guesses = find_loop_variable()
+  local single_name = 'container'
+  local single_type = 'auto const&'
+  local double_name = 'map'
+  local double_type = 'auto const&'
+
+  -- Check the names of the variables
+  if variable_guesses ~= nil and not vim.tbl_isempty(variable_guesses.best) then
+    if not vim.tbl_isempty(variable_guesses.single) then
+      single_name = variable_guesses.single.name
+
+      if variable_guesses.single.primitive_args then
+        single_type = 'auto'
+      end
+    end
+
+    if not vim.tbl_isempty(variable_guesses.double) then
+      double_name = variable_guesses.double.name
+
+      if variable_guesses.double.primitive_args then
+        double_type = 'auto'
+      end
+    end
+  end
+
+  local choices = {
+    sn(
+      nil,
+      fmta( -- Ranged for loop
+        [[
+          <> <> : <>
+        ]],
+        { i(1, single_type), i(2, 'element'), i(3, single_name) }
+      )
+    ),
+    sn(
+      nil,
+      fmta( -- Indexed for loop
+        [[
+          <> <> = 0; <> << <>; <>++
+        ]],
+        { i(1, 'size_t'), i(2, 'i'), rep(2), i(3, 'count'), rep(2) }
+      )
+    ),
+    sn(
+      nil,
+      fmta( -- Get '\n' terminated strings
+        [[
+          std::string <>; std::getline(<>, <>);
+        ]],
+        { i(1, 'line'), i(2, 'std::cin'), rep(1) }
+      )
+    ),
+    sn(
+      nil,
+      fmta( -- Iterate over map
+        [[
+          <> [<>, <>] : <>
+        ]],
+        { i(1, double_type), i(2, 'key'), i(3, 'value'), i(4, double_name) }
+      )
+    ),
+  }
+
+  if variable_guesses ~= nil and not vim.tbl_isempty(variable_guesses.best) then
+    if variable_guesses.best.iterable_type == 'double' then
+      -- Best guess is a map, iterate over map
+      swap(choices, 1, #choices)
+    end
+  end
+
+  return sn(nil, c(1, choices))
+end
+
+vim.keymap.set('n', '<leader>gro', find_loop_variable)
 
 return M

@@ -37,11 +37,14 @@ return {
       default = util.merge({ augend.constant.alias.bool }, default),
     })
 
+    local cmake = util.merge(default, { augend.constant.new({ elements = { 'TRUE', 'FALSE' } }) })
+    cmake = util.merge(cmake, { augend.constant.new({ elements = { 'ON', 'OFF' } }) })
+
     config.augends:on_filetype({
       python = util.merge({ augend.constant.new({ elements = { 'True', 'False' } }) }, default),
       markdown = util.merge({ augend.misc.alias.markdown_header }, default),
 
-      cmake = util.merge({ augend.constant.new({ elements = { 'ON', 'OFF' } }) }, default),
+      cmake = cmake,
 
       cpp = util.merge({
         augend.constant.new({

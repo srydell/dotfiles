@@ -35,7 +35,7 @@ local function get_function()
   local functions = {}
   local add_simple_function = true
   local cpp_ts = require('srydell.treesitter.cpp')
-  if cpp_ts.is_in_function() then
+  if cpp_ts.get_surrounding_function() ~= nil then
     -- Lambda only possible
     add_simple_function = false
     functions = {
@@ -86,6 +86,10 @@ local function get_surrounding_classname()
     return sn(nil, { t(class) })
   end
   return sn(nil, { i(1, 'Class') })
+end
+
+local function get_for_loop_choices(_)
+  local cpp_ts = require('srydell.treesitter.cpp')
 end
 
 return {
@@ -449,44 +453,7 @@ case %s::%s: {
         }
       ]],
       {
-        c(1, {
-          sn(
-            nil,
-            fmta( -- Ranged for loop
-              [[
-                <> <> : <>
-              ]],
-              { i(1, 'auto const&'), i(2, 'element'), i(3, 'container') }
-            )
-          ),
-          sn(
-            nil,
-            fmta( -- Indexed for loop
-              [[
-                <> <> = 0; <> << <>; <>++
-              ]],
-              { i(1, 'size_t'), i(2, 'i'), rep(2), i(3, 'count'), rep(2) }
-            )
-          ),
-          sn(
-            nil,
-            fmta( -- Get '\n' terminated strings
-              [[
-                std::string <>; std::getline(<>, <>);
-              ]],
-              { i(1, 'line'), i(2, 'std::cin'), rep(1) }
-            )
-          ),
-          sn(
-            nil,
-            fmta( -- Iterate over map
-              [[
-                <> [<>, <>] : <>
-              ]],
-              { i(1, 'auto const&'), i(2, 'key'), i(3, 'value'), i(4, 'map') }
-            )
-          ),
-        }),
+        d(1, require('srydell.treesitter.cpp').get_for_loop_choices_for_snippet),
         d(2, get_visual),
         i(0),
       }

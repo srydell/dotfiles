@@ -30,7 +30,7 @@ local function start_screencasting()
   local task = overseer.new_task({
     name = 'Screencasting',
     cmd = 'ffmpeg',
-    args = { '-f', 'avfoundation', '-i', '"2:none"', file .. extension },
+    args = { '-f', 'avfoundation', '-i', '"1:none"', file .. extension },
     components = { { 'on_exit_set_status', success_codes = { 255 } } }, -- Sending SIGINT is intentional
   })
   task:start()

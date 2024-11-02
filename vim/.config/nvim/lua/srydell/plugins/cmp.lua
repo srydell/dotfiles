@@ -23,6 +23,11 @@ return {
         local modifiable = vim.api.nvim_get_option_value('modifiable', {})
         return dap_req and modifiable
       end,
+
+      -- completion = {
+      --   autocomplete = false,
+      -- },
+
       snippet = {
         expand = function(args)
           ls.lsp_expand(args.body)
