@@ -60,8 +60,8 @@ vim.keymap.set('n', '<leader>Gr', ':Gread<CR>')
 
 -- Open appropriate help on the word under the cursor
 -- Filetype dependent.
--- Takes a browser and OS
-vim.keymap.set('n', '<leader>h', ':call helpDocs#GetHelpDocs(g:browser, g:currentOS)<CR>', { silent = true })
+-- Takes a browser
+vim.keymap.set('n', '<leader>h', ':call helpDocs#GetHelpDocs()<CR>', { silent = true })
 
 -- Prompt for a command to run in the nearest tmux pane ( [t]mux [c]ommand )
 vim.keymap.set('n', '<leader>tc', ':VimuxPromptCommand<CR>', { silent = true })
