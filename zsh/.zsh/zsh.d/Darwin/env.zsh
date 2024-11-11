@@ -16,6 +16,9 @@ export CPPFLAGS="-I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/llvm/inclu
 # export PATH="/opt/homebrew/opt/conan@1/bin:$PATH"
 export PATH="$HOME/.rubies/ruby-3.3.0/bin:$PATH"
 
+# Use the jdk from homebrew
+export JAVA_HOME=/opt/homebrew/opt/openjdk
+
 # Brew related env
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
