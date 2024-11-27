@@ -28,7 +28,7 @@ function! helpDocs#GetHelpDocs() abort
   endif
 
   if !exists('g:browser')
-    if g:currentOS #== 'Darwin'
+    if g:currentOS =~ 'Darwin'
       let g:browser = 'Safari'
     else
       let g:browser = 'firefox-developer-edition'
@@ -62,7 +62,7 @@ function! helpDocs#GetHelpDocs() abort
   " silent ! open -a Safari 'http://www.vim.org'
   let s:cmd = [
         \ 'silent !',
-        \ g:currentOS ==# 'Darwin' ? 'open -a' : '',
+        \ g:currentOS =~ 'Darwin' ? 'open -a' : '',
         \ g:browser,
         \ "'" . s:url . "'"
         \]

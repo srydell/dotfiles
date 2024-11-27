@@ -60,4 +60,4 @@ local function split_into_parts()
     :find()
 end
 
-vim.keymap.set('n', '<leader>as', split_into_parts)
+vim.keymap.set('n', '<leader>as', split_into_parts, { buffer = true })

@@ -1,5 +1,19 @@
 return {
   s(
+    { trig = 'cls', wordTrig = true, dscr = 'Class' },
+    fmta(
+      [[
+        public class <> {
+          <>
+        }
+      ]],
+      {
+        i(1, 'MyClass'),
+        i(0),
+      }
+    )
+  ),
+  s(
     { trig = 'p', wordTrig = true, dscr = 'Print stuff' },
     fmta(
       [[

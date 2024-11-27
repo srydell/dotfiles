@@ -1699,6 +1699,6 @@ M.get_for_loop_choices_for_snippet = function()
   return sn(nil, c(1, choices))
 end
 
-vim.keymap.set('n', '<leader>gro', find_loop_variable)
+-- vim.keymap.set('n', '<leader>gro', find_loop_variable, { buffer = true })
 
 return M

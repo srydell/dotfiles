@@ -77,7 +77,6 @@ vim.keymap.set('n', '<leader>tf', ':VimuxZoomRunner<CR>', { silent = true })
 
 local common = require('srydell.compiler.common')
 vim.keymap.set('n', 'm<CR>', common.run, { silent = true })
--- vim.keymap.set('n', 'm<space>', ':make', { silent = true })
 
 -- Move through the valid compilers. Set by b:valid_compilers
 vim.keymap.set('n', ']c', common.go_to_next_compiler, { silent = true })

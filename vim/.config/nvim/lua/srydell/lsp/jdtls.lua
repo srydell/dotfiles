@@ -42,8 +42,8 @@ function M.setup()
   vim.list_extend(bundles, vim.split(vim.fn.glob(path_to_jtest .. '/extension/server/*.jar', true), '\n'))
 
   -- LSP settings for Java.
-  local opts = { noremap = true, silent = true }
   local on_attach = function(_, bufnr)
+    local opts = { noremap = true, silent = true, buffer = bufnr }
     jdtls.setup_dap({ hotcodereplace = 'auto' })
     jdtls_dap.setup_dap_main_class_configs()
     jdtls_setup.add_commands()
@@ -214,11 +214,11 @@ function M.setup()
       --         }
       --     }
       -- }
-      -- project = {
-      -- 	referencedLibraries = {
-      -- 		"**/lib/*.jar",
-      -- 	},
-      -- },
+      project = {
+        referencedLibraries = {
+          '**/lib/*.jar',
+        },
+      },
     },
   }
 

@@ -271,9 +271,9 @@ return {
   s(
     { trig = 'map', wordTrig = true, dscr = 'Setup a keymap' },
     fmta(
-      [==[
-          vim.keymap.set('<>', '<>', '<>')
-        ]==],
+      [[
+        vim.keymap.set('<>', '<>', <>, { buffer = true })
+      ]],
       {
         i(1, 'n'),
         i(2, 'keys'),

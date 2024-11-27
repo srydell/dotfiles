@@ -88,10 +88,6 @@ local function get_surrounding_classname()
   return sn(nil, { i(1, 'Class') })
 end
 
-local function get_for_loop_choices(_)
-  local cpp_ts = require('srydell.treesitter.cpp')
-end
-
 return {
   s(
     { trig = 'switch', wordTrig = true, dscr = 'switch statement' },

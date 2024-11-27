@@ -12,7 +12,7 @@ vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
 })
 
 vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
-  pattern = { '*.py' },
+  pattern = { '*.py', '*.java' },
   group = srydell_indentation,
   callback = function()
     vim.opt.expandtab = true

@@ -38,6 +38,14 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
 })
 
 vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
+  pattern = '*.json_v1',
+  group = filetype_detect,
+  callback = function()
+    vim.cmd('set filetype=json')
+  end,
+})
+
+vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
   pattern = 'pom.xml',
   group = filetype_detect,
   callback = function()
