@@ -18,7 +18,7 @@ return {
         'git_config',
         'git_rebase',
         'gitattributes',
-        'gitcommit',
+        -- 'gitcommit',
         'gitignore',
         'heex',
         'html',

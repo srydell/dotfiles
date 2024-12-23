@@ -10,13 +10,17 @@ local function get_compilers()
   if util.contains({ 'dsf', 'oal', 'SPSCQueue' }, project.name) then
     return {
       {
-        name = 'git ' .. icons.up .. icons.down .. ' ' .. icons.building,
-        tasks = { { 'git push' } },
+        name = 'docker ' .. icons.building,
+        tasks = { { 'docker run' } },
       },
-      {
-        name = 'rsync ' .. icons.building,
-        tasks = { { 'rsync', project = project.name } },
-      },
+      -- {
+      --   name = 'git ' .. icons.up .. icons.down .. ' ' .. icons.building,
+      --   tasks = { { 'git push' } },
+      -- },
+      -- {
+      --   name = 'rsync ' .. icons.building,
+      --   tasks = { { 'rsync', project = project.name } },
+      -- },
     }
   end
 

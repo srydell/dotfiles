@@ -305,6 +305,7 @@ local function remove_declaration_only_qualifiers(qualifiers)
   qualifiers = qualifiers:gsub('final', '')
   qualifiers = qualifiers:gsub('override', '')
   qualifiers = qualifiers:gsub('noexcept', '')
+  qualifiers = qualifiers:gsub('explicit', '')
 
   -- Remove whitespace
   qualifiers = qualifiers:gsub('^%s*', '')
@@ -1282,6 +1283,12 @@ local function build_function_snippet(info)
     return
   end
   local function_name = get_node_text(function_name_node, info.buffer)
+
+  -- If there it is a class function, prepend 'ClassName::'
+  local surrounding_class_node = search_up_until(info.node, is_class_or_struct)
+  if surrounding_class_node ~= nil then
+    function_name = M.get_class_name(surrounding_class_node, info.buffer) .. '::' .. function_name
+  end
 
   local param_snippet = build_parameter_snippet(info.node, info.buffer)
   if param_snippet == nil then

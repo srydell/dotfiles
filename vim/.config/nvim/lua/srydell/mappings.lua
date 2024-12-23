@@ -2,8 +2,16 @@
 -- <leader><lowerCaseLetter> for harmless commands
 -- <leader><upperCaseLetter> for potentially harmful commands
 
+local builtin = require('telescope.builtin')
+
+local function find_neovim_files()
+  builtin.find_files({
+    cwd = vim.fn.stdpath('config'),
+  })
+end
+
 -- Open buffer and edit
-vim.keymap.set('n', '<leader>ev', ':VimNOut edit ~/.config/nvim/init.lua<CR>', { silent = true })
+vim.keymap.set('n', '<leader>ev', find_neovim_files, { silent = true })
 vim.keymap.set('n', '<leader>et', ':VimNOut edit ~/.tmux.conf<CR>', { silent = true })
 vim.keymap.set('n', '<leader>ep', ':VimNOut edit ~/.config/nvim/plugin/projectionist.lua<CR>', { silent = true })
 
@@ -17,12 +25,6 @@ vim.keymap.set(
 vim.keymap.set('n', '<leader>em', ':VimNOut edit ~/.config/nvim/lua/srydell/mappings.lua<CR>', { silent = true })
 vim.keymap.set('n', '<leader>ef', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}.lua<CR>', { silent = true })
 vim.keymap.set('n', '<leader>eaf', ':VimNOut edit ~/.config/nvim/after/ftplugin/{filetype}.lua<CR>', { silent = true })
-vim.keymap.set(
-  'n',
-  '<leader>eef',
-  ':VimNOut edit ~/.config/nvim/autoload/extra_filetypes/{filetype}.vim<CR>',
-  { silent = true }
-)
 
 -- Compiler
 vim.keymap.set('n', '<leader>ec', ':VimNOut edit ~/.config/nvim/compiler/{compiler}.vim<CR>', { silent = true })
@@ -30,7 +32,6 @@ vim.keymap.set('n', '<leader>ecs', ':VimNOut edit ~/.config/nvim/integrations/co
 vim.keymap.set('n', '<leader>eac', ':VimNOut edit ~/.config/nvim/compiler/{files}<CR>', { silent = true })
 
 -- Fuzzy finder
-local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
 vim.keymap.set('n', '<leader>fz', builtin.current_buffer_fuzzy_find, {})
 vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
