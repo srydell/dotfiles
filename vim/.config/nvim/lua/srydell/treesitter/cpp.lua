@@ -353,6 +353,8 @@ local function remove_declaration_only_return_qualifiers(return_type)
   return_type = return_type:gsub('inline', '')
   return_type = return_type:gsub('static', '')
   return_type = return_type:gsub('virtual', '')
+  -- This happens since dtor/ctor have no return type explicitly
+  return_type = return_type:gsub('explicit', '')
 
   -- Remove whitespace
   return_type = return_type:gsub('^%s*', '')
@@ -1271,8 +1273,8 @@ local function build_parameter_snippet(function_node, buffer)
   return { params = all_params, snip_nodes = insert_nodes }
 end
 
--- name = 'MyClass::MyClass' or 'Stuff get_stuff'
 -- info = { node: TSNode, buffer: Int }
+-- Where info.node is a function
 local function build_function_snippet(info)
   local ls = require('luasnip')
   local fmta = require('luasnip.extras.fmt').fmta
@@ -1519,7 +1521,6 @@ local function find_loop_variable()
 
   local function store_guess(type, name, iterable_type, primitive_args)
     local guess = { type = type, name = name, iterable_type = iterable_type, primitive_args = primitive_args }
-    vim.print(guess)
     guesses.best = guess
     guesses[iterable_type] = guess
   end
@@ -1564,9 +1565,6 @@ local function find_loop_variable()
         return false
       end
       local identifier = get_node_text(node:field('declarator')[1])
-      vim.print('Arg type: ' .. typename)
-      vim.print('Arg name: ' .. identifier)
-      vim.print('Arg iterable: ' .. get_iterable_type(typename))
 
       -- Save it to guesses
       store_guess(typename, identifier, iterable_type, are_all_template_args_primitive(type_node))
@@ -1604,16 +1602,11 @@ local function find_loop_variable()
         end
       end
 
-      vim.print('Decl type: ' .. typename)
-      vim.print('Decl name: ' .. identifier)
-      vim.print('Decl iterable: ' .. get_iterable_type(typename))
-
       -- Save it to guesses
       store_guess(typename, identifier, iterable_type, are_all_template_args_primitive(type_node))
     end
   end
 
-  -- vim.print(get_node_text(get_node_at_cursor(0)))
   search_down_until(f, look_for_loop_types)
 
   return guesses

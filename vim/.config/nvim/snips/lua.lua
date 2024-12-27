@@ -218,6 +218,16 @@ return {
     )
   ),
 
+  s(
+    { trig = 'pv', wordTrig = true, dscr = 'print variable' },
+    fmt(
+      [[
+        vim.print('{} = ' .. {})
+      ]],
+      { rep(1), i(1, 'variable') }
+    )
+  ),
+
   s({ trig = 'p', wordTrig = true, dscr = 'print' }, {
     c(1, {
       sn(
