@@ -8,10 +8,17 @@ local function get_compilers()
 
   local icons = require('srydell.constants').icons
   if util.contains({ 'dsf', 'oal', 'SPSCQueue' }, project.name) then
+    local docker = require('nvim-web-devicons').get_icon('Dockerfile', '')
+    local tool_path = vim.fn.stdpath('config') .. '/tools/'
+    vim.g.srydell_compiler_option = 'all'
     return {
       {
-        name = 'docker ' .. icons.building,
-        tasks = { { 'docker run' } },
+        name = docker,
+        tasks = { { 'docker run', command = { tool_path .. 'build_waf.sh' } } },
+      },
+      {
+        name = docker .. ' unit_test_dsf_util',
+        tasks = { { 'docker run', command = { tool_path .. 'build_waf_target.sh', 'unit_test_dsf_util' } } },
       },
       -- {
       --   name = 'git ' .. icons.up .. icons.down .. ' ' .. icons.building,

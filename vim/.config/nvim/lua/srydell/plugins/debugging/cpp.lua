@@ -1,8 +1,10 @@
 local M = {}
 
 -- Look through conan libs and add gcc libs as well
+-- NOTE: Requires fd
 local function get_ld_libs()
-  local libs = io.popen('find ' .. os.getenv('HOME') .. '/.conan/data/ -iname lib')
+  local home = os.getenv('HOME')
+  local libs = io.open("fd --case-sensitive --type d '^lib$'" .. home .. '/.conan/data')
   if not libs then
     return ''
   end
@@ -12,7 +14,7 @@ local function get_ld_libs()
     .. '/opt/rh/gcc-toolset-10/root/usr/lib/dyninst:'
     .. '/opt/rh/gcc-toolset-10/root/usr/lib64:'
     .. '/opt/rh/gcc-toolset-10/root/usr/lib:'
-    .. os.getenv('HOME')
+    .. home
     .. '/code/dsf/build/debug/lib'
 
   for lib in libs:lines() do
@@ -56,7 +58,7 @@ M.setup = function()
           pickers
             .new(opts, {
               prompt_title = 'Path to executable',
-              finder = finders.new_oneshot_job({ 'fd', '--hidden', '--no-ignore', '--type', 'x' }, {}),
+              finder = finders.new_oneshot_job({ 'fd', '--no-ignore', '--type', 'x' }, {}),
               sorter = conf.generic_sorter(opts),
               attach_mappings = function(buffer_number)
                 actions.select_default:replace(function()
@@ -98,7 +100,7 @@ M.setup = function()
             .new(opts, {
               prompt_title = 'Path to executable',
               finder = finders.new_oneshot_job(
-                { 'fd', '--hidden', '--no-ignore', '--type', 'x', '--full-path', './build/debug/bin' },
+                { 'fd', '--no-ignore', '--type', 'x', '--full-path', './build/debug/bin' },
                 {}
               ),
               sorter = conf.generic_sorter(opts),

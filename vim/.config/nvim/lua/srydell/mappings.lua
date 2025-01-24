@@ -26,11 +26,6 @@ vim.keymap.set('n', '<leader>em', ':VimNOut edit ~/.config/nvim/lua/srydell/mapp
 vim.keymap.set('n', '<leader>ef', ':VimNOut edit ~/.config/nvim/ftplugin/{filetype}.lua<CR>', { silent = true })
 vim.keymap.set('n', '<leader>eaf', ':VimNOut edit ~/.config/nvim/after/ftplugin/{filetype}.lua<CR>', { silent = true })
 
--- Compiler
-vim.keymap.set('n', '<leader>ec', ':VimNOut edit ~/.config/nvim/compiler/{compiler}.vim<CR>', { silent = true })
-vim.keymap.set('n', '<leader>ecs', ':VimNOut edit ~/.config/nvim/integrations/compiler/{files}<CR>', { silent = true })
-vim.keymap.set('n', '<leader>eac', ':VimNOut edit ~/.config/nvim/compiler/{files}<CR>', { silent = true })
-
 -- Fuzzy finder
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
 vim.keymap.set('n', '<leader>fz', builtin.current_buffer_fuzzy_find, {})

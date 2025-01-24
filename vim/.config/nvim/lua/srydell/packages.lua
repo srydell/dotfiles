@@ -61,14 +61,8 @@ require('lazy').setup({
   -- Add ftdetect, compiler and other good stuff for elixir
   'elixir-editors/vim-elixir',
 
-  -- Add syntax highlighting for i3 config files
-  'mboughaba/i3config.vim',
-
   -- Colorscheme
   { 'ellisonleao/gruvbox.nvim', priority = 1000 },
-
-  -- Add end, fi, endfunction and so on automatically
-  'tpope/vim-endwise',
 
   -- Git commands
   'tpope/vim-fugitive',
@@ -109,6 +103,7 @@ require('lazy').setup({
   require('srydell.plugins.dial'),
   require('srydell.plugins.lazydev'),
   require('srydell.plugins.quicker'),
+  require('srydell.plugins.refactoring'),
   -- require('srydell.plugins.copilot'),
 
   install = {

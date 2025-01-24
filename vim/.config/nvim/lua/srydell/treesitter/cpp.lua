@@ -214,6 +214,20 @@ local function are_all_template_args_primitive(qualified_identifier)
   return true
 end
 
+-- Check wether the node under the cursor is within a parameter list or not.
+-- If it is, return the parameter list node.
+M.get_surrounding_argument_list = function()
+  local node_at_cursor = get_node_at_cursor()
+  if node_at_cursor == nil then
+    return
+  end
+
+  local function is_argument(node)
+    return node:type() == 'argument_list'
+  end
+  return search_up_until(node_at_cursor, is_argument)
+end
+
 -- Check wether the node under the cursor is within a function or not.
 -- If it is, return the function node.
 M.get_surrounding_function = function()
@@ -818,7 +832,7 @@ end
 --
 -- #include <system_includes>
 function M.divide_and_sort_includes()
-  local includes = { external = {}, system = {}, internal = {}, internal_same_dir = {} }
+  local includes = { external = {}, system = {}, internal = {}, internal_same_dir = {}, internal_my_own = {} }
   local locations = { start_row = nil, end_row = nil }
 
   local function compare_location(node)
@@ -836,15 +850,22 @@ function M.divide_and_sort_includes()
     end
   end
 
+  -- POSIX headers
+  local c_headers = require('srydell.data.c_headers')
+  -- C++ standard library headers
+  local cpp_headers = require('srydell.data.cpp_headers')
   local function is_system(text)
-    -- sys/* are system files on Linux/MacOS
-    if text:find('sys/') ~= nil then
-      return true
-    end
+    return cpp_headers[text] ~= nil or c_headers[text] ~= nil
+  end
 
-    -- Otherwise they should not have '/' or be some specific C library
-    if text:find('/') == nil and text:find('oal') == nil then
-      return true
+  -- if this file is 'hello.cpp' root_of_file = 'hello'
+  local root_of_file = '"' .. vim.fn.expand('%:t:r')
+  local possible_headers_to_this = { root_of_file .. '.h"', root_of_file .. '.hpp"', root_of_file .. '.hxx"' }
+  local function is_header_to_this(include)
+    for _, possible_header in ipairs(possible_headers_to_this) do
+      if include == possible_header then
+        return true
+      end
     end
     return false
   end
@@ -854,7 +875,11 @@ function M.divide_and_sort_includes()
       -- E.g. "myLib/stuff.h"
       -- or "local_stuff.h"
       if text:find('/') == nil then
-        table.insert(includes['internal_same_dir'], { text, node })
+        if is_header_to_this(text) then
+          table.insert(includes['internal_my_own'], { text, node })
+        else
+          table.insert(includes['internal_same_dir'], { text, node })
+        end
       else
         table.insert(includes['internal'], { text, node })
       end
@@ -910,10 +935,12 @@ function M.divide_and_sort_includes()
 
   -- Create the new include lines
   local lines = {}
-  for _, category in ipairs({ 'internal_same_dir', 'internal', 'external', 'system' }) do
-    -- Don't add a newline between internal_same_dir and internal
-    if category ~= 'internal' and #includes[category] > 0 then
-      table.insert(lines, '')
+  for _, category in ipairs({ 'internal_my_own', 'internal_same_dir', 'internal', 'external', 'system' }) do
+    -- Only add empty lines between { internal* } { external } { system }
+    if category == 'external' or category == 'system' and #includes[category] > 0 then
+      if #includes[category] > 0 then
+        table.insert(lines, '')
+      end
     end
     for _, text_and_node in ipairs(includes[category]) do
       table.insert(lines, '#include ' .. text_and_node[1])
@@ -1057,11 +1084,53 @@ local function remove_template(type_string)
   return type_string
 end
 
+local function has_code_within_includes()
+  local has_seen_include = false
+  local has_seen_code_after_first_include = false
+
+  for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, -1, false)) do
+    local is_include = line:find('^#include') ~= nil
+    local is_empty_line = line == ''
+    local is_code = not is_include and not is_empty_line
+
+    -- Is this the first include in the file?
+    if is_include and not has_seen_include then
+      has_seen_include = true
+    -- Code after the first include?
+    elseif is_code and has_seen_include then
+      has_seen_code_after_first_include = true
+    end
+
+    -- Code between the first include and one that is seen now?
+    if has_seen_include and has_seen_code_after_first_include and is_include then
+      return true
+    end
+  end
+
+  return false
+end
+
 -- Look through the types in the current file.
 -- Include the necessary standard library headers for those types.
 -- Avoid doubles.
-M.include_necessary_types = function()
-  local known_includes = require('srydell.treesitter.types_to_headers')
+-- Argument user_includes provides a way to add user defined includes. E.g.
+-- include_necessary_types({
+--   ['fmt::format'] = '<fmt/format.h>',
+-- })
+M.include_necessary_types = function(user_includes)
+  if has_code_within_includes() then
+    -- Give up early
+    return
+  end
+
+  -- Are there code within the current includes? Give up
+  local known_includes = require('srydell.data.types_to_headers')
+
+  -- Merge the user provided with the standard library ones
+  user_includes = user_includes or {}
+  for type, include in pairs(user_includes) do
+    known_includes[type] = include
+  end
 
   local unique_includes = {}
   local function collect_types(node)

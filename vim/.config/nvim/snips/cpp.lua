@@ -35,7 +35,21 @@ local function get_function()
   local functions = {}
   local add_simple_function = true
   local cpp_ts = require('srydell.treesitter.cpp')
-  if cpp_ts.get_surrounding_function() ~= nil then
+  if cpp_ts.get_surrounding_argument_list() ~= nil then
+    -- Lambda only possible
+    add_simple_function = false
+    functions = {
+      sn(
+        nil,
+        fmta(
+          [[
+            [<>](<>) { <> }
+          ]],
+          { i(1), i(2), i(3) }
+        )
+      ),
+    }
+  elseif cpp_ts.get_surrounding_function() ~= nil then
     -- Lambda only possible
     add_simple_function = false
     functions = {
@@ -145,13 +159,13 @@ case %s::%s: {
     { trig = 'post', wordTrig = true, dscr = 'Post to a context' },
     fmta(
       [[
-        post(ExecutorContext::<>, <>,
+        post(<>, <>,
           [<>]() {
             <><>
         });
       ]],
       {
-        i(1, 'Out'),
+        i(1, 'ExecutorContext::Out'),
         i(2, 'm_executor'),
         i(3),
         d(4, get_visual),

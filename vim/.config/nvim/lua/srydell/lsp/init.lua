@@ -1,7 +1,3 @@
-local constants = require('srydell.constants')
-
-local util = require('srydell.util')
-
 require('mason').setup({
   pip = {
     install_args = {
@@ -17,10 +13,40 @@ require('mason').setup({
 
 require('mason-lspconfig').setup()
 
+local lsp_servers = {
+  'bashls',
+  'clangd',
+  'helm-ls',
+  'jdtls',
+  'lua_ls',
+  'marksman',
+  'neocmake',
+  'pylsp',
+  'texlab',
+  'yaml-language-server',
+  -- 'elixirls',
+  -- 'perlnavigator',
+  -- 'ruby-lsp',
+}
+
+local tools = {
+  unpack(lsp_servers),
+
+  -- Debug servers
+  'codelldb',
+  'debugpy',
+  'bash-debug-adapter',
+
+  -- Formatters
+  'ruff',
+  'shellcheck',
+  'stylua',
+}
+
 require('mason-tool-installer').setup({
   -- a list of all tools you want to ensure are installed upon
   -- start; they should be the names Mason uses for each tool
-  ensure_installed = constants.tools,
+  ensure_installed = tools,
 })
 
 local lspconfig = require('lspconfig')
@@ -34,11 +60,6 @@ local on_attach = function(_, bufnr)
 
   -- opts.desc = 'Show line diagnostics'
   -- vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float, opts)
-
-  -- if vim.bo.ft == 'cpp' then
-  --   require('clangd_extensions.inlay_hints').setup_autocmd()
-  --   require('clangd_extensions.inlay_hints').set_inlay_hints()
-  -- end
 
   opts.desc = 'Rename declarator'
   vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
@@ -56,8 +77,9 @@ local on_attach = function(_, bufnr)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
 end
 
-local no_auto_setup = { 'lua_ls', 'jdtls', 'ruby-lsp', 'helm-ls', 'yaml-language-server' }
-for _, lsp in ipairs(constants.lsp_servers) do
+local util = require('srydell.util')
+local no_auto_setup = { 'lua_ls', 'jdtls', 'ruby-lsp', 'helm-ls', 'yaml-language-server', 'bashls' }
+for _, lsp in ipairs(lsp_servers) do
   if not util.contains(no_auto_setup, lsp) then
     lspconfig[lsp].setup({
       capabilities = capabilities,
@@ -68,13 +90,14 @@ end
 
 -- setup sourcekit
 lspconfig['sourcekit'].setup({
-  capabilities = util.merge({
+  capabilities = {
     workspace = {
       didChangeWatchedFiles = {
         dynamicRegistration = true,
       },
     },
-  }, capabilities),
+    unpack(capabilities),
+  },
   on_attach = on_attach,
   cmd = {
     '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp',
@@ -83,7 +106,7 @@ lspconfig['sourcekit'].setup({
   root_dir = function(filename, _)
     return lsp_util.root_pattern('buildServer.json')(filename)
       or lsp_util.root_pattern('*.xcodeproj', '*.xcworkspace')(filename)
-      or lsp_util.find_git_ancestor(filename)
+      or vim.fs.dirname(vim.fs.find('.git', { path = filename, upward = true })[1])
       or lsp_util.root_pattern('Package.swift')(filename)
   end,
 })
@@ -96,6 +119,21 @@ lspconfig['lua_ls'].setup({
     Lua = {
       completion = {
         callSnippet = 'Replace',
+      },
+    },
+  },
+})
+
+-- TODO: The shfmt executable is named platform depentent e.g. shfmt_v3.10.0_darwin_arm64
+-- local shfmt = require('mason-registry').get_package('shfmt'):get_install_path()
+lspconfig['bashls'].setup({
+  capabilities = capabilities,
+  on_attach = on_attach,
+  settings = {
+    bashIde = {
+      shellcheckPath = require('mason-registry').get_package('shellcheck'):get_install_path() .. '/shellcheck',
+      shfmt = {
+        path = 'shfmt',
       },
     },
   },

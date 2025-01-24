@@ -18,6 +18,7 @@ return {
     local dap_python = require('dap-python')
     local dap_cpp = require('srydell.plugins.debugging.cpp')
     local dap_swift = require('srydell.plugins.debugging.swift')
+    local dap_bash = require('srydell.plugins.debugging.bash')
 
     -- UI
     local my_dapui = require('srydell.plugins.debugging.dapui')
@@ -26,6 +27,7 @@ return {
 
     dap_cpp.setup()
     dap_swift.setup()
+    dap_bash.setup()
     dap_python.setup(registry.get_package('debugpy'):get_install_path() .. '/venv/bin/python')
 
     breakpoint_db.setup()

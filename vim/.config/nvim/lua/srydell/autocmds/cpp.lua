@@ -6,7 +6,10 @@ vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
   callback = function()
     local ts_cpp = require('srydell.treesitter.cpp')
     -- Include what is used
-    ts_cpp.include_necessary_types()
+    ts_cpp.include_necessary_types({
+      ['fmt::format'] = '<fmt/format.h>',
+      ['fmt::print'] = '<fmt/format.h>',
+    })
 
     -- Sort and divide them reasonably
     ts_cpp.divide_and_sort_includes()
