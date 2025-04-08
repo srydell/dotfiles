@@ -714,4 +714,16 @@ case %s::%s: {
       {}
     )
   ),
+
+  s(
+    { trig = 'tp', wordTrig = true, dscr = 'Template' },
+    fmt(
+      [[
+        template<typename {}>
+      ]],
+      {
+        i(1, 'T'),
+      }
+    )
+  ),
 }

@@ -221,4 +221,43 @@ function M.ternary(cond, trueStatement, falseStatement)
   end
 end
 
+M.get_executable_via_telescope = function(path)
+  local pickers = require('telescope.pickers')
+  local finders = require('telescope.finders')
+  local conf = require('telescope.config').values
+  local actions = require('telescope.actions')
+  local action_state = require('telescope.actions.state')
+
+  local opts = {}
+  local entry = nil
+  local handle = io.popen('fd --no-ignore --type x --full-path ' .. path)
+  if not handle then
+    return
+  end
+  local files = M.split(handle:read('*a'), '\n')
+  handle:close()
+  pickers
+    .new(opts, {
+      prompt_title = 'Path to executable',
+      finder = finders.new_table({
+        results = files,
+      }),
+      sorter = conf.generic_sorter(opts),
+      attach_mappings = function(prompt_buffer)
+        actions.select_default:replace(function()
+          entry = action_state.get_selected_entry()
+          vim.print('in the action')
+          vim.print(entry)
+          actions.close(prompt_buffer)
+        end)
+        return true
+      end,
+    })
+    :find()
+
+  vim.print('Outside of the find')
+  vim.print(entry)
+
+  return entry
+end
 return M

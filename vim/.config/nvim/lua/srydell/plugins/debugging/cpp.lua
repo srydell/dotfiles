@@ -4,7 +4,7 @@ local M = {}
 -- NOTE: Requires fd
 local function get_ld_libs()
   local home = os.getenv('HOME')
-  local libs = io.open("fd --case-sensitive --type d '^lib$'" .. home .. '/.conan/data')
+  local libs = io.popen("fd --case-sensitive --type d '^lib$'" .. home .. '/.conan/data'):read('*a')
   if not libs then
     return ''
   end
@@ -17,7 +17,7 @@ local function get_ld_libs()
     .. home
     .. '/code/dsf/build/debug/lib'
 
-  for lib in libs:lines() do
+  for lib in libs:gmatch('[^\r\n]+') do
     out = out .. ':' .. lib
   end
 
@@ -60,9 +60,9 @@ M.setup = function()
               prompt_title = 'Path to executable',
               finder = finders.new_oneshot_job({ 'fd', '--no-ignore', '--type', 'x' }, {}),
               sorter = conf.generic_sorter(opts),
-              attach_mappings = function(buffer_number)
+              attach_mappings = function(prompt_buffer)
                 actions.select_default:replace(function()
-                  actions.close(buffer_number)
+                  actions.close(prompt_buffer)
                   coroutine.resume(coro, action_state.get_selected_entry()[1])
                 end)
                 return true
@@ -104,9 +104,9 @@ M.setup = function()
                 {}
               ),
               sorter = conf.generic_sorter(opts),
-              attach_mappings = function(buffer_number)
+              attach_mappings = function(prompt_buffer)
                 actions.select_default:replace(function()
-                  actions.close(buffer_number)
+                  actions.close(prompt_buffer)
                   coroutine.resume(coro, { 'target create ' .. action_state.get_selected_entry()[1] })
                 end)
                 return true

@@ -19,7 +19,7 @@ return {
         [<>](<>)
       ]],
       {
-        i(1, 'link text'),
+        d(1, get_visual),
         i(2, 'link'),
       }
     )

@@ -21,15 +21,8 @@ return {
     formatters_by_ft = {
       cmake = { 'cmake_format' },
       cpp = { 'clang_format' },
-      javascript = { { 'prettierd', 'prettier' } },
       lua = { 'stylua' },
-      python = function(bufnr)
-        if require('conform').get_formatter_info('ruff_format', bufnr).available then
-          return { 'ruff_format' }
-        else
-          return { 'isort', 'black' }
-        end
-      end,
+      python = { 'ruff_format' },
       swift = { 'swiftformat_ext' },
       tex = { 'tex_fmt' },
     },
@@ -39,8 +32,10 @@ return {
         return
       end
 
-      if util.current_path_contains('dsf') or util.current_path_contains('oal') then
-        return
+      if vim.bo.ft == 'cpp' then
+        if util.current_path_contains('dsf') or util.current_path_contains('oal') then
+          return
+        end
       end
 
       -- ...additional logic...

@@ -18,14 +18,7 @@ return {
     end
 
     local function get_compiler()
-      local compiler = require('srydell.compiler.common').get_current_compiler()
-      if not compiler then
-        return '[]'
-      end
-      if vim.g.srydell_compiler_option ~= nil then
-        return '[' .. compiler.name .. ' ' .. vim.g.srydell_compiler_option .. ']'
-      end
-      return '[' .. compiler.name .. ']'
+      return '[' .. require('srydell.compiler.common').get_current_compiler_name() .. ']'
     end
 
     lualine.setup({

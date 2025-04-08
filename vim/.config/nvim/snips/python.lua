@@ -4,6 +4,20 @@ local get_visual = helpers.get_visual
 return {
 
   s(
+    { trig = 'tern', wordTrig = true, dscr = 'Ternary condition' },
+    fmta(
+      [[
+        <> if <> else <>
+      ]],
+      {
+        i(1, 'truthy'),
+        i(2, 'condition'),
+        i(3, 'falsy'),
+      }
+    )
+  ),
+
+  s(
     { trig = 'ctor', wordTrig = true, dscr = 'Constructor' },
     fmta(
       [[

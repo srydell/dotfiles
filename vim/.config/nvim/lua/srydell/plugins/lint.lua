@@ -38,7 +38,7 @@ return {
     -- setup
     lint.linters_by_ft = {
       -- cmake = { 'cmakelint' },
-      python = { 'ruff' },
+      -- python = { 'ruff' },
       swift = { 'swiftlint' },
       -- sh = { 'shellcheck' },
     }

@@ -2,9 +2,49 @@
 
 local M = {}
 
+-- Internal function to make sure vim.w.srydell_current_compiler has a value
+-- and to get the compilers related to the current filetype
+local function initiate_compilers()
+  -- Fetch the list of compilers for this filetype
+  local status, compilers = pcall(require, 'srydell.compiler.filetype.' .. vim.bo.filetype)
+  if not status then
+    return nil
+  end
+
+  -- Make sure that the compiler index exists for this filetype
+  if vim.w.srydell_current_compiler == nil then
+    -- First time opening vim
+    local compiler = {}
+    compiler[vim.bo.filetype] = 1
+    vim.w.srydell_current_compiler = compiler
+  elseif vim.w.srydell_current_compiler[vim.bo.filetype] == nil then
+    -- Opening a new filetype
+    local compiler = vim.w.srydell_current_compiler
+    compiler[vim.bo.filetype] = 1
+    vim.w.srydell_current_compiler = compiler
+  end
+
+  return compilers
+end
+
+local function get_current_compiler()
+  local compilers = initiate_compilers()
+  if not compilers then
+    return nil
+  end
+
+  local index = vim.w.srydell_current_compiler[vim.bo.filetype]
+  if #compilers < index then
+    -- No compilers
+    return nil
+  end
+
+  return compilers[index]
+end
+
 -- Run a set of tasks from config via overseer
 M.run = function()
-  local compiler = M.get_current_compiler()
+  local compiler = get_current_compiler()
   if not compiler then
     vim.print('No current compiler')
     return
@@ -21,44 +61,14 @@ M.run = function()
   task:start()
 end
 
--- Internal function to make sure vim.w.srydell_current_compiler has a value
--- and to get the compilers related to the current filetype
-local function initiate_compilers()
-  -- Fetch the list of compilers for this filetype
-  local status, compilers = pcall(require, 'srydell.compiler.filetype.' .. vim.bo.filetype)
-  if not status then
-    return nil
+-- For display in e.g. status line
+M.get_current_compiler_name = function()
+  local compiler = get_current_compiler()
+  if not compiler then
+    return ''
   end
 
-  -- Make sure that the compiler index exists for this filetype
-  if vim.w.srydell_current_compiler == nil then
-    -- First time opening vim
-    local c = {}
-    c[vim.bo.filetype] = 1
-    vim.w.srydell_current_compiler = c
-  elseif vim.w.srydell_current_compiler[vim.bo.filetype] == nil then
-    -- Opening a new filetype
-    local c = vim.w.srydell_current_compiler
-    c[vim.bo.filetype] = 1
-    vim.w.srydell_current_compiler = c
-  end
-
-  return compilers
-end
-
-M.get_current_compiler = function()
-  local compilers = initiate_compilers()
-  if not compilers then
-    return nil
-  end
-
-  local index = vim.w.srydell_current_compiler[vim.bo.filetype]
-  if #compilers < index then
-    -- No compilers
-    return nil
-  end
-
-  return compilers[index]
+  return compiler.name
 end
 
 -- Moves the compiler index +1 or -1 depending on direction

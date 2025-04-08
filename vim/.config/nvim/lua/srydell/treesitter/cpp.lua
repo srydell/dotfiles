@@ -1208,8 +1208,8 @@ M.make_class_no_move = function()
   local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
   local no_move = {
     string.format('%s No move', indentation),
-    string.format('%s%s(%s const &) = delete;', indentation, name, name),
-    string.format('%s%s & operator=(%s const &) = delete;', indentation, name, name),
+    string.format('%s%s(%s const &&) = delete;', indentation, name, name),
+    string.format('%s%s & operator=(%s const &&) = delete;', indentation, name, name),
   }
 
   vim.api.nvim_buf_set_lines(0, row, row, true, no_move)
@@ -1228,8 +1228,8 @@ M.make_class_no_copy = function()
   local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
   local no_copy = {
     string.format('%s No copy', indentation),
-    string.format('%s%s(%s &&) = delete;', indentation, name, name),
-    string.format('%s%s & operator=(%s &&) = delete;', indentation, name, name),
+    string.format('%s%s(%s &) = delete;', indentation, name, name),
+    string.format('%s%s & operator=(%s &) = delete;', indentation, name, name),
   }
 
   vim.api.nvim_buf_set_lines(0, row, row, true, no_copy)
