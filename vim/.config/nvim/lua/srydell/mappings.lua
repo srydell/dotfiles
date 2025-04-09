@@ -72,13 +72,11 @@ vim.keymap.set('n', '<leader>ti', ':VimuxInspectRunner<CR>', { silent = true })
 vim.keymap.set('n', '<leader>tf', ':VimuxZoomRunner<CR>', { silent = true })
 
 vim.keymap.set('n', 'm<CR>', require('srydell.compiler.common').run, { silent = true })
+vim.keymap.set('n', '<leader>ec', require('srydell.compiler.common').edit_compiler_option, { buffer = true })
 
 -- Move through the valid compilers. Set by b:valid_compilers
 vim.keymap.set('n', ']c', require('srydell.compiler.common').go_to_next_compiler, { silent = true })
 vim.keymap.set('n', '[c', require('srydell.compiler.common').go_to_previous_compiler, { silent = true })
-
-local compiler_options = require('srydell.compiler.options')
-vim.keymap.set('n', '<leader>ec', compiler_options.edit_compiler_option, { buffer = true })
 
 -- Move through the buffer list
 vim.keymap.set('n', '[b', ':bprevious<CR>', { silent = true })

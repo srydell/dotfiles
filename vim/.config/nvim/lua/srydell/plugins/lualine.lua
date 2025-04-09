@@ -19,7 +19,6 @@ return {
 
     local function get_compiler()
       return '[' .. require('srydell.compiler.common').get_current_compiler_name() .. ']'
-      -- return '[]'
     end
 
     lualine.setup({

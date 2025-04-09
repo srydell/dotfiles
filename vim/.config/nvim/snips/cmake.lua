@@ -15,7 +15,7 @@ return {
     { trig = 'pv', wordTrig = true, dscr = 'Print' },
     fmta(
       [[
-      message(FATAL_ERROR "<> = ${<>}")
+        message(FATAL_ERROR "<> = ${<>}")
       ]],
       {
         i(1),

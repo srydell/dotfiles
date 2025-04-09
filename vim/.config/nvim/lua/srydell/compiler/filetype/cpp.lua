@@ -8,8 +8,8 @@ local function get_compilers()
       local split = util.split(chosen_file, '/')
       -- { '.', 'build', 'debug', 'bin', 'unit_test' } -> 'unit_test'
       local executable = split[#split]
-      local options = require('srydell.compiler.options')
-      options.set_compiler_option(executable)
+      -- __AUTO_GENERATED_PRINT_VAR_START__
+      print([==[get_compilers#find_exe_files#(anon) executable:]==], vim.inspect(executable)) -- __AUTO_GENERATED_PRINT_VAR_END__
     end)
   end
 
@@ -22,16 +22,13 @@ local function get_compilers()
   if util.contains({ 'dsf', 'oal', 'SPSCQueue' }, project.name) then
     local docker = require('nvim-web-devicons').get_icon('Dockerfile', '')
     local tool_path = vim.fn.stdpath('config') .. '/tools/'
-    local options = require('srydell.compiler.options')
-    local compiler_with_option = docker .. ' exe'
-    options.set_compiler_option_generator(find_exe_files, compiler_with_option)
     return {
       {
         name = docker .. ' all',
         tasks = { { task = 'docker run', command = { tool_path .. 'build_waf.sh' } } },
       },
       {
-        name = compiler_with_option,
+        name = docker .. ' exe',
         tasks = { { task = 'docker run', command = { tool_path .. 'build_waf_target.sh' }, with_option = true } },
       },
     }

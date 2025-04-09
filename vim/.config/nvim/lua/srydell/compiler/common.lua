@@ -139,4 +139,12 @@ M.go_to_previous_compiler = function()
   change_compiler(-1)
 end
 
+M.edit_compiler_option = function()
+  local compiler = get_current_compiler()
+  if not compiler then
+    vim.print('No compiler.')
+    return nil
+  end
+end
+
 return M
