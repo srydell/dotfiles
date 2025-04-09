@@ -1,6 +1,6 @@
 return {
   name = 'docker run',
-  desc = 'Run a command within a running docker container. If compiler option set, append it to command.',
+  desc = 'Run a command within a running docker container.',
   params = {
     command = {
       type = 'list',
@@ -9,11 +9,6 @@ return {
     },
   },
   builder = function(params)
-    local command = params.command
-    local option = require('srydell.compiler.options').get_compiler_option()
-    if option ~= '' then
-      table.insert(command, option)
-    end
     return {
       cmd = { 'docker' },
       args = {

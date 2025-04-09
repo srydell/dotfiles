@@ -23,11 +23,11 @@ local function get_compilers()
     local docker = require('nvim-web-devicons').get_icon('Dockerfile', '')
     local tool_path = vim.fn.stdpath('config') .. '/tools/'
     local options = require('srydell.compiler.options')
-    local compiler_with_option = 'docker exe'
+    local compiler_with_option = docker .. ' exe'
     options.set_compiler_option_generator(find_exe_files, compiler_with_option)
     return {
       {
-        name = 'docker all',
+        name = docker .. ' all',
         tasks = { { task = 'docker run', command = { tool_path .. 'build_waf.sh' } } },
       },
       {
