@@ -10,7 +10,7 @@ local function get_compilers()
     return {
       {
         name = 'rsync ' .. constants.icons.building,
-        tasks = { { 'rsync', project = project.name } },
+        tasks = { { task = 'rsync', project = project.name } },
       },
     }
   end

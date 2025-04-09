@@ -23,16 +23,16 @@ local function get_compilers()
     local docker = require('nvim-web-devicons').get_icon('Dockerfile', '')
     local tool_path = vim.fn.stdpath('config') .. '/tools/'
     local options = require('srydell.compiler.options')
-    local compiler_with_option = docker .. ' exe'
+    local compiler_with_option = 'docker exe'
     options.set_compiler_option_generator(find_exe_files, compiler_with_option)
     return {
       {
-        name = docker .. ' all',
-        tasks = { { 'docker run', command = { tool_path .. 'build_waf.sh' } } },
+        name = 'docker all',
+        tasks = { { task = 'docker run', command = { tool_path .. 'build_waf.sh' } } },
       },
       {
         name = compiler_with_option,
-        tasks = { { 'docker run', command = { tool_path .. 'build_waf_target.sh' }, with_option = true } },
+        tasks = { { task = 'docker run', command = { tool_path .. 'build_waf_target.sh' }, with_option = true } },
       },
     }
   end
@@ -41,19 +41,19 @@ local function get_compilers()
     return {
       {
         name = 'clang++ ' .. icons.building,
-        tasks = { { 'clang++', will_do = 'RUN' } },
+        tasks = { { task = 'clang++', will_do = 'RUN' } },
       },
       {
         name = 'clang++ ' .. icons.debugging,
-        tasks = { { 'clang++', will_do = 'DEBUG' } },
+        tasks = { { task = 'clang++', will_do = 'DEBUG' } },
       },
       {
         name = 'g++ ' .. icons.building,
-        tasks = { { 'g++', will_do = 'RUN' } },
+        tasks = { { task = 'g++', will_do = 'RUN' } },
       },
       {
         name = 'g++ ' .. icons.debugging,
-        tasks = { { 'g++', will_do = 'DEBUG' } },
+        tasks = { { task = 'g++', will_do = 'DEBUG' } },
       },
     }
   end

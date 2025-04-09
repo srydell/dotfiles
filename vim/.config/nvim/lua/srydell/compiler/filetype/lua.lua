@@ -1,6 +1,6 @@
 local function get_compilers()
   return {
-    { name = 'lua run', tasks = { 'lua' } },
+    { name = 'lua run', tasks = { task = 'lua' } },
   }
 end
 

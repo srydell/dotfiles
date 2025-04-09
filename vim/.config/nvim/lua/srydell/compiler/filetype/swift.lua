@@ -8,7 +8,7 @@ local function get_compilers()
       name = 'ios ' .. constants.icons.building,
       tasks = {
         {
-          'lua function',
+          task = 'lua function',
           f = function()
             actions.build_and_run()
             return true
@@ -20,7 +20,7 @@ local function get_compilers()
       name = 'ios ' .. constants.icons.debugging,
       tasks = {
         {
-          'lua function',
+          task = 'lua function',
           f = function()
             xcode_dap.build_and_debug()
             return true

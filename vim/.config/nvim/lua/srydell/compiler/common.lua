@@ -2,44 +2,70 @@
 
 local M = {}
 
--- Internal function to make sure vim.w.srydell_current_compiler has a value
--- and to get the compilers related to the current filetype
-local function initiate_compilers()
+local function get_current_compiler()
+  if vim.w.srydell_compilers ~= nil and vim.w.srydell_compilers[vim.bo.filetype] ~= nil then
+    local index = vim.w.srydell_compilers[vim.bo.filetype].index
+    if index == nil then
+      vim.print('No index')
+      return nil
+    end
+    return vim.w.srydell_compilers[vim.bo.filetype].compilers[index]
+  end
+
   -- Fetch the list of compilers for this filetype
   local status, compilers = pcall(require, 'srydell.compiler.filetype.' .. vim.bo.filetype)
   if not status then
     return nil
   end
 
-  -- Make sure that the compiler index exists for this filetype
-  if vim.w.srydell_current_compiler == nil then
-    -- First time opening vim
-    local compiler = {}
-    compiler[vim.bo.filetype] = 1
-    vim.w.srydell_current_compiler = compiler
-  elseif vim.w.srydell_current_compiler[vim.bo.filetype] == nil then
-    -- Opening a new filetype
-    local compiler = vim.w.srydell_current_compiler
-    compiler[vim.bo.filetype] = 1
-    vim.w.srydell_current_compiler = compiler
-  end
+  local new_filetype_compilers = vim.w.srydell_compilers or {}
+  new_filetype_compilers[vim.bo.filetype] = { index = 1, compilers = compilers }
 
-  return compilers
+  vim.w.srydell_compilers = new_filetype_compilers
+  -- NOTE: New compilers, index = 1
+  return vim.w.srydell_compilers[vim.bo.filetype].compilers[1]
 end
 
-local function get_current_compiler()
-  local compilers = initiate_compilers()
-  if not compilers then
-    return nil
+local function convert_to_overseer_orchestrator(tasks)
+  -- The C bindings cannot convert the standard overseer orchestrator tables
+  -- since they have tables both with keys and indices (e.g. { 'hi', 'ho' = 'he' })
+  -- Overseer assumes that the first index is the task that follows by the options
+  -- E.g.
+  -- tasks = {
+  --   {
+  --     task = 'docker run',
+  --     command = { '/Users/simryd/.config/nvim/tools/build_waf_target.sh' },
+  --     with_option = true,
+  --   },
+  -- },
+  -- out = {
+  --   {
+  --     'docker run',
+  --     command = { '/Users/simryd/.config/nvim/tools/build_waf_target.sh' },
+  --     with_option = true,
+  --   },
+  -- },
+  -- tasks = { task = 'python run' },
+  -- out = { 'python run' }
+  local converted = {}
+  for key, value in pairs(tasks) do
+    if type(value) == 'table' then
+      -- Nested table without keys
+      if type(key) == 'number' then
+        table.insert(converted, convert_to_overseer_orchestrator(value))
+      else
+        converted[key] = convert_to_overseer_orchestrator(value)
+      end
+    else
+      -- Value is not a table
+      if key == 'task' then
+        table.insert(converted, 1, value)
+      else
+        converted[key] = value
+      end
+    end
   end
-
-  local index = vim.w.srydell_current_compiler[vim.bo.filetype]
-  if #compilers < index then
-    -- No compilers
-    return nil
-  end
-
-  return compilers[index]
+  return converted
 end
 
 -- Run a set of tasks from config via overseer
@@ -55,7 +81,7 @@ M.run = function()
     name = compiler.name,
     strategy = {
       'orchestrator',
-      tasks = compiler.tasks,
+      tasks = convert_to_overseer_orchestrator(compiler.tasks),
     },
   })
   task:start()
@@ -73,43 +99,44 @@ end
 
 -- Moves the compiler index +1 or -1 depending on direction
 -- number_of_compilers is for bounds checking
-local function change_compiler(direction, number_of_compilers)
-  local index = vim.w.srydell_current_compiler[vim.bo.filetype]
+local function change_compiler(direction)
+  local number_of_compilers = #vim.w.srydell_compilers[vim.bo.filetype].compilers
+
+  local start_index = vim.w.srydell_compilers[vim.bo.filetype].index
+  local new_index = start_index
   if direction == 1 then
-    if index == number_of_compilers then
-      index = 1
-    elseif index < number_of_compilers then
-      index = index + 1
+    if start_index == number_of_compilers then
+      new_index = 1
+    elseif start_index < number_of_compilers then
+      new_index = start_index + 1
     end
   elseif direction == -1 then
-    if index == 1 then
-      index = number_of_compilers
-    elseif index > 1 then
-      index = index - 1
+    if start_index == 1 then
+      new_index = number_of_compilers
+    elseif start_index > 1 then
+      new_index = start_index - 1
     end
   end
 
-  local new_compilers = vim.w.srydell_current_compiler
-  new_compilers[vim.bo.filetype] = index
-  vim.w.srydell_current_compiler = new_compilers
+  local new_compilers = vim.w.srydell_compilers
+  new_compilers[vim.bo.filetype].index = new_index
+  vim.w.srydell_compilers = new_compilers
 end
 
 M.go_to_next_compiler = function()
-  local compilers = initiate_compilers()
-  if not compilers then
+  if not get_current_compiler() then
     return nil
   end
 
-  change_compiler(1, #compilers)
+  change_compiler(1)
 end
 
 M.go_to_previous_compiler = function()
-  local compilers = initiate_compilers()
-  if not compilers then
+  if not get_current_compiler() then
     return nil
   end
 
-  change_compiler(-1, #compilers)
+  change_compiler(-1)
 end
 
 return M

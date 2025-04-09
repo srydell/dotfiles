@@ -3,13 +3,6 @@ if exists('g:loaded_srydell_utils')
 endif
 let g:loaded_srydell_utils = 1
 
-" Disable undo file when in tmp
-" (so no passwords are accidentally saved in undodir)
-augroup no_undo_temp_files
-  autocmd!
-  autocmd BufWritePre /tmp/* setlocal noundofile
-augroup END
-
 " q is close quickfix/locationlist buffers
 " Autoclose quickfix buffer if it's the only one available
 augroup quick_and_loc_list_autoclose
