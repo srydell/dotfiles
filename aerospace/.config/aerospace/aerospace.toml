@@ -122,8 +122,8 @@ alt-b = 'workspace B' # Browsers
 alt-c = 'workspace C' # Cisco
 alt-d = 'workspace D' # Docker
 alt-e = 'workspace E' # Email
-alt-m = 'workspace M' # Messages
-alt-p = 'workspace P' # PDF-readers - Acrobat, Preview
+alt-m = 'workspace M' # Messages - Teams
+alt-p = 'workspace P' # Powerpoint and PDF-readers - Acrobat, Preview
 alt-t = 'workspace T' # Terminal
 alt-w = 'workspace W' # Word
 alt-y = 'workspace Y' # yEd
@@ -247,6 +247,10 @@ run = 'move-node-to-workspace P'
 
 [[on-window-detected]]
 if.app-id = 'com.apple.Preview'
+run = 'move-node-to-workspace P'
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.Powerpoint'
 run = 'move-node-to-workspace P'
 
 [[on-window-detected]]
