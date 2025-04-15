@@ -27,6 +27,9 @@ local function select_executable()
   table.insert(files, 'all')
 
   vim.ui.select(files, { prompt = 'Select executable' }, function(executable)
+    if executable == nil then
+      return
+    end
     local common = require('srydell.compiler.common')
     common.replace_current_compiler(docker_compiler(executable, select_executable))
   end)
