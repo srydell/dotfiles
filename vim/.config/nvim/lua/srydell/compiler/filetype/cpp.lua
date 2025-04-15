@@ -1,18 +1,39 @@
+local function docker_compiler(target, edit_function)
+  local docker = require('nvim-web-devicons').get_icon('Dockerfile', '')
+  local tool_path = vim.fn.stdpath('config') .. '/tools/'
+  return {
+    name = docker .. ' ' .. target,
+    tasks = {
+      {
+        task = 'docker run',
+        command = { tool_path .. 'build_waf.sh', target },
+      },
+    },
+    edit_compiler_option = edit_function,
+  }
+end
+
+local function select_executable()
+  local util = require('srydell.util')
+  local files = util.split(io.popen('fd --no-ignore --type x --full-path ./build/debug/bin/'):read('*a'), '\n')
+  table.foreach(files, function(index, file)
+    -- './build/debug/bin/unit_test' -> { '.', 'build', 'debug', 'bin', 'unit_test' }
+    local split = util.split(file, '/')
+    -- { '.', 'build', 'debug', 'bin', 'unit_test' } -> 'unit_test'
+    local executable = split[#split]
+    files[index] = executable
+  end)
+  -- To build all targets
+  table.insert(files, 'all')
+
+  vim.ui.select(files, { prompt = 'Select executable' }, function(executable)
+    local common = require('srydell.compiler.common')
+    common.replace_current_compiler(docker_compiler(executable, select_executable))
+  end)
+end
+
 local function get_compilers()
   local util = require('srydell.util')
-
-  local function find_exe_files()
-    local files = util.split(io.popen('fd --no-ignore --type x --full-path ./build/debug/bin/'):read('*a'), '\n')
-    vim.ui.select(files, { prompt = 'Select executable' }, function(chosen_file)
-      -- './build/debug/bin/unit_test' -> { '.', 'build', 'debug', 'bin', 'unit_test' }
-      local split = util.split(chosen_file, '/')
-      -- { '.', 'build', 'debug', 'bin', 'unit_test' } -> 'unit_test'
-      local executable = split[#split]
-      -- __AUTO_GENERATED_PRINT_VAR_START__
-      print([==[get_compilers#find_exe_files#(anon) executable:]==], vim.inspect(executable)) -- __AUTO_GENERATED_PRINT_VAR_END__
-    end)
-  end
-
   local project = util.get_project()
   if not project.name then
     return {}
@@ -20,18 +41,7 @@ local function get_compilers()
 
   local icons = require('srydell.constants').icons
   if util.contains({ 'dsf', 'oal', 'SPSCQueue' }, project.name) then
-    local docker = require('nvim-web-devicons').get_icon('Dockerfile', '')
-    local tool_path = vim.fn.stdpath('config') .. '/tools/'
-    return {
-      {
-        name = docker .. ' all',
-        tasks = { { task = 'docker run', command = { tool_path .. 'build_waf.sh' } } },
-      },
-      {
-        name = docker .. ' exe',
-        tasks = { { task = 'docker run', command = { tool_path .. 'build_waf_target.sh' }, with_option = true } },
-      },
-    }
+    return { docker_compiler('all', select_executable) }
   end
 
   if util.contains({ 'prototype', 'leetcode' }, project.name) then

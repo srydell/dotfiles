@@ -60,6 +60,10 @@ local function convert_to_overseer_orchestrator(tasks)
       -- Value is not a table
       if key == 'task' then
         table.insert(converted, 1, value)
+      elseif key == 'edit_compiler_option' then
+        -- Special keyword
+        -- Remove it
+        converted[key] = nil
       else
         converted[key] = value
       end
@@ -139,11 +143,43 @@ M.go_to_previous_compiler = function()
   change_compiler(-1)
 end
 
+M.replace_current_compiler = function(new_compiler)
+  if new_compiler == nil then
+    vim.print('New compiler is nil. Please return a valid compiler.')
+    return nil
+  end
+
+  if new_compiler.name == nil or new_compiler.tasks == nil then
+    vim.print('New compiler does not have "name". Please return a valid compiler.')
+    return nil
+  end
+
+  if new_compiler.tasks == nil then
+    vim.print('New compiler does not have "tasks". Please return a valid compiler.')
+    return nil
+  end
+
+  local index = vim.w.srydell_compilers[vim.bo.filetype].index
+  if index == nil then
+    vim.print('No index. Internal error.')
+    return nil
+  end
+
+  -- Set the new compiler
+  local current = vim.w.srydell_compilers
+  current[vim.bo.filetype].compilers[index] = new_compiler
+  vim.w.srydell_compilers = current
+end
+
 M.edit_compiler_option = function()
   local compiler = get_current_compiler()
   if not compiler then
     vim.print('No compiler.')
     return nil
+  end
+
+  if compiler['edit_compiler_option'] ~= nil then
+    compiler['edit_compiler_option'](compiler)
   end
 end
 

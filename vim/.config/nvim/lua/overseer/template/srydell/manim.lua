@@ -1,11 +1,21 @@
 return {
   name = 'manim',
-  builder = function()
+  desc = 'Run a manim command.',
+  params = {
+    args = {
+      type = 'list',
+      optional = false,
+      subtype = { type = 'string' },
+    },
+  },
+  builder = function(params)
     local python = require('srydell.compiler.helpers.python')
+    -- E.g.
+    -- manim -pql main.py DefaultTemplate
     return {
       cmd = { 'manim' },
       args = {
-        vim.fn.expand('%:p'),
+        unpack(params.args),
       },
       components = {
         {
