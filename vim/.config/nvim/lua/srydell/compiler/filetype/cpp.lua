@@ -35,6 +35,25 @@ local function select_executable()
   end)
 end
 
+local function toggle_debug(current_compiler)
+  -- current_compiler = {
+  --   name = 'clang++ ' .. icons.building,
+  --   tasks = { { task = 'clang++', will_do = 'RUN' } },
+  -- }
+  local icons = require('srydell.constants').icons
+  local split = require('srydell.util').split(current_compiler.name, ' ')
+  if current_compiler.tasks[1].will_do == 'RUN' then
+    current_compiler.name = split[1] .. ' ' .. icons.debugging
+    current_compiler.tasks[1].will_do = 'DEBUG'
+  else
+    current_compiler.name = split[1] .. ' ' .. icons.building
+    current_compiler.tasks[1].will_do = 'RUN'
+  end
+
+  local common = require('srydell.compiler.common')
+  common.replace_current_compiler(current_compiler)
+end
+
 local function get_compilers()
   local util = require('srydell.util')
   local project = util.get_project()
@@ -52,18 +71,12 @@ local function get_compilers()
       {
         name = 'clang++ ' .. icons.building,
         tasks = { { task = 'clang++', will_do = 'RUN' } },
-      },
-      {
-        name = 'clang++ ' .. icons.debugging,
-        tasks = { { task = 'clang++', will_do = 'DEBUG' } },
+        edit_compiler_option = toggle_debug,
       },
       {
         name = 'g++ ' .. icons.building,
         tasks = { { task = 'g++', will_do = 'RUN' } },
-      },
-      {
-        name = 'g++ ' .. icons.debugging,
-        tasks = { { task = 'g++', will_do = 'DEBUG' } },
+        edit_compiler_option = toggle_debug,
       },
     }
   end

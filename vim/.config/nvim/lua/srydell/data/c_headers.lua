@@ -1,5 +1,7 @@
 -- Generated from
 -- https://pubs.opengroup.org/onlinepubs/9699919799/idx/head.html
+-- Added extra from https://github.com/torvalds/linux/tree/master/include/uapi/linux
+-- Added extra ad-hoc as I see them used
 return {
   ['<aio.h>'] = true,
   ['<arpa/inet.h>'] = true,
@@ -54,9 +56,15 @@ return {
   ['<string.h>'] = true,
   ['<strings.h>'] = true,
   ['<stropts.h>'] = true,
+  ['<sys/epoll.h>'] = true,
+  ['<sys/eventfd.h>'] = true,
+  ['<sys/file.h>'] = true,
+  ['<sys/ioctl.h>'] = true,
   ['<sys/ipc.h>'] = true,
   ['<sys/mman.h>'] = true,
   ['<sys/msg.h>'] = true,
+  ['<sys/poll.h>'] = true,
+  ['<sys/prctl.h>'] = true,
   ['<sys/resource.h>'] = true,
   ['<sys/select.h>'] = true,
   ['<sys/sem.h>'] = true,
@@ -64,6 +72,7 @@ return {
   ['<sys/socket.h>'] = true,
   ['<sys/stat.h>'] = true,
   ['<sys/statvfs.h>'] = true,
+  ['<sys/syscall.h>'] = true,
   ['<sys/time.h>'] = true,
   ['<sys/times.h>'] = true,
   ['<sys/types.h>'] = true,

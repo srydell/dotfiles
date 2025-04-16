@@ -282,7 +282,7 @@ return {
     { trig = 'map', wordTrig = true, dscr = 'Setup a keymap' },
     fmta(
       [[
-        vim.keymap.set('<>', '<>', <>, { silent = true })
+        vim.keymap.set('<>', <>, <>, { silent = true })
       ]],
       {
         i(1, 'n'),

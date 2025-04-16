@@ -60,10 +60,6 @@ local function convert_to_overseer_orchestrator(tasks)
       -- Value is not a table
       if key == 'task' then
         table.insert(converted, 1, value)
-      elseif key == 'edit_compiler_option' then
-        -- Special keyword
-        -- Remove it
-        converted[key] = nil
       else
         converted[key] = value
       end
