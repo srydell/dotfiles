@@ -31,9 +31,7 @@ local function edit_manim_options(current_compiler)
 end
 
 local function get_compilers()
-  local current_dir = vim.fn.expand('%:p:h')
-
-  if vim.fn.filereadable(current_dir .. '/manim.cfg') then
+  if vim.fn.filereadable(vim.fn.expand('%:p:h') .. '/manim.cfg') == 1 then
     local args = { '-pql', vim.fn.expand('%'), guess_scene() }
     return {
       {
