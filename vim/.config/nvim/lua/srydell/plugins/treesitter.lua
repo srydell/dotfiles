@@ -26,6 +26,7 @@ return {
         'javascript',
         'json',
         'json5',
+        'kotlin',
         'lua',
         'markdown',
         'markdown_inline',

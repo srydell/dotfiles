@@ -1,7 +1,12 @@
-local helpers = require('srydell.snips.helpers')
 local util = require('srydell.util')
+local cpp_snips = require('srydell.snips.cpp')
+local get_visual = require('srydell.snips.helpers').get_visual
 
-local get_visual = helpers.get_visual
+local ls = require('luasnip')
+local fmta = require('luasnip.extras.fmt').fmta
+local sn = ls.snippet_node
+local i = ls.insert_node
+local t = ls.text_node
 
 local function guess_class_name()
   -- Without extension
@@ -12,90 +17,8 @@ local function guess_class_name()
   return sn(nil, { i(1, class_name) })
 end
 
--- In a header file -> ';'
--- In a source file -> ' {\n<indent>\n}'
-local function get_definition_or_declaration()
-  local extension = vim.fn.expand('%:e')
-  if extension == 'h' or extension == 'hpp' then
-    return sn(nil, { t(';') })
-  end
-  return sn(
-    nil,
-    fmta(' ' .. [[
-        {
-          <>
-        }
-      ]], {
-      i(1),
-    })
-  )
-end
-
-local function get_function()
-  local functions = {}
-  local add_simple_function = true
-  local cpp_ts = require('srydell.treesitter.cpp')
-  if cpp_ts.get_surrounding_argument_list() ~= nil then
-    -- Lambda only possible
-    add_simple_function = false
-    functions = {
-      sn(
-        nil,
-        fmta(
-          [[
-            [<>](<>) { <> }
-          ]],
-          { i(1), i(2), i(3) }
-        )
-      ),
-    }
-  elseif cpp_ts.get_surrounding_function() ~= nil then
-    -- Lambda only possible
-    add_simple_function = false
-    functions = {
-      sn(
-        nil,
-        fmta(
-          [[
-            auto <> = [<>](<>) {
-              <>
-            };
-          ]],
-          { r(1, 'function_name'), i(2), i(3), i(0) }
-        )
-      ),
-    }
-  elseif cpp_ts.get_class_name_under_cursor() == nil then
-    functions = cpp_ts.get_snippets_from_not_implemented_functions()
-  end
-
-  if add_simple_function then
-    -- A simple function
-    table.insert(
-      functions,
-      sn(
-        nil,
-        fmta(
-          [[
-                <> <>(<>)<>
-              ]],
-          {
-            i(1, 'void'),
-            r(2, 'function_name'),
-            i(3),
-            d(4, get_definition_or_declaration),
-          }
-        )
-      )
-    )
-  end
-
-  return sn(nil, c(1, functions))
-end
-
 local function get_surrounding_classname()
-  local cpp_ts = require('srydell.treesitter.cpp')
-  local class = cpp_ts.get_class_name_under_cursor()
+  local class = require('srydell.treesitter.cpp').get_class_name_under_cursor()
   if class then
     return sn(nil, { t(class) })
   end
@@ -103,6 +26,17 @@ local function get_surrounding_classname()
 end
 
 return {
+  s(
+    { trig = 'operator(%W+)', trigEngine = 'pattern', dscr = 'operator expansion' },
+    fmta(
+      [[
+        <>
+      ]],
+      {
+        d(1, cpp_snips.get_operator),
+      }
+    )
+  ),
   s(
     { trig = 'switch', wordTrig = true, dscr = 'switch statement' },
     fmta(
@@ -113,44 +47,7 @@ return {
       ]],
       {
         i(1),
-        d(2, function(_)
-          local ts_cpp = require('srydell.treesitter.cpp')
-
-          local enum = ts_cpp.find_enum_from_type()
-          if enum == nil then
-            return sn(
-              nil,
-              fmta(
-                [[
-                case <>: {
-                  <>
-                }
-              ]],
-                { i(1, '0'), i(2, 'return;') }
-              )
-            )
-          end
-
-          local cases = {}
-          local nodes = {}
-          for index, value in ipairs(enum.values) do
-            table.insert(
-              cases,
-              string.format(
-                [[
-case %s::%s: {
-  <>
-}]],
-                enum.name,
-                value
-              )
-            )
-
-            table.insert(nodes, i(index, 'return;'))
-          end
-
-          return sn(nil, fmta(table.concat(cases, '\n'), nodes))
-        end, { 1 }),
+        d(2, cpp_snips.get_enum_choice_snippet, { 1 }),
       }
     )
   ),
@@ -204,7 +101,7 @@ case %s::%s: {
       {
         d(1, get_surrounding_classname),
         i(2),
-        d(3, get_definition_or_declaration),
+        d(3, cpp_snips.get_definition_or_declaration),
       }
     )
   ),
@@ -218,7 +115,7 @@ case %s::%s: {
       {
         d(1, get_surrounding_classname),
         i(2),
-        d(3, get_definition_or_declaration),
+        d(3, cpp_snips.get_definition_or_declaration),
       }
     )
   ),
@@ -227,8 +124,8 @@ case %s::%s: {
     { trig = 'nocopy', wordTrig = true, dscr = 'No copy constructors' },
     fmta(
       [[
-        <>(<> &&) = delete;
-        <> & operator=(<> &&) = delete;
+        <>(<> &) = delete;
+        <> & operator=(<> &) = delete;
       ]],
       {
         d(1, get_surrounding_classname),
@@ -243,8 +140,8 @@ case %s::%s: {
     { trig = 'nomove', wordTrig = true, dscr = 'No move constructors' },
     fmta(
       [[
-        <>(<> const &) = delete;
-        <> & operator=(<> const &) = delete;
+        <>(<> const &&) = delete;
+        <> & operator=(<> const &&) = delete;
       ]],
       {
         d(1, get_surrounding_classname),
@@ -443,7 +340,7 @@ case %s::%s: {
         <>
       ]],
       {
-        d(1, get_function),
+        d(1, cpp_snips.get_function_snippet),
       }
     ),
     {
@@ -463,7 +360,7 @@ case %s::%s: {
         }
       ]],
       {
-        d(1, require('srydell.treesitter.cpp').get_for_loop_choices_for_snippet),
+        d(1, cpp_snips.get_for_loop_choices_for_snippet),
         d(2, get_visual),
         i(0),
       }

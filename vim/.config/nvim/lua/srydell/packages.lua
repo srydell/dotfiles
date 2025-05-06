@@ -112,7 +112,7 @@ require('lazy').setup({
   require('srydell.plugins.lazydev'),
   require('srydell.plugins.quicker'),
   require('srydell.plugins.refactoring'),
-  -- require('srydell.plugins.copilot'),
+  require('srydell.plugins.copilot'),
 
   install = {
     -- try to load one of these colorschemes when starting an installation during startup

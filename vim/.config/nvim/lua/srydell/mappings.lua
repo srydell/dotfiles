@@ -94,6 +94,7 @@ vim.keymap.set('n', '[l', ':lprevious<CR>', { silent = true })
 vim.keymap.set('n', ']l', ':lnext<CR>', { silent = true })
 vim.keymap.set('n', '[L', ':lfirst<CR>', { silent = true })
 vim.keymap.set('n', ']L', ':llast<CR>', { silent = true })
+vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist, { desc = 'Add buffer diagnostics to the location list.' })
 
 -- Move through the quickfix list
 vim.keymap.set('n', '<leader>q', ':call utils#ToggleList("Quickfix List", "c")<CR>', { silent = true })

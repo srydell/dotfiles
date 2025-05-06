@@ -1,4 +1,5 @@
 return {
+
   s(
     { trig = 'while', wordTrig = true, dscr = 'while loop' },
     fmta(
@@ -12,6 +13,15 @@ return {
         i(1, 'true'),
         i(0),
       }
+    )
+  ),
+  s(
+    { trig = 'pv', wordTrig = true, dscr = 'print variable' },
+    fmta(
+      [[
+        echo <> = ${<>}
+      ]],
+      { rep(1), i(1) }
     )
   ),
   s(

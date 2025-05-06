@@ -24,37 +24,35 @@ local lsp_servers = {
   'pylsp',
   'texlab',
   'yaml-language-server',
+  'kotlin-language-server',
   -- 'elixirls',
   -- 'perlnavigator',
   -- 'ruby-lsp',
 }
 
-local tools = {
-  unpack(lsp_servers),
-
-  -- Debug servers
-  'codelldb',
-  'debugpy',
-  'bash-debug-adapter',
-
-  -- Formatters
-  'ruff',
-  'shellcheck',
-  'stylua',
-}
-
 require('mason-tool-installer').setup({
   -- a list of all tools you want to ensure are installed upon
   -- start; they should be the names Mason uses for each tool
-  ensure_installed = tools,
+  ensure_installed = {
+    unpack(lsp_servers),
+
+    -- Debug servers
+    'codelldb',
+    'debugpy',
+    'bash-debug-adapter',
+
+    -- Formatters
+    'ruff',
+    'shellcheck',
+    'stylua',
+  },
 })
 
 local lspconfig = require('lspconfig')
 local lsp_util = require('lspconfig.util')
-local cmp_nvim_lsp = require('cmp_nvim_lsp')
-local capabilities = cmp_nvim_lsp.default_capabilities()
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-local opts = { noremap = true, silent = true }
+local opts = { silent = true }
 local on_attach = function(_, bufnr)
   opts.buffer = bufnr
 
@@ -78,7 +76,8 @@ local on_attach = function(_, bufnr)
 end
 
 local util = require('srydell.util')
-local no_auto_setup = { 'lua_ls', 'jdtls', 'ruby-lsp', 'helm-ls', 'yaml-language-server', 'bashls' }
+local no_auto_setup =
+  { 'lua_ls', 'jdtls', 'ruby-lsp', 'helm-ls', 'yaml-language-server', 'bashls', 'kotlin-language-server' }
 for _, lsp in ipairs(lsp_servers) do
   if not util.contains(no_auto_setup, lsp) then
     lspconfig[lsp].setup({
@@ -89,7 +88,7 @@ for _, lsp in ipairs(lsp_servers) do
 end
 
 -- setup sourcekit
-lspconfig['sourcekit'].setup({
+lspconfig.sourcekit.setup({
   capabilities = {
     workspace = {
       didChangeWatchedFiles = {
@@ -112,11 +111,16 @@ lspconfig['sourcekit'].setup({
 })
 
 -- setup lua_ls and enable call snippets
-lspconfig['lua_ls'].setup({
+lspconfig.lua_ls.setup({
   capabilities = capabilities,
   on_attach = on_attach,
   settings = {
     Lua = {
+      runtime = {
+        version = 'LuaJIT',
+        path = vim.split(package.path, ';'),
+      },
+      diagnostics = { globals = { 'vim', 'hs' } },
       completion = {
         callSnippet = 'Replace',
       },
@@ -126,7 +130,7 @@ lspconfig['lua_ls'].setup({
 
 -- TODO: The shfmt executable is named platform depentent e.g. shfmt_v3.10.0_darwin_arm64
 -- local shfmt = require('mason-registry').get_package('shfmt'):get_install_path()
-lspconfig['bashls'].setup({
+lspconfig.bashls.setup({
   capabilities = capabilities,
   on_attach = on_attach,
   settings = {
@@ -140,7 +144,7 @@ lspconfig['bashls'].setup({
 })
 
 -- setup helm-ls
-lspconfig['helm_ls'].setup({
+lspconfig.helm_ls.setup({
   capabilities = capabilities,
   on_attach = on_attach,
   settings = {
@@ -153,4 +157,16 @@ lspconfig['helm_ls'].setup({
 })
 
 -- setup yamlls
-lspconfig['yamlls'].setup({})
+lspconfig.yamlls.setup({})
+
+-- lspconfig.kotlin_language_server.setup({
+--   filetypes = { 'kotlin', 'kt', 'kts' },
+--   cmd = {
+--     require('mason-registry').get_package('kotlin-language-server'):get_install_path()
+--       .. '/server/bin/kotlin-language-server',
+--   },
+-- })
+lspconfig.kotlin_language_server.setup({
+  filetypes = { 'kotlin', 'kt', 'kts' },
+  capabilities = capabilities,
+})

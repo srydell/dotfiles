@@ -58,6 +58,9 @@ end
 local function search_down_from_root_until(stop_condition, buffer)
   buffer = buffer or 0
   local trees = vim.treesitter.get_parser(buffer, 'cpp'):parse()
+  if not trees then
+    return
+  end
   for _, tree in ipairs(trees) do
     local root = tree:root()
     if root == nil then
@@ -135,6 +138,9 @@ local function get_node_at_cursor(winnr)
 
   local buf = vim.api.nvim_win_get_buf(winnr)
   local trees = vim.treesitter.get_parser(buf, 'cpp'):parse()
+  if not trees then
+    return
+  end
   for _, tree in ipairs(trees) do
     local root = tree:root()
 
@@ -181,37 +187,6 @@ local is_function_implementation = function(function_node)
 
   local implementation = search_up_until(function_node, is_implementation)
   return implementation ~= nil
-end
-
--- Goes through a node of type qualified_identifier
--- If it is a template, go through each template argument and see if
--- it is considered 'primitive'. Primitive args are 'int', 'double', etc.
--- If all of them are, return true. Else, return false
-local function are_all_template_args_primitive(qualified_identifier)
-  local template_type = qualified_identifier:field('name')[1]
-  if template_type == nil then
-    return false
-  end
-
-  local arguments = template_type:field('arguments')[1]
-  if arguments == nil then
-    return false
-  end
-
-  for arg, _ in arguments:iter_children() do
-    if arg:type() == 'type_descriptor' then
-      -- Check the internal type
-      local type = arg:field('type')[1]
-      if type == nil then
-        return false
-      end
-      if type:type() ~= 'primitive_type' then
-        return false
-      end
-    end
-  end
-
-  return true
 end
 
 -- Check wether the node under the cursor is within a parameter list or not.
@@ -749,7 +724,7 @@ end
 -- Return a simplified version of the output
 local function get_type_info_under_cursor()
   local type_definition =
-    vim.lsp.buf_request_sync(0, 'textDocument/typeDefinition', vim.lsp.util.make_position_params(), 1000)
+    vim.lsp.buf_request_sync(0, 'textDocument/typeDefinition', vim.lsp.util.make_position_params(0, 'utf-8'), 1000)
   if not type_definition or vim.tbl_isempty(type_definition) then
     return
   end
@@ -1243,9 +1218,7 @@ local function load_alternative_file()
   end
 
   local buffer = vim.fn.bufadd(alt_file)
-  if not vim.fn.bufloaded(buffer) then
-    vim.fn.bufload(buffer)
-  end
+  vim.fn.bufload(buffer)
 
   return buffer
 end
@@ -1418,7 +1391,7 @@ local function make_definer_outside_of_class_boundary(definers)
   ls.snip_expand(snippet, { pos = pos })
 end
 
-local function find_not_implemented_functions()
+M.find_not_implemented_functions = function()
   local declared_functions = {}
   local implemented_functions = {}
 
@@ -1561,213 +1534,5 @@ M.make_class_destructor = function()
   local is_constructor = false
   make_class_definer(is_constructor)
 end
-
-M.get_snippets_from_not_implemented_functions = function()
-  local functions_missing_implementations = find_not_implemented_functions()
-
-  -- Create the actual snippets
-  local snip_choices = {}
-  for _, f in ipairs(functions_missing_implementations) do
-    local _, info = unpack(f)
-    local snippet = build_function_snippet(info)
-
-    if snippet ~= nil then
-      table.insert(snip_choices, snippet)
-    end
-  end
-
-  return snip_choices
-end
-
-local function find_loop_variable()
-  local f = M.get_surrounding_function()
-  if f == nil then
-    return
-  end
-
-  -- Contains the guess for a loop variable
-  local guesses = { single = {}, double = {}, best = {} }
-
-  local function store_guess(type, name, iterable_type, primitive_args)
-    local guess = { type = type, name = name, iterable_type = iterable_type, primitive_args = primitive_args }
-    guesses.best = guess
-    guesses[iterable_type] = guess
-  end
-
-  local containers = {
-    ['std::array'] = 'single',
-    ['std::vector'] = 'single',
-    ['std::inplace_vector'] = 'single',
-    ['std::deque'] = 'single',
-    ['std::forward_list'] = 'single',
-    ['std::list'] = 'single',
-    ['std::set'] = 'single',
-    ['std::map'] = 'double',
-    ['std::multiset'] = 'single',
-    ['std::multimap'] = 'double',
-    ['std::unordered_set'] = 'single',
-    ['std::unordered_map'] = 'double',
-    ['std::unordered_multiset'] = 'single',
-    ['std::unordered_multimap'] = 'double',
-    ['std::stack'] = '',
-    ['std::queue'] = '',
-    ['std::priority_queue'] = '',
-    ['std::flat_set'] = 'single',
-    ['std::flat_map'] = 'double',
-    ['std::flat_multiset'] = 'single',
-    ['std::flat_multimap'] = 'double',
-    ['std::span'] = 'single',
-    ['std::mdspan'] = 'single',
-  }
-
-  local function get_iterable_type(type_string)
-    type_string = remove_template(type_string)
-    return containers[type_string] or ''
-  end
-
-  local function parse_parameters(node)
-    if is_parameter(node) then
-      local type_node = node:field('type')[1]
-      local typename = get_node_text(type_node)
-      local iterable_type = get_iterable_type(typename)
-      if iterable_type == '' then
-        return false
-      end
-      local identifier = get_node_text(node:field('declarator')[1])
-
-      -- Save it to guesses
-      store_guess(typename, identifier, iterable_type, are_all_template_args_primitive(type_node))
-    end
-  end
-
-  -- The first row that we can get variables to loop over from
-  local cursor_row, _ = unpack(vim.api.nvim_win_get_cursor(0))
-  local function look_for_loop_types(node)
-    if get_row(node) >= cursor_row then
-      return true
-    end
-
-    if node:type() == 'parameter_list' then
-      search_down_until(node, parse_parameters)
-    elseif node:type() == 'declaration' then
-      local type_node = node:field('type')[1]
-      local typename = get_node_text(type_node)
-      local iterable_type = get_iterable_type(typename)
-      if iterable_type == '' then
-        return false
-      end
-
-      -- One of
-      -- std::vector<int> v; // declarator(identifier)
-      -- std::vector<int> v = {1, 2, 3}; // declarator(declarator(identifier))
-      local declarator = node:field('declarator')[1]
-      local identifier = ''
-      if declarator:type() == 'identifier' then
-        identifier = get_node_text(declarator)
-      else
-        local inner_declarator = declarator:field('declarator')[1]
-        if inner_declarator:type() == 'identifier' then
-          identifier = get_node_text(inner_declarator)
-        end
-      end
-
-      -- Save it to guesses
-      store_guess(typename, identifier, iterable_type, are_all_template_args_primitive(type_node))
-    end
-  end
-
-  search_down_until(f, look_for_loop_types)
-
-  return guesses
-end
-
-local function swap(table, pos1, pos2)
-  table[pos1], table[pos2] = table[pos2], table[pos1]
-  return table
-end
-
-M.get_for_loop_choices_for_snippet = function()
-  local ls = require('luasnip')
-  local fmta = require('luasnip.extras.fmt').fmta
-  local sn = ls.snippet_node
-  local i = ls.insert_node
-  local c = ls.choice_node
-  local extras = require('luasnip.extras')
-  local rep = extras.rep
-  local variable_guesses = find_loop_variable()
-  local single_name = 'container'
-  local single_type = 'auto const&'
-  local double_name = 'map'
-  local double_type = 'auto const&'
-
-  -- Check the names of the variables
-  if variable_guesses ~= nil and not vim.tbl_isempty(variable_guesses.best) then
-    if not vim.tbl_isempty(variable_guesses.single) then
-      single_name = variable_guesses.single.name
-
-      if variable_guesses.single.primitive_args then
-        single_type = 'auto'
-      end
-    end
-
-    if not vim.tbl_isempty(variable_guesses.double) then
-      double_name = variable_guesses.double.name
-
-      if variable_guesses.double.primitive_args then
-        double_type = 'auto'
-      end
-    end
-  end
-
-  local choices = {
-    sn(
-      nil,
-      fmta( -- Ranged for loop
-        [[
-          <> <> : <>
-        ]],
-        { i(1, single_type), i(2, 'element'), i(3, single_name) }
-      )
-    ),
-    sn(
-      nil,
-      fmta( -- Indexed for loop
-        [[
-          <> <> = 0; <> << <>; <>++
-        ]],
-        { i(1, 'size_t'), i(2, 'i'), rep(2), i(3, 'count'), rep(2) }
-      )
-    ),
-    sn(
-      nil,
-      fmta( -- Get '\n' terminated strings
-        [[
-          std::string <>; std::getline(<>, <>);
-        ]],
-        { i(1, 'line'), i(2, 'std::cin'), rep(1) }
-      )
-    ),
-    sn(
-      nil,
-      fmta( -- Iterate over map
-        [[
-          <> [<>, <>] : <>
-        ]],
-        { i(1, double_type), i(2, 'key'), i(3, 'value'), i(4, double_name) }
-      )
-    ),
-  }
-
-  if variable_guesses ~= nil and not vim.tbl_isempty(variable_guesses.best) then
-    if variable_guesses.best.iterable_type == 'double' then
-      -- Best guess is a map, iterate over map
-      swap(choices, 1, #choices)
-    end
-  end
-
-  return sn(nil, c(1, choices))
-end
-
--- vim.keymap.set('n', '<leader>gro', find_loop_variable, { buffer = true })
 
 return M

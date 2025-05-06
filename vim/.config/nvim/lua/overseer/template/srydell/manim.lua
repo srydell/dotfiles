@@ -18,6 +18,7 @@ return {
         unpack(params.args),
       },
       components = {
+        { 'srydell.on_start_run_sh', cmd = '. ./venv/bin/activate' },
         {
           'on_output_quickfix',
           open = true,
