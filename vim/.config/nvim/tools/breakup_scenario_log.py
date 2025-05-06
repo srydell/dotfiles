@@ -43,6 +43,8 @@ def main():
         processors = {}
 
         def add(processor, line):
+            # Remove all whitespace as it will be used as a filename
+            processor = processor.replace(" ", "")
             if processor not in processors:
                 processors[processor] = [line]
             else:
