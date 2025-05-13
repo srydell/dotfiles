@@ -13,6 +13,11 @@ local t = ls.text_node
 local d = ls.dynamic_node
 local r = ls.restore_node
 
+local function is_in_header()
+  local extension = vim.fn.expand('%:e')
+  return extension == 'h' or extension == 'hpp'
+end
+
 M.get_snippets_from_not_implemented_functions = function()
   local functions_missing_implementations = cpp_ts.find_not_implemented_functions()
 
@@ -243,23 +248,41 @@ M.get_for_loop_choices_for_snippet = function()
   return sn(nil, c(1, choices))
 end
 
--- In a header file -> ';'
--- In a source file -> ' {\n<indent>\n}'
-local function get_definition_or_declaration()
-  local extension = vim.fn.expand('%:e')
-  if extension == 'h' or extension == 'hpp' then
-    return sn(nil, { t(';') })
-  end
-  return sn(
-    nil,
-    fmta(' ' .. [[
+-- is_declaration == true -> 'void f();'
+-- is_declaration == false -> 'void f() {\n<indent>\n}'
+local function get_simple_function_snippet(is_declaration)
+  if is_declaration then
+    return sn(
+      nil,
+      fmta(
+        [[
+        <> <>(<>);
+      ]],
         {
+          i(1, 'void'),
+          r(2, 'function_name'),
+          i(3),
+        }
+      )
+    )
+  else
+    return sn(
+      nil,
+      fmta(
+        [[
+        <> <>(<>) {
           <>
         }
-      ]], {
-      i(1),
-    })
-  )
+      ]],
+        {
+          i(1, 'void'),
+          r(2, 'function_name'),
+          i(3),
+          i(4),
+        }
+      )
+    )
+  end
 end
 
 M.get_function_snippet = function()
@@ -301,23 +324,14 @@ M.get_function_snippet = function()
 
   if add_simple_function then
     -- A simple function
-    table.insert(
-      functions,
-      sn(
-        nil,
-        fmta(
-          [[
-            <> <>(<>)<>
-          ]],
-          {
-            i(1, 'void'),
-            r(2, 'function_name'),
-            i(3),
-            d(4, get_definition_or_declaration),
-          }
-        )
-      )
-    )
+    local implementation = false
+    if is_in_header() then
+      local declaration = true
+      table.insert(functions, get_simple_function_snippet(declaration))
+      table.insert(functions, get_simple_function_snippet(implementation))
+    else
+      table.insert(functions, get_simple_function_snippet(implementation))
+    end
   end
 
   return sn(nil, c(1, functions))

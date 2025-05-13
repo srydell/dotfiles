@@ -81,6 +81,14 @@ local function get_compilers()
     }
   end
 
+  if util.contains({ 'tolc_prototype' }, project.name) then
+    return {
+      {
+        name = './build.sh',
+        tasks = { { task = 'tolc_prototype' } },
+      },
+    }
+  end
   return {}
 end
 
