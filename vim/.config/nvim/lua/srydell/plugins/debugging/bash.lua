@@ -2,12 +2,7 @@ local M = {}
 
 M.setup = function()
   local dap = require('dap')
-  local registry = require('mason-registry')
-
-  local BASHDB_DIR = ''
-  if registry.has_package('bash-debug-adapter') and registry.get_package('bash-debug-adapter'):is_installed() then
-    BASHDB_DIR = registry.get_package('bash-debug-adapter'):get_install_path() .. '/extension/bashdb_dir'
-  end
+  local BASHDB_DIR = vim.fn.expand('$MASON') .. '/opt/bashdb/'
 
   dap.adapters.bashdb = {
     type = 'executable',

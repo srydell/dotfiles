@@ -28,7 +28,7 @@ return {
     dap_cpp.setup()
     dap_swift.setup()
     dap_bash.setup()
-    dap_python.setup(registry.get_package('debugpy'):get_install_path() .. '/venv/bin/python')
+    dap_python.setup()
 
     breakpoint_db.setup()
 

@@ -23,7 +23,7 @@ M.setup = function()
     type = 'server',
     port = '13000',
     executable = {
-      command = registry.get_package('codelldb'):get_install_path() .. '/codelldb',
+      command = vim.fn.exepath('codelldb'),
       args = {
         '--port',
         '13000',

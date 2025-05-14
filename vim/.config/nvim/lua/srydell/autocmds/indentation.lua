@@ -1,7 +1,7 @@
 local srydell_indentation = vim.api.nvim_create_augroup('srydell_indentation', { clear = false })
 
 vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWinEnter' }, {
-  pattern = { '*.cpp', '*.hpp', '*.h', '*.swift', '*.lua', '*.txt', '*.sh', '*.kt', '*.kts' },
+  pattern = { '*.cpp', '*.hpp', '*.h', '*.swift', '*.lua', '*.txt', '*.sh', '*.html', '*.kt', '*.kts' },
   group = srydell_indentation,
   callback = function()
     vim.opt.expandtab = true

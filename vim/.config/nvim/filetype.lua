@@ -54,3 +54,11 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
     jdtls.setup()
   end,
 })
+
+vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
+  pattern = 'templates/*.html',
+  group = filetype_detect,
+  callback = function()
+    vim.cmd('set filetype=html.flask')
+  end,
+})

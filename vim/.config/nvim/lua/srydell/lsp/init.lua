@@ -135,7 +135,7 @@ lspconfig.bashls.setup({
   on_attach = on_attach,
   settings = {
     bashIde = {
-      shellcheckPath = require('mason-registry').get_package('shellcheck'):get_install_path() .. '/shellcheck',
+      shellcheckPath = vim.fn.exepath('shellcheck'),
       shfmt = {
         path = 'shfmt',
       },
