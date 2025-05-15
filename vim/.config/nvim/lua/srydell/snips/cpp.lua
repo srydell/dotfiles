@@ -9,8 +9,8 @@ local i = ls.insert_node
 local c = ls.choice_node
 local extras = require('luasnip.extras')
 local rep = extras.rep
-local t = ls.text_node
-local d = ls.dynamic_node
+-- local t = ls.text_node
+-- local d = ls.dynamic_node
 local r = ls.restore_node
 
 local function is_in_header()

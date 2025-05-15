@@ -1,11 +1,11 @@
 local M = {}
 
-local function get_node_text(node, buffer)
+M.get_node_text = function(node, buffer)
   buffer = buffer or 0
   return vim.treesitter.get_node_text(node, buffer)
 end
 
-local function get_row(node)
+M.get_row = function(node)
   local row, _, _, _ = vim.treesitter.get_node_range(node)
   return row
 end
@@ -13,7 +13,7 @@ end
 -- Go up the treesitter tree until stop condition is met.
 -- stop_condition is a function that takes a node and returns
 -- false if the search should continue and true if it should stop.
-local function search_up_until(node, stop_condition)
+M.search_up_until = function(node, stop_condition)
   if node == nil then
     return
   end
@@ -31,7 +31,7 @@ end
 -- Visit the nodes in breadth first.
 -- stop_condition is a function that takes a node and returns
 -- false if the search should continue and true if it should stop.
-local function search_down_until(node, stop_condition)
+M.search_down_until = function(node, stop_condition)
   if node == nil then
     return
   end
@@ -55,7 +55,7 @@ end
 -- until a stop condition is met or there are no more nodes.
 -- stop_condition is a function that takes a node and returns
 -- false if the search should continue and true if it should stop.
-local function search_down_from_root_until(stop_condition, buffer)
+M.search_down_from_root_until = function(stop_condition, buffer)
   buffer = buffer or 0
   local trees = vim.treesitter.get_parser(buffer, 'cpp'):parse()
   if not trees then
@@ -67,7 +67,7 @@ local function search_down_from_root_until(stop_condition, buffer)
       return
     end
 
-    local end_node = search_down_until(tree:root(), stop_condition)
+    local end_node = M.search_down_until(tree:root(), stop_condition)
     if end_node then
       return end_node
     end
@@ -154,23 +154,23 @@ local function is_identifier(node)
   return node:type() == 'identifier'
 end
 
-local function is_parameters(node)
+M.is_parameters = function(node)
   return node:type() == 'parameter_list'
 end
 
-local function is_parameter(node)
+M.is_parameter = function(node)
   return node:type() == 'parameter_declaration' or node:type() == 'optional_parameter_declaration'
 end
 
-local is_function = function(node)
+M.is_function = function(node)
   return node:type() == 'function_declarator'
 end
 
-local is_class_or_struct = function(node)
+M.is_class_or_struct = function(node)
   return node:type() == 'class_specifier' or node:type() == 'struct_specifier'
 end
 
-local is_function_name = function(node)
+M.is_function_name = function(node)
   return node:type() == 'identifier' -- Simple free function
     or node:type() == 'field_identifier' -- Class function
     or node:type() == 'qualified_identifier' -- Function with namespace qualifier
@@ -179,13 +179,13 @@ local is_function_name = function(node)
 end
 
 -- Assumes the input function_node is function_node:type() == 'function_declarator'
-local is_function_implementation = function(function_node)
+M.is_function_implementation = function(function_node)
   local function is_implementation(node)
     -- Implemented function
     return node:type() == 'function_definition'
   end
 
-  local implementation = search_up_until(function_node, is_implementation)
+  local implementation = M.search_up_until(function_node, is_implementation)
   return implementation ~= nil
 end
 
@@ -200,7 +200,7 @@ M.get_surrounding_argument_list = function()
   local function is_argument(node)
     return node:type() == 'argument_list'
   end
-  return search_up_until(node_at_cursor, is_argument)
+  return M.search_up_until(node_at_cursor, is_argument)
 end
 
 -- Check wether the node under the cursor is within a function or not.
@@ -214,7 +214,7 @@ M.get_surrounding_function = function()
   local function in_function(node)
     return node:type() == 'function_definition'
   end
-  return search_up_until(node_at_cursor, in_function)
+  return M.search_up_until(node_at_cursor, in_function)
 end
 
 -- Removes the name and the default parameter values from the parameters.
@@ -225,9 +225,9 @@ local function clean_params(params_node, buffer)
   local params = '('
   local function concatenate_params(node)
     -- Simple parameter or with a default value
-    if is_parameter(node) then
+    if M.is_parameter(node) then
       -- The whole parameter - e.g. 'std::string const & s = "hi"'
-      local name = search_down_until(node, is_identifier)
+      local name = M.search_down_until(node, is_identifier)
       if name ~= nil then
         local start_row, start_col, _, _ = vim.treesitter.get_node_range(node)
         local _, start_name_col, end_row, _ = vim.treesitter.get_node_range(name)
@@ -239,11 +239,11 @@ local function clean_params(params_node, buffer)
         -- No name parameter
         if node:type() == 'parameter_declaration' then
           -- Take the whole param name
-          params = params .. get_node_text(node, buffer) .. ','
+          params = params .. M.get_node_text(node, buffer) .. ','
         else
           -- Optional parameter with no name? Yikes.
           -- Remove anything after the '='
-          local param_name = get_node_text(node, buffer)
+          local param_name = M.get_node_text(node, buffer)
           param_name = param_name:sub(1, param_name:find('=') - 1)
           params = params .. param_name .. ','
         end
@@ -251,7 +251,7 @@ local function clean_params(params_node, buffer)
     end
   end
 
-  search_down_until(params_node, concatenate_params)
+  M.search_down_until(params_node, concatenate_params)
   -- Remove the last ','
   -- and close the parenthesis
   if params:sub(#params, #params) == ',' then
@@ -269,7 +269,7 @@ end
 -- E.g.
 --   int f() const -> 'const'
 local function get_function_qualifiers(function_node, buffer)
-  local parameters_node = search_down_until(function_node, is_parameters)
+  local parameters_node = M.search_down_until(function_node, M.is_parameters)
   if parameters_node == nil then
     return ''
   end
@@ -315,7 +315,7 @@ local function get_function_qualifiers_for_snippet(function_node, buffer)
 end
 
 local function get_return_type(function_node, buffer)
-  local function_name_node = search_down_until(function_node, is_function_name)
+  local function_name_node = M.search_down_until(function_node, M.is_function_name)
 
   -- Give up
   if function_name_node == nil then
@@ -326,7 +326,7 @@ local function get_return_type(function_node, buffer)
     return node:type() == 'declaration' or node:type() == 'field_declaration' or node:type() == 'function_definition'
   end
 
-  local function_root = search_up_until(function_node, is_function_root)
+  local function_root = M.search_up_until(function_node, is_function_root)
   if function_root == nil then
     return ''
   end
@@ -370,7 +370,7 @@ local function get_compressed_function_name(function_node, buffer)
 
   local compressed_name = ''
 
-  local class_node = search_up_until(function_node, is_class_or_struct)
+  local class_node = M.search_up_until(function_node, M.is_class_or_struct)
   local class_prefix = ''
   if class_node ~= nil then
     class_prefix = M.get_class_name(class_node, buffer) .. '::'
@@ -378,11 +378,11 @@ local function get_compressed_function_name(function_node, buffer)
 
   for child, _ in function_node:iter_children() do
     -- Name of the function
-    if is_function_name(child) then
-      compressed_name = compressed_name .. class_prefix .. get_node_text(child, buffer)
+    if M.is_function_name(child) then
+      compressed_name = compressed_name .. class_prefix .. M.get_node_text(child, buffer)
     end
 
-    if is_parameters(child) then
+    if M.is_parameters(child) then
       compressed_name = compressed_name .. clean_params(child, buffer)
     end
   end
@@ -433,9 +433,9 @@ function M.make_atomic_store()
         return
       end
 
-      local operator = get_node_text(assignment.operator)
-      local left = get_node_text(assignment.left)
-      local right = get_node_text(assignment.right)
+      local operator = M.get_node_text(assignment.operator)
+      local left = M.get_node_text(assignment.left)
+      local right = M.get_node_text(assignment.right)
       if operator == '=' then
         replace_node_with(curr_node, left .. '.store(' .. right .. ', std::memory_order_release)')
       elseif operator == '+=' then
@@ -455,8 +455,8 @@ function M.make_atomic_store()
         return
       end
 
-      local argument = get_node_text(increment.argument)
-      local operator = get_node_text(increment.operator)
+      local argument = M.get_node_text(increment.argument)
+      local operator = M.get_node_text(increment.operator)
       if operator == '++' then
         replace_node_with(curr_node, argument .. '.fetch_add(1, std::memory_order_acq_rel)')
       elseif operator == '--' then
@@ -484,7 +484,7 @@ function M.make_atomic_load()
     return node:type() == 'identifier' or node:type() == 'field_identifier' or node:type() == 'parameter_declaration'
   end
 
-  local variable = search_up_until(ts_utils.get_node_at_cursor(), is_variable)
+  local variable = M.search_up_until(ts_utils.get_node_at_cursor(), is_variable)
   if variable == nil then
     return
   end
@@ -501,7 +501,7 @@ function M.make_atomic()
     return node:type() == 'primitive_type' or node:type() == 'type_identifier'
   end
 
-  local type = search_up_until(ts_utils.get_node_at_cursor(), is_type)
+  local type = M.search_up_until(ts_utils.get_node_at_cursor(), is_type)
   if type == nil then
     return
   end
@@ -518,13 +518,13 @@ local function parse_enum(enum_node, buffer)
   local enum = {}
   for child, name in enum_node:iter_children() do
     if name == 'name' then
-      enum[name] = get_node_text(child, buffer)
+      enum[name] = M.get_node_text(child, buffer)
     elseif name == 'body' then
       enum['values'] = {}
       for enumerator, _ in child:iter_children() do
         for value, value_name in enumerator:iter_children() do
           if value_name == 'name' then
-            table.insert(enum['values'], get_node_text(value, buffer))
+            table.insert(enum['values'], M.get_node_text(value, buffer))
           end
         end
       end
@@ -536,7 +536,7 @@ end
 local function get_enum_under_cursor()
   local ts_utils = require('nvim-treesitter.ts_utils')
 
-  local enum_node = search_up_until(ts_utils.get_node_at_cursor(), is_enum)
+  local enum_node = M.search_up_until(ts_utils.get_node_at_cursor(), is_enum)
   if enum_node == nil then
     return
   end
@@ -790,7 +790,7 @@ function M.find_enum_from_type()
     return false
   end
 
-  local enum_node = search_down_from_root_until(is_our_enum, buffer)
+  local enum_node = M.search_down_from_root_until(is_our_enum, buffer)
   if enum_node == nil then
     return
   end
@@ -873,7 +873,7 @@ function M.divide_and_sort_includes()
     if node:type() == 'preproc_include' then
       for child, name in node:iter_children() do
         if name ~= nil and name == 'path' then
-          local text = get_node_text(child, 0)
+          local text = M.get_node_text(child, 0)
           -- Avoid alignment headers
           if text:find('align_int8.h') == nil and text:find('align_restore.h') == nil then
             compare_location(child)
@@ -886,7 +886,7 @@ function M.divide_and_sort_includes()
     return false
   end
 
-  search_down_from_root_until(collect_include)
+  M.search_down_from_root_until(collect_include)
 
   -- No includes
   if locations.start_row == nil or locations.end_row == nil then
@@ -942,10 +942,10 @@ M.correct_include_guard = function()
   local function get_guard(node)
     -- #ifndef MY_GUARD
     if node:type() == 'preproc_ifdef' or node:type() == 'preproc_if' then
-      local identifier = search_down_until(node, is_identifier)
+      local identifier = M.search_down_until(node, is_identifier)
       guard.ifdef = identifier
     elseif node:type() == 'preproc_def' then
-      local identifier = search_down_until(node, is_identifier)
+      local identifier = M.search_down_until(node, is_identifier)
       guard.define = identifier
     end
 
@@ -954,7 +954,7 @@ M.correct_include_guard = function()
     -- return guard.ifdef ~= nil and guard.define ~= nil
   end
 
-  search_down_from_root_until(get_guard)
+  M.search_down_from_root_until(get_guard)
 
   -- No include guard
   if guard.ifdef == nil or guard.define == nil then
@@ -962,7 +962,7 @@ M.correct_include_guard = function()
   end
 
   -- Existing include guards are not separated by lines
-  if get_row(guard.define) ~= get_row(guard.ifdef) + 1 then
+  if M.get_row(guard.define) ~= M.get_row(guard.ifdef) + 1 then
     return
   end
 
@@ -1002,11 +1002,11 @@ M.add_includes = function(includes)
     if node:type() == 'preproc_include' then
       for child, name in node:iter_children() do
         if name ~= nil and name == 'path' then
-          existing_includes[get_node_text(child, 0)] = true
+          existing_includes[M.get_node_text(child, 0)] = true
           if first_row == nil then
-            first_row = get_row(node)
+            first_row = M.get_row(node)
           else
-            first_row = math.min(first_row, get_row(node))
+            first_row = math.min(first_row, M.get_row(node))
           end
         end
       end
@@ -1015,7 +1015,7 @@ M.add_includes = function(includes)
     return false
   end
 
-  search_down_from_root_until(collect_include)
+  M.search_down_from_root_until(collect_include)
 
   local includes_to_add = {}
   for _, include in ipairs(includes) do
@@ -1051,7 +1051,7 @@ end
 
 -- Remove template part
 -- i.e. std::vector<int> -> std::vector
-local function remove_template(type_string)
+M.remove_template = function(type_string)
   local template = type_string:find('<', 1, true)
   if template then
     type_string = type_string:sub(1, template - 1)
@@ -1110,11 +1110,11 @@ M.include_necessary_types = function(user_includes)
   local unique_includes = {}
   local function collect_types(node)
     if node:type() == 'qualified_identifier' then
-      local type = get_node_text(node)
+      local type = M.get_node_text(node)
 
       -- Remove template part
       -- i.e. std::vector<int> -> std::vector
-      type = remove_template(type)
+      type = M.remove_template(type)
 
       local include = known_includes[type]
       if include ~= nil then
@@ -1123,7 +1123,7 @@ M.include_necessary_types = function(user_includes)
     end
   end
 
-  search_down_from_root_until(collect_types)
+  M.search_down_from_root_until(collect_types)
 
   local includes = {}
   for include, _ in pairs(unique_includes) do
@@ -1137,7 +1137,7 @@ M.get_class_name = function(class_node, buffer)
   buffer = buffer or 0
   for child, name in class_node:iter_children() do
     if name == 'name' then
-      return get_node_text(child, buffer)
+      return M.get_node_text(child, buffer)
     end
   end
 end
@@ -1147,7 +1147,7 @@ end
 M.get_class_name_under_cursor = function()
   local ts_utils = require('nvim-treesitter.ts_utils')
 
-  local class_node = search_up_until(ts_utils.get_node_at_cursor(), is_class_or_struct)
+  local class_node = M.search_up_until(ts_utils.get_node_at_cursor(), M.is_class_or_struct)
   if class_node == nil then
     return
   end
@@ -1259,7 +1259,7 @@ local function make_definer_within_class_boundary(class_name, indentation, is_so
 end
 
 local function build_parameter_snippet(function_node, buffer)
-  local parameters = search_down_until(function_node, is_parameters)
+  local parameters = M.search_down_until(function_node, M.is_parameters)
 
   if parameters == nil then
     return
@@ -1267,10 +1267,10 @@ local function build_parameter_snippet(function_node, buffer)
 
   local function remove_default_value(param)
     if param:type() ~= 'optional_parameter_declaration' then
-      return get_node_text(param, buffer)
+      return M.get_node_text(param, buffer)
     end
 
-    local text = get_node_text(param, buffer)
+    local text = M.get_node_text(param, buffer)
     -- Remove the default value part
     -- Note, there has to be one as this is an optional_parameter_declaration
     text = text:sub(1, text:find('=') - 1)
@@ -1285,8 +1285,8 @@ local function build_parameter_snippet(function_node, buffer)
   local all_params = '('
   local function concatenate_params(node)
     -- Simple parameter or with a default value
-    if is_parameter(node) then
-      local name = search_down_until(node, is_identifier)
+    if M.is_parameter(node) then
+      local name = M.search_down_until(node, is_identifier)
       local parameter = remove_default_value(node)
       -- Escape for luasnip.fmta
       parameter = parameter:gsub('<', '<<')
@@ -1303,7 +1303,7 @@ local function build_parameter_snippet(function_node, buffer)
       end
     end
   end
-  search_down_until(parameters, concatenate_params)
+  M.search_down_until(parameters, concatenate_params)
 
   -- Remove the last ', '
   -- and close the parenthesis
@@ -1322,14 +1322,14 @@ local function build_function_snippet(info)
   local fmta = require('luasnip.extras.fmt').fmta
   local sn = ls.snippet_node
 
-  local function_name_node = search_down_until(info.node, is_function_name)
+  local function_name_node = M.search_down_until(info.node, M.is_function_name)
   if function_name_node == nil then
     return
   end
-  local function_name = get_node_text(function_name_node, info.buffer)
+  local function_name = M.get_node_text(function_name_node, info.buffer)
 
   -- If there it is a class function, prepend 'ClassName::'
-  local surrounding_class_node = search_up_until(info.node, is_class_or_struct)
+  local surrounding_class_node = M.search_up_until(info.node, M.is_class_or_struct)
   if surrounding_class_node ~= nil then
     function_name = M.get_class_name(surrounding_class_node, info.buffer) .. '::' .. function_name
   end
@@ -1398,9 +1398,9 @@ M.find_not_implemented_functions = function()
   local buffers = { 0, load_alternative_file() }
   for _, buffer in ipairs(buffers) do
     local function collect_functions(node)
-      if is_function(node) then
+      if M.is_function(node) then
         local name = get_compressed_function_name(node, buffer)
-        if is_function_implementation(node) then
+        if M.is_function_implementation(node) then
           implemented_functions[name] = {
             node = node,
             buffer = buffer,
@@ -1414,7 +1414,7 @@ M.find_not_implemented_functions = function()
       end
     end
 
-    search_down_from_root_until(collect_functions, buffer)
+    M.search_down_from_root_until(collect_functions, buffer)
   end
 
   for f, _ in pairs(implemented_functions) do
@@ -1501,7 +1501,7 @@ local function make_class_definer(is_constructor)
     else
       filter_on = keep_only_destructors
     end
-    local without_implementation = filter_on(find_not_implemented_functions())
+    local without_implementation = filter_on(M.find_not_implemented_functions())
     make_definer_outside_of_class_boundary(without_implementation)
   else
     if not is_constructor then
