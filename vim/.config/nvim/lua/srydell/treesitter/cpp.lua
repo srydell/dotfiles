@@ -1098,8 +1098,8 @@ M.include_necessary_types = function(user_includes)
     return
   end
 
-  -- Are there code within the current includes? Give up
   local known_includes = require('srydell.data.types_to_headers')
+  local transitive_includes = require('srydell.data.transitive_includes')
 
   -- Merge the user provided with the standard library ones
   user_includes = user_includes or {}
@@ -1108,6 +1108,7 @@ M.include_necessary_types = function(user_includes)
   end
 
   local unique_includes = {}
+  local to_be_skipped = {}
   local function collect_types(node)
     if node:type() == 'qualified_identifier' then
       local type = M.get_node_text(node)
@@ -1119,6 +1120,13 @@ M.include_necessary_types = function(user_includes)
       local include = known_includes[type]
       if include ~= nil then
         unique_includes[include] = true
+
+        local transitives = transitive_includes[include]
+        if transitives then
+          for _, transitive in ipairs(transitives) do
+            to_be_skipped[transitive] = true
+          end
+        end
       end
     end
   end
@@ -1126,8 +1134,11 @@ M.include_necessary_types = function(user_includes)
   M.search_down_from_root_until(collect_types)
 
   local includes = {}
+
   for include, _ in pairs(unique_includes) do
-    table.insert(includes, include)
+    if to_be_skipped[include] == nil then
+      table.insert(includes, include)
+    end
   end
 
   M.add_includes(includes)

@@ -11,31 +11,32 @@ require('mason').setup({
   },
 })
 
-require('mason-lspconfig').setup()
-
 local lsp_servers = {
   'bashls',
   'clangd',
-  'helm-ls',
+  'helm_ls',
   'jdtls',
   'lua_ls',
   'marksman',
   'neocmake',
   'pylsp',
   'texlab',
-  'yaml-language-server',
-  'kotlin-language-server',
+  'yamlls',
+  'kotlin_language_server',
   -- 'elixirls',
   -- 'perlnavigator',
   -- 'ruby-lsp',
 }
 
+require('mason-lspconfig').setup({
+  automatic_enable = true,
+  ensure_installed = lsp_servers,
+})
+
 require('mason-tool-installer').setup({
   -- a list of all tools you want to ensure are installed upon
   -- start; they should be the names Mason uses for each tool
   ensure_installed = {
-    unpack(lsp_servers),
-
     -- Debug servers
     'codelldb',
     'debugpy',
@@ -75,18 +76,6 @@ local on_attach = function(_, bufnr)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
 end
 
-local util = require('srydell.util')
-local no_auto_setup =
-  { 'lua_ls', 'jdtls', 'ruby-lsp', 'helm-ls', 'yaml-language-server', 'bashls', 'kotlin-language-server' }
-for _, lsp in ipairs(lsp_servers) do
-  if not util.contains(no_auto_setup, lsp) then
-    lspconfig[lsp].setup({
-      capabilities = capabilities,
-      on_attach = on_attach,
-    })
-  end
-end
-
 -- setup sourcekit
 lspconfig.sourcekit.setup({
   capabilities = {
@@ -108,65 +97,4 @@ lspconfig.sourcekit.setup({
       or vim.fs.dirname(vim.fs.find('.git', { path = filename, upward = true })[1])
       or lsp_util.root_pattern('Package.swift')(filename)
   end,
-})
-
--- setup lua_ls and enable call snippets
-lspconfig.lua_ls.setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-  settings = {
-    Lua = {
-      runtime = {
-        version = 'LuaJIT',
-        path = vim.split(package.path, ';'),
-      },
-      diagnostics = { globals = { 'vim', 'hs' } },
-      completion = {
-        callSnippet = 'Replace',
-      },
-    },
-  },
-})
-
--- TODO: The shfmt executable is named platform depentent e.g. shfmt_v3.10.0_darwin_arm64
--- local shfmt = require('mason-registry').get_package('shfmt'):get_install_path()
-lspconfig.bashls.setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-  settings = {
-    bashIde = {
-      shellcheckPath = vim.fn.exepath('shellcheck'),
-      shfmt = {
-        path = 'shfmt',
-      },
-    },
-  },
-})
-
--- setup helm-ls
-lspconfig.helm_ls.setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-  settings = {
-    ['helm-ls'] = {
-      yamlls = {
-        path = 'yaml-language-server',
-      },
-    },
-  },
-})
-
--- setup yamlls
-lspconfig.yamlls.setup({})
-
--- lspconfig.kotlin_language_server.setup({
---   filetypes = { 'kotlin', 'kt', 'kts' },
---   cmd = {
---     require('mason-registry').get_package('kotlin-language-server'):get_install_path()
---       .. '/server/bin/kotlin-language-server',
---   },
--- })
-lspconfig.kotlin_language_server.setup({
-  filetypes = { 'kotlin', 'kt', 'kts' },
-  capabilities = capabilities,
 })
