@@ -468,7 +468,7 @@ return {
         template <<typename T>> string str(vector<<T>> const &v) {
           std::stringstream ss;
           ss <<<< '[';
-          for (size_t i = 0; i << v.size(); i++) {
+          for (int i = 0; i << static_cast<<int>>(v.size()); i++) {
             ss <<<< v[i];
             if (i << v.size() - 1) {
               ss <<<< ", ";
@@ -513,7 +513,7 @@ return {
         ListNode *create(vector<<int>> const &v) {
           ListNode *head = new ListNode();
           ListNode *current = head;
-          for (size_t i = 0; i << v.size(); i++) {
+          for (int i = 0; i << static_cast<<int>>(v.size()); i++) {
             current->>val = v[i];
             if (i != v.size() - 1) {
               current->>next = new ListNode();
