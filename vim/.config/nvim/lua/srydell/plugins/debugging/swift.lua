@@ -2,7 +2,6 @@ local M = {}
 
 M.setup = function()
   local dap = require('dap')
-  local registry = require('mason-registry')
   local xcodebuild = require('xcodebuild.integrations.dap')
 
   dap.configurations.swift = {

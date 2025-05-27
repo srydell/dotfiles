@@ -11,7 +11,6 @@ return {
     local dap = require('dap')
     local dapui = require('dapui')
     local xcodebuild = require('xcodebuild.integrations.dap')
-    local registry = require('mason-registry')
     local breakpoint_db = require('srydell.plugins.debugging.breakpoint_db')
 
     -- language specific adapters

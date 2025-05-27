@@ -23,14 +23,19 @@ local lsp_servers = {
   'texlab',
   'yamlls',
   'kotlin_language_server',
+  'harper_ls',
   -- 'elixirls',
   -- 'perlnavigator',
   -- 'ruby-lsp',
 }
 
-require('mason-lspconfig').setup({
+local mason_lspconfig = require('mason-lspconfig')
+mason_lspconfig.setup({
   automatic_enable = true,
   ensure_installed = lsp_servers,
+  exclude = {
+    'jdtls', -- conflicts with nvim-jdtls
+  },
 })
 
 require('mason-tool-installer').setup({
@@ -44,6 +49,8 @@ require('mason-tool-installer').setup({
 
     -- Formatters
     'ruff',
+    'isort',
+    'black',
     'shellcheck',
     'stylua',
   },
@@ -74,6 +81,10 @@ local on_attach = function(_, bufnr)
   -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
   opts.desc = 'Show documentation for what is under cursor'
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+end
+
+for _, server in ipairs(mason_lspconfig.get_installed_servers()) do
+  vim.lsp.config[server].on_attach = on_attach
 end
 
 -- setup sourcekit

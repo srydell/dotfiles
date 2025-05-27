@@ -26,7 +26,6 @@ end
 
 M.setup = function()
   local dap = require('dap')
-  local registry = require('mason-registry')
 
   dap.adapters.codelldb = {
     type = 'server',

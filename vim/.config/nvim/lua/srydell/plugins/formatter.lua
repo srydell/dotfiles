@@ -22,7 +22,10 @@ return {
       cmake = { 'cmake_format' },
       cpp = { 'clang_format' },
       lua = { 'stylua' },
+      -- Problems with ruff on macos
       python = { 'ruff_format' },
+      -- python = { 'isort', 'black' },
+      -- python = { 'isort' },
       swift = { 'swiftformat_ext' },
       tex = { 'tex_fmt' },
     },

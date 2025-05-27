@@ -215,7 +215,7 @@ M.get_for_loop_choices_for_snippet = function()
         [[
           <> <> = 0; <> << <>; <>++
         ]],
-        { i(1, 'size_t'), i(2, 'i'), rep(2), i(3, 'count'), rep(2) }
+        { i(1, 'int'), i(2, 'i'), rep(2), i(3, 'count'), rep(2) }
       )
     ),
     sn(

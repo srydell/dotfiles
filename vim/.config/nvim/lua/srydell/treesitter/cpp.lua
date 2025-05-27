@@ -1328,7 +1328,7 @@ end
 
 -- info = { node: TSNode, buffer: Int }
 -- Where info.node is a function
-local function build_function_snippet(info)
+M.build_function_snippet = function(info)
   local ls = require('luasnip')
   local fmta = require('luasnip.extras.fmt').fmta
   local sn = ls.snippet_node
@@ -1379,7 +1379,7 @@ local function make_definer_outside_of_class_boundary(definers)
     local _, info = unpack(f)
     -- Remove the parameter list
     -- MyClass::MyClass(int i) -> MyClass::MyClass
-    local snippet = build_function_snippet(info)
+    local snippet = M.build_function_snippet(info)
 
     if snippet ~= nil then
       table.insert(snip_choices, snippet)
