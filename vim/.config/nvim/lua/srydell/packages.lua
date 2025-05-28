@@ -95,8 +95,9 @@ require('lazy').setup({
   -- Java debugger
   { 'mfussenegger/nvim-jdtls' },
 
-  require('srydell.plugins.cmp'),
+  -- require('srydell.plugins.cmp'),
   require('srydell.plugins.snippets'),
+  require('srydell.plugins.blink'),
   require('srydell.plugins.lualine'),
   require('srydell.plugins.oil'),
   require('srydell.plugins.formatter'),

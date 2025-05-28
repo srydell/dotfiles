@@ -58,7 +58,6 @@ require('mason-tool-installer').setup({
 
 local lspconfig = require('lspconfig')
 local lsp_util = require('lspconfig.util')
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 local opts = { silent = true }
 local on_attach = function(_, bufnr)
@@ -85,6 +84,8 @@ end
 
 for _, server in ipairs(mason_lspconfig.get_installed_servers()) do
   vim.lsp.config[server].on_attach = on_attach
+  local capabilities = require('blink.cmp').get_lsp_capabilities(vim.lsp.config[server].capabilities or {})
+  vim.lsp.config[server].capabilities = capabilities
 end
 
 -- setup sourcekit
@@ -95,7 +96,7 @@ lspconfig.sourcekit.setup({
         dynamicRegistration = true,
       },
     },
-    unpack(capabilities),
+    unpack(capabilities or {}),
   },
   on_attach = on_attach,
   cmd = {
