@@ -87,6 +87,11 @@ for _, server in ipairs(mason_lspconfig.get_installed_servers()) do
   vim.lsp.config[server].on_attach = on_attach
 end
 
+-- Setup harper_ls and configure it to only use markdown files
+vim.lsp.config.harper_ls = {
+  filetypes = { 'markdown' },
+}
+
 -- setup sourcekit
 lspconfig.sourcekit.setup({
   capabilities = {

@@ -91,8 +91,8 @@ return {
         end, { 'i', 's' }),
       }),
       sources = cmp.config.sources({
-        { name = 'copilot' },
         { name = 'nvim_lsp' },
+        { name = 'copilot' },
         { name = 'nvim_lua' },
         { name = 'luasnip' },
       }, {
@@ -114,6 +114,12 @@ return {
     cmp.setup.filetype('gitcommit', {
       sources = cmp.config.sources({
         { name = 'buffer' },
+      }),
+    })
+
+    cmp.setup.filetype('codecompanion', {
+      sources = cmp.config.sources({
+        { name = 'codecompanion' },
       }),
     })
 
