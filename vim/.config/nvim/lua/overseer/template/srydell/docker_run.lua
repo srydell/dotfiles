@@ -16,7 +16,7 @@ return {
         '--workdir',
         vim.fn.getcwd(),
         '-t',
-        'docker-dev-rocky8-dev-linux-arm64-latest',
+        'docker-dev-rocky8-dev-linux-arm64-arm64',
         'bash',
         unpack(params.command),
       },

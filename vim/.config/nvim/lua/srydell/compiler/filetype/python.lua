@@ -38,12 +38,12 @@ local function get_compilers()
             task = 'manim',
             args = args,
           },
-          -- {
-          --   task = 'mpv',
-          --   args = mpv_args,
-          -- },
         },
       },
+    }
+  elseif vim.fn.filereadable('./scrapy.cfg') == 1 then
+    return {
+      { name = 'scrapy runspider', tasks = { task = 'scrapy' } },
     }
   end
 
