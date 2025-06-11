@@ -79,12 +79,13 @@ return {
     { trig = 'with', wordTrig = true, dscr = 'with open' },
     fmta(
       [[
-        with open("<>") as <>:
+        with open("<>", "<>") as <>:
             <>
       ]],
       {
         i(1, 'filename.txt'),
-        i(2, 'f'),
+        i(2, 'r'),
+        i(3, 'f'),
         i(0),
       }
     )

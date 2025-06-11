@@ -85,7 +85,7 @@ return {
         }
       ]],
       {
-        i(1),
+        d(1, get_visual),
         i(2, 'std::exception const & e'),
         i(0),
       }
