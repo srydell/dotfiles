@@ -73,6 +73,7 @@ vim.keymap.set('n', '<leader>tf', ':VimuxZoomRunner<CR>', { silent = true })
 
 vim.keymap.set('n', 'm<CR>', require('srydell.compiler.common').run, { silent = true })
 vim.keymap.set('n', '<leader>ec', require('srydell.compiler.common').edit_compiler_option, { silent = true })
+vim.keymap.set('n', '<leader>eC', require('srydell.compiler.common').edit_current_compiler, { silent = true })
 
 -- Move through the valid compilers. Set by b:valid_compilers
 vim.keymap.set('n', ']c', require('srydell.compiler.common').go_to_next_compiler, { silent = true })

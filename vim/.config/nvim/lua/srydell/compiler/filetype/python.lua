@@ -24,7 +24,7 @@ local function edit_manim_options(current_compiler)
 end
 
 local function get_compilers()
-  if vim.fn.filereadable(vim.fn.expand('%:p:h') .. '/manim.cfg') == 1 then
+  if vim.fn.filereadable('manim.cfg') == 1 then
     local scene = guess_scene()
     local args = { '-pqm', vim.fn.expand('%'), scene }
     -- media/videos/filename_without_ext/720p30/MyScene.mp4
@@ -41,7 +41,7 @@ local function get_compilers()
         },
       },
     }
-  elseif vim.fn.filereadable('./scrapy.cfg') == 1 then
+  elseif vim.fn.filereadable('scrapy.cfg') == 1 then
     return {
       { name = 'scrapy runspider', tasks = { task = 'scrapy' } },
     }

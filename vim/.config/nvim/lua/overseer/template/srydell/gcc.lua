@@ -1,5 +1,5 @@
 return {
-  name = 'g++',
+  name = 'gcc',
   desc = 'Compile and run or debug C++ using g++',
   params = {
     will_do = {

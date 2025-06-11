@@ -37,8 +37,8 @@ end
 
 local function toggle_debug(current_compiler)
   -- current_compiler = {
-  --   name = 'clang++ ' .. icons.building,
-  --   tasks = { { task = 'clang++', will_do = 'RUN' } },
+  --   name = 'clang ' .. icons.building,
+  --   tasks = { { task = 'clang', will_do = 'RUN' } },
   -- }
   local icons = require('srydell.constants').icons
   local split = require('srydell.util').split(current_compiler.name, ' ')
@@ -70,12 +70,12 @@ local function get_compilers()
     return {
       {
         name = 'clang++ ' .. icons.building,
-        tasks = { { task = 'clang++', will_do = 'RUN' } },
+        tasks = { { task = 'clang', will_do = 'RUN' } },
         edit_compiler_option = toggle_debug,
       },
       {
         name = 'g++ ' .. icons.building,
-        tasks = { { task = 'g++', will_do = 'RUN' } },
+        tasks = { { task = 'gcc', will_do = 'RUN' } },
         edit_compiler_option = toggle_debug,
       },
     }

@@ -1,5 +1,5 @@
 return {
-  name = 'clang++',
+  name = 'clang',
   desc = 'Compile and run or debug C++ using clang++',
   params = {
     will_do = {

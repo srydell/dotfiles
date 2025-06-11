@@ -179,4 +179,36 @@ M.edit_compiler_option = function()
   end
 end
 
+M.edit_current_compiler = function()
+  local compiler = get_current_compiler()
+  if not compiler then
+    vim.print('No compiler.')
+    return nil
+  end
+
+  local file = ''
+  if compiler['tasks'] ~= nil then
+    if compiler['tasks']['task'] ~= nil then
+      file = compiler['tasks']['task']
+    elseif compiler['tasks'][1] ~= nil and compiler['tasks'][1]['task'] then
+      file = compiler['tasks'][1]['task']
+    end
+  end
+
+  if file == '' then
+    vim.print('No file to edit.')
+    return nil
+  end
+
+  -- Replace spaces with underscores
+  file = file:gsub(' ', '_')
+
+  file = vim.fn.stdpath('config') .. '/lua/overseer/template/srydell/' .. file .. '.lua'
+  if vim.fn.filereadable(file) == 1 then
+    vim.cmd('edit ' .. file)
+  else
+    vim.print('File ' .. file .. ' is not readable.')
+  end
+end
+
 return M
