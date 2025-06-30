@@ -432,18 +432,52 @@ return {
     )
   ),
 
-  s(
-    { trig = 'require', wordTrig = true, dscr = 'Require that' },
-    fmta(
-      [[
-        BOOST_REQUIRE_EQUAL(<>, <>);
-      ]],
-      {
-        i(1, 'true'),
-        i(2, 'false'),
-      }
-    )
-  ),
+  s({ trig = 'require', wordTrig = true, dscr = 'Boost require' }, {
+    c(1, {
+      sn(
+        nil,
+        fmta(
+          [[
+            BOOST_REQUIRE(<>);
+          ]],
+          { r(1, 'comparison') }
+        )
+      ),
+      sn(
+        nil,
+        fmta(
+          [[
+            BOOST_REQUIRE_EQUAL(<>, <>);
+          ]],
+          { r(1, 'comparison'), r(2, 'other') }
+        )
+      ),
+      sn(
+        nil,
+        fmta(
+          [[
+            BOOST_REQUIRE_GE(<>, <>);
+          ]],
+          { r(1, 'comparison'), r(2, 'other') }
+        )
+      ),
+      sn(
+        nil,
+        fmta(
+          [[
+            BOOST_REQUIRE_LE(<>, <>);
+          ]],
+          { r(1, 'comparison'), r(2, 'other') }
+        )
+      ),
+    }),
+  }, {
+    stored = {
+      -- key passed to restoreNodes.
+      ['comparison'] = i(1, 'true'),
+      ['other'] = i(2),
+    },
+  }),
 
   s(
     { trig = 'test', wordTrig = true, dscr = 'Test case' },
