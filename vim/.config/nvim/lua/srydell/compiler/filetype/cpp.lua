@@ -26,6 +26,9 @@ local function select_executable()
   -- To build all targets
   table.insert(files, 'all')
 
+  -- To test all targets
+  table.insert(files, 'test all')
+
   vim.ui.select(files, { prompt = 'Select executable' }, function(executable)
     if executable == nil then
       return

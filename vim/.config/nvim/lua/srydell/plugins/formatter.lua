@@ -35,7 +35,7 @@ return {
         return
       end
 
-      if vim.bo.ft == 'cpp' then
+      if vim.bo.ft == 'cpp' or vim.bo.ft == 'python' then
         if util.current_path_contains('dsf') or util.current_path_contains('oal') then
           return
         end
