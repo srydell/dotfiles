@@ -16,6 +16,7 @@ return {
       cmd = { 'clang++' },
       args = cpp.get_args('clang', full_path, executable),
       components = {
+        { 'srydell.on_start_save_all' },
         { 'srydell.on_start_ensure_exists', dir = 'build/bin' },
         {
           'on_output_quickfix',

@@ -146,22 +146,8 @@ local function leetcode()
     '_skeleton',
     fmta(
       [[
-        #include <<algorithm>>
-        #include <<iostream>>
-        #include <<limits>>
-        #include <<map>>
-        #include <<numeric>>
-        #include <<optional>>
-        #include <<queue>>
-        #include <<set>>
-        #include <<sstream>>
-        #include <<stack>>
-        #include <<string>>
-        #include <<unordered_map>>
-        #include <<unordered_set>>
-        #include <<vector>>
 
-        using namespace std;
+
 
         class Solution {
         public:

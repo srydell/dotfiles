@@ -15,6 +15,7 @@ return {
         unpack(params.args),
       },
       components = {
+        { 'srydell.on_start_save_all' },
         'default',
       },
     }

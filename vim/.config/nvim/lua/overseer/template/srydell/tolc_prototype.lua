@@ -8,6 +8,7 @@ return {
       cmd = { './build.sh' },
       args = { module },
       components = {
+        { 'srydell.on_start_save_all' },
         { 'srydell.on_start_ensure_exists', dir = 'build' },
         {
           'on_output_quickfix',

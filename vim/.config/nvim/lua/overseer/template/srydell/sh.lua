@@ -6,6 +6,7 @@ return {
       cmd = { path },
       args = {},
       components = {
+        { 'srydell.on_start_save_all' },
         -- Ensure the file is executable
         { 'srydell.on_start_run_sh', cmd = 'chmod +x ' .. path },
         {

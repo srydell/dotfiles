@@ -11,13 +11,8 @@ vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
       ['fmt::print'] = '<fmt/format.h>',
       ['oal::Isocket'] = '<oal_socket.h>',
       ['oal::Isocket_mux'] = '<oal_socket_mux.h>',
+      ['oal::Timestamp'] = '<oal_time.h>',
       ['oal::Ref'] = '<oal_ref.h>',
-      ['oal::log_fatal'] = '<oal_log.h>',
-      ['oal::log_error'] = '<oal_log.h>',
-      ['oal::log_warn'] = '<oal_log.h>',
-      ['oal::log_info'] = '<oal_log.h>',
-      ['oal::log_trace'] = '<oal_log.h>',
-      ['oal::log_debug'] = '<oal_log.h>',
       ['oal::Socket_address'] = '<oal_socket_address.h>',
     })
 

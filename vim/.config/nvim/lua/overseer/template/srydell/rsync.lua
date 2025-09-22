@@ -27,6 +27,7 @@ return {
         remote .. ':/home/simryd/code/',
       },
       components = {
+        { 'srydell.on_start_save_all' },
         {
           'srydell.on_status_run_command',
           status = 'SUCCESS',

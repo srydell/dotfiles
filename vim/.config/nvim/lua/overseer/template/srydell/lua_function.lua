@@ -11,6 +11,7 @@ return {
       cmd = { 'true' },
       args = {},
       components = {
+        { 'srydell.on_start_save_all' },
         -- Ensure the file is executable
         { 'srydell.on_exit_run_function', f = params.f },
       },

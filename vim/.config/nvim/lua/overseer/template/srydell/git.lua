@@ -7,6 +7,7 @@ return {
       cmd = { 'git' },
       args = { 'push', 'origin', 'HEAD:' .. branch },
       components = {
+        { 'srydell.on_start_save_all' },
         { 'srydell.on_start_run_sh', cmd = 'git add -u && git commit -m "Commit to be squashed"' },
         {
           'srydell.on_status_run_command',

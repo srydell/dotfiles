@@ -8,6 +8,7 @@ return {
         vim.fn.expand('%:p'),
       },
       components = {
+        { 'srydell.on_start_save_all' },
         {
           'on_output_quickfix',
           open = true,
