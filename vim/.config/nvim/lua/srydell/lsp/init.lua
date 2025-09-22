@@ -83,9 +83,7 @@ local on_attach = function(_, bufnr)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
 end
 
-for _, server in ipairs(mason_lspconfig.get_installed_servers()) do
-  vim.lsp.config[server].on_attach = on_attach
-end
+vim.lsp.config('*', { on_attach = on_attach })
 
 -- Setup harper_ls and configure it to only use markdown files
 vim.lsp.config.harper_ls = {
