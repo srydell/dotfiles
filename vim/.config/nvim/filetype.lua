@@ -59,6 +59,6 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
   pattern = 'templates/*.html',
   group = filetype_detect,
   callback = function()
-    vim.cmd('set filetype=html.flask')
+    vim.cmd('set filetype=html.jinja')
   end,
 })
