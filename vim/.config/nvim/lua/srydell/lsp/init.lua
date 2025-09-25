@@ -56,7 +56,6 @@ require('mason-tool-installer').setup({
   },
 })
 
-local lspconfig = require('lspconfig')
 local lsp_util = require('lspconfig.util')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
@@ -91,24 +90,27 @@ vim.lsp.config.harper_ls = {
 }
 
 -- setup sourcekit
-lspconfig.sourcekit.setup({
-  capabilities = {
-    workspace = {
-      didChangeWatchedFiles = {
-        dynamicRegistration = true,
+vim.lsp.enable('sourcekit')
+if vim.lsp.config.sourcekit ~= nil and vim.lsp.config.sourcekit.setup ~= nil then
+  vim.lsp.config.sourcekit.setup({
+    capabilities = {
+      workspace = {
+        didChangeWatchedFiles = {
+          dynamicRegistration = true,
+        },
       },
+      unpack(capabilities),
     },
-    unpack(capabilities),
-  },
-  on_attach = on_attach,
-  cmd = {
-    '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp',
-  },
-  filetypes = { 'swift' },
-  root_dir = function(filename, _)
-    return lsp_util.root_pattern('buildServer.json')(filename)
-      or lsp_util.root_pattern('*.xcodeproj', '*.xcworkspace')(filename)
-      or vim.fs.dirname(vim.fs.find('.git', { path = filename, upward = true })[1])
-      or lsp_util.root_pattern('Package.swift')(filename)
-  end,
-})
+    on_attach = on_attach,
+    cmd = {
+      '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp',
+    },
+    filetypes = { 'swift' },
+    root_dir = function(filename, _)
+      return lsp_util.root_pattern('buildServer.json')(filename)
+        or lsp_util.root_pattern('*.xcodeproj', '*.xcworkspace')(filename)
+        or vim.fs.dirname(vim.fs.find('.git', { path = filename, upward = true })[1])
+        or lsp_util.root_pattern('Package.swift')(filename)
+    end,
+  })
+end
