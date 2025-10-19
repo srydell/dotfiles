@@ -80,10 +80,18 @@ vim.keymap.set('n', ']c', require('srydell.compiler.common').go_to_next_compiler
 vim.keymap.set('n', '[c', require('srydell.compiler.common').go_to_previous_compiler, { silent = true })
 
 -- Move through the buffer list
-vim.keymap.set('n', '[b', ':bprevious<CR>', { silent = true })
-vim.keymap.set('n', ']b', ':bnext<CR>', { silent = true })
 vim.keymap.set('n', '[B', ':bfirst<CR>', { silent = true })
 vim.keymap.set('n', ']B', ':blast<CR>', { silent = true })
+local function delete_all_other_buffers()
+  -- Delete all buffers except the current one
+  local current_buf = vim.api.nvim_get_current_buf()
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if buf ~= current_buf and vim.api.nvim_buf_is_loaded(buf) then
+      vim.api.nvim_buf_delete(buf, { force = true })
+    end
+  end
+end
+vim.keymap.set('n', '<leader>bd', delete_all_other_buffers, { silent = true })
 
 -- Alternative files
 vim.keymap.set('n', '[a', ':A<CR>', { silent = true })

@@ -76,7 +76,12 @@ M.run = function()
     return
   end
 
+  -- Cancel running tasks
   local overseer = require('overseer')
+  for _, task in ipairs(overseer.list_tasks({ status = 'RUNNING' })) do
+    task:stop()
+  end
+
   local task = overseer.new_task({
     name = compiler.name,
     strategy = {

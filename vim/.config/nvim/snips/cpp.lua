@@ -26,6 +26,41 @@ local function get_surrounding_classname()
 end
 
 return {
+
+  s(
+    { trig = 'ct', wordTrig = true, dscr = 'CompletionToken' },
+    fmta(
+      [[
+        Completion_token<<result_t<<<>>>>>
+      ]],
+      {
+        i(1, 'void'),
+      }
+    )
+  ),
+
+  s(
+    { trig = 'mkct', wordTrig = true, dscr = 'make_completiontoken' },
+    fmta(
+      [[
+        make_completion_token<<result_t<<<>>>>>(<>, <>,
+          [<>](result_t<<<>>> <>) mutable {
+            <>
+          }
+        )
+      ]],
+      {
+        i(1, 'void'),
+        i(2, 'ExecutorContext::Out'),
+        i(3, 'm_executor'),
+        i(4),
+        i(5),
+        rep(1),
+        i(0),
+      }
+    )
+  ),
+
   s(
     { trig = 'operator(%W+)', trigEngine = 'pattern', dscr = 'operator expansion' },
     fmta(
@@ -57,7 +92,7 @@ return {
     fmta(
       [[
         post(<>, <>,
-          [<>]() {
+          [<>]() mutable {
             <><>
         });
       ]],

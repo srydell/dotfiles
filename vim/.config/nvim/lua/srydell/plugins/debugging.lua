@@ -10,7 +10,6 @@ return {
   config = function()
     local dap = require('dap')
     local dapui = require('dapui')
-    local xcodebuild = require('xcodebuild.integrations.dap')
     local breakpoint_db = require('srydell.plugins.debugging.breakpoint_db')
 
     -- language specific adapters
@@ -39,7 +38,7 @@ return {
     -- NOTE: All of them start with <leader>d
     debug_map('c', function()
       if not dap.session() and vim.bo.ft == 'swift' then
-        xcodebuild.build_and_debug()
+        require('xcodebuild.integrations.dap').build_and_debug()
         return
       end
       dap.continue()
