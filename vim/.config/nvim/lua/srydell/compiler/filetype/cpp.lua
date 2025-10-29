@@ -70,15 +70,16 @@ local function get_compilers()
   end
 
   if util.contains({ 'prototype', 'leetcode' }, project.name) then
+    local with_warnings = util.contains({ 'prototype' }, project.name)
     return {
       {
         name = 'clang++ ' .. icons.building,
-        tasks = { { task = 'clang', will_do = 'RUN' } },
+        tasks = { { task = 'clang', will_do = 'RUN', with_warnings = with_warnings } },
         edit_compiler_option = toggle_debug,
       },
       {
         name = 'g++ ' .. icons.building,
-        tasks = { { task = 'gcc', will_do = 'RUN' } },
+        tasks = { { task = 'gcc', will_do = 'RUN', with_warnings = with_warnings } },
         edit_compiler_option = toggle_debug,
       },
     }

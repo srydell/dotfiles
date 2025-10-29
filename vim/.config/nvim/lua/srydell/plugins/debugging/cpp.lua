@@ -28,15 +28,11 @@ M.setup = function()
   local dap = require('dap')
 
   dap.adapters.codelldb = {
-    type = 'server',
-    port = '${port}',
-    executable = {
-      command = vim.fn.exepath('codelldb'),
-      args = { '--port', '${port}' },
+    type = 'executable',
+    command = 'codelldb', -- or if not in $PATH: "/absolute/path/to/codelldb"
 
-      -- On windows you may have to uncomment this:
-      -- detached = false,
-    },
+    -- On windows you may have to uncomment this:
+    -- detached = false,
   }
 
   local pickers = require('telescope.pickers')

@@ -7,6 +7,10 @@ return {
       optional = false,
       choices = { 'RUN', 'DEBUG' },
     },
+    with_warnings = {
+      type = 'boolean',
+      default = true,
+    },
   },
   builder = function(params)
     local cpp = require('srydell.compiler.helpers.cpp')
@@ -14,7 +18,7 @@ return {
     local executable = 'build/bin/' .. vim.fn.expand('%:t:r')
     return {
       cmd = { 'clang++' },
-      args = cpp.get_args('clang', full_path, executable),
+      args = cpp.get_args('gcc', full_path, executable, params.with_warnings),
       components = {
         { 'srydell.on_start_save_all' },
         { 'srydell.on_start_ensure_exists', dir = 'build/bin' },
@@ -24,7 +28,10 @@ return {
           errorformat = cpp.get_errorformat(),
         },
         { 'srydell.on_end_run_or_debug', executable = executable, will_do = params.will_do },
-        { 'srydell.on_end_create_compile_flags_txt', flags = table.concat(cpp.get_flags('clang'), '\n') },
+        {
+          'srydell.on_end_create_compile_flags_txt',
+          flags = table.concat(cpp.get_flags('clang', params.with_warnings), '\n'),
+        },
         'default',
       },
     }

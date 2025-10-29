@@ -25,28 +25,32 @@ M.get_errorformat = function()
     .. [[%DMaking %*\a in %f,]]
 end
 
-M.get_flags = function(compiler)
+M.get_flags = function(compiler, with_warnings)
   local flags = {
-    -- Common flags:
-    '-Wall',
-    '-Werror',
-    '-Wextra',
-    '-Wshadow',
-    '-Wnon-virtual-dtor',
-    '-Wold-style-cast',
-    '-Wcast-align',
-    '-Wunused',
-    '-Woverloaded-virtual',
-    '-Wpedantic',
-    '-Wconversion',
-    '-Wsign-conversion',
-    '-Wnull-dereference',
-    '-Wdouble-promotion',
-    '-Wdate-time',
-    '-Wformat=2',
     '-pthread',
     '-std=c++23',
   }
+  if with_warnings then
+    flags = {
+      unpack(flags),
+      '-Wall',
+      '-Werror',
+      '-Wextra',
+      '-Wshadow',
+      '-Wnon-virtual-dtor',
+      '-Wold-style-cast',
+      '-Wcast-align',
+      '-Wunused',
+      '-Woverloaded-virtual',
+      '-Wpedantic',
+      '-Wconversion',
+      '-Wsign-conversion',
+      '-Wnull-dereference',
+      '-Wdouble-promotion',
+      '-Wdate-time',
+      '-Wformat=2',
+    }
+  end
   local extra_flags = {}
   if compiler == 'clang' then
     extra_flags = { '--debug', '-fsanitize=address', '-Wduplicate-enum', '-fdiagnostics-absolute-paths' }
@@ -64,8 +68,8 @@ M.get_flags = function(compiler)
   return util.merge(flags, extra_flags)
 end
 
-M.get_args = function(compiler, full_path_to_file, out_executable)
-  return util.merge({ full_path_to_file, '-o', out_executable }, M.get_flags(compiler))
+M.get_args = function(compiler, full_path_to_file, out_executable, with_warnings)
+  return util.merge({ full_path_to_file, '-o', out_executable }, M.get_flags(compiler, with_warnings))
 end
 
 return M

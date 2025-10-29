@@ -147,8 +147,7 @@ local function leetcode()
     fmta(
       [[
 
-
-
+        using namespace std;
         class Solution {
         public:
           <> <>(<>) {
