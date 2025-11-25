@@ -31,7 +31,7 @@ fi
 
 # Run the built target if it's a unit_test
 if [[ $1 == unit_test* ]]; then
-  "$1" | sed 's@\.\.\/\.\.@'"$PWD"'@g'
+  DSF_LOG_SEVERITY=info "$1" | sed 's@\.\.\/\.\.@'"$PWD"'@g'
 
   # Make sure the exit code status is the first in the latest pipe
   exit "${PIPESTATUS[0]}"

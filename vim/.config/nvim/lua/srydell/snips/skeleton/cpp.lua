@@ -146,6 +146,7 @@ local function leetcode()
     '_skeleton',
     fmta(
       [[
+        #include <<iostream>>
 
         using namespace std;
         class Solution {

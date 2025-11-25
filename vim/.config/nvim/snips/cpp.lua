@@ -41,12 +41,12 @@ return {
 
   s(
     { trig = 'mkct', wordTrig = true, dscr = 'make_completiontoken' },
-    fmta(
+    fmt(
       [[
-        make_completion_token<<result_t<<<>>>>>(<>, <>,
-          [<>](result_t<<<>>> <>) mutable {
-            <>
-          }
+        make_completion_token<dsf::result_t<{}>>({}, {},
+          [{}](auto {}) mutable {{
+            {}
+          }}
         )
       ]],
       {
@@ -54,8 +54,7 @@ return {
         i(2, 'ExecutorContext::Out'),
         i(3, 'm_executor'),
         i(4),
-        i(5),
-        rep(1),
+        i(5, 'rc'),
         i(0),
       }
     )
@@ -513,6 +512,21 @@ return {
       ['other'] = i(2),
     },
   }),
+
+  s(
+    { trig = 'expect', wordTrig = true, dscr = 'GMock Expect' },
+    fmta(
+      [[
+        EXPECT_CALL(<>, <>(<>)).WillOnce(Return(<>));
+      ]],
+      {
+        i(1, 'mock'),
+        i(2, 'f'),
+        i(3),
+        i(4),
+      }
+    )
+  ),
 
   s(
     { trig = 'test', wordTrig = true, dscr = 'Test case' },

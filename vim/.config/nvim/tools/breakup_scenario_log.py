@@ -34,6 +34,23 @@ def parse_args():
     return args
 
 
+def get_thread(thread_id) -> str:
+    id_to_name = {"1": "OUT", "2": "REPLAY", "3": "CONTROL", "4": "IN"}
+    if thread_id in id_to_name:
+        return id_to_name[thread_id]
+    return str(thread_id)
+
+
+def first_part_part_is_time(broken: list[str]) -> bool:
+    # E.g. 2025-11-06T08
+    if len(broken) == 0:
+        return False
+
+    time_part = broken[0]
+    pattern = r"^\d{4}-\d{2}-\d{2}T\d{2}"
+    return re.match(pattern, time_part) is not None
+
+
 def main():
     args = parse_args()
     json_output = {"files": []}
@@ -53,11 +70,14 @@ def main():
         for line in f.readlines():
             broken = line.split(":")
             # Magic number of columns in log file
-            if len(broken) >= 7:
+            if len(broken) >= 7 and first_part_part_is_time(broken):
                 processor = broken[4]
                 # Join it back together to get the
                 # actual log line from that processor
-                log_line = ":".join(broken[6:])
+
+                log_level = broken[3]
+                thread_name = get_thread(broken[5])
+                log_line = f"{log_level}:{thread_name}:" + ":".join(broken[6:])
                 add(processor, log_line)
             else:
                 # Append to the file where no processor could be found
