@@ -1,4 +1,14 @@
 local home = os.getenv('HOME')
+local data_dirs = {
+  home .. '/.config/nvim/tmp/backup//',
+  home .. '/.config/nvim/tmp/swap//',
+  home .. '/.config/nvim/tmp/undo//',
+}
+
+for _, dir in ipairs(data_dirs) do
+  vim.fn.mkdir(dir, 'p')
+end
+
 vim.opt.encoding = 'utf-8'
 
 -- Make it easier to see tabs, newlines, and trailing spaces

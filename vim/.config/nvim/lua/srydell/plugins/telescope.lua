@@ -44,6 +44,6 @@ return {
     -- To get ui-select loaded and working with telescope, you need to call
     -- load_extension, somewhere after setup function:
     telescope.load_extension('ui-select')
-    telescope.load_extension('dap')
+    -- pcall(telescope.load_extension, 'dap')
   end,
 }

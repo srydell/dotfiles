@@ -1,13 +1,17 @@
 return {
   {
     'zbirenbaum/copilot.lua',
+    cmd = { 'CodeCompanion', 'CodeCompanionChat' },
     dependencies = {
       'zbirenbaum/copilot-cmp',
       'olimorris/codecompanion.nvim',
       'nvim-lua/plenary.nvim',
       'nvim-treesitter/nvim-treesitter',
     },
-    -- event = 'InsertEnter',
+    event = 'InsertEnter',
+    keys = {
+      { '<leader>cc', '<cmd>CodeCompanionChat<CR>', mode = 'n', silent = true },
+    },
     config = function()
       require('copilot').setup({})
       require('copilot_cmp').setup({})
@@ -31,10 +35,6 @@ return {
           },
         },
       })
-      local function chat()
-        vim.cmd('CodeCompanionChat')
-      end
-      vim.keymap.set('n', '<leader>cc', chat, { silent = true })
     end,
   },
 }

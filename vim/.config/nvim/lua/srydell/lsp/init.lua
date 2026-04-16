@@ -59,9 +59,8 @@ require('mason-tool-installer').setup({
 local lsp_util = require('lspconfig.util')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-local opts = { silent = true }
 local on_attach = function(_, bufnr)
-  opts.buffer = bufnr
+  local opts = { buffer = bufnr, silent = true }
 
   -- opts.desc = 'Show line diagnostics'
   -- vim.keymap.set('n', '<leader>d', vim.diagnostic.open_float, opts)
@@ -82,35 +81,37 @@ local on_attach = function(_, bufnr)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
 end
 
-vim.lsp.config('*', { on_attach = on_attach })
+vim.lsp.config('*', {
+  capabilities = capabilities,
+  on_attach = on_attach,
+})
 
 -- Setup harper_ls and configure it to only use markdown files
-vim.lsp.config.harper_ls = {
+vim.lsp.config('harper_ls', {
   filetypes = { 'markdown' },
-}
+})
 
--- setup sourcekit
-vim.lsp.enable('sourcekit')
-if vim.lsp.config.sourcekit ~= nil and vim.lsp.config.sourcekit.setup ~= nil then
-  vim.lsp.config.sourcekit.setup({
-    capabilities = {
-      workspace = {
-        didChangeWatchedFiles = {
-          dynamicRegistration = true,
-        },
-      },
-      unpack(capabilities),
-    },
-    on_attach = on_attach,
-    cmd = {
-      '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp',
-    },
-    filetypes = { 'swift' },
-    root_dir = function(filename, _)
-      return lsp_util.root_pattern('buildServer.json')(filename)
-        or lsp_util.root_pattern('*.xcodeproj', '*.xcworkspace')(filename)
-        or vim.fs.dirname(vim.fs.find('.git', { path = filename, upward = true })[1])
-        or lsp_util.root_pattern('Package.swift')(filename)
-    end,
-  })
+local function sourcekit_root_dir(filename)
+  local git_dir = vim.fs.find('.git', { path = filename, upward = true })[1]
+
+  return lsp_util.root_pattern('buildServer.json')(filename)
+    or lsp_util.root_pattern('*.xcodeproj', '*.xcworkspace')(filename)
+    or lsp_util.root_pattern('Package.swift')(filename)
+    or (git_dir and vim.fs.dirname(git_dir) or nil)
 end
+
+vim.lsp.config('sourcekit', {
+  capabilities = vim.tbl_deep_extend('force', capabilities, {
+    workspace = {
+      didChangeWatchedFiles = {
+        dynamicRegistration = true,
+      },
+    },
+  }),
+  cmd = {
+    '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp',
+  },
+  filetypes = { 'swift' },
+  root_dir = sourcekit_root_dir,
+})
+vim.lsp.enable('sourcekit')
