@@ -147,6 +147,7 @@ local function leetcode()
     fmta(
       [[
         #include <<iostream>>
+        #include "helpers.hpp"
 
         using namespace std;
         class Solution {

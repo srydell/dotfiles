@@ -121,8 +121,14 @@ vim.keymap.set('n', '<leader>y', '"*y')
 vim.keymap.set('x', '<leader>y', '"*ygv<Esc>')
 
 -- Paste from clipboard
-vim.keymap.set('n', '<leader>p', ':setlocal paste<CR>"*p<CR>:setlocal nopaste<CR>', { silent = true })
-vim.keymap.set('n', '<leader>P', ':setlocal paste<CR>"*P<CR>:setlocal nopaste<CR>', { silent = true })
+vim.opt.clipboard = 'unnamedplus'
+
+vim.keymap.set('n', '<leader>p', '"+p', { silent = true })
+vim.keymap.set('n', '<leader>P', '"+P', { silent = true })
+vim.keymap.set('v', '<leader>p', '"+p', { silent = true })
+vim.keymap.set('v', '<leader>y', '"+y', { silent = true })
+-- vim.keymap.set('n', '<leader>p', ':setlocal paste<CR>"*p<CR>:setlocal nopaste<CR>', { silent = true })
+-- vim.keymap.set('n', '<leader>P', ':setlocal paste<CR>"*P<CR>:setlocal nopaste<CR>', { silent = true })
 
 -- Source vimrc
 vim.keymap.set('n', '<leader>sv', ':source $MYVIMRC<CR>')

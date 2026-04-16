@@ -5,7 +5,7 @@ return {
   },
   build = ':TSUpdate',
   config = function()
-    local configs = require('nvim-treesitter.configs')
+    local configs = require('nvim-treesitter')
 
     configs.setup({
       ensure_installed = {
@@ -96,7 +96,7 @@ return {
       -- indent = { enable = true },
     })
 
-    local ts_repeat_move = require('nvim-treesitter.textobjects.repeatable_move')
+    local ts_repeat_move = require('nvim-treesitter-textobjects.repeatable_move')
 
     -- Repeat movement with ; and ,
     -- ensure ; goes forward and , goes backward regardless of the last direction

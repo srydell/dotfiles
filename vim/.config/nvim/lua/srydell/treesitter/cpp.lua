@@ -128,7 +128,7 @@ local function add_text_after(node, text, offset)
   vim.api.nvim_buf_set_lines(0, end_node_row + 1 + offset, end_node_row + 1 + offset, true, lines)
 end
 
--- A version of the ts_utils one that reparses the tree
+-- A version that reparses the tree
 -- Useful when you're trying to act on something that you have not saved yet.
 -- Use when not caring about performance
 local function get_node_at_cursor(winnr)
@@ -137,15 +137,25 @@ local function get_node_at_cursor(winnr)
   local cursor_range = { cursor[1] - 1, cursor[2] }
 
   local buf = vim.api.nvim_win_get_buf(winnr)
-  local trees = vim.treesitter.get_parser(buf, 'cpp'):parse()
-  if not trees then
-    return
+
+  local ok, parser = pcall(vim.treesitter.get_parser, buf, 'cpp')
+  if not ok or not parser then
+    return nil
   end
+
+  local trees = parser:parse()
+  if not trees then
+    return nil
+  end
+
   for _, tree in ipairs(trees) do
     local root = tree:root()
-
-    return root:named_descendant_for_range(cursor_range[1], cursor_range[2], cursor_range[1], cursor_range[2])
+    if root then
+      return root:named_descendant_for_range(cursor_range[1], cursor_range[2], cursor_range[1], cursor_range[2])
+    end
   end
+
+  return nil
 end
 
 -- A set of is_* functions to be used when searching for nodes.
@@ -408,8 +418,6 @@ end
 
 -- variable = 54 -> variable.store(54, std::memory_order_release)
 function M.make_atomic_store()
-  local ts_utils = require('nvim-treesitter.ts_utils')
-
   local function is_assignment(node)
     return node:type() == 'assignment_expression'
   end
@@ -419,7 +427,7 @@ function M.make_atomic_store()
     return node:type() == 'update_expression'
   end
 
-  local curr_node = ts_utils.get_node_at_cursor()
+  local curr_node = get_node_at_cursor()
   while curr_node do
     if is_assignment(curr_node) then
       -- E.g. a += 5;
@@ -473,8 +481,6 @@ end
 
 -- variable -> variable.load(std::memory_order_acquire)
 function M.make_atomic_load()
-  local ts_utils = require('nvim-treesitter.ts_utils')
-
   local function is_variable(node)
     -- Simple variable
     -- or
@@ -484,7 +490,7 @@ function M.make_atomic_load()
     return node:type() == 'identifier' or node:type() == 'field_identifier' or node:type() == 'parameter_declaration'
   end
 
-  local variable = M.search_up_until(ts_utils.get_node_at_cursor(), is_variable)
+  local variable = M.search_up_until(get_node_at_cursor(), is_variable)
   if variable == nil then
     return
   end
@@ -495,13 +501,11 @@ end
 -- int -> std::atomic<int>
 -- If the node under the cursor is not a type, do nothing
 function M.make_atomic()
-  local ts_utils = require('nvim-treesitter.ts_utils')
-
   local function is_type(node)
     return node:type() == 'primitive_type' or node:type() == 'type_identifier'
   end
 
-  local type = M.search_up_until(ts_utils.get_node_at_cursor(), is_type)
+  local type = M.search_up_until(get_node_at_cursor(), is_type)
   if type == nil then
     return
   end
@@ -534,9 +538,7 @@ local function parse_enum(enum_node, buffer)
 end
 
 local function get_enum_under_cursor()
-  local ts_utils = require('nvim-treesitter.ts_utils')
-
-  local enum_node = M.search_up_until(ts_utils.get_node_at_cursor(), is_enum)
+  local enum_node = M.search_up_until(get_node_at_cursor(), is_enum)
   if enum_node == nil then
     return
   end
@@ -1156,9 +1158,7 @@ end
 -- Look for a class under the cursor.
 -- Return the name as a string
 M.get_class_name_under_cursor = function()
-  local ts_utils = require('nvim-treesitter.ts_utils')
-
-  local class_node = M.search_up_until(ts_utils.get_node_at_cursor(), M.is_class_or_struct)
+  local class_node = M.search_up_until(get_node_at_cursor(), M.is_class_or_struct)
   if class_node == nil then
     return
   end
