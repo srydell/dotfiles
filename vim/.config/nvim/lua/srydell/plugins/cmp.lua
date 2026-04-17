@@ -1,140 +1,115 @@
 return {
-  'hrsh7th/nvim-cmp',
+  'saghen/blink.cmp',
+  version = '1.*',
   dependencies = {
-    'hrsh7th/cmp-buffer',
-    'hrsh7th/cmp-path',
-    'hrsh7th/cmp-cmdline',
-    'hrsh7th/cmp-nvim-lsp',
+    { 'saghen/blink.compat', version = '2.*', opts = {} },
     'hrsh7th/cmp-nvim-lua',
     'rcarriga/cmp-dap',
-    'saadparwaiz1/cmp_luasnip',
     'L3MON4D3/LuaSnip',
+    'zbirenbaum/copilot-cmp',
   },
-
-  config = function()
-    local cmp = require('cmp')
-    local ls = require('luasnip')
-
-    cmp.setup({
-      -- Disable for not modifiable pages (for manpager)
-      -- See https://github.com/hrsh7th/nvim-cmp/issues/1113
+  opts = function()
+    return {
       enabled = function()
-        local dap_req = vim.api.nvim_get_option_value('buftype', {}) ~= 'prompt' or require('cmp_dap').is_dap_buffer()
+        local is_dap_buffer = vim.tbl_contains({ 'dap-repl', 'dapui_watches', 'dapui_hover' }, vim.bo.filetype)
+        local dap_req = vim.api.nvim_get_option_value('buftype', {}) ~= 'prompt' or is_dap_buffer
         local modifiable = vim.api.nvim_get_option_value('modifiable', {})
         return dap_req and modifiable
       end,
-
-      -- completion = {
-      --   autocomplete = false,
-      -- },
-
-      snippet = {
-        expand = function(args)
-          ls.lsp_expand(args.body)
+      snippets = {
+        preset = 'luasnip',
+      },
+      completion = {
+        trigger = {
+          show_in_snippet = false,
+        },
+      },
+      keymap = {
+        preset = 'none',
+        ['<C-y>'] = { 'select_and_accept', 'fallback' },
+        ['<C-b>'] = { function(cmp) cmp.scroll_documentation_up(4) end, 'fallback' },
+        ['<C-f>'] = { function(cmp) cmp.scroll_documentation_down(4) end, 'fallback' },
+        ['<Tab>'] = { 'select_next', 'fallback' },
+        ['<S-Tab>'] = { 'select_prev', 'fallback' },
+      },
+      sources = {
+        default = { 'lsp', 'copilot', 'nvim_lua', 'snippets', 'buffer', 'path' },
+        per_filetype = {
+          gitcommit = { 'buffer' },
+          codecompanion = { 'codecompanion' },
+          codecompanion_input = { 'codecompanion' },
+          ['dap-repl'] = { 'dap' },
+          dapui_watches = { 'dap' },
+          dapui_hover = { 'dap' },
+        },
+        providers = {
+          copilot = {
+            name = 'copilot',
+            module = 'blink.compat.source',
+          },
+          nvim_lua = {
+            name = 'nvim_lua',
+            module = 'blink.compat.source',
+          },
+          dap = {
+            name = 'dap',
+            module = 'blink.compat.source',
+          },
+        },
+      },
+      cmdline = {
+        keymap = {
+          preset = 'inherit',
+        },
+        completion = {
+          menu = {
+            auto_show = true,
+          },
+        },
+        sources = function()
+          local cmd_type = vim.fn.getcmdtype()
+          if cmd_type == '/' or cmd_type == '?' then
+            return { 'buffer' }
+          end
+          return { 'path', 'cmdline' }
         end,
       },
-      window = {
-        completion = cmp.config.window.bordered(),
-        documentation = cmp.config.window.bordered(),
-      },
-      mapping = cmp.mapping.preset.insert({
-        ['<C-y>'] = cmp.mapping(
-          cmp.mapping.confirm({
-            behavior = cmp.ConfirmBehavior.Insert,
-            select = true,
-          }),
-          { 'i', 's' }
-        ),
-        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
-        ['<Tab>'] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_next_item()
-          else
-            fallback()
-          end
-        end, { 'i', 's' }),
-        ['<S-Tab>'] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_prev_item()
-          else
-            fallback()
-          end
-        end, { 'i', 's' }),
-        ['<C-E>'] = cmp.mapping(function(fallback)
-          if ls.expand_or_jumpable() then
-            ls.expand_or_jump()
-          else
-            fallback()
-          end
-        end, { 'i', 's' }),
-        ['<C-H>'] = cmp.mapping(function(fallback)
-          if ls.jumpable(-1) then
-            ls.jump(-1)
-          else
-            fallback()
-          end
-        end, { 'i', 's' }),
-        ['<C-K>'] = cmp.mapping(function(fallback)
-          if ls.choice_active() then
-            ls.change_choice(1)
-          else
-            fallback()
-          end
-        end, { 'i', 's' }),
-        ['<C-J>'] = cmp.mapping(function(fallback)
-          if ls.choice_active() then
-            ls.change_choice(-1)
-          else
-            fallback()
-          end
-        end, { 'i', 's' }),
-      }),
-      sources = cmp.config.sources({
-        { name = 'nvim_lsp' },
-        { name = 'copilot' },
-        { name = 'nvim_lua' },
-        { name = 'luasnip' },
-      }, {
-        { name = 'buffer' },
-        { name = 'path' },
-      }),
-    })
+    }
+  end,
+  config = function(_, opts)
+    require('copilot_cmp').setup({})
 
-    cmp.setup.cmdline(':', {
-      mapping = cmp.mapping.preset.cmdline(),
-      sources = cmp.config.sources({
-        { name = 'path' },
-      }, {
-        { name = 'cmdline' },
-      }),
-    })
+    local blink = require('blink.cmp')
+    blink.setup(opts)
 
-    -- Set configuration for specific filetype.
-    cmp.setup.filetype('gitcommit', {
-      sources = cmp.config.sources({
-        { name = 'buffer' },
-      }),
-    })
+    vim.keymap.set({ 'i', 's' }, '<C-E>', function()
+      local ls = require('luasnip')
+      if ls.expandable() then
+        ls.expand()
+      elseif ls.locally_jumpable(1) then
+        ls.jump(1)
+      end
+    end, { silent = true })
 
-    cmp.setup.filetype('codecompanion', {
-      sources = cmp.config.sources({
-        { name = 'codecompanion' },
-      }),
-    })
+    vim.keymap.set({ 'i', 's' }, '<C-H>', function()
+      local ls = require('luasnip')
+      if ls.locally_jumpable(-1) then
+        ls.jump(-1)
+      end
+    end, { silent = true })
 
-    -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
-    cmp.setup.cmdline({ '/', '?' }, {
-      mapping = cmp.mapping.preset.cmdline(),
-      sources = {
-        { name = 'buffer' },
-      },
-    })
+    vim.keymap.set({ 'i', 's' }, '<C-K>', function()
+      local ls = require('luasnip')
+      if ls.choice_active() then
+        ls.change_choice(1)
+      end
+    end, { silent = true })
 
-    cmp.setup.filetype({ 'dap-repl', 'dapui_watches', 'dapui_hover' }, {
-      sources = {
-        { name = 'dap' },
-      },
-    })
+    vim.keymap.set({ 'i', 's' }, '<C-J>', function()
+      local ls = require('luasnip')
+      if ls.choice_active() then
+        ls.change_choice(-1)
+      end
+    end, { silent = true })
   end,
 }

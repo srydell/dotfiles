@@ -64,7 +64,7 @@ if not is_headless then
 end
 
 local lsp_util = require('lspconfig.util')
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
+local capabilities = require('blink.cmp').get_lsp_capabilities()
 
 local on_attach = function(_, bufnr)
   local opts = { buffer = bufnr, silent = true }

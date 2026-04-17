@@ -14,7 +14,6 @@ return {
     },
     config = function()
       require('copilot').setup({})
-      require('copilot_cmp').setup({})
       require('codecompanion').setup({
         strategies = {
           chat = {
@@ -30,7 +29,7 @@ return {
               user = 'Me',
             },
             opts = {
-              completion_provider = 'cmp',
+              completion_provider = 'blink',
             },
           },
         },
