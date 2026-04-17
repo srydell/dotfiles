@@ -285,6 +285,27 @@ local function get_simple_function_snippet(is_declaration)
   end
 end
 
+M.get_definition_or_declaration = function()
+  local declaration = sn(nil, { ls.text_node(';') })
+  local definition = sn(
+    nil,
+    fmta(
+      [[ {
+        <>
+      }]],
+      {
+        i(1),
+      }
+    )
+  )
+
+  if is_in_header() then
+    return sn(nil, c(1, { declaration, definition }))
+  end
+
+  return definition
+end
+
 M.get_function_snippet = function()
   local functions = {}
   local add_simple_function = true

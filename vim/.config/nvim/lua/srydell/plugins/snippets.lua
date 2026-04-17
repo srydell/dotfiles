@@ -7,10 +7,11 @@ return {
   config = function()
     -- NOTE: Keymaps are defined in cmp-nvim since interactions in popup is weird
     local ls = require('luasnip')
-    require('luasnip.loaders.from_lua').load({ paths = '~/.config/nvim/snips/' })
+    local snippet_path = vim.fn.stdpath('config') .. '/snips/'
+    require('luasnip.loaders.from_lua').load({ paths = snippet_path })
 
     vim.keymap.set('n', '<leader><leader>l', function()
-      require('luasnip.loaders.from_lua').load({ paths = '~/.config/nvim/snips/' })
+      require('luasnip.loaders.from_lua').load({ paths = snippet_path })
     end)
 
     ls.config.set_config({
@@ -22,19 +23,6 @@ return {
 
       -- Trigger visual selection
       store_selection_keys = '<C-E>',
-    })
-
-    local unlinkgrp = vim.api.nvim_create_augroup('UnlinkSnippetOnModeChange', { clear = true })
-
-    vim.api.nvim_create_autocmd('ModeChanged', {
-      group = unlinkgrp,
-      pattern = { 's:n', 'i:*' },
-      desc = 'Forget the current snippet when leaving the insert mode',
-      callback = function(evt)
-        if ls.session and ls.session.current_nodes[evt.buf] and not ls.session.jump_active then
-          ls.unlink_current()
-        end
-      end,
     })
 
     vim.api.nvim_create_autocmd('ModeChanged', {

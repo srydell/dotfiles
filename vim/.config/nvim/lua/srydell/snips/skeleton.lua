@@ -6,7 +6,6 @@ local function expand_skeleton()
   end
 
   if not skeleton.snip then
-    print('Skeleton file found but no snippet named "snip" returned.')
     return
   end
 

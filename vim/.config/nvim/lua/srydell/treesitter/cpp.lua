@@ -57,7 +57,12 @@ end
 -- false if the search should continue and true if it should stop.
 M.search_down_from_root_until = function(stop_condition, buffer)
   buffer = buffer or 0
-  local trees = vim.treesitter.get_parser(buffer, 'cpp'):parse()
+  local ok, parser = pcall(vim.treesitter.get_parser, buffer, 'cpp')
+  if not ok or not parser then
+    return
+  end
+
+  local trees = parser:parse()
   if not trees then
     return
   end
