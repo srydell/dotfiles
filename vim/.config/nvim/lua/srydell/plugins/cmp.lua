@@ -25,7 +25,7 @@ return {
         },
         menu = {
           border = 'rounded',
-          winblend = 8,
+          winblend = 0,
           winhighlight = 'Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None',
           scrollbar = false,
           draw = {
