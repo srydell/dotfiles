@@ -1,15 +1,19 @@
-require('mason').setup({
-  pip = {
-    install_args = {
-      '--trusted-host',
-      'pypi.org',
-      '--trusted-host',
-      'pypi.python.org',
-      '--trusted-host',
-      'files.pythonhosted.org',
+local is_headless = #vim.api.nvim_list_uis() == 0
+
+if not is_headless then
+  require('mason').setup({
+    pip = {
+      install_args = {
+        '--trusted-host',
+        'pypi.org',
+        '--trusted-host',
+        'pypi.python.org',
+        '--trusted-host',
+        'files.pythonhosted.org',
+      },
     },
-  },
-})
+  })
+end
 
 local lsp_servers = {
   'bashls',
@@ -29,32 +33,35 @@ local lsp_servers = {
   -- 'ruby-lsp',
 }
 
-local mason_lspconfig = require('mason-lspconfig')
-mason_lspconfig.setup({
-  automatic_enable = true,
-  ensure_installed = lsp_servers,
-  exclude = {
-    'jdtls', -- conflicts with nvim-jdtls
-  },
-})
+if not is_headless then
+  local mason_lspconfig = require('mason-lspconfig')
+  mason_lspconfig.setup({
+    automatic_enable = true,
+    ensure_installed = lsp_servers,
+    exclude = {
+      'jdtls', -- conflicts with nvim-jdtls
+    },
+  })
 
-require('mason-tool-installer').setup({
-  -- a list of all tools you want to ensure are installed upon
-  -- start; they should be the names Mason uses for each tool
-  ensure_installed = {
-    -- Debug servers
-    'codelldb',
-    'debugpy',
-    'bash-debug-adapter',
+  require('mason-tool-installer').setup({
+    -- a list of all tools you want to ensure are installed upon
+    -- start; they should be the names Mason uses for each tool
+    ensure_installed = {
+      -- Debug servers
+      'codelldb',
+      'debugpy',
+      'bash-debug-adapter',
 
-    -- Formatters
-    'ruff',
-    'isort',
-    'black',
-    'shellcheck',
-    'stylua',
-  },
-})
+      -- Formatters
+      'ruff',
+      'isort',
+      'black',
+      'shellcheck',
+      'stylua',
+    },
+    run_on_start = false,
+  })
+end
 
 local lsp_util = require('lspconfig.util')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()

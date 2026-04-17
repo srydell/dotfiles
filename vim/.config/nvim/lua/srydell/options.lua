@@ -3,6 +3,9 @@ local data_dirs = {
   home .. '/.config/nvim/tmp/backup//',
   home .. '/.config/nvim/tmp/swap//',
   home .. '/.config/nvim/tmp/undo//',
+  vim.fn.stdpath('cache'),
+  vim.fn.stdpath('state'),
+  vim.fn.stdpath('state') .. '/shada',
 }
 
 for _, dir in ipairs(data_dirs) do
