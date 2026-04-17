@@ -23,6 +23,59 @@ return {
         trigger = {
           show_in_snippet = false,
         },
+        menu = {
+          border = 'rounded',
+          winblend = 8,
+          winhighlight = 'Normal:BlinkCmpMenu,FloatBorder:BlinkCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None',
+          scrollbar = false,
+          draw = {
+            padding = { 0, 1 },
+            gap = 1,
+            columns = {
+              { 'kind_icon' },
+              { 'label', gap = 1 },
+              { 'source_name' },
+            },
+            components = {
+              kind_icon = {
+                ellipsis = false,
+                text = function(ctx) return ctx.kind_icon end,
+                highlight = function(ctx) return { { group = ctx.kind_hl, priority = 20000 } } end,
+              },
+              label = {
+                width = { fill = true, max = 50 },
+                text = function(ctx) return ctx.label .. ctx.label_detail end,
+                highlight = function(ctx)
+                  local label = ctx.label
+                  local highlights = {
+                    { 0, #label, group = ctx.deprecated and 'BlinkCmpLabelDeprecated' or 'BlinkCmpLabel' },
+                  }
+                  if ctx.label_detail then
+                    table.insert(highlights, { #label, #label + #ctx.label_detail, group = 'BlinkCmpLabelDetail' })
+                  end
+                  for _, idx in ipairs(ctx.label_matched_indices) do
+                    table.insert(highlights, { idx, idx + 1, group = 'BlinkCmpLabelMatch' })
+                  end
+                  return highlights
+                end,
+              },
+              source_name = {
+                width = { max = 12 },
+                text = function(ctx) return ctx.source_name end,
+                highlight = 'BlinkCmpSource',
+              },
+            },
+          },
+        },
+        documentation = {
+          auto_show = true,
+          auto_show_delay_ms = 200,
+          window = {
+            border = 'rounded',
+            winblend = 8,
+            scrollbar = false,
+          },
+        },
       },
       keymap = {
         preset = 'none',

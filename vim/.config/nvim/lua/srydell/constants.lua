@@ -1,7 +1,7 @@
 return {
   icons = {
-    debugging = '🐛',
-    building = '🛠',
+    debugging = '',
+    building = '',
     up = '',
     down = '',
   },
