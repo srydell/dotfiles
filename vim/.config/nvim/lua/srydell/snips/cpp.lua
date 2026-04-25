@@ -213,9 +213,9 @@ M.get_for_loop_choices_for_snippet = function()
       nil,
       fmta( -- Indexed for loop
         [[
-          <> <> = 0; <> << <>; <>++
+          <> <> = <>; <> << <>; <>++
         ]],
-        { i(1, 'int'), i(2, 'i'), rep(2), i(3, 'count'), rep(2) }
+        { i(1, 'int'), i(2, 'i'), i(3, '0'), rep(2), i(4, 'count'), rep(2) }
       )
     ),
     sn(

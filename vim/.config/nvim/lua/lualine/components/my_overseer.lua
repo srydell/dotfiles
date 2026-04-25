@@ -67,11 +67,7 @@ function M:init(options)
   if self.options.colored == nil then
     self.options.colored = true
   end
-  if self.options.colored then
-    -- overseer.on_setup(function()
-    --   self:update_colors()
-    -- end)
-  end
+  self.highlight_groups = {}
   self.symbols = vim.tbl_extend(
     'keep',
     self.options.symbols or {},
@@ -89,6 +85,10 @@ function M:update_colors()
 end
 
 function M:update_status()
+  if self.options.colored and not next(self.highlight_groups) then
+    self:update_colors()
+  end
+
   local tasks = task_list.list_tasks(self.options)
   local tasks_by_status = util.tbl_group_by(tasks, 'status')
   local pieces = {}
@@ -98,7 +98,7 @@ function M:update_status()
   for _, status in ipairs(STATUS.values) do
     local status_tasks = tasks_by_status[status]
     if self.symbols[status] and status_tasks then
-      if self.options.colored then
+      if self.options.colored and self.highlight_groups[status] then
         local hl_start = self:format_hl(self.highlight_groups[status])
         table.insert(pieces, string.format('%s%s', hl_start, self.symbols[status]))
       else
