@@ -14,6 +14,9 @@ local function edit_manim_options(current_compiler)
   vim.ui.input(
     { prompt = 'Enter new arguments: ', default = table.concat(current_compiler.tasks[1].args, ' ') },
     function(input)
+      if input == nil then
+        return
+      end
       local args = require('srydell.util').split(input, ' ')
       current_compiler.name = 'manim ' .. table.concat(args, ' ')
       current_compiler.tasks[1].args = args
@@ -23,7 +26,7 @@ local function edit_manim_options(current_compiler)
   )
 end
 
-local function get_compilers()
+return function()
   if vim.fn.filereadable('manim.cfg') == 1 then
     local scene = guess_scene()
     local args = { '-pqm', vim.fn.expand('%'), scene }
@@ -51,5 +54,3 @@ local function get_compilers()
     { name = 'python run', tasks = { task = 'python' } },
   }
 end
-
-return get_compilers()

@@ -2,28 +2,121 @@
 
 local M = {}
 
-local function get_current_compiler()
-  if vim.w.srydell_compilers ~= nil and vim.w.srydell_compilers[vim.bo.filetype] ~= nil then
-    local index = vim.w.srydell_compilers[vim.bo.filetype].index
-    if index == nil then
-      vim.print('No index')
-      return nil
-    end
-    return vim.w.srydell_compilers[vim.bo.filetype].compilers[index]
+local function get_context()
+  local file = vim.api.nvim_buf_get_name(0)
+  local cwd = vim.fn.getcwd()
+  local project = require('srydell.util').get_project()
+  local filetype = vim.bo.filetype
+  return {
+    bufnr = vim.api.nvim_get_current_buf(),
+    cwd = cwd,
+    file = file,
+    filetype = filetype,
+    key = table.concat({ filetype, cwd, file }, ':'),
+    project = project,
+  }
+end
+
+local function get_state(ctx)
+  local states = vim.w.srydell_compilers or {}
+  local state = states[ctx.key]
+  if state == nil then
+    state = { index = 1 }
+    states[ctx.key] = state
+    vim.w.srydell_compilers = states
+  end
+  return state
+end
+
+local function save_state(ctx, state)
+  local states = vim.w.srydell_compilers or {}
+  states[ctx.key] = state
+  vim.w.srydell_compilers = states
+end
+
+local function notify_loader_error(module, err)
+  local missing_module = string.find(err, "module '" .. module .. "' not found", 1, true) ~= nil
+  if not missing_module then
+    vim.notify('Failed to load compiler module ' .. module .. ':\n' .. err, vim.log.levels.ERROR)
+  end
+end
+
+local function load_compilers(ctx)
+  local module = 'srydell.compiler.filetype.' .. ctx.filetype
+  local status, resolver = pcall(require, module)
+  if not status then
+    notify_loader_error(module, resolver)
+    return {}
   end
 
-  -- Fetch the list of compilers for this filetype
-  local status, compilers = pcall(require, 'srydell.compiler.filetype.' .. vim.bo.filetype)
-  if not status then
+  local compilers = resolver
+  if type(resolver) == 'function' then
+    local ok, result = pcall(resolver, ctx)
+    if not ok then
+      vim.notify('Failed to resolve compilers for ' .. ctx.filetype .. ':\n' .. result, vim.log.levels.ERROR)
+      return {}
+    end
+    compilers = result
+  end
+
+  if compilers == nil then
+    return {}
+  end
+
+  if type(compilers) ~= 'table' then
+    vim.notify('Compiler module ' .. module .. ' must return a table or resolver function.', vim.log.levels.ERROR)
+    return {}
+  end
+
+  return compilers
+end
+
+local function get_current_compiler()
+  local ctx = get_context()
+  local state = get_state(ctx)
+  local compilers = state.compilers or load_compilers(ctx)
+  state.compilers = compilers
+
+  if #compilers == 0 then
     return nil
   end
 
-  local new_filetype_compilers = vim.w.srydell_compilers or {}
-  new_filetype_compilers[vim.bo.filetype] = { index = 1, compilers = compilers }
+  if state.index == nil or state.index > #compilers then
+    state.index = 1
+  end
+  save_state(ctx, state)
+  return compilers[state.index]
+end
 
-  vim.w.srydell_compilers = new_filetype_compilers
-  -- NOTE: New compilers, index = 1
-  return vim.w.srydell_compilers[vim.bo.filetype].compilers[1]
+local function convert_task_to_overseer(task)
+  if type(task) ~= 'table' then
+    return task
+  end
+
+  local converted = {}
+  if task.task ~= nil then
+    table.insert(converted, task.task)
+  end
+
+  for _, value in ipairs(task) do
+    if type(value) == 'table' then
+      table.insert(converted, convert_task_to_overseer(value))
+    else
+      table.insert(converted, value)
+    end
+  end
+
+  for key, value in pairs(task) do
+    if type(key) ~= 'number' and key ~= 'task' then
+      if type(value) == 'table' then
+        converted[key] = convert_task_to_overseer(value)
+      else
+        converted[key] = value
+      end
+    end
+  end
+
+  return converted
 end
 
 local function convert_to_overseer_orchestrator(tasks)
@@ -47,23 +140,13 @@ local function convert_to_overseer_orchestrator(tasks)
   -- },
   -- tasks = { task = 'python run' },
   -- out = { 'python run' }
+  if tasks.task ~= nil then
+    return convert_task_to_overseer(tasks)
+  end
+
   local converted = {}
-  for key, value in pairs(tasks) do
-    if type(value) == 'table' then
-      -- Nested table without keys
-      if type(key) == 'number' then
-        table.insert(converted, convert_to_overseer_orchestrator(value))
-      else
-        converted[key] = convert_to_overseer_orchestrator(value)
-      end
-    else
-      -- Value is not a table
-      if key == 'task' then
-        table.insert(converted, 1, value)
-      else
-        converted[key] = value
-      end
-    end
+  for _, task in ipairs(tasks) do
+    table.insert(converted, convert_task_to_overseer(task))
   end
   return converted
 end
@@ -105,9 +188,16 @@ end
 -- Moves the compiler index +1 or -1 depending on direction
 -- number_of_compilers is for bounds checking
 local function change_compiler(direction)
-  local number_of_compilers = #vim.w.srydell_compilers[vim.bo.filetype].compilers
+  local ctx = get_context()
+  local state = get_state(ctx)
+  local compilers = state.compilers or load_compilers(ctx)
+  state.compilers = compilers
+  local number_of_compilers = #compilers
+  if number_of_compilers == 0 then
+    return
+  end
 
-  local start_index = vim.w.srydell_compilers[vim.bo.filetype].index
+  local start_index = state.index or 1
   local new_index = start_index
   if direction == 1 then
     if start_index == number_of_compilers then
@@ -123,9 +213,8 @@ local function change_compiler(direction)
     end
   end
 
-  local new_compilers = vim.w.srydell_compilers
-  new_compilers[vim.bo.filetype].index = new_index
-  vim.w.srydell_compilers = new_compilers
+  state.index = new_index
+  save_state(ctx, state)
 end
 
 M.go_to_next_compiler = function()
@@ -150,7 +239,7 @@ M.replace_current_compiler = function(new_compiler)
     return nil
   end
 
-  if new_compiler.name == nil or new_compiler.tasks == nil then
+  if new_compiler.name == nil then
     vim.print('New compiler does not have "name". Please return a valid compiler.')
     return nil
   end
@@ -160,16 +249,18 @@ M.replace_current_compiler = function(new_compiler)
     return nil
   end
 
-  local index = vim.w.srydell_compilers[vim.bo.filetype].index
+  local ctx = get_context()
+  local state = get_state(ctx)
+  local index = state.index
   if index == nil then
     vim.print('No index. Internal error.')
     return nil
   end
 
   -- Set the new compiler
-  local current = vim.w.srydell_compilers
-  current[vim.bo.filetype].compilers[index] = new_compiler
-  vim.w.srydell_compilers = current
+  state.compilers = state.compilers or load_compilers(ctx)
+  state.compilers[index] = new_compiler
+  save_state(ctx, state)
 end
 
 M.edit_compiler_option = function()
@@ -180,7 +271,10 @@ M.edit_compiler_option = function()
   end
 
   if compiler['edit_compiler_option'] ~= nil then
-    compiler['edit_compiler_option'](compiler)
+    local new_compiler = compiler['edit_compiler_option'](vim.deepcopy(compiler))
+    if new_compiler ~= nil then
+      M.replace_current_compiler(new_compiler)
+    end
   end
 end
 

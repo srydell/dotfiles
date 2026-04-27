@@ -18,7 +18,7 @@ return {
     local executable = 'build/bin/' .. vim.fn.expand('%:t:r')
     return {
       cmd = { 'clang++' },
-      args = cpp.get_args('gcc', full_path, executable, params.with_warnings),
+      args = cpp.get_args('clang', full_path, executable, params.with_warnings),
       components = {
         { 'srydell.on_start_save_all' },
         { 'srydell.on_start_ensure_exists', dir = 'build/bin' },

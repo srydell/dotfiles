@@ -1,6 +1,6 @@
 local constants = require('srydell.constants')
 
-local function get_compilers()
+return function()
   return {
     { name = 'maven ' .. constants.icons.building, tasks = { task = 'maven' } },
     {
@@ -17,5 +17,3 @@ local function get_compilers()
     },
   }
 end
-
-return get_compilers()

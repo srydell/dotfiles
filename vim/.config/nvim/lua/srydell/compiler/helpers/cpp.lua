@@ -72,4 +72,21 @@ M.get_args = function(compiler, full_path_to_file, out_executable, with_warnings
   return util.merge({ full_path_to_file, '-o', out_executable }, M.get_flags(compiler, with_warnings))
 end
 
+M.get_perf_flags = function(compiler)
+  local flags = {
+    '-pthread',
+    '-std=c++23',
+    '-O2',
+    '-g',
+  }
+  if compiler == 'clang' then
+    return util.merge(flags, { '-fno-omit-frame-pointer', '-fdiagnostics-absolute-paths' })
+  end
+  return util.merge(flags, { '-fno-omit-frame-pointer' })
+end
+
+M.get_perf_args = function(compiler, full_path_to_file, out_executable)
+  return util.merge({ full_path_to_file, '-o', out_executable }, M.get_perf_flags(compiler))
+end
+
 return M

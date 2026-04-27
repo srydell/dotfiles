@@ -15,14 +15,19 @@ end
 
 local function select_executable()
   local util = require('srydell.util')
-  local files = util.split(io.popen('fd --no-ignore --type x --full-path ./build/debug/bin/'):read('*a'), '\n')
-  table.foreach(files, function(index, file)
+  local handle = io.popen('fd --no-ignore --type x --full-path ./build/debug/bin/')
+  if not handle then
+    return
+  end
+  local files = util.split(handle:read('*a'), '\n')
+  handle:close()
+  for index, file in ipairs(files) do
     -- './build/debug/bin/unit_test' -> { '.', 'build', 'debug', 'bin', 'unit_test' }
     local split = util.split(file, '/')
     -- { '.', 'build', 'debug', 'bin', 'unit_test' } -> 'unit_test'
     local executable = split[#split]
     files[index] = executable
-  end)
+  end
   -- To build all targets
   table.insert(files, 'all')
 
@@ -53,13 +58,24 @@ local function toggle_debug(current_compiler)
     current_compiler.tasks[1].will_do = 'RUN'
   end
 
-  local common = require('srydell.compiler.common')
-  common.replace_current_compiler(current_compiler)
+  return current_compiler
 end
 
-local function get_compilers()
+local function toggle_perf_mode(current_compiler)
+  if current_compiler.tasks[1].mode == 'STAT' then
+    current_compiler.name = 'perf record'
+    current_compiler.tasks[1].mode = 'RECORD'
+  else
+    current_compiler.name = 'perf stat'
+    current_compiler.tasks[1].mode = 'STAT'
+  end
+
+  return current_compiler
+end
+
+return function(ctx)
   local util = require('srydell.util')
-  local project = util.get_project()
+  local project = ctx.project
   if not project.name then
     return {}
   end
@@ -82,6 +98,11 @@ local function get_compilers()
         tasks = { { task = 'gcc', will_do = 'RUN', with_warnings = with_warnings } },
         edit_compiler_option = toggle_debug,
       },
+      {
+        name = 'perf stat',
+        tasks = { { task = 'cpp perf', compiler = 'clang', mode = 'STAT' } },
+        edit_compiler_option = toggle_perf_mode,
+      },
     }
   end
 
@@ -95,5 +116,3 @@ local function get_compilers()
   end
   return {}
 end
-
-return get_compilers()

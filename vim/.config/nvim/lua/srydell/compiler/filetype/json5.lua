@@ -1,6 +1,6 @@
-local function get_compilers()
+return function(ctx)
   local util = require('srydell.util')
-  local project = util.get_project()
+  local project = ctx.project
   if not project.name then
     return {}
   end
@@ -16,5 +16,3 @@ local function get_compilers()
   end
   return {}
 end
-
-return get_compilers()
