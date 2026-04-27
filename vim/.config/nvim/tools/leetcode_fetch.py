@@ -258,6 +258,7 @@ def _enrich_example(example, params, return_type):
     return {
         "arguments": _enrich_testcase(example.get("input"), params)["arguments"],
         "expected": _cpp_value(example.get("output"), return_type),
+        "explanation": example.get("explanation"),
     }
 
 

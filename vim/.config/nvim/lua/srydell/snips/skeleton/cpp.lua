@@ -256,10 +256,21 @@ local function get_input_expression(example)
   return expression
 end
 
+local function add_explanation(lines, explanation)
+  if not explanation or explanation == '' then
+    return
+  end
+
+  for line in string.gmatch(explanation, '[^\n]+') do
+    table.insert(lines, '    // ' .. line)
+  end
+end
+
 local function get_example_blocks(problem)
   local blocks = {}
   for _, example in ipairs(problem.examples or {}) do
     local lines = { '  {' }
+    add_explanation(lines, example.explanation)
     for _, arg in ipairs(example.arguments or {}) do
       table.insert(lines, '    ' .. arg.declaration)
     end
