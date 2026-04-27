@@ -9,10 +9,11 @@ return {
   },
   builder = function(params)
     return {
-      cmd = { 'perf' },
+      cmd = { 'sh' },
       args = {
-        'stat',
-        '--event',
+        '-c',
+        'if [ -x "$2" ]; then exec perf stat --event "$1" "$2"; else echo "Executable not found: $2"; exit 1; fi',
+        'sh',
         table.concat({
           'task-clock',
           'cycles',

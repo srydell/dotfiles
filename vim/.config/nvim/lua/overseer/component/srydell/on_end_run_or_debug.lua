@@ -16,6 +16,11 @@ return {
     return {
       on_exit = function(self, _task, code)
         if code == 0 then
+          if vim.fn.executable(params.executable) ~= 1 then
+            vim.print('Executable not found: ' .. params.executable)
+            return
+          end
+
           if params.will_do == 'RUN' then
             local exe = require('overseer').new_task({
               cmd = { params.executable },

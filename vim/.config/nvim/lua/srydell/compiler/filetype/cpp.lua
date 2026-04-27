@@ -85,8 +85,86 @@ local function perf_compiler()
   }
 end
 
+local function is_cmake_project()
+  return vim.fn.findfile('CMakeLists.txt', vim.fn.expand('%:p:h') .. ';') ~= ''
+end
+
+local function cmake_executable(build_dir, target)
+  return build_dir .. '/' .. target
+end
+
+local function update_cmake_compiler(current_compiler, target)
+  local build_dir = current_compiler.cmake.build_dir
+  local executable = cmake_executable(build_dir, target)
+  current_compiler.cmake.target = target
+  current_compiler.tasks[2].target = target
+
+  if current_compiler.cmake.kind == 'build' then
+    current_compiler.name = 'cmake build ' .. target
+  elseif current_compiler.cmake.kind == 'run' then
+    current_compiler.name = 'cmake run ' .. target
+    current_compiler.tasks[3].executable = executable
+  elseif current_compiler.cmake.kind == 'perf stat' or current_compiler.cmake.kind == 'perf record' then
+    current_compiler.name = 'cmake ' .. current_compiler.tasks[3].task .. ' ' .. target
+    current_compiler.tasks[3].executable = executable
+  end
+
+  return current_compiler
+end
+
+local function edit_cmake_target(current_compiler)
+  vim.ui.input({ prompt = 'CMake target: ', default = current_compiler.cmake.target }, function(input)
+    if input == nil or input == '' then
+      return
+    end
+
+    local common = require('srydell.compiler.common')
+    common.replace_current_compiler(update_cmake_compiler(current_compiler, input))
+  end)
+end
+
+local function cmake_compiler(kind, target)
+  local build_dir = 'build'
+  local compiler = {
+    name = 'cmake ' .. kind .. ' ' .. target,
+    cmake = {
+      build_dir = build_dir,
+      kind = kind,
+      target = target,
+    },
+    tasks = {
+      { task = 'cmake configure', build_dir = build_dir },
+      { task = 'cmake build', build_dir = build_dir, target = target },
+    },
+    edit_compiler_option = edit_cmake_target,
+  }
+
+  if kind == 'run' then
+    table.insert(compiler.tasks, { task = 'run executable', executable = cmake_executable(build_dir, target) })
+  elseif kind == 'perf stat' or kind == 'perf record' then
+    compiler.name = 'cmake ' .. kind .. ' ' .. target
+    table.insert(compiler.tasks, { task = kind, executable = cmake_executable(build_dir, target) })
+  end
+
+  return compiler
+end
+
+local function cmake_compilers()
+  local target = vim.fn.expand('%:t:r')
+  return {
+    cmake_compiler('build', target),
+    cmake_compiler('run', target),
+    cmake_compiler('perf stat', target),
+    cmake_compiler('perf record', target),
+  }
+end
+
 return function(ctx)
   local util = require('srydell.util')
+  if is_cmake_project() then
+    return cmake_compilers()
+  end
+
   local project = ctx.project
   if not project.name then
     return {}

@@ -1,6 +1,6 @@
 return {
-  name = 'perf record',
-  desc = 'Run perf record with DWARF call graphs',
+  name = 'run executable',
+  desc = 'Run an executable',
   params = {
     executable = {
       type = 'string',
@@ -12,7 +12,7 @@ return {
       cmd = { 'sh' },
       args = {
         '-c',
-        'if [ -x "$1" ]; then exec perf record --call-graph dwarf "$1"; else echo "Executable not found: $1"; exit 1; fi',
+        'if [ -x "$1" ]; then exec "$1"; else echo "Executable not found: $1"; exit 1; fi',
         'sh',
         params.executable,
       },
