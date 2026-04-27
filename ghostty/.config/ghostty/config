@@ -1,0 +1,28 @@
+# Ghostty config migrated from ~/.config/wezterm/wezterm.lua
+# Goal: keep the same look and the same few custom shortcuts.
+
+theme = Gruvbox Dark
+background = #000000
+
+font-family = JetBrains Mono
+font-size = 24
+cursor-style = block
+cursor-style-blink = false
+
+window-show-tab-bar = never
+window-padding-x = 8
+window-padding-y = 8
+window-padding-balance = true
+
+# Closest match to WezTerm's "RESIZE": no titlebar/chrome.
+# Exact border-only behavior depends on the platform/window manager.
+window-decoration = none
+
+background-opacity = 1
+background-blur = 30
+
+shell-integration = zsh
+shell-integration-features = no-cursor
+
+keybind = ctrl+f=toggle_fullscreen
+keybind = ctrl+'=clear_screen
