@@ -1,7 +1,19 @@
 local function expand_skeleton()
-  local status, skeleton = pcall(require, 'srydell.snips.skeleton.' .. vim.bo.ft)
+  if vim.bo.ft == '' then
+    return
+  end
+
+  local module = 'srydell.snips.skeleton.' .. vim.bo.ft
+  package.loaded[module] = nil
+
+  local status, skeleton = pcall(require, module)
   if not status then
-    print('No skeleton file for srydell.snips.skeleton.' .. vim.bo.ft)
+    local missing_module = string.find(skeleton, "module '" .. module .. "' not found", 1, true)
+    if not missing_module then
+      error(skeleton)
+    end
+
+    print('No skeleton file for ' .. module)
     return
   end
 
