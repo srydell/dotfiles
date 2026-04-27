@@ -62,15 +62,27 @@ local function toggle_debug(current_compiler)
 end
 
 local function toggle_perf_mode(current_compiler)
-  if current_compiler.tasks[1].mode == 'STAT' then
+  if current_compiler.tasks[2].task == 'perf stat' then
     current_compiler.name = 'perf record'
-    current_compiler.tasks[1].mode = 'RECORD'
+    current_compiler.tasks[2].task = 'perf record'
   else
     current_compiler.name = 'perf stat'
-    current_compiler.tasks[1].mode = 'STAT'
+    current_compiler.tasks[2].task = 'perf stat'
   end
 
   return current_compiler
+end
+
+local function perf_compiler()
+  local executable = 'build/bin/' .. vim.fn.expand('%:t:r')
+  return {
+    name = 'perf stat',
+    tasks = {
+      { task = 'cpp perf compile', compiler = 'clang' },
+      { task = 'perf stat', executable = executable },
+    },
+    edit_compiler_option = toggle_perf_mode,
+  }
 end
 
 return function(ctx)
@@ -98,11 +110,7 @@ return function(ctx)
         tasks = { { task = 'gcc', will_do = 'RUN', with_warnings = with_warnings } },
         edit_compiler_option = toggle_debug,
       },
-      {
-        name = 'perf stat',
-        tasks = { { task = 'cpp perf', compiler = 'clang', mode = 'STAT' } },
-        edit_compiler_option = toggle_perf_mode,
-      },
+      perf_compiler(),
     }
   end
 
