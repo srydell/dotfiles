@@ -224,13 +224,14 @@ def normalize_problem(problem):
 def template_problem(normalized):
     """Return only the fields a C++ template needs."""
     params = normalized.get("metadata", {}).get("params", [])
+    return_type = (normalized.get("metadata", {}).get("return") or {}).get("type")
     return {
         "id": normalized.get("id"),
         "title": normalized.get("title"),
         "slug": normalized.get("slug"),
         "difficulty": normalized.get("difficulty"),
         "signature": _build_cpp_signature(normalized.get("metadata", {})),
-        "examples": [_enrich_example(example, params) for example in normalized.get("examples", [])],
+        "examples": [_enrich_example(example, params, return_type) for example in normalized.get("examples", [])],
     }
 
 
@@ -252,9 +253,12 @@ def _build_cpp_signature(metadata):
     }
 
 
-def _enrich_example(example, params):
+def _enrich_example(example, params, return_type):
     """Convert one example input into C++ argument declarations."""
-    return {"arguments": _enrich_testcase(example.get("input"), params)["arguments"]}
+    return {
+        "arguments": _enrich_testcase(example.get("input"), params)["arguments"],
+        "expected": _cpp_value(example.get("output"), return_type),
+    }
 
 
 def _enrich_testcase(testcase, params):
