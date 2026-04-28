@@ -26,40 +26,6 @@ local function get_surrounding_classname()
 end
 
 return {
-
-  s(
-    { trig = 'ct', wordTrig = true, dscr = 'CompletionToken' },
-    fmta(
-      [[
-        Completion_token<<result_t<<<>>>>>
-      ]],
-      {
-        i(1, 'void'),
-      }
-    )
-  ),
-
-  s(
-    { trig = 'mkct', wordTrig = true, dscr = 'make_completiontoken' },
-    fmt(
-      [[
-        make_completion_token<dsf::result_t<{}>>({}, {},
-          [{}](auto {}) mutable {{
-            {}
-          }}
-        )
-      ]],
-      {
-        i(1, 'void'),
-        i(2, 'ExecutorContext::Out'),
-        i(3, 'm_executor'),
-        i(4),
-        i(5, 'rc'),
-        i(0),
-      }
-    )
-  ),
-
   s(
     { trig = 'operator(%W+)', trigEngine = 'pattern', dscr = 'operator expansion' },
     fmta(
@@ -86,24 +52,6 @@ return {
     )
   ),
 
-  s(
-    { trig = 'post', wordTrig = true, dscr = 'Post to a context' },
-    fmta(
-      [[
-        post(<>, <>,
-          [<>]() mutable {
-            <><>
-        });
-      ]],
-      {
-        i(1, 'ExecutorContext::Out'),
-        i(2, 'm_executor'),
-        i(3),
-        d(4, get_visual),
-        i(0),
-      }
-    )
-  ),
   postfix('.a', { l('std::atomic<' .. l.POSTFIX_MATCH .. '>') }),
 
   postfix('.v', { l('std::vector<' .. l.POSTFIX_MATCH .. '>') }),
@@ -235,44 +183,6 @@ return {
       }
     )
   ),
-
-  s({ trig = 'log', wordTrig = true, dscr = 'log something' }, {
-    c(1, {
-      sn(
-        nil,
-        fmta(
-          [[
-            DSF_LOG(oal::log_<>, "<>");
-          ]],
-          { r(1, 'log_level'), r(2, 'text') }
-        )
-      ),
-      sn(
-        nil,
-        fmta(
-          [[
-            DSF_FLOG(oal::log_<>, "<>", <>);
-          ]],
-          { r(1, 'log_level'), r(2, 'text'), i(3) }
-        )
-      ),
-      sn(
-        nil,
-        fmta(
-          [[
-            OAL_LOG(oal::log_<>, "<>");
-          ]],
-          { r(1, 'log_level'), r(2, 'text') }
-        )
-      ),
-    }),
-  }, {
-    stored = {
-      -- key passed to restoreNodes.
-      ['log_level'] = i(1, 'info'),
-      ['text'] = i(2),
-    },
-  }),
 
   s({ trig = 'pv', wordTrig = true, dscr = 'print something with name log' }, {
     c(1, {
@@ -461,84 +371,6 @@ return {
       ]],
       {
         i(1, 'Enum'),
-        i(0),
-      }
-    )
-  ),
-
-  s({ trig = 'require', wordTrig = true, dscr = 'Boost require' }, {
-    c(1, {
-      sn(
-        nil,
-        fmta(
-          [[
-            BOOST_REQUIRE(<>);
-          ]],
-          { r(1, 'comparison') }
-        )
-      ),
-      sn(
-        nil,
-        fmta(
-          [[
-            BOOST_REQUIRE_EQUAL(<>, <>);
-          ]],
-          { r(1, 'comparison'), r(2, 'other') }
-        )
-      ),
-      sn(
-        nil,
-        fmta(
-          [[
-            BOOST_REQUIRE_GE(<>, <>);
-          ]],
-          { r(1, 'comparison'), r(2, 'other') }
-        )
-      ),
-      sn(
-        nil,
-        fmta(
-          [[
-            BOOST_REQUIRE_LE(<>, <>);
-          ]],
-          { r(1, 'comparison'), r(2, 'other') }
-        )
-      ),
-    }),
-  }, {
-    stored = {
-      -- key passed to restoreNodes.
-      ['comparison'] = i(1, 'true'),
-      ['other'] = i(2),
-    },
-  }),
-
-  s(
-    { trig = 'expect', wordTrig = true, dscr = 'GMock Expect' },
-    fmta(
-      [[
-        EXPECT_CALL(<>, <>(<>)).WillOnce(Return(<>));
-      ]],
-      {
-        i(1, 'mock'),
-        i(2, 'f'),
-        i(3),
-        i(4),
-      }
-    )
-  ),
-
-  s(
-    { trig = 'test', wordTrig = true, dscr = 'Test case' },
-    fmta(
-      [[
-        BOOST_AUTO_TEST_CASE(<>)
-        {
-          <>
-        }
-      ]],
-      {
-        i(1, 'name_of_the_test'),
         i(0),
       }
     )

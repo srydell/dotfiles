@@ -8,7 +8,6 @@ return {
     -- NOTE: Keymaps are defined in cmp-nvim since interactions in popup is weird
     local ls = require('luasnip')
     local snippet_path = vim.fn.stdpath('config') .. '/snips/'
-    require('luasnip.loaders.from_lua').lazy_load({ paths = snippet_path })
 
     local function clear_snippet_modules()
       for module, _ in pairs(package.loaded) do
@@ -21,10 +20,16 @@ return {
     vim.keymap.set('n', '<leader><leader>l', function()
       clear_snippet_modules()
 
-      local snippet_file = snippet_path .. vim.bo.filetype .. '.lua'
-      if vim.uv.fs_stat(snippet_file) then
-        require('luasnip.loaders').reload_file(snippet_file)
-      else
+      local reloaded = false
+      for _, filetype in ipairs(require('srydell.snips.context').filetypes_for_buffer(0)) do
+        local snippet_file = snippet_path .. filetype .. '.lua'
+        if vim.uv.fs_stat(snippet_file) then
+          require('luasnip.loaders').reload_file(snippet_file)
+          reloaded = true
+        end
+      end
+
+      if not reloaded then
         require('luasnip.loaders.from_lua').lazy_load({ paths = snippet_path })
       end
     end, { desc = 'Reload snippets for current filetype' })
@@ -46,7 +51,17 @@ return {
 
       -- Trigger visual selection
       store_selection_keys = '<C-E>',
+
+      ft_func = function()
+        return require('srydell.snips.context').filetypes_for_buffer(0)
+      end,
+
+      load_ft_func = function(bufnr)
+        return require('srydell.snips.context').filetypes_for_buffer(bufnr)
+      end,
     })
+
+    require('luasnip.loaders.from_lua').lazy_load({ paths = snippet_path })
 
     vim.api.nvim_create_autocmd('ModeChanged', {
       group = vim.api.nvim_create_augroup('UnlinkLuaSnipSnippetOnModeChange', {
