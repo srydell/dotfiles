@@ -155,16 +155,16 @@ return {
 
     vim.keymap.set({ 'i', 's' }, '<C-E>', function()
       local ls = require('luasnip')
-      if ls.expandable() then
-        ls.expand()
-      elseif ls.locally_jumpable(1) then
+      if ls.jumpable(1) then
         ls.jump(1)
+      elseif ls.expandable() then
+        ls.expand()
       end
     end, { desc = 'Expand snippet or jump forward', silent = true })
 
     vim.keymap.set({ 'i', 's' }, '<C-H>', function()
       local ls = require('luasnip')
-      if ls.locally_jumpable(-1) then
+      if ls.jumpable(-1) then
         ls.jump(-1)
       end
     end, { desc = 'Jump backward in snippet', silent = true })

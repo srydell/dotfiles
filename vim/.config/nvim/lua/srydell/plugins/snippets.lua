@@ -52,8 +52,9 @@ return {
       -- Enable autotriggered snippets
       enable_autosnippets = true,
 
-      -- Trigger visual selection
-      store_selection_keys = '<C-E>',
+      -- Capture visual selections for snippets that use LS_SELECT_RAW.
+      -- In insert/select mode <C-E> is handled by lua/srydell/plugins/cmp.lua.
+      cut_selection_keys = '<C-E>',
 
       -- ft_func controls which snippet scopes are available for expansion and
       -- completion in the current buffer.
@@ -76,7 +77,7 @@ return {
       group = vim.api.nvim_create_augroup('UnlinkLuaSnipSnippetOnModeChange', {
         clear = true,
       }),
-      pattern = { 's:n', 'i:*' },
+      pattern = { 's:n', 'i:n' },
       desc = 'Forget the current snippet when leaving the insert mode',
       callback = function(evt)
         -- If we have n active nodes, n - 1 will still remain after a `unlink_current()` call.
