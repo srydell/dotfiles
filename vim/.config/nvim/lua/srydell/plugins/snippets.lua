@@ -8,11 +8,34 @@ return {
     -- NOTE: Keymaps are defined in cmp-nvim since interactions in popup is weird
     local ls = require('luasnip')
     local snippet_path = vim.fn.stdpath('config') .. '/snips/'
-    require('luasnip.loaders.from_lua').load({ paths = snippet_path })
+    require('luasnip.loaders.from_lua').lazy_load({ paths = snippet_path })
+
+    local function clear_snippet_modules()
+      for module, _ in pairs(package.loaded) do
+        if module:match('^srydell%.snips') or module:match('^srydell%.data%.cpp_operators$') then
+          package.loaded[module] = nil
+        end
+      end
+    end
 
     vim.keymap.set('n', '<leader><leader>l', function()
-      require('luasnip.loaders.from_lua').load({ paths = snippet_path })
-    end)
+      clear_snippet_modules()
+
+      local snippet_file = snippet_path .. vim.bo.filetype .. '.lua'
+      if vim.uv.fs_stat(snippet_file) then
+        require('luasnip.loaders').reload_file(snippet_file)
+      else
+        require('luasnip.loaders.from_lua').lazy_load({ paths = snippet_path })
+      end
+    end, { desc = 'Reload snippets for current filetype' })
+
+    vim.api.nvim_create_user_command('LuaSnipEdit', function()
+      require('luasnip.loaders').edit_snippet_files()
+    end, { desc = 'Choose a snippet file to edit' })
+
+    vim.keymap.set('n', '<leader><leader>e', function()
+      require('luasnip.loaders').edit_snippet_files()
+    end, { desc = 'Edit snippet files' })
 
     ls.config.set_config({
       -- Update dynamic snippets as you type

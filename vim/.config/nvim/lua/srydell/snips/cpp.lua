@@ -40,6 +40,10 @@ end
 -- it is considered 'primitive'. Primitive args are 'int', 'double', etc.
 -- If all of them are, return true. Else, return false
 local function are_all_template_args_primitive(qualified_identifier)
+  if qualified_identifier == nil then
+    return false
+  end
+
   local template_type = qualified_identifier:field('name')[1]
   if template_type == nil then
     return false
@@ -64,6 +68,25 @@ local function are_all_template_args_primitive(qualified_identifier)
   end
 
   return true
+end
+
+local function get_declarator_identifier(declarator)
+  if declarator == nil then
+    return
+  end
+
+  if declarator:type() == 'identifier' then
+    return cpp_ts.get_node_text(declarator)
+  end
+
+  local identifier = cpp_ts.search_down_until(declarator, function(node)
+    return node:type() == 'identifier'
+  end)
+  if identifier == nil then
+    return
+  end
+
+  return cpp_ts.get_node_text(identifier)
 end
 
 local function find_loop_variable()
@@ -115,12 +138,20 @@ local function find_loop_variable()
   local function parse_parameters(node)
     if cpp_ts.is_parameter(node) then
       local type_node = node:field('type')[1]
+      if type_node == nil then
+        return false
+      end
+
       local typename = cpp_ts.get_node_text(type_node)
       local iterable_type = get_iterable_type(typename)
       if iterable_type == '' then
         return false
       end
-      local identifier = cpp_ts.get_node_text(node:field('declarator')[1])
+
+      local identifier = get_declarator_identifier(node:field('declarator')[1])
+      if identifier == nil then
+        return false
+      end
 
       -- Save it to guesses
       store_guess(typename, identifier, iterable_type, are_all_template_args_primitive(type_node))
@@ -138,6 +169,10 @@ local function find_loop_variable()
       cpp_ts.search_down_until(node, parse_parameters)
     elseif node:type() == 'declaration' then
       local type_node = node:field('type')[1]
+      if type_node == nil then
+        return false
+      end
+
       local typename = cpp_ts.get_node_text(type_node)
       local iterable_type = get_iterable_type(typename)
       if iterable_type == '' then
@@ -147,15 +182,9 @@ local function find_loop_variable()
       -- One of
       -- std::vector<int> v; // declarator(identifier)
       -- std::vector<int> v = {1, 2, 3}; // declarator(declarator(identifier))
-      local declarator = node:field('declarator')[1]
-      local identifier = ''
-      if declarator:type() == 'identifier' then
-        identifier = cpp_ts.get_node_text(declarator)
-      else
-        local inner_declarator = declarator:field('declarator')[1]
-        if inner_declarator:type() == 'identifier' then
-          identifier = cpp_ts.get_node_text(inner_declarator)
-        end
+      local identifier = get_declarator_identifier(node:field('declarator')[1])
+      if identifier == nil then
+        return false
       end
 
       -- Save it to guesses

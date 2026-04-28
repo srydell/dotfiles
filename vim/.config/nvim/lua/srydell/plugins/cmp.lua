@@ -39,12 +39,18 @@ return {
             components = {
               kind_icon = {
                 ellipsis = false,
-                text = function(ctx) return ctx.kind_icon end,
-                highlight = function(ctx) return { { group = ctx.kind_hl, priority = 20000 } } end,
+                text = function(ctx)
+                  return ctx.kind_icon
+                end,
+                highlight = function(ctx)
+                  return { { group = ctx.kind_hl, priority = 20000 } }
+                end,
               },
               label = {
                 width = { fill = true, max = 50 },
-                text = function(ctx) return ctx.label .. ctx.label_detail end,
+                text = function(ctx)
+                  return ctx.label .. ctx.label_detail
+                end,
                 highlight = function(ctx)
                   local label = ctx.label
                   local highlights = {
@@ -61,7 +67,9 @@ return {
               },
               source_name = {
                 width = { max = 12 },
-                text = function(ctx) return ctx.source_name end,
+                text = function(ctx)
+                  return ctx.source_name
+                end,
                 highlight = 'BlinkCmpSource',
               },
             },
@@ -80,8 +88,18 @@ return {
       keymap = {
         preset = 'none',
         ['<C-y>'] = { 'select_and_accept', 'fallback' },
-        ['<C-b>'] = { function(cmp) cmp.scroll_documentation_up(4) end, 'fallback' },
-        ['<C-f>'] = { function(cmp) cmp.scroll_documentation_down(4) end, 'fallback' },
+        ['<C-b>'] = {
+          function(cmp)
+            cmp.scroll_documentation_up(4)
+          end,
+          'fallback',
+        },
+        ['<C-f>'] = {
+          function(cmp)
+            cmp.scroll_documentation_down(4)
+          end,
+          'fallback',
+        },
         ['<Tab>'] = { 'select_next', 'fallback' },
         ['<S-Tab>'] = { 'select_prev', 'fallback' },
       },
@@ -142,27 +160,27 @@ return {
       elseif ls.locally_jumpable(1) then
         ls.jump(1)
       end
-    end, { silent = true })
+    end, { desc = 'Expand snippet or jump forward', silent = true })
 
     vim.keymap.set({ 'i', 's' }, '<C-H>', function()
       local ls = require('luasnip')
       if ls.locally_jumpable(-1) then
         ls.jump(-1)
       end
-    end, { silent = true })
+    end, { desc = 'Jump backward in snippet', silent = true })
 
     vim.keymap.set({ 'i', 's' }, '<C-K>', function()
       local ls = require('luasnip')
       if ls.choice_active() then
         ls.change_choice(1)
       end
-    end, { silent = true })
+    end, { desc = 'Select next snippet choice', silent = true })
 
     vim.keymap.set({ 'i', 's' }, '<C-J>', function()
       local ls = require('luasnip')
       if ls.choice_active() then
         ls.change_choice(-1)
       end
-    end, { silent = true })
+    end, { desc = 'Select previous snippet choice', silent = true })
   end,
 }
