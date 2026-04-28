@@ -3,6 +3,9 @@ local fmta = require('luasnip.extras.fmt').fmta
 local sn = ls.snippet_node
 local i = ls.insert_node
 
+-- C++ test snippets. These are only active when
+-- lua/srydell/snips/context.lua adds the cpp_test scope for the current buffer.
+
 return {
   s({ trig = 'require', wordTrig = true, dscr = 'Boost require' }, {
     c(1, {

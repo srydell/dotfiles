@@ -10,6 +10,9 @@ return {
     local snippet_path = vim.fn.stdpath('config') .. '/snips/'
 
     local function clear_snippet_modules()
+      -- Snippet files often call helpers from lua/srydell/snips or
+      -- lua/srydell/data. Clear those modules before manual reloads so helper
+      -- edits take effect without restarting Neovim.
       for module, _ in pairs(package.loaded) do
         if module:match('^srydell%.snips') or module:match('^srydell%.data%.cpp_operators$') then
           package.loaded[module] = nil
@@ -52,15 +55,21 @@ return {
       -- Trigger visual selection
       store_selection_keys = '<C-E>',
 
+      -- ft_func controls which snippet scopes are available for expansion and
+      -- completion in the current buffer.
       ft_func = function()
         return require('srydell.snips.context').filetypes_for_buffer(0)
       end,
 
+      -- load_ft_func must mirror ft_func so lazy-loaded snippets are loaded for
+      -- every scope that can become active in this buffer.
       load_ft_func = function(bufnr)
         return require('srydell.snips.context').filetypes_for_buffer(bufnr)
       end,
     })
 
+    -- Snippet files are loaded on demand based on load_ft_func. See
+    -- lua/srydell/snips/context.lua for the dynamic C++ scopes.
     require('luasnip.loaders.from_lua').lazy_load({ paths = snippet_path })
 
     vim.api.nvim_create_autocmd('ModeChanged', {

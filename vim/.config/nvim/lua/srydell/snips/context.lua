@@ -1,5 +1,9 @@
 local M = {}
 
+-- LuaSnip sees each entry returned from this module as an active snippet
+-- filetype. For a regular C++ file this is just { "cpp" }, while project or
+-- path-specific contexts append extra scopes such as "cpp_test" or "cpp_dsf".
+
 local function split_filetypes(filetype)
   if filetype == '' then
     return {}
@@ -14,6 +18,8 @@ local function get_buf_name(bufnr)
 end
 
 local function get_project_name(path)
+  -- Match the convention already used elsewhere in the config:
+  -- <project>/{src,include,test}/...
   local last_directory = ''
   for part in path:gmatch('[^/]+') do
     if part == 'src' or part == 'include' or part == 'test' then
@@ -44,6 +50,8 @@ function M.filetypes_for_buffer(bufnr)
   end
 
   local path = get_buf_name(bufnr)
+  -- These are additive. A DSF test file intentionally gets both cpp_test and
+  -- cpp_dsf snippets in addition to the base cpp snippets.
   if is_cpp_test_file(path) then
     table.insert(filetypes, 'cpp_test')
   end

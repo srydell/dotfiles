@@ -5,6 +5,9 @@ local fmta = require('luasnip.extras.fmt').fmta
 local sn = ls.snippet_node
 local i = ls.insert_node
 
+-- DSF-specific C++ snippets. These are only active when
+-- lua/srydell/snips/context.lua adds the cpp_dsf scope for the current buffer.
+
 return {
   s(
     { trig = 'ct', wordTrig = true, dscr = 'CompletionToken' },
