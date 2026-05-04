@@ -1,3 +1,5 @@
+-- Expands filetype-specific skeleton snippets when opening empty files.
+-- Load and expand the skeleton module that matches the current filetype.
 local function expand_skeleton()
   if vim.bo.ft == '' then
     return
@@ -21,10 +23,11 @@ local function expand_skeleton()
     return
   end
 
-  -- Expand the skeleton snippet
+  -- Expand the skeleton snippet into the current buffer.
   require('luasnip').snip_expand(skeleton.snip)
 end
 
+-- Autocommands that populate new or externally-created empty files.
 local nvim_skeleton = vim.api.nvim_create_augroup('nvim-skeleton', { clear = true })
 vim.api.nvim_create_autocmd('BufNewFile', {
   pattern = '*',

@@ -264,6 +264,85 @@ class LeetCodeFetchTests(unittest.TestCase):
 
         self.assertEqual(template["description"], "You are given an array prices.")
 
+    def test_template_problem_includes_design_payload(self):
+        template = leetcode_fetch.template_problem(
+            {
+                "id": "295",
+                "title": "Find Median from Data Stream",
+                "slug": "find-median-from-data-stream",
+                "difficulty": "Hard",
+                "description": "Implement the MedianFinder class.",
+                "exampleTestcaseList": [
+                    '["MedianFinder","addNum","addNum","findMedian","addNum","findMedian"]\n'
+                    "[[],[1],[2],[],[3],[]]"
+                ],
+                "metadata": {
+                    "classname": "MedianFinder",
+                    "constructor": {"params": []},
+                    "methods": [
+                        {
+                            "params": [{"type": "integer", "name": "num"}],
+                            "name": "addNum",
+                            "return": {"type": "void"},
+                        },
+                        {
+                            "params": [],
+                            "name": "findMedian",
+                            "return": {"type": "double"},
+                        },
+                    ],
+                    "return": {"type": "boolean"},
+                    "systemdesign": True,
+                },
+                "examples": [
+                    {
+                        "input": '["MedianFinder","addNum","addNum","findMedian","addNum","findMedian"] [[],[1],[2],[],[3],[]]',
+                        "output": "[null, null, null, 1.5, null, 2.0]",
+                        "explanation": "MedianFinder medianFinder = new MedianFinder();",
+                    }
+                ],
+            }
+        )
+
+        self.assertEqual(template["design"]["class_name"], "MedianFinder")
+        self.assertEqual(template["design"]["methods"][0]["params"][0]["type"], "int")
+        self.assertEqual(template["design"]["examples"][0]["steps"][1]["operation"], "addNum")
+        self.assertEqual(template["design"]["examples"][0]["steps"][1]["arguments"][0]["value"], "1")
+        self.assertEqual(template["design"]["examples"][0]["steps"][3]["expected"], "1.5")
+        self.assertEqual(template["design"]["examples"][0]["steps"][5]["expected"], "2.0")
+
+    def test_extract_examples_accepts_design_labels_without_colons(self):
+        problem = {
+            "questionFrontendId": "295",
+            "title": "Find Median from Data Stream",
+            "titleSlug": "find-median-from-data-stream",
+            "difficulty": "Hard",
+            "content": """
+                <p><strong class="example">Example 1:</strong></p>
+                <pre>
+                <strong>Input</strong>
+                ["MedianFinder", "findMedian"]
+                [[], []]
+                <strong>Output</strong>
+                [null, 1.5]
+                <strong>Explanation</strong>
+                MedianFinder medianFinder = new MedianFinder();
+                </pre>
+            """,
+            "exampleTestcaseList": [],
+            "sampleTestCase": "",
+            "metaData": "{}",
+            "codeSnippets": [],
+        }
+
+        normalized = leetcode_fetch.normalize_problem(problem)
+
+        self.assertEqual(normalized["examples"][0]["output"], "[null, 1.5]")
+        self.assertEqual(
+            normalized["examples"][0]["explanation"],
+            "MedianFinder medianFinder = new MedianFinder();",
+        )
+
     def test_unknown_id_raises_error(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             mapping_path = Path(tmpdir) / "id_to_slug.json"

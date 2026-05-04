@@ -1,3 +1,4 @@
+-- C++ skeleton generators for project files, prototypes, and LeetCode solutions.
 local ls = require('luasnip')
 local s = ls.snippet
 local i = ls.insert_node
@@ -7,6 +8,7 @@ local fmta = require('luasnip.extras.fmt').fmta
 
 local util = require('srydell.util')
 
+-- Return the license header used by DSF-generated files.
 local function get_license()
   return [[/*
  * This file is subject to the terms and conditions defined in
@@ -15,6 +17,7 @@ local function get_license()
 ]]
 end
 
+-- Build a header skeleton with an include guard and project namespace.
 local function basic_include_guard(project_info)
   local license = ''
   if project_info.name == 'dsf' then
@@ -42,6 +45,7 @@ namespace %s {
   return s('_skeleton', fmta(snippet, { i(0) }))
 end
 
+-- Derive the tested unit name from a DSF test filename.
 local function get_test_name(filename)
   -- Assume filename is on form 'test_blahblah.cpp'
   filename = string.sub(filename, 6)
@@ -51,6 +55,7 @@ local function get_test_name(filename)
   return filename
 end
 
+-- Guess the production header included by a DSF test file.
 local function get_test_include_path(project_info, test_name)
   local index = util.index_of(project_info.path, 'test')
   if not index then
@@ -63,6 +68,7 @@ local function get_test_include_path(project_info, test_name)
   return include_path
 end
 
+-- Build the Boost.Test skeleton used by DSF test files.
 local function dsf_test(project_info, filename)
   local license = get_license()
   local test_name = get_test_name(filename)
@@ -90,6 +96,7 @@ BOOST_AUTO_TEST_SUITE_END()
   return s('_skeleton', fmta(snippet, { i(1), i(0) }))
 end
 
+-- Build a DSF source skeleton, or route test files to the test skeleton.
 local function dsf_cpp(project_info)
   local filename = project_info.path[#project_info.path]
   if string.match(filename, 'test_') then
@@ -123,6 +130,7 @@ namespace %s {
   return s('_skeleton', fmta(snippet, { i(0) }))
 end
 
+-- Build a minimal C++ main file for quick prototype projects.
 local function prototype()
   return s(
     '_skeleton',
@@ -141,6 +149,7 @@ local function prototype()
   )
 end
 
+-- Build an editable fallback when LeetCode metadata cannot be fetched.
 local function leetcode_fallback()
   return s(
     '_skeleton',
@@ -181,6 +190,7 @@ local function leetcode_fallback()
   )
 end
 
+-- Escape LuaSnip fmt markers that may appear in generated C++ text.
 local function fmta_escape(text)
   if type(text) ~= 'string' then
     return ''
@@ -189,10 +199,12 @@ local function fmta_escape(text)
   return text:gsub('<', '<<'):gsub('>', '>>')
 end
 
+-- Extract the numeric LeetCode ID from paths like leetcode/src/123.cpp.
 local function get_leetcode_problem_id()
   return vim.fn.expand('%:p'):match('/src/(%d+)%a*%.cpp$')
 end
 
+-- Fetch and decode the compact JSON payload for the current LeetCode file.
 local function fetch_leetcode_problem()
   local problem_id = get_leetcode_problem_id()
   if not problem_id then
@@ -213,6 +225,7 @@ local function fetch_leetcode_problem()
   return problem
 end
 
+-- Treat JSON null userdata and other non-lists as an empty list.
 local function list_or_empty(value)
   if type(value) == 'table' then
     return value
@@ -220,10 +233,12 @@ local function list_or_empty(value)
   return {}
 end
 
+-- Check for real strings; vim.NIL from JSON null is userdata and truthy.
 local function is_nonempty_string(value)
   return type(value) == 'string' and value ~= ''
 end
 
+-- Return tables only when decoded JSON actually produced a table.
 local function table_or_nil(value)
   if type(value) == 'table' then
     return value
@@ -231,6 +246,7 @@ local function table_or_nil(value)
   return nil
 end
 
+-- Use a default when a decoded JSON value is missing or not a string.
 local function string_or(value, default)
   if type(value) == 'string' then
     return value
@@ -238,6 +254,7 @@ local function string_or(value, default)
   return default
 end
 
+-- Render the C++ parameter list for a normal Solution method.
 local function get_solution_params(problem)
   local params = {}
   for _, param in ipairs(list_or_empty(problem.signature.params)) do
@@ -248,6 +265,7 @@ local function get_solution_params(problem)
   return table.concat(params, ', ')
 end
 
+-- Render the argument names used in a normal Solution method call.
 local function get_call_args(example)
   local args = {}
   for _, arg in ipairs(list_or_empty(example.arguments)) do
@@ -258,6 +276,7 @@ local function get_call_args(example)
   return table.concat(args, ', ')
 end
 
+-- Pick how to print a returned answer in the generated harness.
 local function get_answer_expression(return_type)
   if type(return_type) ~= 'string' then
     return 'ans'
@@ -269,6 +288,7 @@ local function get_answer_expression(return_type)
   return 'ans'
 end
 
+-- Pick how to print any named value based on its C++ type.
 local function get_print_expression(name, cxx_type)
   if type(cxx_type) ~= 'string' then
     return name
@@ -280,6 +300,7 @@ local function get_print_expression(name, cxx_type)
   return name
 end
 
+-- Build the "Input:" stream expression for one regular example.
 local function get_input_expression(example)
   local parts = {}
   for _, arg in ipairs(list_or_empty(example.arguments)) do
@@ -299,6 +320,7 @@ local function get_input_expression(example)
   return expression
 end
 
+-- Wrap long problem descriptions into readable C++ comment lines.
 local function wrap_comment_text(text, max_width)
   if type(text) ~= 'string' then
     return {}
@@ -325,6 +347,7 @@ local function wrap_comment_text(text, max_width)
   return lines
 end
 
+-- Render title, difficulty, and statement text at the top of the file.
 local function get_problem_header(problem)
   local lines = {}
 
@@ -350,7 +373,177 @@ local function get_problem_header(problem)
   return table.concat(lines, '\n') .. '\n\n'
 end
 
-local function add_explanation(lines, explanation)
+-- Forward declaration because both LeetCode renderers share explanation output.
+local add_explanation
+
+-- Render constructor or method parameters for class-design problems.
+local function get_design_param_list(params)
+  local result = {}
+  for _, param in ipairs(list_or_empty(params)) do
+    if type(param) == 'table' and is_nonempty_string(param.type) and is_nonempty_string(param.name) then
+      table.insert(result, string.format('%s %s', param.type, param.name))
+    end
+  end
+  return table.concat(result, ', ')
+end
+
+-- Render raw argument values for class-design calls and log labels.
+local function get_design_arg_values(arguments)
+  local result = {}
+  for _, argument in ipairs(list_or_empty(arguments)) do
+    if type(argument) == 'table' and is_nonempty_string(argument.value) then
+      table.insert(result, argument.value)
+    end
+  end
+  return table.concat(result, ', ')
+end
+
+-- Render method stubs inside a LeetCode class-design skeleton.
+local function get_design_method_blocks(design)
+  local blocks = {}
+  for _, method in ipairs(list_or_empty(design.methods)) do
+    if type(method) == 'table' and is_nonempty_string(method.name) then
+      local return_type = string_or(method.return_type, 'void')
+      local lines = {
+        string.format('  %s %s(%s) {', return_type, method.name, get_design_param_list(method.params)),
+      }
+      if return_type ~= 'void' then
+        table.insert(lines, '    return {};')
+      end
+      table.insert(lines, '  }')
+      table.insert(blocks, table.concat(lines, '\n'))
+    end
+  end
+  return table.concat(blocks, '\n\n')
+end
+
+-- Render the editable constructor stub for a class-design problem.
+local function get_design_constructor_block(design)
+  return string.format(
+    '  %s(%s) {\n    <>\n  }',
+    design.class_name,
+    fmta_escape(get_design_param_list(design.constructor and design.constructor.params))
+  )
+end
+
+-- Render one class-design constructor or method call.
+local function get_design_step_call(object_name, step)
+  if step.constructor then
+    return string.format('%s %s{%s};', step.operation, object_name, get_design_arg_values(step.arguments))
+  end
+  return string.format('%s.%s(%s)', object_name, step.operation, get_design_arg_values(step.arguments))
+end
+
+-- Render a human-readable operation label for class-design logging.
+local function get_design_step_label(step)
+  return string.format('%s(%s)', step.operation, get_design_arg_values(step.arguments))
+end
+
+-- Quote a log label safely for generated C++ string literals.
+local function cpp_string_literal(text)
+  text = string_or(text, '')
+  text = text:gsub('\\', '\\\\'):gsub('"', '\\"')
+  return '"' .. text .. '"'
+end
+
+-- Append the generated C++ lines for one class-design test step.
+local function add_design_step_lines(lines, step, step_index)
+  if type(step) ~= 'table' or not is_nonempty_string(step.operation) then
+    return
+  end
+
+  table.insert(
+    lines,
+    string.format(
+      [[    std::cout << %s << '\n';]],
+      cpp_string_literal('Step ' .. step_index .. ': ' .. get_design_step_label(step))
+    )
+  )
+
+  if step.constructor then
+    table.insert(lines, '    ' .. get_design_step_call('obj', step))
+    return
+  end
+
+  local return_type = string_or(step.return_type, 'void')
+  if return_type == 'void' then
+    table.insert(lines, '    ' .. get_design_step_call('obj', step) .. ';')
+    return
+  end
+
+  local ans_name = 'ans' .. tostring(step_index)
+  table.insert(lines, string.format('    auto %s = %s;', ans_name, get_design_step_call('obj', step)))
+  table.insert(
+    lines,
+    string.format([[    std::cout << "Got:      " << %s << '\n';]], get_print_expression(ans_name, return_type))
+  )
+  if is_nonempty_string(step.expected) then
+    table.insert(lines, string.format([[    std::cout << "Expected: " << %s << '\n';]], step.expected))
+  end
+end
+
+-- Render all examples for a LeetCode class-design harness.
+local function get_design_example_blocks(design)
+  local blocks = {}
+  for example_index, example in ipairs(list_or_empty(design.examples)) do
+    if type(example) ~= 'table' then
+      goto continue
+    end
+
+    local lines = { '  {' }
+    table.insert(lines, string.format([[    std::cout << "Example %d" << '\n';]], example_index))
+    add_explanation(lines, example.explanation)
+
+    for step_index, step in ipairs(list_or_empty(example.steps)) do
+      add_design_step_lines(lines, step, step_index)
+    end
+
+    table.insert(lines, [[    std::cout << "-------------------------------------" << '\n';]])
+    table.insert(lines, '  }')
+    table.insert(blocks, table.concat(lines, '\n'))
+
+    ::continue::
+  end
+  return table.concat(blocks, '\n\n')
+end
+
+-- Decide whether the fetched payload describes a class-design problem.
+local function is_design_problem(problem)
+  return type(problem.design) == 'table' and is_nonempty_string(problem.design.class_name)
+end
+
+-- Build the dedicated skeleton for LeetCode class-design problems.
+local function leetcode_design(problem)
+  local design = problem.design
+  local snippet = string.format(
+    [[
+%s#include <<iostream>>
+#include "helpers.hpp"
+
+using namespace std;
+class %s {
+public:
+%s
+
+%s
+};
+
+int main() {
+%s
+}
+]],
+    fmta_escape(get_problem_header(problem)),
+    design.class_name,
+    get_design_constructor_block(design),
+    fmta_escape(get_design_method_blocks(design)),
+    fmta_escape(get_design_example_blocks(design))
+  )
+
+  return s('_skeleton', fmta(snippet, { i(0) }))
+end
+
+-- Add LeetCode example explanations as comments above a test block.
+function add_explanation(lines, explanation)
   if not is_nonempty_string(explanation) then
     return
   end
@@ -360,6 +553,7 @@ local function add_explanation(lines, explanation)
   end
 end
 
+-- Render all regular LeetCode examples into runnable C++ blocks.
 local function get_example_blocks(problem)
   local blocks = {}
   local return_type = string_or(problem.signature.return_type, 'int')
@@ -409,10 +603,15 @@ local function get_example_blocks(problem)
   return table.concat(blocks, '\n\n')
 end
 
+-- Build a LeetCode skeleton, choosing class-design or normal Solution mode.
 local function leetcode()
   local problem = fetch_leetcode_problem()
   if not problem then
     return leetcode_fallback()
+  end
+
+  if is_design_problem(problem) then
+    return leetcode_design(problem)
   end
 
   problem.signature = table_or_nil(problem.signature)
@@ -449,6 +648,7 @@ int main() {
   return s('_skeleton', fmta(snippet, { i(0) }))
 end
 
+-- Build a generic header skeleton for non-DSF headers.
 local function pragma_once(_)
   return s(
     '_skeleton',
@@ -465,13 +665,12 @@ local function pragma_once(_)
   )
 end
 
--- Dummy function for structure
+-- Return no skeleton for C++ files that do not have a known project template.
 local function no_op(_)
   return nil
 end
 
--- Map over the snippets available
--- skel.ext.project
+-- Map file extension and project name to the skeleton generator.
 local skel = {
   hpp = {
     dsf = basic_include_guard,
@@ -488,6 +687,7 @@ local skel = {
   },
 }
 
+-- Pick the skeleton generator for the current file.
 local function skeleton()
   local ext = vim.fn.expand('%:e')
   if skel[ext] then

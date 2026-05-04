@@ -101,6 +101,7 @@ def graphql_request(query, variables):
 
 
 def _raise_for_graphql_errors(data):
+    """Turn LeetCode GraphQL error objects into a readable exception."""
     errors = data.get("errors")
     if errors:
         message = "; ".join(item.get("message", "Unknown GraphQL error") for item in errors)
@@ -123,6 +124,7 @@ def fetch_id_to_slug_mapping():
 
 
 def _search_slug_by_id(qid):
+    """Find one problem slug when the cached ID map does not contain it."""
     data = graphql_request(
         ID_TO_SLUG_QUERY,
         {"limit": 50, "filters": {"searchKeywords": str(qid)}},
@@ -180,6 +182,7 @@ def load_or_fetch_problem(slug, force=False):
 
 
 def _is_problem_cache_complete(problem):
+    """Check whether an old cache entry has the fields this script needs."""
     return "content" in problem
 
 
@@ -216,6 +219,7 @@ def normalize_problem(problem):
         "difficulty": problem.get("difficulty"),
         "description": _extract_description_from_content(problem.get("content")),
         "examples": examples,
+        "exampleTestcaseList": problem.get("exampleTestcaseList") or [],
         "sample": _format_testcase(problem.get("sampleTestCase"), param_names),
         "metadata": metadata,
         "cpp": cpp,
@@ -224,17 +228,22 @@ def normalize_problem(problem):
 
 def template_problem(normalized):
     """Return only the fields a C++ template needs."""
-    params = normalized.get("metadata", {}).get("params", [])
-    return_type = (normalized.get("metadata", {}).get("return") or {}).get("type")
-    return {
+    metadata = normalized.get("metadata", {})
+    params = metadata.get("params", [])
+    return_type = (metadata.get("return") or {}).get("type")
+    template = {
         "id": normalized.get("id"),
         "title": normalized.get("title"),
         "slug": normalized.get("slug"),
         "difficulty": normalized.get("difficulty"),
         "description": normalized.get("description"),
-        "signature": _build_cpp_signature(normalized.get("metadata", {})),
+        "signature": _build_cpp_signature(metadata),
         "examples": [_enrich_example(example, params, return_type) for example in normalized.get("examples", [])],
     }
+    design = _build_design_problem(normalized)
+    if design:
+        template["design"] = design
+    return template
 
 
 def _build_cpp_signature(metadata):
@@ -255,6 +264,51 @@ def _build_cpp_signature(metadata):
     }
 
 
+def _build_design_problem(normalized):
+    """Build the class-design payload when LeetCode marks metadata as systemdesign."""
+    metadata = normalized.get("metadata", {})
+    class_name = metadata.get("classname")
+    if not metadata.get("systemdesign") or not class_name:
+        return None
+
+    methods = []
+    for method in metadata.get("methods", []) or []:
+        if not isinstance(method, dict) or not method.get("name"):
+            continue
+        methods.append(
+            {
+                "name": method.get("name"),
+                "return_type": _leetcode_type_to_cpp((method.get("return") or {}).get("type")),
+                "params": _build_cpp_params(method.get("params", [])),
+            }
+        )
+    design = {
+        "class_name": class_name,
+        "constructor": {
+            "params": _build_cpp_params((metadata.get("constructor") or {}).get("params", [])),
+        },
+        "methods": methods,
+        "examples": _enrich_design_examples(normalized, class_name, metadata),
+    }
+    return design
+
+
+def _build_cpp_params(params):
+    """Convert LeetCode parameter metadata into C++ parameter metadata."""
+    result = []
+    for param in params or []:
+        if not isinstance(param, dict) or not param.get("name"):
+            continue
+        result.append(
+            {
+                "name": param.get("name"),
+                "type": _leetcode_type_to_cpp(param.get("type")),
+                "leetcode_type": param.get("type"),
+            }
+        )
+    return result
+
+
 def _enrich_example(example, params, return_type):
     """Convert one example input into C++ argument declarations."""
     return {
@@ -262,6 +316,117 @@ def _enrich_example(example, params, return_type):
         "expected": _cpp_value(example.get("output"), return_type),
         "explanation": example.get("explanation"),
     }
+
+
+def _enrich_design_examples(normalized, class_name, metadata):
+    """Pair class-design operations, arguments, and expected outputs per example."""
+    examples = []
+    output_examples = normalized.get("examples", [])
+    for index, testcase in enumerate(normalized.get("exampleTestcaseList", []) or []):
+        operations, argument_lists = _parse_design_testcase(testcase)
+        if not operations or not argument_lists:
+            continue
+
+        output = output_examples[index].get("output") if index < len(output_examples) else None
+        output_values = _parse_json_values(output) if output else []
+        expected_values = output_values[0] if output_values else []
+        explanation = output_examples[index].get("explanation") if index < len(output_examples) else None
+        examples.append(
+            {
+                "steps": _build_design_steps(
+                    operations,
+                    argument_lists,
+                    expected_values if isinstance(expected_values, list) else [],
+                    class_name,
+                    metadata,
+                ),
+                "explanation": explanation,
+            }
+        )
+    return examples
+
+
+def _parse_design_testcase(testcase):
+    """Parse LeetCode's two-line class-design testcase format."""
+    values = _parse_json_values(testcase)
+    if len(values) != 2 or not isinstance(values[0], list) or not isinstance(values[1], list):
+        return None, None
+    return values[0], values[1]
+
+
+def _parse_json_values(text):
+    """Parse one or more adjacent JSON values from LeetCode testcase text."""
+    if text is None:
+        return []
+
+    decoder = json.JSONDecoder()
+    values = []
+    position = 0
+    text = str(text).strip()
+    while position < len(text):
+        while position < len(text) and text[position].isspace():
+            position += 1
+        if position >= len(text):
+            break
+        try:
+            value, position = decoder.raw_decode(text, position)
+        except json.JSONDecodeError:
+            return []
+        values.append(value)
+    return values
+
+
+def _build_design_steps(operations, argument_lists, expected_values, class_name, metadata):
+    """Build normalized constructor/method steps for the Lua class-design renderer."""
+    methods = {
+        method.get("name"): method
+        for method in metadata.get("methods", []) or []
+        if isinstance(method, dict) and method.get("name")
+    }
+    constructor_params = (metadata.get("constructor") or {}).get("params", [])
+    steps = []
+    for index, operation in enumerate(operations):
+        args = argument_lists[index] if index < len(argument_lists) and isinstance(argument_lists[index], list) else []
+        expected = expected_values[index] if index < len(expected_values) else None
+        if operation == class_name:
+            steps.append(
+                {
+                    "operation": operation,
+                    "constructor": True,
+                    "arguments": _build_design_arguments(args, constructor_params),
+                    "expected": None,
+                    "return_type": "void",
+                }
+            )
+            continue
+
+        method = methods.get(operation, {})
+        return_type = (method.get("return") or {}).get("type")
+        steps.append(
+            {
+                "operation": operation,
+                "constructor": False,
+                "arguments": _build_design_arguments(args, method.get("params", [])),
+                "expected": _cpp_value(json.dumps(expected), return_type) if expected is not None else None,
+                "return_type": _leetcode_type_to_cpp(return_type),
+            }
+        )
+    return steps
+
+
+def _build_design_arguments(values, params):
+    """Format one class-design method's argument values as C++ expressions."""
+    arguments = []
+    for index, value in enumerate(values):
+        param = params[index] if index < len(params) and isinstance(params[index], dict) else {}
+        le_type = param.get("type")
+        arguments.append(
+            {
+                "type": _leetcode_type_to_cpp(le_type),
+                "value": _cpp_value(json.dumps(value), le_type),
+            }
+        )
+    return arguments
 
 
 def _enrich_testcase(testcase, params):
@@ -448,6 +613,7 @@ def _cpp_array_value(text, le_type):
 
 
 def _cpp_vector_initializer(text, cpp_type):
+    """Format a JSON array as a typed vector initializer."""
     values = _parse_json_like(text)
     if values is None:
         return f"vector<{cpp_type}>{{{text}}}"
@@ -455,10 +621,12 @@ def _cpp_vector_initializer(text, cpp_type):
 
 
 def _is_sequence_type(le_type):
+    """Return whether a LeetCode type describes a sequence."""
     return le_type.endswith("[]") or (le_type.startswith("list<") and le_type.endswith(">"))
 
 
 def _sequence_item_type(le_type):
+    """Return the inner type for a LeetCode sequence type."""
     if le_type.endswith("[]"):
         return le_type[:-2]
     return le_type[5:-1]
@@ -481,6 +649,7 @@ def _cpp_braced_list(value, item_type):
 
 
 def _parse_json_like(text):
+    """Parse JSON testcase text, returning None when LeetCode used non-JSON text."""
     try:
         return json.loads(text)
     except json.JSONDecodeError:
@@ -488,12 +657,14 @@ def _parse_json_like(text):
 
 
 def _cpp_string(text):
+    """Return a valid C++ string literal."""
     if text.startswith('"') and text.endswith('"'):
         return text
     return json.dumps(text)
 
 
 def _cpp_char(text):
+    """Return a valid C++ character literal."""
     if text.startswith("'") and text.endswith("'"):
         return text
     if text.startswith('"') and text.endswith('"'):
@@ -502,6 +673,7 @@ def _cpp_char(text):
 
 
 def _format_testcase(testcase, param_names):
+    """Attach parameter names to newline-separated fallback examples."""
     if testcase is None:
         return None
 
@@ -517,26 +689,33 @@ def _format_testcase(testcase, param_names):
 
 
 class _HTMLToTextParser(HTMLParser):
+    """Small HTML-to-text parser for LeetCode problem statements."""
+
     def __init__(self):
         super().__init__()
         self.parts = []
 
     def handle_starttag(self, tag, attrs):
+        """Preserve block boundaries when stripping HTML tags."""
         if tag in {"p", "div", "section", "article", "br", "li", "ul", "ol", "pre"}:
             self.parts.append("\n")
 
     def handle_endtag(self, tag):
+        """Preserve spacing after block-level tags."""
         if tag in {"p", "div", "section", "article", "li", "ul", "ol", "pre"}:
             self.parts.append("\n")
 
     def handle_data(self, data):
+        """Collect visible text from the HTML stream."""
         self.parts.append(data)
 
     def get_text(self):
+        """Return decoded visible text from all collected HTML parts."""
         return unescape("".join(self.parts))
 
 
 def _extract_examples_from_content(content):
+    """Extract Input, Output, and Explanation sections from problem HTML."""
     if not content:
         return []
 
@@ -544,7 +723,7 @@ def _extract_examples_from_content(content):
     parser.feed(content)
     text = parser.get_text()
     matches = re.findall(
-        r"Example\s*\d*:\s*Input:\s*(.*?)\s*Output:\s*(.*?)(?=\s*Example\s*\d*:|\s*Constraints:|\s*Follow-up:|\Z)",
+        r"Example\s*\d*:\s*Input:?\s*(.*?)\s*Output:?\s*(.*?)(?=\s*Example\s*\d*:|\s*Constraints:|\s*Follow-up:|\Z)",
         text,
         flags=re.DOTALL,
     )
@@ -565,6 +744,7 @@ def _extract_examples_from_content(content):
 
 
 def _extract_description_from_content(content):
+    """Extract the statement text that appears before examples and constraints."""
     if not content:
         return None
 
@@ -582,21 +762,24 @@ def _extract_description_from_content(content):
 
 
 def _collapse_whitespace(text):
+    """Collapse HTML-derived whitespace into a single readable line."""
     return re.sub(r"\s+", " ", text).strip()
 
 
 def _split_output_and_explanation(text):
+    """Split an example's output value from its optional explanation."""
     collapsed = _collapse_whitespace(text)
     if not collapsed:
         return None, None
 
-    parts = re.split(r"\bExplanation:\s*", collapsed, maxsplit=1)
+    parts = re.split(r"\bExplanation:?\s*", collapsed, maxsplit=1)
     if len(parts) == 2:
         return parts[0].strip() or None, parts[1].strip() or None
     return collapsed, None
 
 
 def main():
+    """CLI entrypoint used by the Neovim skeleton renderer."""
     parser = argparse.ArgumentParser(description="Fetch LeetCode problems by numeric ID.")
     parser.add_argument("qid", help="Numeric LeetCode problem ID")
     parser.add_argument("--force", action="store_true", help="Refetch problem even if cached")
