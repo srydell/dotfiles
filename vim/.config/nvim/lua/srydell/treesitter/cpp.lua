@@ -876,16 +876,21 @@ function M.divide_and_sort_includes()
     end
   end
 
+  local has_alignment_header = false
   local function collect_include(node)
     if node:type() == 'preproc_include' then
       for child, name in node:iter_children() do
         if name ~= nil and name == 'path' then
           local text = M.get_node_text(child, 0)
-          -- Avoid alignment headers
-          if text:find('align_int8.h') == nil and text:find('align_restore.h') == nil then
-            compare_location(child)
-            append_include(text, child)
+          -- Alignment headers are often used as paired sentinels. Leave the
+          -- include block untouched rather than moving or deleting them.
+          if text:find('align_int8.h') ~= nil or text:find('align_restore.h') ~= nil then
+            has_alignment_header = true
+            return true
           end
+
+          compare_location(child)
+          append_include(text, child)
         end
       end
     end
@@ -894,6 +899,10 @@ function M.divide_and_sort_includes()
   end
 
   M.search_down_from_root_until(collect_include)
+
+  if has_alignment_header then
+    return
+  end
 
   -- No includes
   if locations.start_row == nil or locations.end_row == nil then
@@ -944,32 +953,42 @@ end
 -- e.g
 -- MYPROJECT_INCLUDE_API_H
 M.correct_include_guard = function()
-  local guard = { ifdef = nil, define = nil }
-
-  local function get_guard(node)
-    -- #ifndef MY_GUARD
-    if node:type() == 'preproc_ifdef' or node:type() == 'preproc_if' then
-      local identifier = M.search_down_until(node, is_identifier)
-      guard.ifdef = identifier
-    elseif node:type() == 'preproc_def' then
-      local identifier = M.search_down_until(node, is_identifier)
-      guard.define = identifier
+  local function get_top_include_guard()
+    local lines = vim.api.nvim_buf_get_lines(0, 0, 2, false)
+    if #lines < 2 then
+      return
     end
 
-    -- Stop when both found
-    return false
-    -- return guard.ifdef ~= nil and guard.define ~= nil
+    local ifndef = lines[1]:match('^%s*#ifndef%s+([%w_]+)%s*$')
+    local define = lines[2]:match('^%s*#define%s+([%w_]+)%s*$')
+    if ifndef == nil or define == nil or ifndef ~= define then
+      return
+    end
+
+    local guard = { ifdef = nil, define = nil }
+    local function get_guard(node)
+      local row = M.get_row(node)
+      if row > 1 then
+        return true
+      end
+
+      if row == 0 and node:type() == 'preproc_ifdef' then
+        guard.ifdef = M.search_down_until(node, is_identifier)
+      elseif row == 1 and node:type() == 'preproc_def' then
+        guard.define = M.search_down_until(node, is_identifier)
+      end
+
+      return guard.ifdef ~= nil and guard.define ~= nil
+    end
+
+    M.search_down_from_root_until(get_guard)
+    return guard
   end
 
-  M.search_down_from_root_until(get_guard)
+  local guard = get_top_include_guard()
 
   -- No include guard
-  if guard.ifdef == nil or guard.define == nil then
-    return
-  end
-
-  -- Existing include guards are not separated by lines
-  if M.get_row(guard.define) ~= M.get_row(guard.ifdef) + 1 then
+  if guard == nil or guard.ifdef == nil or guard.define == nil then
     return
   end
 

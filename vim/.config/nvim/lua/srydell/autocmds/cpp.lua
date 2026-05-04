@@ -27,7 +27,7 @@ vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
 })
 
 vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
-  pattern = { '*.h' },
+  pattern = { '*.h', '*.hpp' },
   group = srydell_cpp,
   callback = function()
     local ts_cpp = require('srydell.treesitter.cpp')
