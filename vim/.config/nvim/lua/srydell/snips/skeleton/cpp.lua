@@ -182,6 +182,10 @@ local function leetcode_fallback()
 end
 
 local function fmta_escape(text)
+  if type(text) ~= 'string' then
+    return ''
+  end
+
   return text:gsub('<', '<<'):gsub('>', '>>')
 end
 
@@ -202,30 +206,63 @@ local function fetch_leetcode_problem()
   end
 
   local ok, problem = pcall(vim.json.decode, output)
-  if not ok then
+  if not ok or type(problem) ~= 'table' then
     return nil
   end
 
   return problem
 end
 
+local function list_or_empty(value)
+  if type(value) == 'table' then
+    return value
+  end
+  return {}
+end
+
+local function is_nonempty_string(value)
+  return type(value) == 'string' and value ~= ''
+end
+
+local function table_or_nil(value)
+  if type(value) == 'table' then
+    return value
+  end
+  return nil
+end
+
+local function string_or(value, default)
+  if type(value) == 'string' then
+    return value
+  end
+  return default
+end
+
 local function get_solution_params(problem)
   local params = {}
-  for _, param in ipairs(problem.signature.params or {}) do
-    table.insert(params, string.format('%s %s', param.type, param.name))
+  for _, param in ipairs(list_or_empty(problem.signature.params)) do
+    if type(param) == 'table' and is_nonempty_string(param.type) and is_nonempty_string(param.name) then
+      table.insert(params, string.format('%s %s', param.type, param.name))
+    end
   end
   return table.concat(params, ', ')
 end
 
 local function get_call_args(example)
   local args = {}
-  for _, arg in ipairs(example.arguments or {}) do
-    table.insert(args, arg.name)
+  for _, arg in ipairs(list_or_empty(example.arguments)) do
+    if type(arg) == 'table' and is_nonempty_string(arg.name) then
+      table.insert(args, arg.name)
+    end
   end
   return table.concat(args, ', ')
 end
 
 local function get_answer_expression(return_type)
+  if type(return_type) ~= 'string' then
+    return 'ans'
+  end
+
   if string.match(return_type or '', '^vector<') or return_type == 'ListNode*' or return_type == 'TreeNode*' then
     return 'str(ans)'
   end
@@ -233,6 +270,10 @@ local function get_answer_expression(return_type)
 end
 
 local function get_print_expression(name, cxx_type)
+  if type(cxx_type) ~= 'string' then
+    return name
+  end
+
   if string.match(cxx_type or '', '^vector<') or cxx_type == 'ListNode*' or cxx_type == 'TreeNode*' then
     return 'str(' .. name .. ')'
   end
@@ -241,8 +282,10 @@ end
 
 local function get_input_expression(example)
   local parts = {}
-  for _, arg in ipairs(example.arguments or {}) do
-    table.insert(parts, get_print_expression(arg.name, arg.type))
+  for _, arg in ipairs(list_or_empty(example.arguments)) do
+    if type(arg) == 'table' and is_nonempty_string(arg.name) then
+      table.insert(parts, get_print_expression(arg.name, arg.type))
+    end
   end
 
   if #parts == 0 then
@@ -256,8 +299,59 @@ local function get_input_expression(example)
   return expression
 end
 
+local function wrap_comment_text(text, max_width)
+  if type(text) ~= 'string' then
+    return {}
+  end
+
+  local lines = {}
+  local current = ''
+
+  for word in string.gmatch(text or '', '%S+') do
+    if current == '' then
+      current = word
+    elseif #current + #word + 1 <= max_width then
+      current = current .. ' ' .. word
+    else
+      table.insert(lines, current)
+      current = word
+    end
+  end
+
+  if current ~= '' then
+    table.insert(lines, current)
+  end
+
+  return lines
+end
+
+local function get_problem_header(problem)
+  local lines = {}
+
+  if is_nonempty_string(problem.title) then
+    table.insert(lines, '// ' .. problem.title)
+  end
+  if is_nonempty_string(problem.difficulty) then
+    table.insert(lines, '// Difficulty: ' .. problem.difficulty)
+  end
+
+  if #lines > 0 and is_nonempty_string(problem.description) then
+    table.insert(lines, '//')
+  end
+
+  for _, line in ipairs(wrap_comment_text(problem.description, 88)) do
+    table.insert(lines, '// ' .. line)
+  end
+
+  if #lines == 0 then
+    return ''
+  end
+
+  return table.concat(lines, '\n') .. '\n\n'
+end
+
 local function add_explanation(lines, explanation)
-  if not explanation or explanation == '' then
+  if not is_nonempty_string(explanation) then
     return
   end
 
@@ -268,27 +362,48 @@ end
 
 local function get_example_blocks(problem)
   local blocks = {}
-  for _, example in ipairs(problem.examples or {}) do
-    local lines = { '  {' }
-    add_explanation(lines, example.explanation)
-    for _, arg in ipairs(example.arguments or {}) do
-      table.insert(lines, '    ' .. arg.declaration)
+  local return_type = string_or(problem.signature.return_type, 'int')
+
+  for _, example in ipairs(list_or_empty(problem.examples)) do
+    if type(example) ~= 'table' then
+      goto continue
     end
 
-    table.insert(lines, string.format('    %s expected = %s;', problem.signature.return_type, example.expected))
+    local lines = { '  {' }
+    local expected = string_or(example.expected, '{}')
+
+    add_explanation(lines, example.explanation)
+    for _, arg in ipairs(list_or_empty(example.arguments)) do
+      if type(arg) == 'table' and is_nonempty_string(arg.declaration) then
+        table.insert(lines, '    ' .. arg.declaration)
+      end
+    end
+
+    if return_type ~= 'void' then
+      table.insert(lines, string.format('    %s expected = %s;', return_type, expected))
+    end
     table.insert(lines, string.format([[    std::cout << "Input:    " << %s << '\n';]], get_input_expression(example)))
-    table.insert(lines, string.format('    auto ans = solution.%s(%s);', problem.signature.name, get_call_args(example)))
-    table.insert(
-      lines,
-      string.format([[    std::cout << "Got:      " << %s << '\n';]], get_answer_expression(problem.signature.return_type))
-    )
-    table.insert(
-      lines,
-      string.format([[    std::cout << "Expected: " << %s << '\n';]], get_print_expression('expected', problem.signature.return_type))
-    )
+    if return_type == 'void' then
+      table.insert(lines, string.format('    solution.%s(%s);', problem.signature.name, get_call_args(example)))
+    else
+      table.insert(
+        lines,
+        string.format('    auto ans = solution.%s(%s);', problem.signature.name, get_call_args(example))
+      )
+      table.insert(
+        lines,
+        string.format([[    std::cout << "Got:      " << %s << '\n';]], get_answer_expression(return_type))
+      )
+      table.insert(
+        lines,
+        string.format([[    std::cout << "Expected: " << %s << '\n';]], get_print_expression('expected', return_type))
+      )
+    end
     table.insert(lines, [[    std::cout << "-------------------------------------" << '\n';]])
     table.insert(lines, '  }')
     table.insert(blocks, table.concat(lines, '\n'))
+
+    ::continue::
   end
 
   return table.concat(blocks, '\n\n')
@@ -296,13 +411,18 @@ end
 
 local function leetcode()
   local problem = fetch_leetcode_problem()
-  if not problem or not problem.signature or not problem.signature.name then
+  if not problem then
+    return leetcode_fallback()
+  end
+
+  problem.signature = table_or_nil(problem.signature)
+  if not problem.signature or not is_nonempty_string(problem.signature.name) then
     return leetcode_fallback()
   end
 
   local snippet = string.format(
     [[
-#include <<iostream>>
+%s#include <<iostream>>
 #include "helpers.hpp"
 
 using namespace std;
@@ -319,7 +439,8 @@ int main() {
 %s
 }
 ]],
-    fmta_escape(problem.signature.return_type or 'int'),
+    fmta_escape(get_problem_header(problem)),
+    fmta_escape(string_or(problem.signature.return_type, 'int')),
     problem.signature.name,
     fmta_escape(get_solution_params(problem)),
     fmta_escape(get_example_blocks(problem))

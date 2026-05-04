@@ -214,6 +214,7 @@ def normalize_problem(problem):
         "title": problem.get("title"),
         "slug": problem.get("titleSlug"),
         "difficulty": problem.get("difficulty"),
+        "description": _extract_description_from_content(problem.get("content")),
         "examples": examples,
         "sample": _format_testcase(problem.get("sampleTestCase"), param_names),
         "metadata": metadata,
@@ -230,6 +231,7 @@ def template_problem(normalized):
         "title": normalized.get("title"),
         "slug": normalized.get("slug"),
         "difficulty": normalized.get("difficulty"),
+        "description": normalized.get("description"),
         "signature": _build_cpp_signature(normalized.get("metadata", {})),
         "examples": [_enrich_example(example, params, return_type) for example in normalized.get("examples", [])],
     }
@@ -560,6 +562,23 @@ def _extract_examples_from_content(content):
                 }
             )
     return examples
+
+
+def _extract_description_from_content(content):
+    if not content:
+        return None
+
+    parser = _HTMLToTextParser()
+    parser.feed(content)
+    text = parser.get_text()
+    description = re.split(
+        r"\s*(?:Example\s*\d*:|Constraints:|Follow-up:)\s*",
+        text,
+        maxsplit=1,
+        flags=re.DOTALL,
+    )[0]
+    description = _collapse_whitespace(description)
+    return description or None
 
 
 def _collapse_whitespace(text):

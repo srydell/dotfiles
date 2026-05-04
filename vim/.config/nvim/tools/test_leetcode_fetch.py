@@ -190,6 +190,33 @@ class LeetCodeFetchTests(unittest.TestCase):
             ],
         )
 
+    def test_normalize_problem_extracts_description_from_content(self):
+        problem = {
+            "questionFrontendId": "121",
+            "title": "Best Time to Buy and Sell Stock",
+            "titleSlug": "best-time-to-buy-and-sell-stock",
+            "difficulty": "Easy",
+            "content": """
+                <p>You are given an array prices where prices[i] is the price of a given stock on the ith day.</p>
+                <p>You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.</p>
+                <p><strong>Example 1:</strong></p>
+                <p><strong>Input:</strong> prices = [7,1,5,3,6,4]</p>
+                <p><strong>Output:</strong> 5</p>
+            """,
+            "exampleTestcaseList": [],
+            "sampleTestCase": "",
+            "metaData": '{"params":[]}',
+            "codeSnippets": [],
+        }
+
+        normalized = leetcode_fetch.normalize_problem(problem)
+
+        self.assertEqual(
+            normalized["description"],
+            "You are given an array prices where prices[i] is the price of a given stock on the ith day. "
+            "You want to maximize your profit by choosing a single day to buy one stock and choosing a different day in the future to sell that stock.",
+        )
+
     def test_normalize_problem_splits_example_explanation(self):
         problem = {
             "questionFrontendId": "121",
@@ -221,6 +248,21 @@ class LeetCodeFetchTests(unittest.TestCase):
                 }
             ],
         )
+
+    def test_template_problem_includes_description(self):
+        template = leetcode_fetch.template_problem(
+            {
+                "id": "121",
+                "title": "Best Time to Buy and Sell Stock",
+                "slug": "best-time-to-buy-and-sell-stock",
+                "difficulty": "Easy",
+                "description": "You are given an array prices.",
+                "metadata": {},
+                "examples": [],
+            }
+        )
+
+        self.assertEqual(template["description"], "You are given an array prices.")
 
     def test_unknown_id_raises_error(self):
         with tempfile.TemporaryDirectory() as tmpdir:
