@@ -22,4 +22,6 @@
 !lua
 !plugin
 !snips
+!tests
+!tests/*.lua
 !tools
