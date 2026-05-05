@@ -1,3 +1,5 @@
+-- Run with
+-- $ nvim --headless -u init.lua -l tests/cpp_header_regression.lua
 local ts_cpp = require('srydell.treesitter.cpp')
 
 local function assert_lines(expected)

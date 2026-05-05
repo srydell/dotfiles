@@ -80,14 +80,16 @@ return {
       pattern = { 's:n', 'i:n' },
       desc = 'Forget the current snippet when leaving the insert mode',
       callback = function(evt)
-        -- If we have n active nodes, n - 1 will still remain after a `unlink_current()` call.
-        -- We unlink all of them by wrapping the calls in a loop.
-        while true do
-          if ls.session and ls.session.current_nodes[evt.buf] and not ls.session.jump_active then
-            ls.unlink_current()
-          else
-            break
-          end
+        if not ls.session or ls.session.jump_active then
+          return
+        end
+
+        if ls.session.current_nodes then
+          ls.session.current_nodes[evt.buf] = nil
+        end
+
+        if ls.session.active_choice_nodes then
+          ls.session.active_choice_nodes[evt.buf] = nil
         end
       end,
     })

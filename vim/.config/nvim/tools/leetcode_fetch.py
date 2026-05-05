@@ -256,7 +256,7 @@ def _build_cpp_signature(metadata):
         "params": [
             {
                 "name": param.get("name"),
-                "type": _leetcode_type_to_cpp(param.get("type")),
+                "type": _leetcode_type_to_cpp_param(param.get("type")),
             }
             for param in params
             if param.get("name")
@@ -311,9 +311,10 @@ def _build_cpp_params(params):
 
 def _enrich_example(example, params, return_type):
     """Convert one example input into C++ argument declarations."""
+    expected = _cpp_value(example.get("output"), return_type) if example.get("output") is not None else None
     return {
         "arguments": _enrich_testcase(example.get("input"), params)["arguments"],
-        "expected": _cpp_value(example.get("output"), return_type),
+        "expected": expected,
         "explanation": example.get("explanation"),
     }
 
@@ -574,6 +575,14 @@ def _leetcode_type_to_cpp(le_type):
     if le_type.endswith("[]"):
         return f"vector<{_leetcode_type_to_cpp(le_type[:-2])}>"
     return le_type
+
+
+def _leetcode_type_to_cpp_param(le_type):
+    """Translate LeetCode metadata types into C++ Solution parameter types."""
+    cpp_type = _leetcode_type_to_cpp(le_type)
+    if le_type and _is_sequence_type(le_type.strip()):
+        return f"{cpp_type}&"
+    return cpp_type
 
 
 def _cpp_value(value, le_type):

@@ -264,6 +264,38 @@ class LeetCodeFetchTests(unittest.TestCase):
 
         self.assertEqual(template["description"], "You are given an array prices.")
 
+    def test_template_problem_uses_vector_reference_parameters(self):
+        template = leetcode_fetch.template_problem(
+            {
+                "id": "209",
+                "title": "Minimum Size Subarray Sum",
+                "slug": "minimum-size-subarray-sum",
+                "difficulty": "Medium",
+                "description": "Find the minimal length of a subarray.",
+                "metadata": {
+                    "name": "minSubArrayLen",
+                    "params": [
+                        {"name": "target", "type": "integer"},
+                        {"name": "nums", "type": "integer[]"},
+                    ],
+                    "return": {"type": "integer"},
+                },
+                "examples": [],
+            }
+        )
+
+        self.assertEqual(
+            template["signature"],
+            {
+                "name": "minSubArrayLen",
+                "return_type": "int",
+                "params": [
+                    {"name": "target", "type": "int"},
+                    {"name": "nums", "type": "vector<int>&"},
+                ],
+            },
+        )
+
     def test_template_problem_includes_design_payload(self):
         template = leetcode_fetch.template_problem(
             {

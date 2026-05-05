@@ -564,13 +564,17 @@ local function get_example_blocks(problem)
     end
 
     local lines = { '  {' }
-    local expected = string_or(example.expected, '{}')
+    local expected = string_or(example.expected, nil)
 
     add_explanation(lines, example.explanation)
     for _, arg in ipairs(list_or_empty(example.arguments)) do
       if type(arg) == 'table' and is_nonempty_string(arg.declaration) then
         table.insert(lines, '    ' .. arg.declaration)
       end
+    end
+
+    if return_type ~= 'void' and not expected then
+      goto continue
     end
 
     if return_type ~= 'void' then
