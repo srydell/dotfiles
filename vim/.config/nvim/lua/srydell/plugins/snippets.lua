@@ -73,24 +73,40 @@ return {
     -- lua/srydell/snips/context.lua for the dynamic C++ scopes.
     require('luasnip.loaders.from_lua').lazy_load({ paths = snippet_path })
 
+    local function forget_current_snippet(bufnr)
+      if not ls.session then
+        return
+      end
+
+      if ls.session.current_nodes and ls.session.current_nodes[bufnr] then
+        if vim.api.nvim_get_current_buf() == bufnr then
+          ls.unlink_current()
+        end
+        ls.session.current_nodes[bufnr] = nil
+      end
+
+      if ls.session.active_choice_nodes then
+        ls.session.active_choice_nodes[bufnr] = nil
+      end
+    end
+
     vim.api.nvim_create_autocmd('ModeChanged', {
       group = vim.api.nvim_create_augroup('UnlinkLuaSnipSnippetOnModeChange', {
         clear = true,
       }),
       pattern = { 's:n', 'i:n' },
-      desc = 'Forget the current snippet when leaving the insert mode',
+      desc = 'Forget the current snippet after really leaving insert/select mode',
       callback = function(evt)
-        if not ls.session or ls.session.jump_active then
+        if not ls.session then
           return
         end
 
-        if ls.session.current_nodes then
-          ls.session.current_nodes[evt.buf] = nil
-        end
-
-        if ls.session.active_choice_nodes then
-          ls.session.active_choice_nodes[evt.buf] = nil
-        end
+        local bufnr = evt.buf
+        vim.defer_fn(function()
+          if vim.api.nvim_buf_is_valid(bufnr) and vim.api.nvim_get_mode().mode == 'n' then
+            forget_current_snippet(bufnr)
+          end
+        end, 20)
       end,
     })
   end,
