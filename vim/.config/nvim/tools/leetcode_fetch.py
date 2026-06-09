@@ -229,6 +229,7 @@ def normalize_problem(problem):
 def template_problem(normalized):
     """Return only the fields a C++ template needs."""
     metadata = normalized.get("metadata", {})
+    metadata = _metadata_with_cpp_signature(metadata, normalized.get("cpp"))
     params = metadata.get("params", [])
     return_type = (metadata.get("return") or {}).get("type")
     template = {
@@ -262,6 +263,96 @@ def _build_cpp_signature(metadata):
             if param.get("name")
         ],
     }
+
+
+def _metadata_with_cpp_signature(metadata, cpp):
+    """Use the C++ starter signature for manual/custom-type problems."""
+    if not metadata.get("manual"):
+        return metadata
+
+    signature = _parse_cpp_solution_signature(cpp, metadata.get("name"))
+    if not signature:
+        return metadata
+
+    updated = dict(metadata)
+    updated["name"] = signature["name"]
+    updated["return"] = {"type": signature["return_type"]}
+    updated["params"] = signature["params"]
+    return updated
+
+
+def _parse_cpp_solution_signature(cpp, expected_name=None):
+    """Extract the editable Solution method signature from a C++ starter."""
+    if not cpp:
+        return None
+
+    text = _strip_cpp_comments(str(cpp))
+    pattern = re.compile(
+        r"^\s*([A-Za-z_:][\w:<>, \t*&]*[*&]?)\s+([A-Za-z_]\w*)\s*\(([^)]*)\)\s*\{",
+        re.MULTILINE,
+    )
+    for match in pattern.finditer(text):
+        return_type = _cpp_type_to_leetcode_type(match.group(1))
+        name = match.group(2)
+        if expected_name and name != expected_name:
+            continue
+        return {
+            "name": name,
+            "return_type": return_type,
+            "params": _parse_cpp_signature_params(match.group(3)),
+        }
+    return None
+
+
+def _strip_cpp_comments(text):
+    """Remove C++ comments before parsing a starter signature."""
+    text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+    return re.sub(r"//.*", "", text)
+
+
+def _parse_cpp_signature_params(text):
+    """Parse C++ method parameters into LeetCode-ish type metadata."""
+    params = []
+    for chunk in _split_top_level_commas(text):
+        chunk = chunk.strip()
+        if not chunk or chunk == "void":
+            continue
+        match = re.match(r"(.+?)\s+([A-Za-z_]\w*)$", chunk)
+        if not match:
+            continue
+        params.append(
+            {
+                "name": match.group(2),
+                "type": _cpp_type_to_leetcode_type(match.group(1)),
+            }
+        )
+    return params
+
+
+def _cpp_type_to_leetcode_type(cpp_type):
+    """Translate C++ starter types back into metadata types used for examples."""
+    cxx = re.sub(r"\bconst\b", "", str(cpp_type)).strip()
+    cxx = re.sub(r"\s+", " ", cxx)
+    cxx = re.sub(r"\s*([*&])\s*", r"\1", cxx)
+
+    if cxx.endswith("&"):
+        cxx = cxx[:-1]
+    if cxx.endswith("*"):
+        pointed = cxx[:-1]
+        if pointed in {"ListNode", "TreeNode", "Node"}:
+            return pointed
+        return cxx
+
+    scalar_types = {
+        "bool": "boolean",
+        "char": "character",
+        "int": "integer",
+        "long long": "long",
+        "double": "double",
+        "string": "string",
+        "void": "void",
+    }
+    return scalar_types.get(cxx, cxx)
 
 
 def _build_design_problem(normalized):
@@ -475,21 +566,38 @@ def _parse_assignments(testcase, params):
 
     param_by_name = {param.get("name"): param for param in params}
     chunks = _split_top_level_commas(text)
+    assignment_chunks = []
     assignments = []
     for chunk in chunks:
         if "=" not in chunk:
             continue
         name, value = chunk.split("=", 1)
         name = name.strip()
+        value = value.strip()
+        assignment_chunks.append((name, value))
         if name not in param_by_name:
             continue
         assignments.append(
             {
                 "name": name,
                 "type": param_by_name[name].get("type"),
-                "value": value.strip(),
+                "value": value,
             }
         )
+
+    if len(assignments) == len(params):
+        return assignments
+
+    if len(assignment_chunks) == len(params):
+        return [
+            {
+                "name": param.get("name"),
+                "type": param.get("type"),
+                "value": value,
+            }
+            for param, (_, value) in zip(params, assignment_chunks)
+            if param.get("name")
+        ]
 
     if assignments:
         return assignments
@@ -595,6 +703,8 @@ def _cpp_value(value, le_type):
         return f"create({_cpp_vector_initializer(text, 'optional<int>')})"
     if le_type == "ListNode":
         return f"create({_cpp_vector_initializer(text, 'int')})"
+    if le_type == "Node":
+        return f"create({_cpp_vector_initializer(text, 'vector<int>')})"
     if le_type and _is_sequence_type(le_type):
         return _cpp_array_value(text, le_type)
     if le_type == "string":

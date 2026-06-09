@@ -296,6 +296,148 @@ class LeetCodeFetchTests(unittest.TestCase):
             },
         )
 
+    def test_template_problem_uses_positional_values_for_example_aliases(self):
+        template = leetcode_fetch.template_problem(
+            {
+                "id": "1514",
+                "title": "Path with Maximum Probability",
+                "slug": "path-with-maximum-probability",
+                "difficulty": "Medium",
+                "description": "Find the path with the maximum probability.",
+                "metadata": {
+                    "name": "maxProbability",
+                    "params": [
+                        {"name": "n", "type": "integer"},
+                        {"name": "edges", "type": "integer[][]"},
+                        {"name": "succProb", "type": "double[]"},
+                        {"name": "start_node", "type": "integer"},
+                        {"name": "end_node", "type": "integer"},
+                    ],
+                    "return": {"type": "double"},
+                },
+                "examples": [
+                    {
+                        "input": (
+                            "n = 3, edges = [[0,1],[1,2],[0,2]], "
+                            "succProb = [0.5,0.5,0.2], start = 0, end = 2"
+                        ),
+                        "output": "0.25000",
+                    }
+                ],
+            }
+        )
+
+        arguments = template["examples"][0]["arguments"]
+
+        self.assertEqual([argument["name"] for argument in arguments], [
+            "n",
+            "edges",
+            "succProb",
+            "start_node",
+            "end_node",
+        ])
+        self.assertEqual(arguments[3]["declaration"], "int start_node = 0;")
+        self.assertEqual(arguments[4]["declaration"], "int end_node = 2;")
+
+    def test_template_problem_preserves_structured_types_for_example_aliases(self):
+        template = leetcode_fetch.template_problem(
+            {
+                "id": "0",
+                "title": "Structured Alias Example",
+                "slug": "structured-alias-example",
+                "difficulty": "Medium",
+                "description": "Exercise TreeNode and ListNode alias parsing.",
+                "metadata": {
+                    "name": "solve",
+                    "params": [
+                        {"name": "root_node", "type": "TreeNode"},
+                        {"name": "head_node", "type": "ListNode"},
+                        {"name": "target_value", "type": "integer"},
+                    ],
+                    "return": {"type": "integer"},
+                },
+                "examples": [
+                    {
+                        "input": "root = [1,2,null,3], head = [4,5,6], target = 7",
+                        "output": "1",
+                    }
+                ],
+            }
+        )
+
+        arguments = template["examples"][0]["arguments"]
+
+        self.assertEqual(
+            [argument["name"] for argument in arguments],
+            ["root_node", "head_node", "target_value"],
+        )
+        self.assertEqual(
+            arguments[0]["declaration"],
+            "TreeNode* root_node = create(vector<optional<int>>{1, 2, nullopt, 3});",
+        )
+        self.assertEqual(
+            arguments[1]["declaration"],
+            "ListNode* head_node = create(vector<int>{4, 5, 6});",
+        )
+        self.assertEqual(arguments[2]["declaration"], "int target_value = 7;")
+
+    def test_template_problem_uses_cpp_signature_for_manual_graph_problem(self):
+        template = leetcode_fetch.template_problem(
+            {
+                "id": "133",
+                "title": "Clone Graph",
+                "slug": "clone-graph",
+                "difficulty": "Medium",
+                "description": "Return a deep copy of the graph.",
+                "cpp": """
+                    /*
+                    // Definition for a Node.
+                    class Node {
+                    public:
+                        int val;
+                        vector<Node*> neighbors;
+                    };
+                    */
+
+                    class Solution {
+                    public:
+                        Node* cloneGraph(Node* node) {
+
+                        }
+                    };
+                """,
+                "metadata": {
+                    "name": "cloneGraph",
+                    "params": [{"name": "edges", "type": "integer[][]"}],
+                    "return": {"type": "boolean"},
+                    "manual": True,
+                },
+                "examples": [
+                    {
+                        "input": "adjList = [[2,4],[1,3],[2,4],[1,3]]",
+                        "output": "[[2,4],[1,3],[2,4],[1,3]]",
+                    }
+                ],
+            }
+        )
+
+        self.assertEqual(
+            template["signature"],
+            {
+                "name": "cloneGraph",
+                "return_type": "Node*",
+                "params": [{"name": "node", "type": "Node*"}],
+            },
+        )
+        self.assertEqual(
+            template["examples"][0]["arguments"][0]["declaration"],
+            "Node* node = create(vector<vector<int>>{{2, 4}, {1, 3}, {2, 4}, {1, 3}});",
+        )
+        self.assertEqual(
+            template["examples"][0]["expected"],
+            "create(vector<vector<int>>{{2, 4}, {1, 3}, {2, 4}, {1, 3}})",
+        )
+
     def test_template_problem_includes_design_payload(self):
         template = leetcode_fetch.template_problem(
             {

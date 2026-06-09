@@ -282,7 +282,7 @@ local function get_answer_expression(return_type)
     return 'ans'
   end
 
-  if string.match(return_type or '', '^vector<') or return_type == 'ListNode*' or return_type == 'TreeNode*' then
+  if string.match(return_type or '', '^vector<') or return_type == 'ListNode*' or return_type == 'TreeNode*' or return_type == 'Node*' then
     return 'str(ans)'
   end
   return 'ans'
@@ -294,7 +294,7 @@ local function get_print_expression(name, cxx_type)
     return name
   end
 
-  if string.match(cxx_type or '', '^vector<') or cxx_type == 'ListNode*' or cxx_type == 'TreeNode*' then
+  if string.match(cxx_type or '', '^vector<') or cxx_type == 'ListNode*' or cxx_type == 'TreeNode*' or cxx_type == 'Node*' then
     return 'str(' .. name .. ')'
   end
   return name
