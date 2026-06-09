@@ -26,3 +26,6 @@ shell-integration-features = no-cursor
 
 keybind = ctrl+f=toggle_fullscreen
 keybind = ctrl+'=clear_screen
+
+clipboard-read=allow
+clipboard-write=allow
