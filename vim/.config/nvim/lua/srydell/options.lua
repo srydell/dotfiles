@@ -66,9 +66,6 @@ vim.opt.autowrite = true
 vim.opt.timeoutlen = 1000
 vim.opt.ttimeoutlen = 0
 
--- Don't redraw buffer while evaluating macros
-vim.opt.lazyredraw = true
-
 -- Be able to hide unsaved buffers while editing new ones
 vim.opt.hidden = true
 
