@@ -40,24 +40,20 @@
 --   When true, count all tasks that do *not* match the 'status' param.
 
 local M = require('lualine.component'):extend()
-local constants = require('overseer.constants')
-local overseer = require('overseer')
-local task_list = require('overseer.task_list')
-local util = require('overseer.util')
 local utils = require('lualine.utils.utils')
-local STATUS = constants.STATUS
+local status_values = { 'PENDING', 'RUNNING', 'CANCELED', 'SUCCESS', 'FAILURE', 'DISPOSED' }
 
 local default_icons = {
-  [STATUS.FAILURE] = '󰅚 ',
-  [STATUS.CANCELED] = ' ',
-  [STATUS.SUCCESS] = '󰄴 ',
-  [STATUS.RUNNING] = '󰑮',
+  FAILURE = '󰅚 ',
+  CANCELED = ' ',
+  SUCCESS = '󰄴 ',
+  RUNNING = '󰑮',
 }
 local default_no_icons = {
-  [STATUS.FAILURE] = 'F:',
-  [STATUS.CANCELED] = 'C:',
-  [STATUS.SUCCESS] = 'S:',
-  [STATUS.RUNNING] = 'R:',
+  FAILURE = 'F:',
+  CANCELED = 'C:',
+  SUCCESS = 'S:',
+  RUNNING = 'R:',
 }
 
 function M:init(options)
@@ -77,7 +73,7 @@ end
 
 function M:update_colors()
   self.highlight_groups = {}
-  for _, status in ipairs(STATUS.values) do
+  for _, status in ipairs(status_values) do
     local hl = string.format('Overseer%s', status)
     local color = { fg = utils.extract_color_from_hllist('fg', { hl }) }
     self.highlight_groups[status] = self:create_hl(color, status)
@@ -85,17 +81,23 @@ function M:update_colors()
 end
 
 function M:update_status()
+  local task_list_loaded = package.loaded['overseer.task_list']
+  local util_loaded = package.loaded['overseer.util']
+  if not task_list_loaded or not util_loaded then
+    return
+  end
+
   if self.options.colored and not next(self.highlight_groups) then
     self:update_colors()
   end
 
-  local tasks = task_list.list_tasks(self.options)
-  local tasks_by_status = util.tbl_group_by(tasks, 'status')
+  local tasks = task_list_loaded.list_tasks(self.options)
+  local tasks_by_status = util_loaded.tbl_group_by(tasks, 'status')
   local pieces = {}
   if self.options.label ~= '' then
     table.insert(pieces, self.options.label)
   end
-  for _, status in ipairs(STATUS.values) do
+  for _, status in ipairs(status_values) do
     local status_tasks = tasks_by_status[status]
     if self.symbols[status] and status_tasks then
       if self.options.colored and self.highlight_groups[status] then

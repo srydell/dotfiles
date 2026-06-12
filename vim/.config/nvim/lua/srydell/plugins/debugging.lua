@@ -2,7 +2,7 @@ return {
   'mfussenegger/nvim-dap',
   event = 'VeryLazy',
   dependencies = {
-    { 'nvim-neotest/nvim-nio', main = 'nio', lazy = false },
+    { 'nvim-neotest/nvim-nio', main = 'nio' },
     'rcarriga/nvim-dap-ui',
     'mfussenegger/nvim-dap-python',
     'wojciech-kulik/xcodebuild.nvim',

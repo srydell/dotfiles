@@ -185,21 +185,32 @@ function M.find_config(filename)
     return cachedConfig[filename]
   end
 
-  local configs = vim.fn.systemlist({
-    'find',
-    vim.fn.getcwd(),
-    '-maxdepth',
-    '2',
-    '-iname',
-    filename,
-    '-not',
-    '-path',
-    '*/.*/*',
-  })
   searchedForConfig[filename] = true
 
-  if vim.v.shell_error ~= 0 then
-    return nil
+  local configs = {}
+  local target = filename:lower()
+  local queue = { { dir = vim.fn.getcwd(), depth = 0 } }
+
+  while #queue > 0 do
+    local item = table.remove(queue, 1)
+    local fs = vim.uv.fs_scandir(item.dir)
+    if fs then
+      while true do
+        local name, type = vim.uv.fs_scandir_next(fs)
+        if not name then
+          break
+        end
+
+        if name:sub(1, 1) ~= '.' then
+          local path = item.dir .. '/' .. name
+          if type == 'file' and name:lower() == target then
+            table.insert(configs, path)
+          elseif type == 'directory' and item.depth < 1 then
+            table.insert(queue, { dir = path, depth = item.depth + 1 })
+          end
+        end
+      end
+    end
   end
 
   table.sort(configs, function(a, b)

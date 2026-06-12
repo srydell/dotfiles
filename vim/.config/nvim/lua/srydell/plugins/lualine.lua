@@ -5,7 +5,6 @@ return {
   },
   config = function()
     local lualine = require('lualine')
-    local overseer = require('overseer')
 
     -- Makes the background not change when changing mode
     -- What an insane feature
@@ -77,10 +76,10 @@ return {
             label = '', -- Prefix for task counts
             colored = true, -- Color the task icons and counts
             symbols = {
-              [overseer.STATUS.FAILURE] = '󰅚 ',
-              [overseer.STATUS.CANCELED] = ' ',
-              [overseer.STATUS.SUCCESS] = '󰄴 ',
-              [overseer.STATUS.RUNNING] = '󰑮 ',
+              FAILURE = '󰅚 ',
+              CANCELED = ' ',
+              SUCCESS = '󰄴 ',
+              RUNNING = '󰑮 ',
             },
             unique = true, -- Unique-ify non-running task count by name
             name = nil, -- List of task names to search for

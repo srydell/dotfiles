@@ -2,10 +2,8 @@
 -- <leader><lowerCaseLetter> for harmless commands
 -- <leader><upperCaseLetter> for potentially harmful commands
 
-local builtin = require('telescope.builtin')
-
 local function find_neovim_files()
-  builtin.find_files({
+  require('telescope.builtin').find_files({
     cwd = vim.fn.stdpath('config'),
   })
 end
@@ -27,11 +25,21 @@ vim.keymap.set('n', '<leader>ef', ':VimNOut edit ~/.config/nvim/ftplugin/{filety
 vim.keymap.set('n', '<leader>eaf', ':VimNOut edit ~/.config/nvim/after/ftplugin/{filetype}.lua<CR>', { silent = true })
 
 -- Fuzzy finder
-vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-vim.keymap.set('n', '<leader>fz', builtin.current_buffer_fuzzy_find, {})
-vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-vim.keymap.set('n', '<leader>/', builtin.live_grep, {})
-vim.keymap.set('n', '<leader>*', builtin.grep_string, {})
+vim.keymap.set('n', '<leader>ff', function()
+  require('telescope.builtin').find_files()
+end, {})
+vim.keymap.set('n', '<leader>fz', function()
+  require('telescope.builtin').current_buffer_fuzzy_find()
+end, {})
+vim.keymap.set('n', '<leader>fb', function()
+  require('telescope.builtin').buffers()
+end, {})
+vim.keymap.set('n', '<leader>/', function()
+  require('telescope.builtin').live_grep()
+end, {})
+vim.keymap.set('n', '<leader>*', function()
+  require('telescope.builtin').grep_string()
+end, {})
 
 -- Run git add -u
 vim.keymap.set('n', '<leader>gb', ':Git blame<CR>', { silent = true })
