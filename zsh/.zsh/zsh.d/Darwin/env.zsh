@@ -18,6 +18,7 @@ export PATH="$HOME/.rubies/ruby-3.3.0/bin:$PATH"
 
 # Use the jdk from homebrew
 export JAVA_HOME=/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 
 # Brew related env
 eval "$(/opt/homebrew/bin/brew shellenv)"

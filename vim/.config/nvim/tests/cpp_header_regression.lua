@@ -34,7 +34,8 @@ assert_lines({
   'std::string s;',
 })
 
-vim.cmd('edit! /tmp/proj/include/foo.h')
+vim.cmd('enew!')
+vim.api.nvim_buf_set_name(0, '/tmp/proj/include/foo.h')
 vim.bo.filetype = 'cpp'
 vim.api.nvim_buf_set_lines(0, 0, -1, false, {
   '#if FEATURE',
@@ -52,7 +53,8 @@ assert_lines({
   'class A {};',
 })
 
-vim.cmd('edit! /tmp/proj/include/foo.hpp')
+vim.cmd('enew!')
+vim.api.nvim_buf_set_name(0, '/tmp/proj/include/foo.hpp')
 vim.bo.filetype = 'cpp'
 vim.api.nvim_buf_set_lines(0, 0, -1, false, {
   '#ifndef OLD_GUARD',
@@ -62,7 +64,7 @@ vim.api.nvim_buf_set_lines(0, 0, -1, false, {
   '',
   '#endif',
 })
-vim.cmd('doautocmd BufWritePre')
+ts_cpp.correct_include_guard()
 assert_lines({
   '#ifndef PROJ_FOO_HPP',
   '#define PROJ_FOO_HPP',

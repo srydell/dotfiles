@@ -953,6 +953,8 @@ end
 -- e.g
 -- MYPROJECT_INCLUDE_API_H
 M.correct_include_guard = function()
+  -- Use the source lines instead of Tree-sitter nodes here. This runs during
+  -- BufWritePre, when a parser may not be attached or its tree may be stale.
   local function get_top_include_guard()
     local lines = vim.api.nvim_buf_get_lines(0, 0, 2, false)
     if #lines < 2 then
@@ -965,30 +967,13 @@ M.correct_include_guard = function()
       return
     end
 
-    local guard = { ifdef = nil, define = nil }
-    local function get_guard(node)
-      local row = M.get_row(node)
-      if row > 1 then
-        return true
-      end
-
-      if row == 0 and node:type() == 'preproc_ifdef' then
-        guard.ifdef = M.search_down_until(node, is_identifier)
-      elseif row == 1 and node:type() == 'preproc_def' then
-        guard.define = M.search_down_until(node, is_identifier)
-      end
-
-      return guard.ifdef ~= nil and guard.define ~= nil
-    end
-
-    M.search_down_from_root_until(get_guard)
-    return guard
+    return lines
   end
 
-  local guard = get_top_include_guard()
+  local lines = get_top_include_guard()
 
   -- No include guard
-  if guard == nil or guard.ifdef == nil or guard.define == nil then
+  if lines == nil then
     return
   end
 
@@ -998,18 +983,11 @@ M.correct_include_guard = function()
     return
   end
 
-  -- Put in the new include guard
-  -- Have to divide it up as otherwise
-  -- there is a change in the node range before the second node is checked
-  local to_change = {}
-  for _, node in pairs(guard) do
-    table.insert(to_change, { vim.treesitter.get_node_range(node) })
-  end
-
-  for _, value in ipairs(to_change) do
-    local start_row, start_col, end_row, end_col = unpack(value)
-    vim.api.nvim_buf_set_text(0, start_row, start_col, end_row, end_col, { include_guard })
-  end
+  -- The pair was validated together above, so update both directives as one
+  -- operation and preserve their existing indentation and spacing.
+  lines[1] = lines[1]:gsub('(#ifndef%s+)[%w_]+', '%1' .. include_guard, 1)
+  lines[2] = lines[2]:gsub('(#define%s+)[%w_]+', '%1' .. include_guard, 1)
+  vim.api.nvim_buf_set_lines(0, 0, 2, false, lines)
 end
 
 -- Add an include to the list of includes in the current file

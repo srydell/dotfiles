@@ -1,10 +1,11 @@
 # Load if not loaded
 autoload -Uz compinit
 
-# Only load completions once a day
-if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' $ZDOTDIR/.zcompdump) ]; then
+# Rebuild an existing dump after 24 hours. The N qualifier makes a missing
+# dump expand to nothing, allowing compinit -C to create it without an error.
+if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
 	compinit
-	touch $ZDOTDIR/.zcompdump
+	touch "${ZDOTDIR}/.zcompdump"
 else
 	compinit -C
 fi

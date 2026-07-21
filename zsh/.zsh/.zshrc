@@ -5,21 +5,21 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 # Install plugins if not installed
-if [ ! -d $ZDOTDIR/antidote ]; then
+if [[ ! -d "$ZDOTDIR/antidote" ]]; then
 	# Install antidote
-	git clone --depth=1 https://github.com/mattmc3/antidote.git $ZDOTDIR/antidote
-	chmod +x $ZDOTDIR/antidote/antidote
+	git clone --depth=1 https://github.com/mattmc3/antidote.git "$ZDOTDIR/antidote"
+	chmod +x "$ZDOTDIR/antidote/antidote"
 fi
 
- # Lazy-load antidote and generate the static load file only when needed
+# Lazy-load antidote and generate the static load file only when needed
 zsh_plugins=${ZDOTDIR:-$HOME}/.zsh_plugins
 if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
 	(
-		source $ZDOTDIR/antidote/antidote.zsh
-		antidote bundle <${zsh_plugins}.txt >${zsh_plugins}.zsh
+		source "$ZDOTDIR/antidote/antidote.zsh"
+		antidote bundle <"${zsh_plugins}.txt" >"${zsh_plugins}.zsh"
 	)
 fi
-source ${zsh_plugins}.zsh
+source "${zsh_plugins}.zsh"
 
 # Load configs, platform specific files are in zsh.d/$(uname)
 for ZSH_FILE in ${ZDOTDIR:-$HOME}/zsh.d{/$(uname),}/*.zsh; do
@@ -81,4 +81,3 @@ export PATH="$PATH:$HOME/.local/bin"
 
 # To customize prompt, run `p10k configure` or edit ~/.zsh/.p10k.zsh.
 [[ -f ~/.zsh/.p10k.zsh ]] && source ~/.zsh/.p10k.zsh
-export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"

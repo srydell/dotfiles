@@ -25,7 +25,13 @@ gco() {
 
 # Create and enter directories
 mkd() {
-	mkdir -p "$@" && cd "$@"
+	# cd accepts only one destination, so reject accidental extra arguments.
+	if (( $# != 1 )); then
+		print -u2 'usage: mkd directory'
+		return 2
+	fi
+
+	mkdir -p -- "$1" && cd -- "$1"
 }
 
 # tmux attach and if an argument is passed, try to attach to that session
