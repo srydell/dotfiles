@@ -65,7 +65,7 @@ vim.keymap.set('n', '<leader>Gr', ':Gread<CR>')
 -- Open appropriate help on the word under the cursor
 -- Filetype dependent.
 -- Takes a browser
-vim.keymap.set('n', '<leader>h', ':call helpDocs#GetHelpDocs()<CR>', { silent = true })
+vim.keymap.set('n', '<leader>h', require('srydell.help_docs').open, { silent = true })
 
 -- Prompt for a command to run in the nearest tmux pane ( [t]mux [c]ommand )
 vim.keymap.set('n', '<leader>tc', ':VimuxPromptCommand<CR>', { silent = true })
