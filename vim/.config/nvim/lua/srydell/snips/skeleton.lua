@@ -31,17 +31,15 @@ end
 -- Autocommands that populate new or externally-created empty files.
 local nvim_skeleton = vim.api.nvim_create_augroup('nvim-skeleton', { clear = true })
 
-local function expand_skeleton_later(bufnr, only_if_empty)
+local function expand_skeleton_later(bufnr)
   vim.schedule(function()
     if not vim.api.nvim_buf_is_valid(bufnr) or vim.api.nvim_get_current_buf() ~= bufnr then
       return
     end
 
-    if only_if_empty then
-      local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, true)
-      if #lines ~= 1 or lines[1] ~= '' then
-        return
-      end
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, true)
+    if #lines ~= 1 or lines[1] ~= '' then
+      return
     end
 
     expand_skeleton()
@@ -52,7 +50,7 @@ vim.api.nvim_create_autocmd('BufNewFile', {
   pattern = '*',
   group = nvim_skeleton,
   callback = function(evt)
-    expand_skeleton_later(evt.buf, false)
+    expand_skeleton_later(evt.buf)
   end,
 })
 
@@ -60,7 +58,7 @@ vim.api.nvim_create_autocmd('User', {
   pattern = 'NvimSkeletonInit',
   group = nvim_skeleton,
   callback = function(evt)
-    expand_skeleton_later(evt.buf, true)
+    expand_skeleton_later(evt.buf)
   end,
 })
 

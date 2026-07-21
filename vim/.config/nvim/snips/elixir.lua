@@ -156,23 +156,6 @@ return {
   }),
 
   s(
-    { trig = 'f', wordTrig = true, dscr = 'function' },
-    fmta(
-      [[
-        def<> <>(<>) do
-          <>
-        end
-      ]],
-      {
-        i(1),
-        i(2, 'f'),
-        i(3),
-        i(0),
-      }
-    )
-  ),
-
-  s(
     { trig = 'mod', wordTrig = true, dscr = 'Module' },
     fmta(
       [[

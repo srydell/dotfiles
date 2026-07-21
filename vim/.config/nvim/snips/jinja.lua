@@ -5,30 +5,43 @@ local get_visual = helpers.get_visual
 return {
   s(
     { trig = 'extends', wordTrig = true, dscr = 'Extend block' },
-    fmta(
-      [[
-        {% extends "<>.html" %}
-      ]],
-      {
-        i(1),
-      }
-    )
+    c(1, {
+      sn(nil, fmta([[{% extends "<>.html" %}]], { i(1, 'base') })),
+      sn(nil, fmta([[{% extends '<>.html' %}]], { i(1, 'base') })),
+    })
   ),
 
   s(
     { trig = 'block', wordTrig = true, dscr = 'Block' },
-    fmta(
-      [[
-        {% block <> %}
-          <><>
-        {% endblock %}
-      ]],
-      {
-        i(1, 'block_name'),
-        d(2, get_visual),
-        i(0),
-      }
-    )
+    c(1, {
+      sn(
+        nil,
+        fmta(
+          [[
+            {% block <> %}
+              <><>
+            {% endblock %}
+          ]],
+          {
+            i(1, 'block_name'),
+            d(2, get_visual),
+            i(0),
+          }
+        )
+      ),
+      sn(
+        nil,
+        fmta(
+          [[
+            {% block <> %}<>{% endblock %}
+          ]],
+          {
+            i(1, 'block_name'),
+            d(2, get_visual),
+          }
+        )
+      ),
+    })
   ),
 
   s(
@@ -76,31 +89,6 @@ return {
         i(1, 'False'),
         d(2, get_visual),
         i(0),
-      }
-    )
-  ),
-
-  s(
-    { trig = 'block', wordTrig = true, dscr = 'block' },
-    fmta(
-      [[
-        {% block <> %}<>{% endblock %}
-      ]],
-      {
-        i(1, 'content'),
-        i(2),
-      }
-    )
-  ),
-
-  s(
-    { trig = 'extends', wordTrig = true, dscr = 'extends block' },
-    fmta(
-      [[
-        {% extends '<>.html' %}
-      ]],
-      {
-        i(1, 'base'),
       }
     )
   ),
