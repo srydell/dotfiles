@@ -30,7 +30,6 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
 # output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 output * bg #282828 solid_color
 
-
 #
 # Example configuration:
 #
@@ -46,9 +45,10 @@ bindsym Shift+Print exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%F-%T)
 
 # Copy selected area directly to clipboard
 bindsym Ctrl+Print exec grim -g "$(slurp)" - | wl-copy
+
 ### Idle configuration
 #
-# Example configurationbindsym Print exec grim ~/Pictures/screenshot-$(date +%F-%T).png
+# Example configuration:
 #
 # exec swayidle -w \
 #          timeout 300 'swaylock -f -c 000000' \
@@ -87,5 +87,6 @@ bar {
 
 include ~/.config/sway/config.d/*
 
-exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
-exec systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec systemctl --user set-environment XDG_CURRENT_DESKTOP=sway
+exec systemctl --user import-environment DISPLAY SWAYSOCK WAYLAND_DISPLAY
+exec dbus-update-activation-environment --systemd DISPLAY SWAYSOCK WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway

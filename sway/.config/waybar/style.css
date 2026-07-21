@@ -1,7 +1,7 @@
 * {
 	border: none;
 	border-radius: 0;
-	font-family: Dejavu Sans Mono for Powerline;
+	font-family: "JetBrainsMono Nerd Font";
 	font-size: 14px;
 	min-height: 0;
 }
@@ -28,16 +28,11 @@ window#waybar {
 
 #clock.1,
 #clock.2,
-#battery,
 #cpu,
 #memory,
-#backlight,
-#network,
 #pulseaudio,
-#custom-mpd,
 #tray,
-#mode,
-#idle_inhibitor {
+#mode {
 	padding: 0 10px;
 	margin: 0 0px;
 }
@@ -62,16 +57,8 @@ window#waybar {
 	background: #4e4e4e;
 }
 
-#network {
-	background: #4e4e4e;
-}
-
 #clock.2 {
 	background: #4e4e4e;
-}
-
-#network.disconnected {
-	background: transparent;
 }
 
 #pulseaudio {
@@ -83,16 +70,8 @@ window#waybar {
 	color: #2a5c45;
 }
 
-#custom-mpd {
-	background: transparent;
-}
-
 #tray {
 	background-color: #949494;
-}
-
-#idle_inhibitor {
-	background-color: #2d3436;
 }
 
 #custom-arrow1 {
