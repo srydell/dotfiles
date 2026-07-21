@@ -2,9 +2,8 @@ return {
   'saghen/blink.cmp',
   version = '1.*',
   dependencies = {
-    { 'saghen/blink.compat', version = '2.*', opts = {} },
     'fang2hou/blink-copilot',
-    'rcarriga/cmp-dap',
+    'mayromr/blink-cmp-dap',
     'L3MON4D3/LuaSnip',
   },
   opts = function()
@@ -120,7 +119,7 @@ return {
           },
           dap = {
             name = 'dap',
-            module = 'blink.compat.source',
+            module = 'blink-cmp-dap',
           },
         },
       },
