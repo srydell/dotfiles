@@ -8,7 +8,11 @@ M.setup = function()
       name = 'iOS App Debugger',
       type = 'codelldb_ios',
       request = 'attach',
-      program = require('xcodebuild.integrations.dap').get_program_path,
+      -- Resolve the Xcode app path only when starting a Swift session so the
+      -- integration remains unloaded while debugging other languages.
+      program = function(...)
+        return require('xcodebuild.integrations.dap').get_program_path(...)
+      end,
       -- alternatively, you can wait for the process manually
       -- pid = xcodebuild.wait_for_pid,
       cwd = '${workspaceFolder}',

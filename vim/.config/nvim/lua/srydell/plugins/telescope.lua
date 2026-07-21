@@ -1,7 +1,7 @@
 -- Fuzzy Finder (files, lsp, etc)
 return {
   'nvim-telescope/telescope.nvim',
-  branch = '0.1.x',
+  branch = 'master',
   event = 'VeryLazy',
   dependencies = {
     'nvim-lua/plenary.nvim',
@@ -18,7 +18,6 @@ return {
       end,
     },
     'nvim-telescope/telescope-ui-select.nvim',
-    'nvim-telescope/telescope-dap.nvim',
   },
   config = function()
     local actions = require('telescope.actions')
@@ -44,6 +43,5 @@ return {
     -- To get ui-select loaded and working with telescope, you need to call
     -- load_extension, somewhere after setup function:
     telescope.load_extension('ui-select')
-    -- pcall(telescope.load_extension, 'dap')
   end,
 }

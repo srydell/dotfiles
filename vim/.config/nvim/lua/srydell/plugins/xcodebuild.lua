@@ -1,6 +1,6 @@
 return {
   'wojciech-kulik/xcodebuild.nvim',
-  event = 'VeryLazy',
+  ft = 'swift',
   dependencies = {
     'nvim-telescope/telescope.nvim',
     'MunifTanjim/nui.nvim',
@@ -25,32 +25,32 @@ return {
       },
     })
 
-    vim.keymap.set(
-      'n',
-      '<leader>xl',
-      '<cmd>XcodebuildToggleLogs<cr>',
-      { desc = 'Toggle Xcodebuild Logs', buffer = true }
-    )
-    vim.keymap.set('n', '<leader>xb', '<cmd>XcodebuildBuild<cr>', { desc = 'Build Project', buffer = true })
-    vim.keymap.set('n', '<leader>xr', '<cmd>XcodebuildBuildRun<cr>', {
-      desc = 'Build & Run Project',
-      buffer = true,
-    })
-    vim.keymap.set('n', '<leader>xt', '<cmd>XcodebuildTest<cr>', { desc = 'Run Tests', buffer = true })
-    vim.keymap.set('n', '<leader>xT', '<cmd>XcodebuildTestClass<cr>', {
-      desc = 'Run This Test Class',
-      buffer = true,
-    })
-    vim.keymap.set(
-      'n',
-      '<leader>X',
-      '<cmd>XcodebuildPicker<cr>',
-      { desc = 'Show All Xcodebuild Actions', buffer = true }
-    )
-    vim.keymap.set('n', '<leader>xd', '<cmd>XcodebuildSelectDevice<cr>', { desc = 'Select Device', buffer = true })
-    vim.keymap.set('n', '<leader>xp', '<cmd>XcodebuildSelectTestPlan<cr>', {
-      desc = 'Select Test Plan',
-      buffer = true,
+    local function set_mappings(bufnr)
+      local function map(lhs, rhs, desc)
+        vim.keymap.set('n', lhs, rhs, { buffer = bufnr, desc = desc })
+      end
+
+      map('<leader>xl', '<cmd>XcodebuildToggleLogs<cr>', 'Toggle Xcodebuild Logs')
+      map('<leader>xb', '<cmd>XcodebuildBuild<cr>', 'Build Project')
+      map('<leader>xr', '<cmd>XcodebuildBuildRun<cr>', 'Build & Run Project')
+      map('<leader>xt', '<cmd>XcodebuildTest<cr>', 'Run Tests')
+      map('<leader>xT', '<cmd>XcodebuildTestClass<cr>', 'Run This Test Class')
+      map('<leader>X', '<cmd>XcodebuildPicker<cr>', 'Show All Xcodebuild Actions')
+      map('<leader>xd', '<cmd>XcodebuildSelectDevice<cr>', 'Select Device')
+      map('<leader>xp', '<cmd>XcodebuildSelectTestPlan<cr>', 'Select Test Plan')
+    end
+
+    -- The FileType event that loads this plugin has already fired for the
+    -- current buffer, so map it explicitly before handling later buffers.
+    if vim.bo.filetype == 'swift' then
+      set_mappings(vim.api.nvim_get_current_buf())
+    end
+    vim.api.nvim_create_autocmd('FileType', {
+      group = vim.api.nvim_create_augroup('srydell_xcodebuild_mappings', { clear = true }),
+      pattern = 'swift',
+      callback = function(event)
+        set_mappings(event.buf)
+      end,
     })
   end,
 }

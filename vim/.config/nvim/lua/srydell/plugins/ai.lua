@@ -3,7 +3,6 @@ return {
     'zbirenbaum/copilot.lua',
     cmd = { 'CodeCompanion', 'CodeCompanionChat' },
     dependencies = {
-      'zbirenbaum/copilot-cmp',
       'olimorris/codecompanion.nvim',
       'nvim-lua/plenary.nvim',
       'nvim-treesitter/nvim-treesitter',
@@ -13,7 +12,10 @@ return {
       { '<leader>cc', '<cmd>CodeCompanionChat<CR>', mode = 'n', silent = true },
     },
     config = function()
-      require('copilot').setup({})
+      require('copilot').setup({
+        suggestion = { enabled = false },
+        panel = { enabled = false },
+      })
       require('codecompanion').setup({
         strategies = {
           chat = {

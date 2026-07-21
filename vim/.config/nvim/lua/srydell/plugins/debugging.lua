@@ -5,7 +5,6 @@ return {
     { 'nvim-neotest/nvim-nio', main = 'nio' },
     'rcarriga/nvim-dap-ui',
     'mfussenegger/nvim-dap-python',
-    'wojciech-kulik/xcodebuild.nvim',
   },
   config = function()
     local dap = require('dap')
@@ -70,7 +69,11 @@ return {
       if dap.session() then
         dap.terminate()
       end
-      require('xcodebuild.actions').cancel()
+      -- Avoid loading the Swift-only Xcodebuild integration during teardown
+      -- of a debugging session for another language.
+      if package.loaded.xcodebuild then
+        require('xcodebuild.actions').cancel()
+      end
       if has_dapui then
         dapui.close()
       end

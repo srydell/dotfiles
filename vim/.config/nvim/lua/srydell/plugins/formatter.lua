@@ -9,7 +9,7 @@ return {
       -- Customize or remove this keymap to your liking
       '<leader>f',
       function()
-        require('conform').format({ async = true, lsp_fallback = true })
+        require('conform').format({ async = true, lsp_format = 'fallback' })
       end,
       mode = '',
       desc = 'Format buffer',
@@ -42,7 +42,7 @@ return {
       end
 
       -- ...additional logic...
-      return { timeout_ms = 500, lsp_fallback = true }
+      return { timeout_ms = 500, lsp_format = 'fallback' }
     end,
 
     -- Customize formatters

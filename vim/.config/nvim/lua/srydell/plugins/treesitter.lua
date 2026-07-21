@@ -27,7 +27,6 @@ local languages = {
   'scheme',
   'swift',
   'terraform',
-  'tmux',
   'toml',
   'vim',
   'vimdoc',
@@ -52,24 +51,11 @@ return {
     'nvim-treesitter/nvim-treesitter-textobjects',
   },
   build = function()
-    require('nvim-treesitter').install(languages, { summary = true }):wait(300000)
+    local treesitter = require('nvim-treesitter')
+    treesitter.install(languages, { summary = true }):wait(300000)
+    treesitter.update(languages, { summary = true }):wait(300000)
   end,
   config = function()
-    local parsers = require('nvim-treesitter.parsers')
-
-    if parsers.ft_to_lang == nil then
-      parsers.ft_to_lang = function(ft)
-        return vim.treesitter.language.get_lang(ft) or ft
-      end
-    end
-
-    if parsers.get_parser == nil then
-      parsers.get_parser = function(bufnr, lang)
-        local parser = vim.treesitter.get_parser(bufnr, lang, { error = false })
-        return parser
-      end
-    end
-
     local ts_group = vim.api.nvim_create_augroup('srydell_treesitter', { clear = true })
 
     vim.api.nvim_create_autocmd('FileType', {

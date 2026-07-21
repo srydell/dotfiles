@@ -3,10 +3,10 @@ return {
   version = '1.*',
   dependencies = {
     { 'saghen/blink.compat', version = '2.*', opts = {} },
+    'fang2hou/blink-copilot',
     'hrsh7th/cmp-nvim-lua',
     'rcarriga/cmp-dap',
     'L3MON4D3/LuaSnip',
-    'zbirenbaum/copilot-cmp',
   },
   opts = function()
     return {
@@ -116,7 +116,8 @@ return {
         providers = {
           copilot = {
             name = 'copilot',
-            module = 'blink.compat.source',
+            module = 'blink-copilot',
+            async = true,
           },
           nvim_lua = {
             name = 'nvim_lua',
@@ -148,8 +149,6 @@ return {
     }
   end,
   config = function(_, opts)
-    require('copilot_cmp').setup({})
-
     local blink = require('blink.cmp')
     blink.setup(opts)
 

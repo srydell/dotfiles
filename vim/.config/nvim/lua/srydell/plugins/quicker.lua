@@ -3,7 +3,7 @@ return {
   event = 'FileType qf',
   config = function()
     require('quicker').setup({
-      hightlight = {
+      highlight = {
         -- Do not automatically load all the buffers
         -- I create long lists : )
         load_buffers = false,

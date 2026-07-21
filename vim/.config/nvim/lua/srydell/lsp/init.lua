@@ -93,6 +93,22 @@ vim.lsp.config('*', {
   on_attach = on_attach,
 })
 
+vim.lsp.config('clangd', {
+  -- Treat project markers equally so a parent ~/.clangd index directory
+  -- cannot outrank a nearer compilation database or repository marker.
+  root_markers = {
+    {
+      '.clangd',
+      '.clang-tidy',
+      '.clang-format',
+      'compile_commands.json',
+      'compile_flags.txt',
+      'configure.ac',
+      '.git',
+    },
+  },
+})
+
 -- Setup harper_ls and configure it to only use markdown files
 vim.lsp.config('harper_ls', {
   filetypes = { 'markdown' },
