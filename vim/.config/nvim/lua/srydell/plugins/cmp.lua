@@ -4,7 +4,6 @@ return {
   dependencies = {
     { 'saghen/blink.compat', version = '2.*', opts = {} },
     'fang2hou/blink-copilot',
-    'hrsh7th/cmp-nvim-lua',
     'rcarriga/cmp-dap',
     'L3MON4D3/LuaSnip',
   },
@@ -104,7 +103,7 @@ return {
         ['<S-Tab>'] = { 'select_prev', 'fallback' },
       },
       sources = {
-        default = { 'lsp', 'copilot', 'nvim_lua', 'snippets', 'buffer', 'path' },
+        default = { 'lsp', 'copilot', 'snippets', 'buffer', 'path' },
         per_filetype = {
           gitcommit = { 'buffer' },
           codecompanion = { 'codecompanion' },
@@ -118,10 +117,6 @@ return {
             name = 'copilot',
             module = 'blink-copilot',
             async = true,
-          },
-          nvim_lua = {
-            name = 'nvim_lua',
-            module = 'blink.compat.source',
           },
           dap = {
             name = 'dap',
