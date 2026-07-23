@@ -21,6 +21,8 @@
 !ftplugin
 !lua
 !plugin
+!queries
+!queries/**
 !snips
 !tests
 !tests/*.lua

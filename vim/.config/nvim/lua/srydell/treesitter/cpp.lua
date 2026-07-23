@@ -912,7 +912,7 @@ function M.divide_and_sort_includes()
   -- If code is found between the includes
   -- -> give up
   for _, line in ipairs(vim.api.nvim_buf_get_lines(0, locations.start_row, locations.end_row, false)) do
-    if line ~= '' and line:find('^#include') == nil then
+    if line:match('^%s*$') == nil and line:find('^%s*#%s*include%s+') == nil then
       return
     end
   end
@@ -999,18 +999,94 @@ M.add_includes = function(includes)
     return
   end
 
-  -- Get all the existing includes
+  -- Return the preprocessor nesting depth at each source line. Includes added
+  -- by this function must be placed at the file's effective top level: depth
+  -- zero in source files, or depth one inside a conventional include guard.
+  -- In particular, an existing include nested in an unrelated #if must never
+  -- become the insertion point for a newly inferred dependency.
+  local function get_line_depths(lines)
+    local depths = {}
+    local depth = 0
+
+    for row, line in ipairs(lines) do
+      local directive = line:match('^%s*#%s*(%a+)')
+      if directive == 'endif' then
+        depth = math.max(0, depth - 1)
+      end
+
+      depths[row] = depth
+
+      if directive == 'if' or directive == 'ifdef' or directive == 'ifndef' then
+        depth = depth + 1
+      end
+    end
+
+    return depths
+  end
+
+  -- A conventional guard starts with a matching #ifndef/#define pair after
+  -- optional whitespace and license comments. New includes belong inside that
+  -- guard, even when the author omitted the usual blank line after #define.
+  local function get_include_guard(lines)
+    local in_block_comment = false
+    local function is_preamble_line(line)
+      local trimmed = line:match('^%s*(.-)%s*$')
+      if in_block_comment then
+        if trimmed:find('*/', 1, true) then
+          in_block_comment = false
+        end
+        return true
+      end
+      if trimmed == '' or trimmed:find('//', 1, true) == 1 then
+        return true
+      end
+      if trimmed:find('/*', 1, true) == 1 then
+        in_block_comment = not trimmed:find('*/', 3, true)
+        return true
+      end
+      return false
+    end
+
+    local ifndef_row = 1
+    while lines[ifndef_row] ~= nil and is_preamble_line(lines[ifndef_row]) do
+      ifndef_row = ifndef_row + 1
+    end
+
+    local define_row = ifndef_row + 1
+    while lines[define_row] ~= nil and lines[define_row]:match('^%s*$') do
+      define_row = define_row + 1
+    end
+
+    local name = lines[ifndef_row] and lines[ifndef_row]:match('^%s*#%s*ifndef%s+([%w_]+)%s*$')
+    local defined = lines[define_row] and lines[define_row]:match('^%s*#%s*define%s+([%w_]+)%s*$')
+    if name ~= nil and name == defined then
+      return { depth = 1, after_define = define_row }
+    end
+
+    return { depth = 0, after_comments = ifndef_row - 1 }
+  end
+
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  local depths = get_line_depths(lines)
+  local guard = get_include_guard(lines)
+
+  -- Only an include at the effective top level satisfies an unconditional
+  -- dependency. For example, <vector> inside #if FEATURE must not suppress an
+  -- unconditional <vector> needed by code outside that conditional.
   local existing_includes = {}
   local first_row = nil
   local function collect_include(node)
     if node:type() == 'preproc_include' then
       for child, name in node:iter_children() do
         if name ~= nil and name == 'path' then
-          existing_includes[M.get_node_text(child, 0)] = true
-          if first_row == nil then
-            first_row = M.get_row(node)
-          else
-            first_row = math.min(first_row, M.get_row(node))
+          local row = M.get_row(node)
+          if depths[row + 1] == guard.depth then
+            existing_includes[M.get_node_text(child, 0)] = true
+            if first_row == nil then
+              first_row = row
+            else
+              first_row = math.min(first_row, row)
+            end
           end
         end
       end
@@ -1024,29 +1100,38 @@ M.add_includes = function(includes)
   local includes_to_add = {}
   for _, include in ipairs(includes) do
     if existing_includes[include] ~= true then
-      -- Already there
       table.insert(includes_to_add, '#include ' .. include)
     end
   end
 
-  local function get_first_empty_row()
-    for number, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, 50, false)) do
-      if line == '' then
-        return number
-      end
-    end
-    return 0
+  if vim.tbl_isempty(includes_to_add) then
+    return
   end
 
   if first_row == nil then
-    -- No includes, find the first empty line to add them
-    local first_empty_row = get_first_empty_row()
-    if first_empty_row == nil then
-      return
+    local pragma_once_row
+    if guard.after_define == nil then
+      for row, line in ipairs(lines) do
+        if line:match('^%s*#%s*pragma%s+once%s*$') then
+          pragma_once_row = row
+          break
+        end
+      end
     end
-    first_row = first_empty_row
-    -- If there were no includes before,
-    -- also add an extra empty row after it
+
+    -- Insert after the actual file preamble, never merely after the first blank
+    -- line: that blank may follow a using-declaration or other code which
+    -- already needs the inferred header. Consume only blank lines immediately
+    -- following the guard, #pragma once, or leading license comments.
+    local preamble_end = guard.after_define or pragma_once_row or guard.after_comments or 0
+    while
+      lines[preamble_end + 1] ~= nil
+      and lines[preamble_end + 1]:match('^%s*$')
+      and depths[preamble_end + 1] == guard.depth
+    do
+      preamble_end = preamble_end + 1
+    end
+    first_row = preamble_end
     table.insert(includes_to_add, '')
   end
 
@@ -1063,32 +1148,6 @@ M.remove_template = function(type_string)
   return type_string
 end
 
-local function has_code_within_includes()
-  local has_seen_include = false
-  local has_seen_code_after_first_include = false
-
-  for _, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, -1, false)) do
-    local is_include = line:find('^#include') ~= nil
-    local is_empty_line = line == ''
-    local is_code = not is_include and not is_empty_line
-
-    -- Is this the first include in the file?
-    if is_include and not has_seen_include then
-      has_seen_include = true
-    -- Code after the first include?
-    elseif is_code and has_seen_include then
-      has_seen_code_after_first_include = true
-    end
-
-    -- Code between the first include and one that is seen now?
-    if has_seen_include and has_seen_code_after_first_include and is_include then
-      return true
-    end
-  end
-
-  return false
-end
-
 -- Look through the types in the current file.
 -- Include the necessary standard library headers for those types.
 -- Avoid doubles.
@@ -1097,45 +1156,147 @@ end
 --   ['fmt::format'] = '<fmt/format.h>',
 -- })
 M.include_necessary_types = function(user_includes)
-  if has_code_within_includes() then
-    -- Give up early
-    return
-  end
-
-  local known_includes = require('srydell.data.types_to_headers')
+  -- require() caches tables. Copy the built-in mapping before applying
+  -- buffer/project-specific overrides so they cannot leak into later calls.
+  local known_includes = vim.tbl_extend('force', {}, require('srydell.data.types_to_headers'), user_includes or {})
   local transitive_includes = require('srydell.data.transitive_includes')
-
-  -- Merge the user provided with the standard library ones
-  user_includes = user_includes or {}
-  for type, include in pairs(user_includes) do
-    known_includes[type] = include
-  end
 
   local unique_includes = {}
   local to_be_skipped = {}
-  local function collect_types(node)
-    if node:type() == 'qualified_identifier' then
-      local type = M.get_node_text(node)
+  local ok, parser = pcall(vim.treesitter.get_parser, 0, 'cpp')
+  if not ok or parser == nil then
+    return
+  end
 
-      -- Remove template part
-      -- i.e. std::vector<int> -> std::vector
-      type = M.remove_template(type)
+  -- The query lives in queries/cpp/includes.scm so the syntax patterns remain
+  -- visible, testable configuration rather than an opaque Lua string.
+  local query = vim.treesitter.query.get('cpp', 'includes')
+  if query == nil then
+    return
+  end
 
-      local include = known_includes[type]
-      if include ~= nil then
-        unique_includes[include] = true
+  local function add_include_for(type)
+    local include = known_includes[type]
+    if include == nil then
+      return
+    end
 
-        local transitives = transitive_includes[include]
-        if transitives then
-          for _, transitive in ipairs(transitives) do
-            to_be_skipped[transitive] = true
-          end
-        end
-      end
+    unique_includes[include] = true
+    for _, transitive in ipairs(transitive_includes[include] or {}) do
+      to_be_skipped[transitive] = true
     end
   end
 
-  M.search_down_from_root_until(collect_types)
+  local function starts_before(node, other)
+    local row, column = node:start()
+    local other_row, other_column = other:start()
+    return row < other_row or row == other_row and column < other_column
+  end
+
+  local function contains(ancestor, node)
+    while node ~= nil do
+      if node == ancestor then
+        return true
+      end
+      node = node:parent()
+    end
+    return false
+  end
+
+  -- A type_identifier that names the template portion of std::vector<int> is
+  -- already covered by the surrounding qualified_identifier. Template
+  -- arguments such as `string` remain eligible for unqualified resolution.
+  local function is_name_of_qualified_identifier(node)
+    local parent = node:parent()
+    if parent == nil or parent:type() ~= 'template_type' then
+      return false
+    end
+
+    local grandparent = parent:parent()
+    if grandparent == nil or grandparent:type() ~= 'qualified_identifier' then
+      return false
+    end
+
+    for _, name_node in ipairs(grandparent:field('name')) do
+      if name_node == parent then
+        return true
+      end
+    end
+    return false
+  end
+
+  local function import_scope(node)
+    -- A using-declaration affects the remainder of its immediate translation
+    -- unit, namespace body, or compound statement.
+    return node:parent()
+  end
+
+  for _, tree in ipairs(parser:parse() or {}) do
+    local imports = {}
+    local candidates = {}
+
+    for capture_id, node in query:iter_captures(tree:root(), 0) do
+      local capture = query.captures[capture_id]
+      if capture == 'symbol.qualified' then
+        add_include_for(M.remove_template(M.get_node_text(node)))
+      elseif capture == 'using.namespace' then
+        table.insert(imports, {
+          kind = 'namespace',
+          name = M.get_node_text(node),
+          node = node,
+          scope = import_scope(node:parent()),
+        })
+      elseif capture == 'using.symbol' then
+        table.insert(imports, {
+          kind = 'symbol',
+          name = M.get_node_text(node),
+          node = node,
+          scope = import_scope(node:parent()),
+        })
+      elseif capture == 'symbol.unqualified_type' then
+        if not is_name_of_qualified_identifier(node) then
+          table.insert(candidates, node)
+        end
+      elseif capture == 'symbol.unqualified_function' then
+        table.insert(candidates, node)
+      end
+    end
+
+    for _, candidate in ipairs(candidates) do
+      local short_name = M.get_node_text(candidate)
+      local matches = {}
+
+      for _, import in ipairs(imports) do
+        if starts_before(import.node, candidate) and contains(import.scope, candidate) then
+          local qualified_name
+          if import.kind == 'symbol' and import.name:match('::([^:]+)$') == short_name then
+            qualified_name = import.name
+          elseif import.kind == 'namespace' then
+            qualified_name = import.name .. '::' .. short_name
+          end
+
+          if qualified_name ~= nil and known_includes[qualified_name] ~= nil then
+            matches[qualified_name] = true
+          end
+        end
+      end
+
+      -- Multiple imported namespaces may expose the same spelling. Without
+      -- semantic information from clangd, declining an ambiguous match is the
+      -- only safe choice.
+      local resolved
+      for qualified_name in pairs(matches) do
+        if resolved ~= nil then
+          resolved = nil
+          break
+        end
+        resolved = qualified_name
+      end
+      if resolved ~= nil then
+        add_include_for(resolved)
+      end
+    end
+  end
 
   local includes = {}
 
@@ -1145,6 +1306,9 @@ M.include_necessary_types = function(user_includes)
     end
   end
 
+  -- pairs() has no defined iteration order. Stable input keeps direct callers
+  -- deterministic even before divide_and_sort_includes() runs on save.
+  table.sort(includes)
   M.add_includes(includes)
 end
 
