@@ -131,11 +131,18 @@ end
 --   'DSF_UTIL_PERF_HISTOGRAM_HPP'
 --
 M.get_include_guard = function(project_info)
-  local guard = { string.upper(project_info.name) }
+  local function macro_component(text)
+    local component = string.upper(text):gsub('[^%w_]', '_'):gsub('_+', '_')
+    if component:match('^%d') then
+      component = '_' .. component
+    end
+    return component
+  end
+
+  local guard = { macro_component(project_info.name) }
 
   for j = 1, #project_info.path do
-    local path = string.gsub(project_info.path[j], '%.', '_')
-    table.insert(guard, string.upper(path))
+    table.insert(guard, macro_component(project_info.path[j]))
   end
 
   return table.concat(guard, '_')

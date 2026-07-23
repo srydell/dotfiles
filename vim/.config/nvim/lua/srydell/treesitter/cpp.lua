@@ -804,6 +804,107 @@ function M.find_enum_from_type()
   return parse_enum(enum_node, buffer)
 end
 
+-- Return whether a line contains only whitespace and comments. block_comment
+-- carries state between lines so license headers can be skipped without
+-- mistaking code after a closing */ on the same line for preamble trivia.
+local function is_cpp_trivia_line(line, block_comment)
+  local rest = line
+
+  while true do
+    rest = rest:match('^%s*(.*)$')
+    if block_comment then
+      local close = rest:find('*/', 1, true)
+      if close == nil then
+        return true, true
+      end
+      rest = rest:sub(close + 2)
+      block_comment = false
+    elseif rest == '' or rest:sub(1, 2) == '//' then
+      return true, false
+    elseif rest:sub(1, 2) == '/*' then
+      block_comment = true
+      rest = rest:sub(3)
+    else
+      return false, false
+    end
+  end
+end
+
+-- Parse the file preamble once and share the result between include insertion
+-- and guard correction. A conventional guard may follow license comments and
+-- may contain whitespace or comments between #ifndef and #define.
+local function parse_cpp_preamble(lines)
+  local row = 1
+  local block_comment = false
+  while lines[row] ~= nil do
+    local is_trivia
+    is_trivia, block_comment = is_cpp_trivia_line(lines[row], block_comment)
+    if not is_trivia then
+      break
+    end
+    row = row + 1
+  end
+
+  local preamble = {
+    depth = 0,
+    after_comments = row - 1,
+  }
+
+  local guard_name = lines[row] and lines[row]:match('^%s*#%s*ifndef%s+([%w_]+)%s*$')
+  if guard_name == nil then
+    return preamble
+  end
+
+  local define_row = row + 1
+  block_comment = false
+  while lines[define_row] ~= nil do
+    local is_trivia
+    is_trivia, block_comment = is_cpp_trivia_line(lines[define_row], block_comment)
+    if not is_trivia then
+      break
+    end
+    define_row = define_row + 1
+  end
+
+  local defined_name, define_suffix = lines[define_row] and lines[define_row]:match('^%s*#%s*define%s+([%w_]+)%s*(.*)$')
+  if define_suffix ~= nil and define_suffix ~= '' and not define_suffix:match('^//') then
+    defined_name = nil
+  end
+  if defined_name ~= guard_name then
+    return preamble
+  end
+
+  local depth = 0
+  local endif_row
+  for candidate = row, #lines do
+    local directive = lines[candidate]:match('^%s*#%s*(%a+)')
+    if directive == 'if' or directive == 'ifdef' or directive == 'ifndef' then
+      depth = depth + 1
+    elseif directive == 'endif' then
+      depth = depth - 1
+      if depth == 0 then
+        endif_row = candidate
+        break
+      end
+    end
+  end
+
+  -- Do not treat an unterminated conditional as a valid include guard.
+  if endif_row == nil then
+    return preamble
+  end
+
+  return {
+    depth = 1,
+    after_comments = row - 1,
+    after_define = define_row,
+    ifndef_row = row,
+    define_row = define_row,
+    endif_row = endif_row,
+    name = guard_name,
+  }
+end
+
 -- Read the current includes
 -- Divide them and sort them internally in the following groups:
 --
@@ -852,26 +953,27 @@ function M.divide_and_sort_includes()
     return false
   end
 
-  local function append_include(text, node)
+  local function append_include(text, node, suffix)
+    local include = { text = text, node = node, suffix = suffix }
     if node:type() == 'string_literal' then
       -- E.g. "myLib/stuff.h"
       -- or "local_stuff.h"
       if text:find('/') == nil then
         if is_header_to_this(text) then
-          table.insert(includes['internal_my_own'], { text, node })
+          table.insert(includes['internal_my_own'], include)
         else
-          table.insert(includes['internal_same_dir'], { text, node })
+          table.insert(includes['internal_same_dir'], include)
         end
       else
-        table.insert(includes['internal'], { text, node })
+        table.insert(includes['internal'], include)
       end
     else
       -- E.g. <vector>
       -- or <boost/program_options.hpp>
       if is_system(text) then
-        table.insert(includes['system'], { text, node })
+        table.insert(includes['system'], include)
       else
-        table.insert(includes['external'], { text, node })
+        table.insert(includes['external'], include)
       end
     end
   end
@@ -890,7 +992,13 @@ function M.divide_and_sort_includes()
           end
 
           compare_location(child)
-          append_include(text, child)
+          local row, _, _, end_column = vim.treesitter.get_node_range(child)
+          local line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ''
+          -- Preserve everything following the path, most importantly comments
+          -- explaining why an include exists. The directive's leading spacing
+          -- is still normalized by the sorter.
+          local suffix = line:sub(end_column + 1)
+          append_include(text, child, suffix)
         end
       end
     end
@@ -920,7 +1028,7 @@ function M.divide_and_sort_includes()
   -- Sort the include within their category
   for _, includes_and_nodes in pairs(includes) do
     table.sort(includes_and_nodes, function(inc_a, inc_b)
-      return inc_a[1] < inc_b[1]
+      return inc_a.text < inc_b.text
     end)
   end
 
@@ -933,8 +1041,8 @@ function M.divide_and_sort_includes()
         table.insert(lines, '')
       end
     end
-    for _, text_and_node in ipairs(includes[category]) do
-      table.insert(lines, '#include ' .. text_and_node[1])
+    for _, include in ipairs(includes[category]) do
+      table.insert(lines, '#include ' .. include.text .. include.suffix)
     end
   end
 
@@ -953,27 +1061,11 @@ end
 -- e.g
 -- MYPROJECT_INCLUDE_API_H
 M.correct_include_guard = function()
-  -- Use the source lines instead of Tree-sitter nodes here. This runs during
+  -- Use source lines instead of Tree-sitter nodes because this runs during
   -- BufWritePre, when a parser may not be attached or its tree may be stale.
-  local function get_top_include_guard()
-    local lines = vim.api.nvim_buf_get_lines(0, 0, 2, false)
-    if #lines < 2 then
-      return
-    end
-
-    local ifndef = lines[1]:match('^%s*#ifndef%s+([%w_]+)%s*$')
-    local define = lines[2]:match('^%s*#define%s+([%w_]+)%s*$')
-    if ifndef == nil or define == nil or ifndef ~= define then
-      return
-    end
-
-    return lines
-  end
-
-  local lines = get_top_include_guard()
-
-  -- No include guard
-  if lines == nil then
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  local preamble = parse_cpp_preamble(lines)
+  if preamble.name == nil then
     return
   end
 
@@ -983,11 +1075,19 @@ M.correct_include_guard = function()
     return
   end
 
-  -- The pair was validated together above, so update both directives as one
-  -- operation and preserve their existing indentation and spacing.
-  lines[1] = lines[1]:gsub('(#ifndef%s+)[%w_]+', '%1' .. include_guard, 1)
-  lines[2] = lines[2]:gsub('(#define%s+)[%w_]+', '%1' .. include_guard, 1)
-  vim.api.nvim_buf_set_lines(0, 0, 2, false, lines)
+  -- The pair and matching #endif were validated together. Preserve directive
+  -- spacing and update a conventional closing comment when it names the old
+  -- guard; unrelated comments remain untouched.
+  lines[preamble.ifndef_row] = lines[preamble.ifndef_row]:gsub('(#%s*ifndef%s+)[%w_]+', '%1' .. include_guard, 1)
+  lines[preamble.define_row] = lines[preamble.define_row]:gsub('(#%s*define%s+)[%w_]+', '%1' .. include_guard, 1)
+
+  local old_name = vim.pesc(preamble.name)
+  lines[preamble.endif_row] =
+    lines[preamble.endif_row]:gsub('(//%s*)' .. old_name .. '(%s*)$', '%1' .. include_guard .. '%2', 1)
+  lines[preamble.endif_row] =
+    lines[preamble.endif_row]:gsub('(/%*%s*)' .. old_name .. '(%s*%*/%s*)$', '%1' .. include_guard .. '%2', 1)
+
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
 end
 
 -- Add an include to the list of includes in the current file
@@ -1024,51 +1124,9 @@ M.add_includes = function(includes)
     return depths
   end
 
-  -- A conventional guard starts with a matching #ifndef/#define pair after
-  -- optional whitespace and license comments. New includes belong inside that
-  -- guard, even when the author omitted the usual blank line after #define.
-  local function get_include_guard(lines)
-    local in_block_comment = false
-    local function is_preamble_line(line)
-      local trimmed = line:match('^%s*(.-)%s*$')
-      if in_block_comment then
-        if trimmed:find('*/', 1, true) then
-          in_block_comment = false
-        end
-        return true
-      end
-      if trimmed == '' or trimmed:find('//', 1, true) == 1 then
-        return true
-      end
-      if trimmed:find('/*', 1, true) == 1 then
-        in_block_comment = not trimmed:find('*/', 3, true)
-        return true
-      end
-      return false
-    end
-
-    local ifndef_row = 1
-    while lines[ifndef_row] ~= nil and is_preamble_line(lines[ifndef_row]) do
-      ifndef_row = ifndef_row + 1
-    end
-
-    local define_row = ifndef_row + 1
-    while lines[define_row] ~= nil and lines[define_row]:match('^%s*$') do
-      define_row = define_row + 1
-    end
-
-    local name = lines[ifndef_row] and lines[ifndef_row]:match('^%s*#%s*ifndef%s+([%w_]+)%s*$')
-    local defined = lines[define_row] and lines[define_row]:match('^%s*#%s*define%s+([%w_]+)%s*$')
-    if name ~= nil and name == defined then
-      return { depth = 1, after_define = define_row }
-    end
-
-    return { depth = 0, after_comments = ifndef_row - 1 }
-  end
-
   local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
   local depths = get_line_depths(lines)
-  local guard = get_include_guard(lines)
+  local guard = parse_cpp_preamble(lines)
 
   -- Only an include at the effective top level satisfies an unconditional
   -- dependency. For example, <vector> inside #if FEATURE must not suppress an
@@ -1203,6 +1261,17 @@ M.include_necessary_types = function(user_includes)
     return false
   end
 
+  local function distance_to_ancestor(node, ancestor)
+    local distance = 0
+    while node ~= nil do
+      if node == ancestor then
+        return distance
+      end
+      node = node:parent()
+      distance = distance + 1
+    end
+  end
+
   -- A type_identifier that names the template portion of std::vector<int> is
   -- already covered by the surrounding qualified_identifier. Template
   -- arguments such as `string` remain eligible for unqualified resolution.
@@ -1233,12 +1302,13 @@ M.include_necessary_types = function(user_includes)
 
   for _, tree in ipairs(parser:parse() or {}) do
     local imports = {}
+    local aliases = {}
     local candidates = {}
 
     for capture_id, node in query:iter_captures(tree:root(), 0) do
       local capture = query.captures[capture_id]
       if capture == 'symbol.qualified' then
-        add_include_for(M.remove_template(M.get_node_text(node)))
+        table.insert(candidates, { kind = 'qualified', node = node })
       elseif capture == 'using.namespace' then
         table.insert(imports, {
           kind = 'namespace',
@@ -1253,47 +1323,122 @@ M.include_necessary_types = function(user_includes)
           node = node,
           scope = import_scope(node:parent()),
         })
+      elseif capture == 'namespace.alias' then
+        local name_nodes = node:field('name')
+        local target = node:named_child(1)
+        -- Be deliberately strict about malformed/incomplete syntax. An alias
+        -- without exactly one name and a namespace-like target is unusable and
+        -- must not influence include inference while the user is still typing.
+        if
+          #name_nodes == 1
+          and target ~= nil
+          and (target:type() == 'namespace_identifier' or target:type() == 'nested_namespace_specifier')
+        then
+          table.insert(aliases, {
+            name = M.get_node_text(name_nodes[1]),
+            target = M.get_node_text(target),
+            node = node,
+            scope = node:parent(),
+          })
+        end
       elseif capture == 'symbol.unqualified_type' then
         if not is_name_of_qualified_identifier(node) then
-          table.insert(candidates, node)
+          table.insert(candidates, { kind = 'unqualified', node = node })
         end
       elseif capture == 'symbol.unqualified_function' then
-        table.insert(candidates, node)
+        table.insert(candidates, { kind = 'unqualified', node = node })
       end
     end
 
-    for _, candidate in ipairs(candidates) do
-      local short_name = M.get_node_text(candidate)
-      local matches = {}
+    -- Resolve the first component of a namespace through the closest visible
+    -- alias. Inner scopes shadow outer scopes; declaration order is respected.
+    -- Alias chains are supported, while cycles and excessively deep malformed
+    -- chains are rejected rather than risking a save-time loop.
+    local function resolve_aliases(namespace, reference)
+      namespace = namespace:gsub('^::', '')
+      local seen = {}
+      for _ = 1, 32 do
+        local first, suffix = namespace:match('^([^:]+)(.*)$')
+        if first == nil then
+          return namespace
+        end
 
-      for _, import in ipairs(imports) do
-        if starts_before(import.node, candidate) and contains(import.scope, candidate) then
-          local qualified_name
-          if import.kind == 'symbol' and import.name:match('::([^:]+)$') == short_name then
-            qualified_name = import.name
-          elseif import.kind == 'namespace' then
-            qualified_name = import.name .. '::' .. short_name
-          end
-
-          if qualified_name ~= nil and known_includes[qualified_name] ~= nil then
-            matches[qualified_name] = true
+        local best
+        local best_distance
+        local ambiguous = false
+        for _, alias in ipairs(aliases) do
+          local distance = distance_to_ancestor(reference, alias.scope)
+          if alias.name == first and distance ~= nil and starts_before(alias.node, reference) then
+            if best == nil or distance < best_distance then
+              best = alias
+              best_distance = distance
+              ambiguous = false
+            elseif distance == best_distance then
+              -- Redeclaring an alias in one scope is invalid C++. While such a
+              -- buffer is incomplete, reject the lookup instead of guessing
+              -- which declaration the user intends to keep.
+              ambiguous = true
+            end
           end
         end
-      end
 
-      -- Multiple imported namespaces may expose the same spelling. Without
-      -- semantic information from clangd, declining an ambiguous match is the
-      -- only safe choice.
-      local resolved
-      for qualified_name in pairs(matches) do
+        if ambiguous then
+          return nil
+        elseif best == nil then
+          return namespace
+        end
+        if seen[best] then
+          return nil
+        end
+        seen[best] = true
+        namespace = best.target .. suffix
+      end
+      return nil
+    end
+
+    for _, candidate_info in ipairs(candidates) do
+      local candidate = candidate_info.node
+      if candidate_info.kind == 'qualified' then
+        local qualified_name = resolve_aliases(M.remove_template(M.get_node_text(candidate)), candidate)
+        if qualified_name ~= nil then
+          add_include_for(qualified_name)
+        end
+      else
+        local short_name = M.get_node_text(candidate)
+        local matches = {}
+
+        for _, import in ipairs(imports) do
+          if starts_before(import.node, candidate) and contains(import.scope, candidate) then
+            local qualified_name
+            if import.kind == 'symbol' and import.name:match('::([^:]+)$') == short_name then
+              qualified_name = resolve_aliases(import.name, import.node)
+            elseif import.kind == 'namespace' then
+              local namespace = resolve_aliases(import.name, import.node)
+              if namespace ~= nil then
+                qualified_name = namespace .. '::' .. short_name
+              end
+            end
+
+            if qualified_name ~= nil and known_includes[qualified_name] ~= nil then
+              matches[qualified_name] = true
+            end
+          end
+        end
+
+        -- Multiple imported namespaces may expose the same spelling. Without
+        -- semantic information from clangd, declining an ambiguous match is the
+        -- only safe choice.
+        local resolved
+        for qualified_name in pairs(matches) do
+          if resolved ~= nil then
+            resolved = nil
+            break
+          end
+          resolved = qualified_name
+        end
         if resolved ~= nil then
-          resolved = nil
-          break
+          add_include_for(resolved)
         end
-        resolved = qualified_name
-      end
-      if resolved ~= nil then
-        add_include_for(resolved)
       end
     end
   end

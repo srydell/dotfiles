@@ -154,6 +154,129 @@ local cases = {
     expected = { '#include <utility>', '', 'using namespace std;', 'exchange(value, next);' },
   },
   {
+    name = 'namespace alias resolves qualified type',
+    input = { 'namespace fs = std::filesystem;', 'fs::path path;' },
+    expected = { '#include <filesystem>', '', 'namespace fs = std::filesystem;', 'fs::path path;' },
+  },
+  {
+    name = 'namespace alias resolves qualified function',
+    input = { 'namespace alg = std;', 'alg::sort(first, last);' },
+    expected = { '#include <algorithm>', '', 'namespace alg = std;', 'alg::sort(first, last);' },
+  },
+  {
+    name = 'namespace alias resolves using namespace',
+    input = { 'namespace chrono = std::chrono;', 'using namespace chrono;', 'duration<int> elapsed;' },
+    expected = {
+      '#include <chrono>',
+      '',
+      'namespace chrono = std::chrono;',
+      'using namespace chrono;',
+      'duration<int> elapsed;',
+    },
+  },
+  {
+    name = 'namespace alias resolves explicit symbol import',
+    input = { 'namespace fs = std::filesystem;', 'using fs::path;', 'path value;' },
+    expected = {
+      '#include <filesystem>',
+      '',
+      'namespace fs = std::filesystem;',
+      'using fs::path;',
+      'path value;',
+    },
+  },
+  {
+    name = 'namespace alias chain resolves transitively',
+    input = {
+      'namespace standard = std;',
+      'namespace filesystem = standard::filesystem;',
+      'namespace fs = filesystem;',
+      'fs::path value;',
+    },
+    expected = {
+      '#include <filesystem>',
+      '',
+      'namespace standard = std;',
+      'namespace filesystem = standard::filesystem;',
+      'namespace fs = filesystem;',
+      'fs::path value;',
+    },
+  },
+  {
+    name = 'namespace alias does not apply before declaration',
+    input = { 'fs::path before;', 'namespace fs = std::filesystem;' },
+    expected = { 'fs::path before;', 'namespace fs = std::filesystem;' },
+  },
+  {
+    name = 'namespace alias remains inside lexical scope',
+    input = {
+      'namespace detail {',
+      '  namespace fs = std::filesystem;',
+      '}',
+      'fs::path outside;',
+    },
+    expected = {
+      'namespace detail {',
+      '  namespace fs = std::filesystem;',
+      '}',
+      'fs::path outside;',
+    },
+  },
+  {
+    name = 'inner namespace alias shadows outer alias',
+    input = {
+      'namespace api = first;',
+      'namespace detail {',
+      '  namespace api = second;',
+      '  api::Thing value;',
+      '}',
+    },
+    user_includes = {
+      ['first::Thing'] = '"first/thing.hpp"',
+      ['second::Thing'] = '"second/thing.hpp"',
+    },
+    expected = {
+      '#include "second/thing.hpp"',
+      '',
+      'namespace api = first;',
+      'namespace detail {',
+      '  namespace api = second;',
+      '  api::Thing value;',
+      '}',
+    },
+  },
+  {
+    name = 'duplicate alias in same scope is rejected as malformed',
+    input = {
+      'namespace api = first;',
+      'namespace api = second;',
+      'api::Thing value;',
+    },
+    user_includes = {
+      ['first::Thing'] = '"first/thing.hpp"',
+      ['second::Thing'] = '"second/thing.hpp"',
+    },
+    expected = { 'namespace api = first;', 'namespace api = second;', 'api::Thing value;' },
+  },
+  {
+    name = 'unknown namespace alias target is ignored',
+    input = { 'namespace api = unknown;', 'api::Thing value;' },
+    expected = { 'namespace api = unknown;', 'api::Thing value;' },
+  },
+  {
+    name = 'cyclic namespace aliases are ignored defensively',
+    input = { 'namespace first = second;', 'namespace second = first;', 'first::Thing value;' },
+    user_includes = {
+      ['first::Thing'] = '"first/thing.hpp"',
+      ['second::Thing'] = '"second/thing.hpp"',
+    },
+    expected = {
+      'namespace first = second;',
+      'namespace second = first;',
+      'first::Thing value;',
+    },
+  },
+  {
     name = 'explicit symbol import resolves type',
     input = { 'using std::optional;', 'optional<int> value;' },
     expected = { '#include <optional>', '', 'using std::optional;', 'optional<int> value;' },

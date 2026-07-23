@@ -9,6 +9,11 @@
 (using_declaration
   (qualified_identifier) @using.symbol)
 
+; Capture the whole definition because tree-sitter-cpp exposes the alias name
+; as a field but represents the target as its second named child. Keeping the
+; pairing intact avoids correlating independent captures by source position.
+(namespace_alias_definition) @namespace.alias
+
 ; Type names and direct function calls are the two unqualified contexts that
 ; can be resolved with useful confidence from syntax alone. Member calls are
 ; deliberately excluded because their functions are field_expressions.

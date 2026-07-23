@@ -41,6 +41,20 @@ assert_lines({
   'std::string s;',
 })
 
+set_lines({
+  '#include <vector> // Public API exposes std::vector',
+  '#include <string> /* Kept with string */',
+  '',
+  'std::vector<std::string> values;',
+})
+ts_cpp.divide_and_sort_includes()
+assert_lines({
+  '#include <string> /* Kept with string */',
+  '#include <vector> // Public API exposes std::vector',
+  '',
+  'std::vector<std::string> values;',
+})
+
 vim.cmd('enew!')
 vim.api.nvim_buf_set_name(0, '/tmp/proj/include/foo.h')
 vim.bo.filetype = 'cpp'
@@ -79,6 +93,80 @@ assert_lines({
   'class A {};',
   '',
   '#endif',
+})
+
+vim.cmd('enew!')
+vim.api.nvim_buf_set_name(0, '/tmp/my-project/include/detail/foo-bar.hpp')
+vim.bo.filetype = 'cpp'
+vim.api.nvim_buf_set_lines(0, 0, -1, false, {
+  '/*',
+  ' * Copyright notice',
+  ' */',
+  '',
+  '# ifndef OLD_GUARD',
+  '',
+  '// The define is intentionally separated from ifndef.',
+  '# define OLD_GUARD // public header',
+  '',
+  'class A {};',
+  '',
+  '# endif // OLD_GUARD',
+})
+ts_cpp.correct_include_guard()
+assert_lines({
+  '/*',
+  ' * Copyright notice',
+  ' */',
+  '',
+  '# ifndef MY_PROJECT_DETAIL_FOO_BAR_HPP',
+  '',
+  '// The define is intentionally separated from ifndef.',
+  '# define MY_PROJECT_DETAIL_FOO_BAR_HPP // public header',
+  '',
+  'class A {};',
+  '',
+  '# endif // MY_PROJECT_DETAIL_FOO_BAR_HPP',
+})
+
+vim.cmd('enew!')
+vim.api.nvim_buf_set_name(0, '/tmp/proj/include/value.hpp')
+vim.bo.filetype = 'cpp'
+vim.api.nvim_buf_set_lines(0, 0, -1, false, {
+  '#ifndef OLD_VALUE_HPP',
+  '#define OLD_VALUE_HPP',
+  '',
+  '#if FEATURE',
+  'class Feature {};',
+  '#endif',
+  '',
+  '#endif /* OLD_VALUE_HPP */',
+})
+ts_cpp.correct_include_guard()
+assert_lines({
+  '#ifndef PROJ_VALUE_HPP',
+  '#define PROJ_VALUE_HPP',
+  '',
+  '#if FEATURE',
+  'class Feature {};',
+  '#endif',
+  '',
+  '#endif /* PROJ_VALUE_HPP */',
+})
+
+-- An unmatched conditional is not sufficiently safe to rewrite as a guard.
+vim.cmd('enew!')
+vim.api.nvim_buf_set_name(0, '/tmp/proj/include/broken.hpp')
+vim.bo.filetype = 'cpp'
+vim.api.nvim_buf_set_lines(0, 0, -1, false, {
+  '#ifndef OLD_BROKEN_HPP',
+  '#define OLD_BROKEN_HPP',
+  'class Broken {};',
+})
+ts_cpp.correct_include_guard()
+assert_lines({
+  '#ifndef OLD_BROKEN_HPP',
+  '#define OLD_BROKEN_HPP',
+  'class Broken {};',
 })
 
 -- A conditional include is not a safe insertion point for an unconditional
