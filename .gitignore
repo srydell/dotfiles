@@ -14,6 +14,7 @@ tmux/.tmux/plugins/
 tmux/.tmux/resurrect/
 vim/.vim/.netrwhist
 vim/.vim/pack/
+vim/.config/github-copilot/
 
 # Files
 bash/.bash/bash_history
@@ -52,4 +53,5 @@ qutebrowser/.config/qutebrowser/quickmarks
 !.Arch
 !.gitignore
 !README.md
+!Brewfile
 !ssh/config
