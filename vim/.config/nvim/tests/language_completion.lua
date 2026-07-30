@@ -20,7 +20,10 @@ local function assert_completion(server, project_dir, filename, position, expect
   assert(attached, server .. ' did not attach')
 
   local client = vim.lsp.get_clients({ bufnr = 0, name = server })[1]
-  assert(client.root_dir == project_dir, server .. ' selected the wrong root: ' .. tostring(client.root_dir))
+  assert(
+    vim.uv.fs_realpath(client.root_dir) == vim.uv.fs_realpath(project_dir),
+    server .. ' selected the wrong root: ' .. tostring(client.root_dir)
+  )
   assert(client.server_capabilities.completionProvider, server .. ' did not advertise completion support')
   assert(
     client.config.capabilities.textDocument.completion.completionItem.snippetSupport,

@@ -4,17 +4,16 @@ function M.setup()
   local jdtls = require('jdtls')
   local jdtls_dap = require('jdtls.dap')
   local jdtls_setup = require('jdtls.setup')
-  local home = os.getenv('HOME')
-
   local root_markers = { '.git', 'mvnw', 'gradlew', 'pom.xml', 'build.gradle' }
   local root_dir = jdtls_setup.find_root(root_markers)
+  if not root_dir or root_dir == '' then
+    return
+  end
 
   local project_name = vim.fn.fnamemodify(root_dir, ':p:h:t')
-  local workspace_dir = home .. '/.cache/jdtls/workspace' .. project_name
+  local workspace_dir = vim.fn.stdpath('cache') .. '/jdtls/workspace/' .. project_name
 
-  -- 💀
-  local path_to_mason_packages = home .. '/.local/share/nvim/mason/packages'
-  -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                       ^^^^^^^^^^^^^^
+  local path_to_mason_packages = vim.fn.stdpath('data') .. '/mason/packages'
 
   local path_to_jdtls = path_to_mason_packages .. '/jdtls'
   local path_to_jdebug = path_to_mason_packages .. '/java-debug-adapter'
@@ -31,9 +30,12 @@ function M.setup()
 
   local lombok_path = path_to_jdtls .. '/lombok.jar'
 
-  -- 💀
-  local path_to_jar = path_to_jdtls .. '/plugins/org.eclipse.equinox.launcher_1.6.800.v20240330-1250.jar'
-  -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                          ^^^^^^^^^^^^^^^^^^^^^^
+  local launchers = vim.fn.glob(path_to_jdtls .. '/plugins/org.eclipse.equinox.launcher_*.jar', false, true)
+  local path_to_jar = launchers[#launchers]
+  if not path_to_jar then
+    vim.notify('jdtls launcher not found; install jdtls with Mason', vim.log.levels.ERROR)
+    return
+  end
 
   local bundles = {
     vim.fn.glob(path_to_jdebug .. '/extension/server/com.microsoft.java.debug.plugin-*.jar', true),

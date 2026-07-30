@@ -2,6 +2,12 @@ local M = {}
 
 M.setup = function()
   local dap = require('dap')
+  local developer_dir = vim.fn.systemlist({ 'xcode-select', '-p' })[1]
+  local lldb_path
+  if vim.v.shell_error == 0 and developer_dir then
+    local xcode_contents = developer_dir:gsub('/Developer/?$', '')
+    lldb_path = xcode_contents .. '/SharedFrameworks/LLDB.framework/Versions/A/LLDB'
+  end
 
   dap.configurations.swift = {
     {
@@ -30,8 +36,7 @@ M.setup = function()
         '--port',
         '13000',
         '--liblldb',
-        -- make sure that this path is correct on your side
-        '/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB',
+        lldb_path or 'liblldb',
       },
     },
   }

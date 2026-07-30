@@ -94,10 +94,10 @@ vim.lsp.config('*', {
 })
 
 vim.lsp.config('clangd', {
-  -- Treat project markers equally so a parent ~/.clangd index directory
-  -- cannot outrank a nearer compilation database or repository marker.
-  root_markers = {
-    {
+  root_dir = function(bufnr, on_dir)
+    -- Pick the nearest marker regardless of its name. This prevents a parent
+    -- ~/.clangd directory from outranking a project's compilation database.
+    local marker = vim.fs.find({
       '.clangd',
       '.clang-tidy',
       '.clang-format',
@@ -105,8 +105,15 @@ vim.lsp.config('clangd', {
       'compile_flags.txt',
       'configure.ac',
       '.git',
-    },
-  },
+    }, {
+      path = vim.api.nvim_buf_get_name(bufnr),
+      upward = true,
+      limit = 1,
+    })[1]
+    if marker then
+      on_dir(vim.fs.dirname(marker))
+    end
+  end,
 })
 
 -- Setup harper_ls and configure it to only use markdown files
@@ -114,27 +121,39 @@ vim.lsp.config('harper_ls', {
   filetypes = { 'markdown' },
 })
 
-local function sourcekit_root_dir(filename)
+local function sourcekit_root_dir(bufnr, on_dir)
+  local filename = vim.api.nvim_buf_get_name(bufnr)
   local git_dir = vim.fs.find('.git', { path = filename, upward = true })[1]
 
-  return lsp_util.root_pattern('buildServer.json')(filename)
+  local root_dir = lsp_util.root_pattern('buildServer.json')(filename)
     or lsp_util.root_pattern('*.xcodeproj', '*.xcworkspace')(filename)
     or lsp_util.root_pattern('Package.swift')(filename)
     or (git_dir and vim.fs.dirname(git_dir) or nil)
+
+  if root_dir then
+    on_dir(root_dir)
+  end
 end
 
-vim.lsp.config('sourcekit', {
-  capabilities = vim.tbl_deep_extend('force', capabilities, {
-    workspace = {
-      didChangeWatchedFiles = {
-        dynamicRegistration = true,
+local sourcekit_cmd
+if vim.fn.executable('sourcekit-lsp') == 1 then
+  sourcekit_cmd = { vim.fn.exepath('sourcekit-lsp') }
+elseif vim.fn.has('mac') == 1 and vim.fn.executable('xcrun') == 1 then
+  sourcekit_cmd = { 'xcrun', 'sourcekit-lsp' }
+end
+
+if sourcekit_cmd then
+  vim.lsp.config('sourcekit', {
+    capabilities = vim.tbl_deep_extend('force', capabilities, {
+      workspace = {
+        didChangeWatchedFiles = {
+          dynamicRegistration = true,
+        },
       },
-    },
-  }),
-  cmd = {
-    '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp',
-  },
-  filetypes = { 'swift' },
-  root_dir = sourcekit_root_dir,
-})
-vim.lsp.enable('sourcekit')
+    }),
+    cmd = sourcekit_cmd,
+    filetypes = { 'swift' },
+    root_dir = sourcekit_root_dir,
+  })
+  vim.lsp.enable('sourcekit')
+end

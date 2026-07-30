@@ -33,7 +33,10 @@ end, 20)
 assert(attached, 'clangd did not attach to the C++ buffer')
 
 local client = vim.lsp.get_clients({ bufnr = 0, name = 'clangd' })[1]
-assert(client.root_dir == project_dir, 'clangd selected the wrong project root: ' .. tostring(client.root_dir))
+assert(
+  vim.uv.fs_realpath(client.root_dir) == vim.uv.fs_realpath(project_dir),
+  'clangd selected the wrong project root: ' .. tostring(client.root_dir)
+)
 assert(client.server_capabilities.completionProvider, 'clangd did not advertise completion support')
 assert(
   client.config.capabilities.textDocument.completion.completionItem.snippetSupport,
