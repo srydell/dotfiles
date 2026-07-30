@@ -2,6 +2,22 @@
 -- nvim --headless -u init.lua -l tests/completion_sources.lua
 local source_lib = require('blink.cmp.sources.lib')
 local config = require('blink.cmp.config')
+assert(
+  vim.deep_equal(config.keymap['<Tab>'], { 'select_next', 'fallback' }),
+  '<Tab> must move forward through completion items'
+)
+assert(
+  config.completion.list.selection.preselect({}) == false,
+  'completion must start unselected so the first <Tab> selects item one'
+)
+assert(
+  config.completion.list.selection.auto_insert({}) == true,
+  '<Tab> must insert each selected completion as a replaceable preview'
+)
+assert(
+  vim.deep_equal(config.keymap['<C-y>'], { 'select_and_accept', 'fallback' }),
+  '<C-y> must accept the selected item, or item one when none is selected'
+)
 
 local function assert_sources(filetype, expected)
   vim.bo.filetype = filetype

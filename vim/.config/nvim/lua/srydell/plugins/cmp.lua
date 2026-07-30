@@ -21,6 +21,15 @@ return {
         trigger = {
           show_in_snippet = false,
         },
+        list = {
+          selection = {
+            -- Keep the menu initially unselected so the first <Tab> selects
+            -- and inserts item one. Later presses replace that preview with
+            -- each following item until <C-y> accepts the current selection.
+            preselect = false,
+            auto_insert = true,
+          },
+        },
         menu = {
           border = 'rounded',
           winblend = 0,
