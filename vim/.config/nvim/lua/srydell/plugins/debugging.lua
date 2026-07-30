@@ -12,7 +12,7 @@ return {
     local has_dapui, dapui = pcall(require, 'dapui')
 
     -- language specific adapters
-    local dap_python = require('dap-python')
+    local dap_python = require('srydell.plugins.debugging.python')
     local dap_cpp = require('srydell.plugins.debugging.cpp')
     local dap_swift = require('srydell.plugins.debugging.swift')
     local dap_bash = require('srydell.plugins.debugging.bash')
@@ -42,6 +42,14 @@ return {
     -- NOTE: All of them start with <leader>d
     debug_map('c', function()
       if not dap.session() and vim.bo.ft == 'swift' then
+        if vim.uv.os_uname().sysname ~= 'Darwin' then
+          require('srydell.plugins.debugging.util').notify_problem(
+            'Swift Debugger',
+            'iOS debugging is only available on macOS.',
+            'Use this configuration on a Mac with Xcode installed.'
+          )
+          return
+        end
         require('xcodebuild.integrations.dap').build_and_debug()
         return
       end

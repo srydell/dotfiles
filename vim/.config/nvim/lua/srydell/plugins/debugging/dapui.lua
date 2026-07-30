@@ -1,5 +1,7 @@
 local M = {}
 
+-- Shared nvim-dap UI layout and lifecycle. Loaded automatically by
+-- debugging.lua when nvim-dap-ui is available.
 M.setup = function()
   local dap = require('dap')
   local dapui = require('dapui')
@@ -45,14 +47,6 @@ M.setup = function()
   end
   dap.listeners.before.event_exited['dapui_config'] = function()
     dapui.close()
-  end
-
-  -- Disables annoying warning that requires hitting enter
-  local orig_notify = require('dap.utils').notify
-  require('dap.utils').notify = function(msg, log_level)
-    if not string.find(msg, 'Either the adapter is slow') then
-      orig_notify(msg, log_level)
-    end
   end
 
   vim.fn.sign_define('DapBreakpoint', { text = '', texthl = 'DiagnosticError', linehl = '', numhl = '' })

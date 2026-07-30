@@ -1,27 +1,41 @@
 local M = {}
 
-local function file_exist(file_path)
-  local f = io.open(file_path, 'r')
-  return f ~= nil and io.close(f)
+local function notify_problem(problem, detail)
+  require('srydell.plugins.debugging.util').notify_problem(
+    'DAP Breakpoints',
+    problem,
+    'Fix or remove .nvim/breakpoints.json in the project root, then retry.',
+    detail
+  )
+end
+
+local function decode(content)
+  local ok, value = pcall(vim.json.decode, content)
+  if not ok or type(value) ~= 'table' then
+    notify_problem('The saved breakpoint file is not valid JSON.', ok and 'Expected a JSON object.' or value)
+    return nil
+  end
+  return value
 end
 
 function M.store()
   local breakpoints = require('dap.breakpoints')
   local settings = vim.fn.getcwd() .. '/.nvim'
   local breakpoints_fp = settings .. '/breakpoints.json'
-  vim.fn.systemlist({ 'mkdir', '-p', settings })
+  if vim.fn.mkdir(settings, 'p') == 0 and vim.fn.isdirectory(settings) ~= 1 then
+    notify_problem('Could not create the project breakpoint directory.', settings)
+    return
+  end
 
   local bps = {}
-
-  if file_exist(breakpoints_fp) then
-    local breakpoints_handle = io.open(breakpoints_fp)
-
-    if breakpoints_handle then
-      local load_bps_raw = breakpoints_handle:read('*a')
-      breakpoints_handle:close()
-
-      if string.len(load_bps_raw) > 0 then
-        bps = vim.fn.json_decode(load_bps_raw)
+  local breakpoints_handle = io.open(breakpoints_fp, 'r')
+  if breakpoints_handle then
+    local content = breakpoints_handle:read('*a')
+    breakpoints_handle:close()
+    if content ~= '' then
+      bps = decode(content, breakpoints_fp)
+      if not bps then
+        return
       end
     end
   end
@@ -32,10 +46,12 @@ function M.store()
   end
 
   local fp = io.open(breakpoints_fp, 'w')
-  if fp then
-    fp:write(vim.fn.json_encode(bps))
-    fp:close()
+  if not fp then
+    notify_problem('Could not open the breakpoint file for writing.', breakpoints_fp)
+    return
   end
+  fp:write(vim.json.encode(bps))
+  fp:close()
 end
 
 function M.load()
@@ -54,7 +70,7 @@ function M.load()
     return
   end
 
-  local bps = vim.fn.json_decode(content)
+  local bps = decode(content, settings .. '/breakpoints.json')
   if not bps then
     return
   end
