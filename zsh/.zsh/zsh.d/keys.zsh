@@ -4,7 +4,9 @@
 # To add a new key, add the name of the file after id_rsa if it is in ~/.ssh/
 # or give an absolute path
 # eval $(keychain --eval --quiet --ignore-missing --agents gpg,ssh id_rsa "$LATEST_GPGKEY")
-eval "$(keychain --eval --quiet --ignore-missing id_rsa)"
+if (( $+commands[keychain] )); then
+	eval "$(keychain --eval --quiet --ignore-missing id_rsa)"
+fi
 # unset LATEST_GPGKEY
 
 # Always prompt for gpg password in the terminal instead of gui popup

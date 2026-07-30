@@ -1,28 +1,42 @@
-# Let brew programs come first
-export PATH="/usr/local/sbin:$PATH"
-export PATH="/opt/local/bin:$PATH"
+# Homebrew lives in /opt/homebrew on Apple Silicon and /usr/local on Intel.
+# It may also be absent during the first shell started on a new machine.
+if (( $+commands[brew] )); then
+	brew_command=$commands[brew]
+elif [[ -x /opt/homebrew/bin/brew ]]; then
+	brew_command=/opt/homebrew/bin/brew
+elif [[ -x /usr/local/bin/brew ]]; then
+	brew_command=/usr/local/bin/brew
+fi
 
-# Use llvm clang
-export PATH="/usr/local/opt/llvm/bin:$PATH"
+if [[ -n ${brew_command:-} ]]; then
+	eval "$("$brew_command" shellenv)"
+	brew_prefix=$("$brew_command" --prefix)
 
-# Use the real gcc
-export PATH="/usr/local/bin:$PATH"
+	# Prefer Homebrew LLVM when installed, without adding nonexistent paths.
+	llvm_prefix=$("$brew_command" --prefix llvm 2>/dev/null)
+	if [[ -d $llvm_prefix ]]; then
+		path=("$llvm_prefix/bin" $path)
+		export LDFLAGS="-L$llvm_prefix/lib -Wl,-rpath,$llvm_prefix/lib${LDFLAGS:+ $LDFLAGS}"
+		export CPPFLAGS="-I$llvm_prefix/include -I$llvm_prefix/include/c++/v1${CPPFLAGS:+ $CPPFLAGS}"
+	fi
 
-# Use LLVM clangd etc
-export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
-export LDFLAGS="-L/opt/homebrew/opt/llvm/lib -Wl,-rpath,/opt/homebrew/opt/llvm/lib"
-export CPPFLAGS="-I/opt/homebrew/opt/llvm/include -I/opt/homebrew/opt/llvm/include/c++/v1/"
+	openjdk_prefix=$("$brew_command" --prefix openjdk 2>/dev/null)
+	if [[ -d $openjdk_prefix ]]; then
+		export JAVA_HOME="$openjdk_prefix/libexec/openjdk.jdk/Contents/Home"
+		path=("$openjdk_prefix/bin" $path)
+	fi
 
-# export PATH="/opt/homebrew/opt/conan@1/bin:$PATH"
-export PATH="$HOME/.rubies/ruby-3.3.0/bin:$PATH"
+	chruby_prefix=$("$brew_command" --prefix chruby 2>/dev/null)
+	if [[ -r $chruby_prefix/share/chruby/chruby.sh ]]; then
+		source "$chruby_prefix/share/chruby/chruby.sh"
+		source "$chruby_prefix/share/chruby/auto.sh"
+	fi
+fi
 
-# Use the jdk from homebrew
-export JAVA_HOME=/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home
-export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+unset brew_command brew_prefix llvm_prefix openjdk_prefix chruby_prefix
 
-# Brew related env
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# MacPorts, when installed.
+[[ -d /opt/local/bin ]] && path=(/opt/local/bin $path)
 
-# Ruby
-source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
-source /opt/homebrew/opt/chruby/share/chruby/auto.sh
+# Locally installed Rubies, when present.
+[[ -d $HOME/.rubies/ruby-3.3.0/bin ]] && path=("$HOME/.rubies/ruby-3.3.0/bin" $path)
