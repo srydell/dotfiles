@@ -1,31 +1,11 @@
 local M = {}
 
--- Look through conan libs and add gcc libs as well
--- NOTE: Requires fd
-local function get_ld_libs()
-  local home = os.getenv('HOME')
-  local libs = io.popen("fd --case-sensitive --type d '^lib$'" .. home .. '/.conan/data'):read('*a')
-  if not libs then
-    return ''
-  end
-  local out = '/opt/rh/gcc-toolset-10/root/usr/lib64:'
-    .. '/opt/rh/gcc-toolset-10/root/usr/lib:'
-    .. '/opt/rh/gcc-toolset-10/root/usr/lib64/dyninst:'
-    .. '/opt/rh/gcc-toolset-10/root/usr/lib/dyninst:'
-    .. '/opt/rh/gcc-toolset-10/root/usr/lib64:'
-    .. '/opt/rh/gcc-toolset-10/root/usr/lib:'
-    .. home
-    .. '/code/dsf/build/debug/lib'
-
-  for lib in libs:gmatch('[^\r\n]+') do
-    out = out .. ':' .. lib
-  end
-
-  return out
-end
-
 M.setup = function()
   local dap = require('dap')
+  -- This module implements the Docker-specific adapter and interactive launch
+  -- flow. debugging.lua calls this setup function when lazy.nvim configures
+  -- nvim-dap, so no separate require is needed elsewhere.
+  local docker_lldb = require('srydell.plugins.debugging.docker_lldb')
 
   dap.adapters.codelldb = {
     type = 'executable',
@@ -34,6 +14,10 @@ M.setup = function()
     -- On windows you may have to uncomment this:
     -- detached = false,
   }
+  dap.adapters.docker_lldb = docker_lldb.adapter
+  vim.api.nvim_create_user_command('DapDockerResetContainer', docker_lldb.reset_container, {
+    desc = 'Forget the container selected for Docker LLDB',
+  })
 
   local pickers = require('telescope.pickers')
   local finders = require('telescope.finders')
@@ -70,52 +54,17 @@ M.setup = function()
       stopOnEntry = false,
     },
 
-    -- Debugging inside of a Linux docker container
+    -- Run lldb-dap inside any local or remote Docker container over stdio.
+    -- Container, remote project root, executable, and arguments are resolved
+    -- interactively when the configuration is selected.
     {
-      name = 'Remote launch',
-      type = 'codelldb',
+      name = 'Docker: Launch file',
+      type = 'docker_lldb',
       request = 'launch',
-      localRoot = '${workspaceFolder}',
-      remoteRoot = '/Users/simryd/code/dsf/',
-      cwd = '${workspaceFolder}',
-      sourceMaps = true,
-      sourceMapPathOverrides = {
-        ['.'] = '${workspaceFolder}',
-      },
-      initCommands = {
-        'platform select remote-linux',
-        'platform connect connect://localhost:31166',
-      },
-      targetCreateCommands = function()
-        -- Use telescope to find executables
-        -- NOTE: Requires fd
-        return coroutine.create(function(coro)
-          local opts = {}
-          pickers
-            .new(opts, {
-              prompt_title = 'Path to executable',
-              finder = finders.new_oneshot_job(
-                { 'fd', '--no-ignore', '--type', 'x', '--full-path', './build/debug/bin' },
-                {}
-              ),
-              sorter = conf.generic_sorter(opts),
-              attach_mappings = function(prompt_buffer)
-                actions.select_default:replace(function()
-                  actions.close(prompt_buffer)
-                  coroutine.resume(coro, { 'target create ' .. action_state.get_selected_entry()[1] })
-                end)
-                return true
-              end,
-            })
-            :find()
-        end)
-      end,
-      processCreateCommands = {
-        'process launch',
-      },
-      env = {
-        LD_LIBRARY_PATH = get_ld_libs,
-      },
+      console = 'internalConsole',
+      stopOnEntry = false,
+      program = docker_lldb.pick_program,
+      args = docker_lldb.prompt_arguments,
     },
   }
 end
