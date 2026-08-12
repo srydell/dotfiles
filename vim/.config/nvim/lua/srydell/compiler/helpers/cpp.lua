@@ -31,8 +31,7 @@ M.get_flags = function(compiler, with_warnings)
     '-std=c++23',
   }
   if with_warnings then
-    flags = {
-      unpack(flags),
+    flags = util.merge(flags, {
       '-Wall',
       '-Werror',
       '-Wextra',
@@ -49,11 +48,12 @@ M.get_flags = function(compiler, with_warnings)
       '-Wdouble-promotion',
       '-Wdate-time',
       '-Wformat=2',
-    }
+    })
   end
   local extra_flags = {}
   if compiler == 'clang' then
     extra_flags = { '--debug', '-fsanitize=address', '-Wduplicate-enum', '-fdiagnostics-absolute-paths' }
+
     -- extra_flags = { '--debug', '-fsanitize=thread', '-Wduplicate-enum', '-fdiagnostics-absolute-paths' }
   elseif compiler == 'gcc' then
     extra_flags = {
