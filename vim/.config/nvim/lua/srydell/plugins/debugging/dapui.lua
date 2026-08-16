@@ -10,20 +10,6 @@ M.setup = function()
       {
         elements = {
           {
-            id = 'watches',
-            size = 0.5,
-          },
-          {
-            id = 'repl',
-            size = 0.5,
-          },
-        },
-        position = 'left',
-        size = 40,
-      },
-      {
-        elements = {
-          {
             id = 'scopes',
             size = 0.75,
           },
