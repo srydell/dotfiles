@@ -550,16 +550,42 @@ class LeetCodeFetchTests(unittest.TestCase):
             search_slug.assert_called_once_with("223")
 
     def test_graphql_error_handling(self):
-        response_payload = json.dumps(
-            {"errors": [{"message": "Something went wrong"}]}
-        ).encode("utf-8")
-        response = mock.MagicMock()
-        response.read.return_value = response_payload
-        response.__enter__.return_value = response
-        response.__exit__.return_value = None
+        response_body = json.dumps({"errors": [{"message": "Something went wrong"}]})
+        curl_result = mock.MagicMock(
+            returncode=0,
+            stdout=f"{response_body}\n200".encode("utf-8"),
+            stderr=b"",
+        )
 
-        with mock.patch("urllib.request.urlopen", return_value=response):
+        with mock.patch("subprocess.run", return_value=curl_result):
             with self.assertRaisesRegex(RuntimeError, "GraphQL error: Something went wrong"):
+                leetcode_fetch.graphql_request("query {}", {})
+
+    def test_graphql_request_reports_missing_curl(self):
+        with mock.patch("subprocess.run", side_effect=FileNotFoundError()):
+            with self.assertRaisesRegex(RuntimeError, "'curl' was not found on PATH"):
+                leetcode_fetch.graphql_request("query {}", {})
+
+    def test_graphql_request_reports_curl_failure(self):
+        curl_result = mock.MagicMock(
+            returncode=6,
+            stdout=b"",
+            stderr=b"Could not resolve host: leetcode.com",
+        )
+
+        with mock.patch("subprocess.run", return_value=curl_result):
+            with self.assertRaisesRegex(RuntimeError, "curl exited with code 6.*Could not resolve host"):
+                leetcode_fetch.graphql_request("query {}", {})
+
+    def test_graphql_request_reports_http_error_status(self):
+        curl_result = mock.MagicMock(
+            returncode=0,
+            stdout=b'{"data": null}\n503',
+            stderr=b"",
+        )
+
+        with mock.patch("subprocess.run", return_value=curl_result):
+            with self.assertRaisesRegex(RuntimeError, "HTTP 503 from"):
                 leetcode_fetch.graphql_request("query {}", {})
 
 

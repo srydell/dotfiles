@@ -14,11 +14,11 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 from html import unescape
 from html.parser import HTMLParser
-from urllib import error, request
 
 
 GRAPHQL_URL = "https://leetcode.com/graphql/"
@@ -64,39 +64,66 @@ query questionData($titleSlug: String!) {
 """
 
 
+def _run_curl(payload, headers):
+    """POST payload to GRAPHQL_URL via curl and return (status_code, body).
+
+    curl is used exclusively (instead of Python's urllib) because it honors
+    the OS/Keychain certificate trust store. Machines behind TLS-inspecting
+    corporate proxies (e.g. Zscaler) install their root CA into the OS trust
+    store, which curl respects but Python's bundled certifi store does not,
+    causing confusing CERTIFICATE_VERIFY_FAILED errors from urllib.
+    """
+    header_args = []
+    for key, value in headers.items():
+        header_args += ["-H", f"{key}: {value}"]
+
+    cmd = ["curl", "-sS", "--data-binary", "@-", "-w", "\n%{http_code}", *header_args, GRAPHQL_URL]
+    try:
+        result = subprocess.run(cmd, input=payload, capture_output=True, check=False)
+    except FileNotFoundError as exc:
+        raise RuntimeError(
+            "Network failure: 'curl' was not found on PATH. Install curl "
+            "(it ships with macOS and most Linux distros) so this script can reach LeetCode."
+        ) from exc
+
+    if result.returncode != 0:
+        stderr = result.stderr.decode("utf-8", errors="replace").strip()
+        raise RuntimeError(
+            f"Network failure: curl exited with code {result.returncode} calling {GRAPHQL_URL}: "
+            f"{stderr or '(no error output from curl)'}"
+        )
+
+    stdout = result.stdout.decode("utf-8", errors="replace")
+    body, sep, status_code = stdout.rpartition("\n")
+    if not sep or not status_code.isdigit():
+        raise RuntimeError(f"Network failure: unexpected curl output for {GRAPHQL_URL}: {stdout!r}")
+
+    return int(status_code), body
+
+
 def graphql_request(query, variables):
     """Send a GraphQL request and return the decoded response payload."""
     payload = json.dumps({"query": query, "variables": variables}).encode("utf-8")
-    req = request.Request(
-        GRAPHQL_URL,
-        data=payload,
-        headers={
-            "Content-Type": "application/json",
-            "Referer": "https://leetcode.com",
-            "User-Agent": "python-urllib/leetcode-fetch",
-        },
-        method="POST",
-    )
-    try:
-        with request.urlopen(req) as response:
-            body = response.read().decode("utf-8")
-    except error.HTTPError as exc:
-        body = exc.read().decode("utf-8", errors="replace")
-        try:
-            data = json.loads(body)
-        except json.JSONDecodeError:
-            raise RuntimeError(f"Network failure: HTTP {exc.code}: {body.strip() or exc.reason}") from exc
-        _raise_for_graphql_errors(data)
-        raise RuntimeError(f"Network failure: HTTP {exc.code}: {exc.reason}") from exc
-    except error.URLError as exc:
-        raise RuntimeError(f"Network failure: {exc}") from exc
+    headers = {
+        "Content-Type": "application/json",
+        "Referer": "https://leetcode.com",
+        "User-Agent": "curl/leetcode-fetch",
+    }
+    status_code, body = _run_curl(payload, headers)
 
     try:
         data = json.loads(body)
     except json.JSONDecodeError as exc:
-        raise RuntimeError("Invalid JSON response from LeetCode") from exc
+        raise RuntimeError(
+            f"Network failure: HTTP {status_code} from {GRAPHQL_URL} did not return valid JSON: "
+            f"{body.strip()[:200] or '(empty body)'}"
+        ) from exc
 
     _raise_for_graphql_errors(data)
+
+    if status_code != 200:
+        raise RuntimeError(f"Network failure: HTTP {status_code} from {GRAPHQL_URL}")
+
     return data
 
 

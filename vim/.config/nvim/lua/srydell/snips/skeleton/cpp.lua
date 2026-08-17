@@ -213,7 +213,13 @@ local function fetch_leetcode_problem()
 
   local script = vim.fn.stdpath('config') .. '/tools/leetcode_fetch.py'
   local output = vim.fn.system({ 'python3', script, problem_id })
-  if vim.v.shell_error ~= 0 or output == '' then
+  if vim.v.shell_error ~= 0 then
+    -- The leetcode_fetch script adds some output in case of failure
+    vim.notify('leetcode_fetch.py failed, falling back to generic skeleton:\n' .. vim.trim(output), vim.log.levels.WARN)
+    return nil
+  end
+
+  if output == '' then
     return nil
   end
 
@@ -282,7 +288,12 @@ local function get_answer_expression(return_type)
     return 'ans'
   end
 
-  if string.match(return_type or '', '^vector<') or return_type == 'ListNode*' or return_type == 'TreeNode*' or return_type == 'Node*' then
+  if
+    string.match(return_type or '', '^vector<')
+    or return_type == 'ListNode*'
+    or return_type == 'TreeNode*'
+    or return_type == 'Node*'
+  then
     return 'str(ans)'
   end
   return 'ans'
@@ -294,7 +305,12 @@ local function get_print_expression(name, cxx_type)
     return name
   end
 
-  if string.match(cxx_type or '', '^vector<') or cxx_type == 'ListNode*' or cxx_type == 'TreeNode*' or cxx_type == 'Node*' then
+  if
+    string.match(cxx_type or '', '^vector<')
+    or cxx_type == 'ListNode*'
+    or cxx_type == 'TreeNode*'
+    or cxx_type == 'Node*'
+  then
     return 'str(' .. name .. ')'
   end
   return name
