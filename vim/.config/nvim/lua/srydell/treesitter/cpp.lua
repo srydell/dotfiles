@@ -232,6 +232,24 @@ M.get_surrounding_function = function()
   return M.search_up_until(node_at_cursor, in_function)
 end
 
+-- nvim_buf_get_text returns one array element per line in the range. Joining
+-- with a space keeps this safe even when a range happens to span multiple
+-- lines (e.g. a wrapped return type or parameter list), instead of silently
+-- truncating to whatever `[1]` (the first line) contains.
+local function get_buf_text_joined(buffer, start_row, start_col, end_row, end_col)
+  local lines = vim.api.nvim_buf_get_text(buffer, start_row, start_col, end_row, end_col, {})
+  return table.concat(lines, ' ')
+end
+
+-- Remove any of `words` from `text` as whole words, so stripping e.g. 'final'
+-- does not also eat part of an unrelated identifier such as 'finalize'.
+local function strip_words(text, words)
+  for _, word in ipairs(words) do
+    text = text:gsub('%f[%w]' .. word .. '%f[%W]', '')
+  end
+  return text
+end
+
 -- Removes the name and the default parameter values from the parameters.
 -- Also removes whitespace to make it easier to compare parameters as strings.
 -- I.e. (std::string my_string, int i = 5) -> (std::string,int)
@@ -248,8 +266,8 @@ local function clean_params(params_node, buffer)
         local _, start_name_col, end_row, _ = vim.treesitter.get_node_range(name)
         -- Remove anything after the name
         -- This includes default parmeters
-        local parameter = vim.api.nvim_buf_get_text(buffer, start_row, start_col, end_row, start_name_col, {})
-        params = params .. parameter[1] .. ','
+        local parameter = get_buf_text_joined(buffer, start_row, start_col, end_row, start_name_col)
+        params = params .. parameter .. ','
       else
         -- No name parameter
         if node:type() == 'parameter_declaration' then
@@ -293,10 +311,7 @@ local function get_function_qualifiers(function_node, buffer)
   local _, _, end_row, end_col = vim.treesitter.get_node_range(function_node)
   local _, _, start_row, start_col = vim.treesitter.get_node_range(parameters_node)
 
-  local qualifiers = vim.api.nvim_buf_get_text(buffer, start_row, start_col, end_row, end_col, {})[1]
-  if qualifiers == nil then
-    return ''
-  end
+  local qualifiers = get_buf_text_joined(buffer, start_row, start_col, end_row, end_col)
 
   -- Remove leading & trailing whitespace
   qualifiers = qualifiers:gsub('^%s*', '')
@@ -305,11 +320,11 @@ local function get_function_qualifiers(function_node, buffer)
 end
 
 local function remove_declaration_only_qualifiers(qualifiers)
-  -- Should not include things that are only in the declaration
-  qualifiers = qualifiers:gsub('final', '')
-  qualifiers = qualifiers:gsub('override', '')
-  qualifiers = qualifiers:gsub('noexcept', '')
-  qualifiers = qualifiers:gsub('explicit', '')
+  -- Should not include things that are only in the declaration.
+  -- Note: `noexcept` is intentionally NOT stripped here. Unlike
+  -- override/final/explicit, it is part of the function's type and must be
+  -- repeated on the out-of-class definition or the two will not match.
+  qualifiers = strip_words(qualifiers, { 'final', 'override', 'explicit' })
 
   -- Remove whitespace
   qualifiers = qualifiers:gsub('^%s*', '')
@@ -348,17 +363,15 @@ local function get_return_type(function_node, buffer)
 
   local start_row, start_col, _, _ = vim.treesitter.get_node_range(function_root)
   local _, start_name_col, end_row, _ = vim.treesitter.get_node_range(function_name_node)
-  local return_type = vim.api.nvim_buf_get_text(buffer, start_row, start_col, end_row, start_name_col, {})[1]
+  local return_type = get_buf_text_joined(buffer, start_row, start_col, end_row, start_name_col)
   return return_type:gsub('%s+$', '')
 end
 
 local function remove_declaration_only_return_qualifiers(return_type)
-  -- Should not include things that are only in the declaration
-  return_type = return_type:gsub('inline', '')
-  return_type = return_type:gsub('static', '')
-  return_type = return_type:gsub('virtual', '')
-  -- This happens since dtor/ctor have no return type explicitly
-  return_type = return_type:gsub('explicit', '')
+  -- Should not include things that are only in the declaration.
+  -- 'explicit' has no return type of its own; it shows up here because
+  -- ctors/dtors have no explicit return type to anchor on otherwise.
+  return_type = strip_words(return_type, { 'inline', 'static', 'virtual', 'explicit' })
 
   -- Remove whitespace
   return_type = return_type:gsub('^%s*', '')
@@ -490,15 +503,30 @@ function M.make_atomic_load()
     -- Simple variable
     -- or
     -- accessed variable (i.e. Data->var)
-    -- or
-    -- variable in function argument list
-    return node:type() == 'identifier' or node:type() == 'field_identifier' or node:type() == 'parameter_declaration'
+    return node:type() == 'identifier' or node:type() == 'field_identifier'
   end
 
-  local variable = M.search_up_until(get_node_at_cursor(), is_variable)
-  if variable == nil then
+  local function is_variable_or_parameter(node)
+    -- Also trigger anywhere within a function parameter (e.g. cursor on its
+    -- type), so we still need to drill down to the actual identifier below.
+    return is_variable(node) or node:type() == 'parameter_declaration'
+  end
+
+  local node = M.search_up_until(get_node_at_cursor(), is_variable_or_parameter)
+  if node == nil then
     return
   end
+
+  local variable = node
+  if node:type() == 'parameter_declaration' then
+    -- Only wrap the identifier itself, not the whole 'Type name' declaration,
+    -- otherwise e.g. 'int value' becomes the invalid 'int value.load(...)'.
+    variable = M.search_down_until(node, is_variable)
+    if variable == nil then
+      return
+    end
+  end
+
   wrap_node_in('', variable, '.load(std::memory_order_acquire)')
 end
 
@@ -558,32 +586,35 @@ local function get_enum_under_cursor()
   return enum, enum_node
 end
 
-function M.make_enum_print()
-  local enum, node = get_enum_under_cursor()
-
-  if enum == nil or node == nil then
-    return
-  end
-
-  if enum.name == nil or enum.values == nil then
-    return
-  end
-
+-- Build one case/if block per enum value using `case_format`, which is given
+-- (enum_name, value) and must return the full block of text for that value.
+-- Shared by all the M.make_enum_* generators below to avoid re-implementing
+-- the same lookup/nil-check/case-loop four times.
+local function build_enum_cases(enum, case_format)
   local cases = {}
   for _, value in ipairs(enum.values) do
-    table.insert(
-      cases,
-      string.format(
-        [[  case %s::%s: {
+    table.insert(cases, case_format(enum.name, value))
+  end
+  return table.concat(cases, '\n')
+end
+
+function M.make_enum_print()
+  local enum, node = get_enum_under_cursor()
+  if enum == nil then
+    return
+  end
+
+  local cases = build_enum_cases(enum, function(enum_name, value)
+    return string.format(
+      [[  case %s::%s: {
     std::cout << "%s::%s" << '\n';
   }]],
-        enum.name,
-        value,
-        enum.name,
-        value
-      )
+      enum_name,
+      value,
+      enum_name,
+      value
     )
-  end
+  end)
 
   local enum_printer_function = string.format(
     [[
@@ -595,7 +626,7 @@ void print(%s e) {
 }
 ]],
     enum.name,
-    table.concat(cases, '\n'),
+    cases,
     enum.name
   )
 
@@ -605,30 +636,21 @@ end
 -- Create a stringify enum switch function over all the cases based on the enum under the cursor
 function M.make_enum_stringify()
   local enum, node = get_enum_under_cursor()
-
-  if enum == nil or node == nil then
+  if enum == nil then
     return
   end
 
-  if enum.name == nil or enum.values == nil then
-    return
-  end
-
-  local cases = {}
-  for _, value in ipairs(enum.values) do
-    table.insert(
-      cases,
-      string.format(
-        [[  case %s::%s: {
+  local cases = build_enum_cases(enum, function(enum_name, value)
+    return string.format(
+      [[  case %s::%s: {
     return "%s::%s";
   }]],
-        enum.name,
-        value,
-        enum.name,
-        value
-      )
+      enum_name,
+      value,
+      enum_name,
+      value
     )
-  end
+  end)
 
   local enum_stringify_function = string.format(
     [[
@@ -640,7 +662,7 @@ std::string to_string(%s e) {
 }
 ]],
     enum.name,
-    table.concat(cases, '\n')
+    cases
   )
 
   add_text_after(node, enum_stringify_function)
@@ -649,30 +671,21 @@ end
 -- Create a binary enum switch function over all the cases based on the enum under the cursor
 function M.make_enum_binary()
   local enum, node = get_enum_under_cursor()
-
-  if enum == nil or node == nil then
+  if enum == nil then
     return
   end
 
-  if enum.name == nil or enum.values == nil then
-    return
-  end
-
-  local cases = {}
-  for _, value in ipairs(enum.values) do
-    table.insert(
-      cases,
-      string.format(
-        [[  if ((event & %s::%s) > 0) {
+  local cases = build_enum_cases(enum, function(enum_name, value)
+    return string.format(
+      [[  if ((event & %s::%s) > 0) {
     return "%s::%s";
   }]],
-        enum.name,
-        value,
-        enum.name,
-        value
-      )
+      enum_name,
+      value,
+      enum_name,
+      value
     )
-  end
+  end)
 
   local enum_binary_stringify = string.format(
     [[
@@ -681,7 +694,7 @@ std::string to_string(uint32_t event) {
   return "Unknown";
 }
 ]],
-    table.concat(cases, '\n')
+    cases
   )
 
   add_text_after(node, enum_binary_stringify)
@@ -690,30 +703,19 @@ end
 -- Create a simple enum switch over all the cases based on the enum under the cursor
 function M.make_enum_switch()
   local enum, node = get_enum_under_cursor()
-
-  if enum == nil or node == nil then
+  if enum == nil then
     return
   end
 
-  if enum.name == nil or enum.values == nil then
-    return
-  end
-
-  local cases = {}
-  for _, value in ipairs(enum.values) do
-    table.insert(
-      cases,
-      string.format(
-        [[  case %s::%s: {
+  local cases = build_enum_cases(enum, function(enum_name, value)
+    return string.format(
+      [[  case %s::%s: {
     return;
   }]],
-        enum.name,
-        value,
-        enum.name,
-        value
-      )
+      enum_name,
+      value
     )
-  end
+  end)
 
   local enum_switch = string.format(
     [[
@@ -721,7 +723,7 @@ function M.make_enum_switch()
 %s
   }
 ]],
-    table.concat(cases, '\n')
+    cases
   )
 
   add_text_after(node, enum_switch)
@@ -780,6 +782,11 @@ function M.find_enum_from_type()
   -- Get the lines containing the enum declaration. E.g.
   -- 'enum class MyEnum {'
   local lines = vim.api.nvim_buf_get_lines(buffer, type_info.line, type_info.line + 1, false)
+  if lines[1] == nil then
+    -- The reported LSP location does not exist in the buffer (stale index,
+    -- out-of-range line, etc.). Bail out instead of erroring on nil.
+    return
+  end
 
   -- Get the name. E.g.
   -- 'MyEnum'
@@ -1504,9 +1511,11 @@ M.make_class_no_move = function()
 
   local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
   local no_move = {
-    string.format('%s No move', indentation),
-    string.format('%s%s(%s const &&) = delete;', indentation, name, name),
-    string.format('%s%s & operator=(%s const &&) = delete;', indentation, name, name),
+    string.format('%s// No move', indentation),
+    -- noexcept by default: lets std containers (e.g. std::vector) move
+    -- instead of copy on reallocation.
+    string.format('%s%s(%s &&) noexcept = delete;', indentation, name, name),
+    string.format('%s%s & operator=(%s &&) noexcept = delete;', indentation, name, name),
   }
 
   vim.api.nvim_buf_set_lines(0, row, row, true, no_move)
@@ -1524,9 +1533,9 @@ M.make_class_no_copy = function()
 
   local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
   local no_copy = {
-    string.format('%s No copy', indentation),
-    string.format('%s%s(%s &) = delete;', indentation, name, name),
-    string.format('%s%s & operator=(%s &) = delete;', indentation, name, name),
+    string.format('%s// No copy', indentation),
+    string.format('%s%s(%s const &) = delete;', indentation, name, name),
+    string.format('%s%s & operator=(%s const &) = delete;', indentation, name, name),
   }
 
   vim.api.nvim_buf_set_lines(0, row, row, true, no_copy)
@@ -1753,11 +1762,6 @@ M.find_not_implemented_functions = function()
   table.sort(missing_implementations, function(f_a, f_b)
     return f_a[1] < f_b[1]
   end)
-
-  -- vim.print('Implemented:')
-  -- vim.print(implemented_functions)
-  -- vim.print('Missing:')
-  -- vim.print(missing_implementations)
 
   -- Return the not implemented functions
   return missing_implementations

@@ -122,8 +122,8 @@ return {
     { trig = 'nomove', wordTrig = true, dscr = 'No move constructors' },
     fmta(
       [[
-        <>(<> const &&) = delete;
-        <> & operator=(<> const &&) = delete;
+        <>(<> &&) noexcept = delete;
+        <> & operator=(<> &&) noexcept = delete;
       ]],
       {
         d(1, get_surrounding_classname),
