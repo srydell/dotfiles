@@ -4,8 +4,10 @@ local class_info = require('srydell.treesitter.cpp.class_info')
 
 local M = {}
 
--- If there is a class where the cursor is:
--- Create deleted move constructors
+-- Before: cursor is somewhere inside a class/struct named `Foo`.
+-- After: 3 lines are inserted directly below the cursor's row - a `// No
+-- move` comment, a deleted move constructor, and a deleted move-assignment
+-- operator. Does nothing if the cursor is not inside a class/struct.
 M.make_class_no_move = function()
   local name = class_info.get_class_name_under_cursor()
   if name == nil then
@@ -26,8 +28,10 @@ M.make_class_no_move = function()
   vim.api.nvim_buf_set_lines(0, row, row, true, no_move)
 end
 
--- If there is a class where the cursor is:
--- Create deleted copy constructors
+-- Before: cursor is somewhere inside a class/struct named `Foo`.
+-- After: 3 lines are inserted directly below the cursor's row - a `// No
+-- copy` comment, a deleted copy constructor, and a deleted copy-assignment
+-- operator. Does nothing if the cursor is not inside a class/struct.
 M.make_class_no_copy = function()
   local name = class_info.get_class_name_under_cursor()
   if name == nil then

@@ -22,6 +22,11 @@ local function load_alternative_file()
   return buffer
 end
 
+-- Before: cursor is on a blank/insertion line inside a class body.
+-- After: a fully expanded LuaSnip constructor/destructor snippet is inserted
+-- at that position - a declaration (`ClassName(<params>);`) in a header, or
+-- an implementation with an editable body in a source file - with the
+-- cursor left in the first insert node.
 -- Definer means either constructor or destructor
 local function make_definer_within_class_boundary(class_name, indentation, is_source)
   local ls = require('luasnip')
@@ -160,6 +165,14 @@ M.build_function_snippet = function(info)
   return sn(nil, fmta(snip_body, param_snippet.snip_nodes))
 end
 
+-- Before: `definers` is the list of not-yet-implemented constructors or
+-- destructors found in the header (see M.find_not_implemented_functions),
+-- and the cursor sits outside any class body in the source file.
+-- After: a new blank line is inserted below the cursor and expanded into a
+-- LuaSnip choice snippet offering one out-of-class implementation per
+-- definer (e.g. `Foo::Foo(int i) { <> }`), cycled with the usual
+-- choice-node keymap. Does nothing if none of the definers produce a
+-- snippet.
 -- Definer means either constructor or destructor
 local function make_definer_outside_of_class_boundary(definers)
   local snip_choices = {}

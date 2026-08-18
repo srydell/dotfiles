@@ -58,6 +58,9 @@ local function build_enum_cases(enum, case_format)
   return table.concat(cases, '\n')
 end
 
+-- Before: cursor is inside an `enum class Foo { A, B, ... }`.
+-- After: a `void print(Foo e)` function with a switch over every enumerator
+-- is inserted directly below the enum. Does nothing if no enum is found.
 M.make_enum_print = function()
   local enum, node = get_enum_under_cursor()
   if enum == nil then
@@ -93,7 +96,9 @@ void print(%s e) {
   navigation.add_text_after(node, enum_printer_function)
 end
 
--- Create a stringify enum switch function over all the cases based on the enum under the cursor
+-- Before: cursor is inside an `enum class Foo { A, B, ... }`.
+-- After: a `std::string to_string(Foo e)` function with a switch over every
+-- enumerator is inserted directly below the enum. Does nothing if no enum is found.
 M.make_enum_stringify = function()
   local enum, node = get_enum_under_cursor()
   if enum == nil then
@@ -128,7 +133,10 @@ std::string to_string(%s e) {
   navigation.add_text_after(node, enum_stringify_function)
 end
 
--- Create a binary enum switch function over all the cases based on the enum under the cursor
+-- Before: cursor is inside a bitmask-style `enum class Foo { A, B, ... }`.
+-- After: a `std::string to_string(uint32_t event)` function that checks each
+-- enumerator's bit is inserted directly below the enum. Does nothing if no
+-- enum is found.
 M.make_enum_binary = function()
   local enum, node = get_enum_under_cursor()
   if enum == nil then
@@ -160,7 +168,10 @@ std::string to_string(uint32_t event) {
   navigation.add_text_after(node, enum_binary_stringify)
 end
 
--- Create a simple enum switch over all the cases based on the enum under the cursor
+-- Before: cursor is inside an `enum class Foo { A, B, ... }`.
+-- After: a bare `switch (e) { case Foo::A: return; ... }` skeleton is
+-- inserted directly below the enum, ready to be dropped into a function
+-- body. Does nothing if no enum is found.
 M.make_enum_switch = function()
   local enum, node = get_enum_under_cursor()
   if enum == nil then

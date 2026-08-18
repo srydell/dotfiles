@@ -107,6 +107,14 @@ local function parse_cpp_preamble(lines)
   }
 end
 
+-- Before: the file's #include block contains any mix of quoted/angle-bracket
+-- includes, possibly unsorted.
+-- After: the entire contiguous #include block is replaced in place with the
+-- same includes grouped and sorted into (own header, same-dir, other
+-- internal, external, system), each group alphabetized with a blank line
+-- between the internal/external/system groups. Does nothing if code (not
+-- just includes/blank lines) is interleaved between includes, or if an
+-- alignment-sentinel header is present.
 -- Read the current includes
 -- Divide them and sort them internally in the following groups:
 --
@@ -257,6 +265,11 @@ function M.divide_and_sort_includes()
   vim.api.nvim_buf_set_lines(0, locations.start_row, locations.end_row + 1, true, lines)
 end
 
+-- Before: the file has a conventional `#ifndef X / #define X ... #endif //
+-- X` include guard (possibly preceded by license comments).
+-- After: `X` is replaced everywhere it appears in the guard (ifndef, define,
+-- and the matching endif comment) with the project's canonical guard name.
+-- Does nothing if no conventional guard is found.
 -- Read the include guard if there is one.
 -- Correct it so that it follows the standard below:
 -- PROJECT_PATH_TO_FILE_EXTENSION
@@ -292,6 +305,12 @@ M.correct_include_guard = function()
   vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
 end
 
+-- Before: `includes` is a list like `{ '<atomic>', '"foo.h"' }`.
+-- After: any of those not already present at the file's effective top level
+-- are inserted as new `#include` lines right after the file's preamble
+-- (guard/pragma once/license comments), then M.divide_and_sort_includes is
+-- expected to tidy them on save. Does nothing if every include is already
+-- present.
 -- Add an include to the list of includes in the current file
 -- E.g. add_includes({ '<atomic>' })
 -- Checks if it was there before and uses divide_and_sort_includes
@@ -408,6 +427,12 @@ M.remove_template = function(type_string)
   return type_string
 end
 
+-- Before: the file uses standard-library types (e.g. `std::vector`,
+-- `std::atomic`) whose headers may not yet be included.
+-- After: calls M.add_includes with the headers for every recognized type
+-- found in the file that isn't already covered, merging in `user_includes`
+-- as extra type->header mappings. Does nothing (no buffer change) if every
+-- type used is already covered.
 -- Look through the types in the current file.
 -- Include the necessary standard library headers for those types.
 -- Avoid doubles.

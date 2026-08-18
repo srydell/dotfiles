@@ -81,9 +81,9 @@ M.search_down_from_root_until = function(stop_condition, buffer, lang)
   end
 end
 
--- Wrap a treesitter node on the current line in text as
--- node_text -> before .. node_text .. after
--- This assumes that the node is on the current line of the cursor
+-- Before: `node` sits on the current line, e.g. `int value` with `node` being `value`.
+-- After: the line becomes `int std::atomic<value>` for `wrap_node_in('std::atomic<', node, '>')`.
+-- The cursor moves right by #before so it stays next to the wrapped text.
 M.wrap_node_in = function(before, node, after)
   local _, start_node_col, _, end_node_col = vim.treesitter.get_node_range(node)
   local line = vim.api.nvim_get_current_line()
@@ -101,8 +101,10 @@ M.wrap_node_in = function(before, node, after)
   vim.api.nvim_win_set_cursor(0, { row, col + before:len() })
 end
 
--- Takes the text that the node is currently containing and
--- replaces it with text in the current buffer.
+-- Before: `node` sits on the current line, e.g. `a += 5;` with `node` being the
+-- whole assignment expression.
+-- After: the line's `node` text is entirely replaced with `text`, e.g.
+-- `a.fetch_add(5, std::memory_order_acq_rel);`.
 M.replace_node_with = function(node, text)
   local _, start_node_col, _, end_node_col = vim.treesitter.get_node_range(node)
   local line = vim.api.nvim_get_current_line()
@@ -120,8 +122,10 @@ M.replace_node_with = function(node, text)
   -- vim.api.nvim_win_set_cursor(0, { row, col + (text:len() - to_be_removed:len()) })
 end
 
--- Add text after the end of the node.
--- Can add an extra padding of rows (offset).
+-- Before: `node` ends at some line in the buffer.
+-- After: `text` (split on newlines) is inserted as new lines directly below
+-- `node`'s end, or `offset` extra lines further down if given. Nothing before
+-- or after that insertion point is otherwise touched.
 M.add_text_after = function(node, text, offset)
   offset = offset or 0
   local _, _, end_node_row, _ = vim.treesitter.get_node_range(node)
