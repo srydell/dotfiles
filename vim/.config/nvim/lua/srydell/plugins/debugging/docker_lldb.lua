@@ -32,43 +32,21 @@
 -- Problems are reported when the relevant step is reached, together with
 -- concrete remediation. `:DapDockerResetContainer` forgets the selected
 -- container and cached adapter path after a container is recreated.
+local docker_container = require('srydell.util.docker_container')
+
 local M = {}
 
-local selected_container
 local launch_context
 local last_argument_string = ''
 local verified_lldb = {}
 
-function M.format_problem(problem, remedy, detail)
-  local message = problem
-  if detail and detail ~= '' then
-    message = message .. '\n\nDetails:\n' .. detail
-  end
-  if remedy and remedy ~= '' then
-    message = message .. '\n\nHow to fix it:\n' .. remedy
-  end
-  return message
-end
+M.format_problem = docker_container.format_problem
+M.parse_containers = docker_container.parse_containers
 
 local function notify_error(problem, remedy, detail)
   vim.schedule(function()
     vim.notify(M.format_problem(problem, remedy, detail), vim.log.levels.ERROR, { title = 'Docker LLDB' })
   end)
-end
-
-function M.parse_containers(output)
-  local containers = {}
-  for line in output:gmatch('[^\r\n]+') do
-    local id, name, image = line:match('^([^\t]+)\t([^\t]+)\t(.+)$')
-    if id then
-      containers[#containers + 1] = {
-        id = id,
-        name = name,
-        image = image,
-      }
-    end
-  end
-  return containers
 end
 
 function M.parse_arguments(input)
@@ -160,117 +138,8 @@ function M.executable_adapter(container, lldb_dap)
   }
 end
 
-local function choose_container(containers, callback)
-  local configured = vim.env.NVIM_DAP_CONTAINER
-  if configured and configured ~= '' then
-    for _, container in ipairs(containers) do
-      if container.id == configured or container.name == configured then
-        selected_container = configured
-        callback(configured)
-        return
-      end
-    end
-    local names = vim.tbl_map(function(container)
-      return '  ' .. container.name
-    end, containers)
-    notify_error(
-      ("NVIM_DAP_CONTAINER is set to '%s', but that container is not running."):format(configured),
-      table.concat({
-        'Start that container, or change/unset NVIM_DAP_CONTAINER.',
-        'Running containers:',
-        table.concat(names, '\n'),
-        'Verify with: docker ps',
-      }, '\n')
-    )
-    callback(nil)
-    return
-  end
-
-  if selected_container then
-    for _, container in ipairs(containers) do
-      if container.id == selected_container or container.name == selected_container then
-        callback(selected_container)
-        return
-      end
-    end
-    selected_container = nil
-  end
-
-  if #containers == 1 then
-    selected_container = containers[1].name
-    callback(selected_container)
-    return
-  end
-
-  vim.schedule(function()
-    vim.ui.select(containers, {
-      prompt = 'Container for LLDB: ',
-      format_item = function(container)
-        return ('%s  [%s]'):format(container.name, container.image)
-      end,
-    }, function(container)
-      selected_container = container and container.name or nil
-      callback(selected_container)
-    end)
-  end)
-end
-
 local function with_container(callback)
-  if vim.fn.executable('docker') ~= 1 then
-    notify_error(
-      'The Docker CLI is not available in Neovim PATH.',
-      table.concat({
-        'macOS: install and start Docker Desktop, then restart Neovim.',
-        'Arch Linux: install docker (or docker-cli for a remote daemon).',
-        'Verify in the same shell with: docker version',
-      }, '\n')
-    )
-    vim.schedule(function()
-      callback(nil)
-    end)
-    return
-  end
-
-  vim.system({ 'docker', 'ps', '--format', '{{.ID}}\\t{{.Names}}\\t{{.Image}}' }, { text = true }, function(result)
-    if result.code ~= 0 then
-      notify_error(
-        'Docker is installed, but the active Docker context cannot list containers.',
-        table.concat({
-          'Start Docker or select a working context:',
-          '  docker context ls',
-          '  docker context use <context>',
-          'Then verify access with:',
-          '  docker ps',
-          'On Linux, also check your Docker socket permissions.',
-        }, '\n'),
-        vim.trim(result.stderr or 'unknown error')
-      )
-      vim.schedule(function()
-        callback(nil)
-      end)
-      return
-    end
-
-    local containers = M.parse_containers(result.stdout or '')
-    if #containers == 0 then
-      notify_error(
-        'The active Docker context has no running containers.',
-        table.concat({
-          'Start the intended container, then verify it appears with:',
-          '  docker ps',
-          'Stopped containers can be inspected with:',
-          '  docker ps -a',
-        }, '\n')
-      )
-      vim.schedule(function()
-        callback(nil)
-      end)
-      return
-    end
-    vim.schedule(function()
-      choose_container(containers, callback)
-    end)
-  end)
+  docker_container.with_container(callback, { title = 'Docker LLDB' })
 end
 
 local function find_lldb_dap(container, callback)
@@ -558,7 +427,7 @@ function M.prompt_arguments()
 end
 
 function M.reset_container()
-  selected_container = nil
+  docker_container.reset()
   launch_context = nil
   verified_lldb = {}
   vim.notify(

@@ -11,6 +11,7 @@
 --   cpp/includes.lua               - #include management
 --   cpp/class_members.lua          - rule-of-5 deleted move/copy members
 --   cpp/definitions.lua            - constructor/destructor definers
+--   cpp/struct_layout.lua           - qualified name lookup for struct-layout inspection
 --
 -- This file requires them and merges their public tables into one, so
 -- `require('srydell.treesitter.cpp')` exposes a single flat API.
@@ -22,6 +23,7 @@ local enums = require('srydell.treesitter.cpp.enums')
 local includes = require('srydell.treesitter.cpp.includes')
 local class_members = require('srydell.treesitter.cpp.class_members')
 local definitions = require('srydell.treesitter.cpp.definitions')
+local struct_layout = require('srydell.treesitter.cpp.struct_layout')
 
 local M = {}
 
@@ -34,6 +36,7 @@ for _, module in ipairs({
   includes,
   class_members,
   definitions,
+  struct_layout,
 }) do
   for key, value in pairs(module) do
     M[key] = value
