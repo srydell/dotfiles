@@ -1,41 +1,6 @@
-import argparse
-import json
 import re
 
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="Filter a Thread Sanitizer log.")
-    parser.add_argument(
-        "--filename",
-        metavar="filename",
-        type=str,
-        required=True,
-        help="The name of the file to filter.",
-    )
-    parser.add_argument(
-        "--keep-containing",
-        metavar="keep_containing",
-        type=str,
-        required=False,
-        help="If a stack trace contains this string, it is kept.",
-    )
-    parser.add_argument(
-        "--remove-containing",
-        metavar="remove_containing",
-        type=str,
-        required=False,
-        help="If a stack trace contains this string, it is skipped.",
-    )
-    parser.add_argument(
-        "--as-json",
-        action="store_true",
-        required=False,
-        help="Print the stack traces as json",
-    )
-
-    args = parser.parse_args()
-    return args
-
+import sanitizer_common
 
 # Every sanitizer warning begins with
 #
@@ -199,60 +164,30 @@ def to_json(tsan_output: [str]):
             stack["thread"] = thread
             continue
 
+    # The last stack trace accumulated (e.g. the final "Thread ... created
+    # by" section) is only ever flushed when a *new* stack header is seen.
+    # Since there's no such trigger after the final section, flush it here
+    # or its frames would silently be dropped from the output.
+    add_reset_stack_trace(stack, frames)
+
     return data
 
 
-def should_skip(line: str, args) -> bool:
-    if args.remove_containing:
-        if args.remove_containing in line:
-            return True
+def _starts_report(line: str) -> bool:
+    return "WARNING" in line
 
-    return False
+
+def _ends_report(line: str) -> bool:
+    return "SUMMARY" in line
 
 
 def main():
-    args = parse_args()
-    with open(args.filename) as f:
-        in_tsan = False
-        skip = False
-        found_containing = args.keep_containing is None
-        tsan_output = []
-        # Only used when as_json flag is set
-        all_json_traces = []
-        for line in f.readlines():
-            # Start of a TSAN stack frames
-            if "WARNING" in line:
-                in_tsan = True
-
-            # Then store it for later
-            if in_tsan:
-                tsan_output.append(line)
-
-            # Should we dismiss this stack frames?
-            if should_skip(line, args):
-                in_tsan = False
-                skip = True
-                tsan_output = []
-
-            if not found_containing:
-                found_containing = args.keep_containing in line
-
-            # End of a TSAN stack frames
-            if "SUMMARY" in line:
-                if not skip and found_containing:
-                    if args.as_json:
-                        all_json_traces.append(to_json(tsan_output))
-                    else:
-                        print("".join(tsan_output))
-
-                # Reset for the next stack frames
-                in_tsan = False
-                skip = False
-                found_containing = args.keep_containing is None
-                tsan_output = []
-
-        if args.as_json:
-            print(json.dumps(all_json_traces))
+    sanitizer_common.run_filter(
+        "Filter a Thread Sanitizer log.",
+        _starts_report,
+        _ends_report,
+        to_json,
+    )
 
 
 if __name__ == "__main__":

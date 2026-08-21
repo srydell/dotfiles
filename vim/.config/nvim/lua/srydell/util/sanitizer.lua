@@ -1,3 +1,9 @@
+-- Shared quickfix ingestion + navigation for every `-fsanitize=...` log
+-- filetype (tsan/asan/lsan/ubsan). Each ftplugin/<sanitizer>.lua wires this
+-- up via srydell.util.sanitizer_buffer, passing the matching tools/filter_*.py
+-- script. The JSON schema consumed here is produced by that family of
+-- scripts (see tools/sanitizer_common.py): a list of
+--   { warning, summary, thread_names, stacks = { { header, thread, frames } } }
 local M = {}
 
 -- Returns a list of thread names
@@ -5,56 +11,59 @@ local M = {}
 -- Output = '{main, event_listener}'
 local function get_thread_names(thread_names)
   local names = ''
-  for _, thread_name in pairs(thread_names) do
+  for _, thread_name in pairs(thread_names or {}) do
     if names == '' then
       names = thread_name
     else
       names = names .. ' ' .. thread_name
     end
   end
+  if names == '' then
+    return ''
+  end
   return '{' .. names .. '}'
 end
 
 local function get_valid_file(filename)
-  local exists = false
-  if vim.fn.exists(filename) == 1 then
-    exists = true
-  elseif filename:sub(1, 3) == '../' then
+  -- Absolute paths and paths already relative to the cwd (common for
+  -- ASan/UBSan, which often don't rewrite paths) can be checked directly.
+  if vim.fn.filereadable(filename) == 1 then
+    return { exists = true, name = filename }
+  end
+
+  -- TSAN (and some ASan builds) report paths relative to a build directory
+  -- one level below the cwd, e.g. "../src/foo.cpp".
+  if filename:sub(1, 3) == '../' then
     local name = filename
-    -- If it begins with '..',
     while name:sub(1, 3) == '../' do
       -- Is it relative to the current working directory?
       -- ../hello.cpp -> ./hello.cpp
       if vim.fn.filereadable(name:sub(2)) == 1 then
-        filename = name:sub(2)
-        exists = true
-        return { exists = exists, name = filename }
+        return { exists = true, name = name:sub(2) }
       -- Is it in a nearby library?
       -- ../source/hello.cpp -> ../oal/hello.cpp
       elseif name:sub(1, 9) == '../source' and vim.fn.filereadable('../oal' .. name:sub(10)) == 1 then
-        filename = '../oal' .. name:sub(10)
-        exists = true
-        return { exists = exists, name = filename }
+        return { exists = true, name = '../oal' .. name:sub(10) }
       end
 
       -- ../hello.cpp -> hello.cpp
       name = name:sub(4)
     end
   end
-  return { exists = exists, name = filename }
+  return { exists = false, name = filename }
 end
 
-M.load_tsan_into_quickfix_from_json = function(output)
+M.load_into_quickfix_from_json = function(output, title)
   -- The interface for qlist is:
   -- items = {
   --   { filename = 'a.txt', lnum = 10, text = 'Apple' },
   --   { text = 'only text' },
   -- }
   local items = {}
-  for _, tsan_warning in ipairs(output) do
-    table.insert(items, { text = tsan_warning['warning'] .. get_thread_names(tsan_warning['thread_names']) })
-    for _, stack in ipairs(tsan_warning['stacks']) do
-      local thread_name = tsan_warning['thread_names'][stack['thread']]
+  for _, warning in ipairs(output) do
+    table.insert(items, { text = warning['warning'] .. get_thread_names(warning['thread_names']) })
+    for _, stack in ipairs(warning['stacks']) do
+      local thread_name = (warning['thread_names'] or {})[stack['thread']]
       if thread_name ~= nil then
         table.insert(items, { text = stack['header'] .. ' ' .. thread_name })
       else
@@ -100,12 +109,12 @@ M.load_tsan_into_quickfix_from_json = function(output)
         end
       end
     end
-    table.insert(items, { text = tsan_warning['summary'] })
+    table.insert(items, { text = warning['summary'] })
   end
 
   -- Replace the current quickfix list with this one
   local id = vim.fn.getqflist({ id = 0 }).id
-  vim.fn.setqflist({}, 'r', { id = id, title = 'TSAN output', items = items })
+  vim.fn.setqflist({}, 'r', { id = id, title = title or 'Sanitizer output', items = items })
 
   -- Open the quickfix list
   vim.cmd('copen')
@@ -169,16 +178,21 @@ M.goto_next_stack = function()
   M.goto_stack(1)
 end
 
-M.is_tsan_warning = function(text)
-  return text:match('WARNING: ThreadSanitizer:') ~= nil
+-- Matches the first line of any sanitizer report:
+--   WARNING: ThreadSanitizer: ...
+--   ==1234==ERROR: AddressSanitizer: ...
+--   ==1234==ERROR: LeakSanitizer: ...
+--   /path/file.cpp:10:5: runtime error: ...   (UndefinedBehaviorSanitizer)
+M.is_warning_line = function(text)
+  return text:match('%u+: %a+Sanitizer:') ~= nil or text:match(': runtime error: ') ~= nil
 end
 
-M.goto_tsan_warning = function(increment)
+M.goto_warning = function(increment)
   local qlist = vim.fn.getqflist()
   local current_index = vim.fn.getqflist({ idx = 0 }).idx
   local line = qlist[current_index]
 
-  if M.is_tsan_warning(line.text) then
+  if M.is_warning_line(line.text) then
     current_index = current_index + increment
     line = qlist[current_index]
     -- End of qlist
@@ -188,7 +202,7 @@ M.goto_tsan_warning = function(increment)
   end
 
   -- search until we find a new warning
-  while not M.is_tsan_warning(line.text) do
+  while not M.is_warning_line(line.text) do
     current_index = current_index + increment
     line = qlist[current_index]
     -- End of qlist
@@ -197,16 +211,16 @@ M.goto_tsan_warning = function(increment)
     end
   end
 
-  -- Goto our new tsan warning
+  -- Goto our new warning
   vim.cmd('cc ' .. current_index)
 end
 
-M.goto_next_tsan_warning = function()
-  M.goto_tsan_warning(1)
+M.goto_next_warning = function()
+  M.goto_warning(1)
 end
 
-M.goto_previous_tsan_warning = function()
-  M.goto_tsan_warning(-1)
+M.goto_previous_warning = function()
+  M.goto_warning(-1)
 end
 
 return M
