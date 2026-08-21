@@ -30,10 +30,14 @@ vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
 })
 
 vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
-  pattern = '*.tsan',
+  pattern = { '*.tsan', '*.asan', '*.lsan', '*.ubsan' },
   group = filetype_detect,
   callback = function()
-    vim.cmd('set filetype=tsan')
+    -- The extension names the sanitizer whose output was piped into this
+    -- file, e.g. "*.tsan" -> filetype=tsan (see ftplugin/tsan.lua and
+    -- friends, all backed by srydell.util.sanitizer_buffer).
+    local extension = vim.fn.expand('%:e')
+    vim.cmd('set filetype=' .. extension)
   end,
 })
 
