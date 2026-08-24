@@ -166,7 +166,15 @@ M.run = function()
   end
 
   local task = overseer.new_task({
-    name = compiler.name,
+    -- `task_name` is a stable identity for overseer bookkeeping (task list
+    -- dedup, lualine's `my_overseer` status aggregation), independent of
+    -- `compiler.name` which is the human-facing label and may change with
+    -- compiler options (e.g. the docker target). Without this, switching
+    -- targets creates a new distinctly-named task every time; old completed
+    -- tasks for previously-selected targets are never deduped away by
+    -- `unique = true`, so a stale FAILURE from an earlier target can still
+    -- show up in the statusline next to a currently succeeding build.
+    name = compiler.task_name or compiler.name,
     strategy = {
       'orchestrator',
       tasks = convert_to_overseer_orchestrator(compiler.tasks),

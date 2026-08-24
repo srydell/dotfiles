@@ -20,11 +20,8 @@ return {
       components = {
         { 'srydell.on_start_save_all' },
         { 'srydell.on_start_ensure_exists', dir = 'build/bin' },
-        {
-          'on_output_quickfix',
-          open_on_match = true,
-          errorformat = cpp.get_errorformat(),
-        },
+        { 'on_output_parse', parser = require('srydell.compiler.helpers.cpp_parser').new_parser() },
+        { 'on_result_diagnostics_quickfix', open = true },
         {
           'srydell.on_end_create_compile_flags_txt',
           flags = table.concat(cpp.get_perf_flags('clang'), '\n'),

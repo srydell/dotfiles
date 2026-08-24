@@ -3,6 +3,11 @@ local function docker_compiler(target, edit_function)
   local tool_path = vim.fn.stdpath('config') .. '/tools/'
   return {
     name = docker .. ' ' .. target,
+    -- Stable across target switches (unlike `name` above), so overseer's
+    -- task list treats consecutive docker builds as "the same" task and
+    -- dedups old completed runs instead of letting them pile up. See
+    -- common.lua's M.run for details.
+    task_name = 'docker run',
     tasks = {
       {
         task = 'docker run',
