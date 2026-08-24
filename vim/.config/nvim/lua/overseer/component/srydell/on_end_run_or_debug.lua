@@ -21,10 +21,14 @@ return {
             return
           end
 
+          -- Args persist per executable, so they carry over between RUN/DEBUG
+          -- and between compilers (e.g. clang/gcc) that build the same target.
+          local run_args = require('srydell.compiler.run_args').get(params.executable)
+
           if params.will_do == 'RUN' then
             local exe = require('overseer').new_task({
               cmd = { params.executable },
-              args = {},
+              args = run_args,
               components = { { 'on_output_quickfix', open = true }, 'default' },
             })
             exe:start()
@@ -33,6 +37,7 @@ return {
             if dap.configurations[vim.bo.filetype] then
               local config = dap.configurations[vim.bo.filetype][1]
               config.program = params.executable
+              config.args = run_args
               dap.run(config)
             else
               vim.print('There is no dap configuration for filetype = ' .. vim.bo.filetype)

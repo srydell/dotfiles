@@ -278,6 +278,24 @@ M.edit_compiler_option = function()
   end
 end
 
+-- Edit the persisted binary arguments for the current compiler's executable.
+-- Args are keyed by executable path so that logically related compilers
+-- (e.g. clang/gcc RUN/DEBUG for the same file) share the same args.
+M.edit_run_args = function()
+  local compiler = get_current_compiler()
+  if not compiler then
+    vim.print('No compiler.')
+    return nil
+  end
+
+  if compiler.executable == nil then
+    vim.print('Current compiler has no "executable". Cannot set run args.')
+    return nil
+  end
+
+  require('srydell.compiler.run_args').prompt(compiler.executable)
+end
+
 M.edit_current_compiler = function()
   local compiler = get_current_compiler()
   if not compiler then

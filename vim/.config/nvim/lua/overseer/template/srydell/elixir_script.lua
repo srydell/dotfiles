@@ -2,11 +2,10 @@ return {
   name = 'elixir script',
   builder = function()
     local path = './' .. vim.fn.expand('%')
+    local run_args = require('srydell.compiler.run_args').get(vim.fn.expand('%:p'))
     return {
       cmd = { 'elixir' },
-      args = {
-        path,
-      },
+      args = vim.list_extend({ path }, run_args),
       components = {
         { 'srydell.on_start_save_all' },
         {

@@ -1,3 +1,3 @@
 return function()
-  return { { name = 'perl run', tasks = { task = 'perl' } } }
+  return { { name = 'perl run', executable = vim.fn.expand('%:p'), tasks = { task = 'perl' } } }
 end

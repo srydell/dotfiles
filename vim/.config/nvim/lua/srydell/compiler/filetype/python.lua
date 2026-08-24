@@ -51,6 +51,10 @@ return function()
   end
 
   return {
-    { name = 'python run', tasks = { task = 'python' } },
+    {
+      name = 'python run',
+      executable = vim.fn.expand('%:p'),
+      tasks = { task = 'python' },
+    },
   }
 end

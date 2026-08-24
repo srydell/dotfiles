@@ -2,9 +2,10 @@ return {
   name = 'sh',
   builder = function()
     local path = './' .. vim.fn.expand('%')
+    local run_args = require('srydell.compiler.run_args').get(vim.fn.expand('%:p'))
     return {
       cmd = { path },
-      args = {},
+      args = run_args,
       components = {
         { 'srydell.on_start_save_all' },
         -- Ensure the file is executable

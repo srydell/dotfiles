@@ -1,5 +1,5 @@
 return function()
   return {
-    { name = 'lua run', tasks = { task = 'lua' } },
+    { name = 'lua run', executable = vim.fn.expand('%:p'), tasks = { task = 'lua' } },
   }
 end

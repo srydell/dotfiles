@@ -1,5 +1,9 @@
 return function()
   return {
-    { name = 'sh run', tasks = { task = 'sh' } },
+    {
+      name = 'sh run',
+      executable = vim.fn.expand('%:p'),
+      tasks = { task = 'sh' },
+    },
   }
 end

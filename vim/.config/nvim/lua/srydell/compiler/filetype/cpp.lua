@@ -97,6 +97,7 @@ local function update_cmake_compiler(current_compiler, target)
   local build_dir = current_compiler.cmake.build_dir
   local executable = cmake_executable(build_dir, target)
   current_compiler.cmake.target = target
+  current_compiler.executable = executable
   current_compiler.tasks[2].target = target
 
   if current_compiler.cmake.kind == 'build' then
@@ -127,6 +128,7 @@ local function cmake_compiler(kind, target)
   local build_dir = 'build'
   local compiler = {
     name = 'cmake ' .. kind .. ' ' .. target,
+    executable = cmake_executable(build_dir, target),
     cmake = {
       build_dir = build_dir,
       kind = kind,
@@ -177,14 +179,19 @@ return function(ctx)
 
   if util.contains({ 'prototype', 'leetcode' }, project.name) then
     local with_warnings = util.contains({ 'prototype' }, project.name)
+    -- clang++ and g++ compile the same source file to the same executable, so
+    -- they share a single "executable" key for persisted run args.
+    local executable = 'build/bin/' .. vim.fn.expand('%:t:r')
     return {
       {
         name = 'clang++ ' .. icons.building,
+        executable = executable,
         tasks = { { task = 'clang', will_do = 'RUN', with_warnings = with_warnings } },
         edit_compiler_option = toggle_debug,
       },
       {
         name = 'g++ ' .. icons.building,
+        executable = executable,
         tasks = { { task = 'gcc', will_do = 'RUN', with_warnings = with_warnings } },
         edit_compiler_option = toggle_debug,
       },
