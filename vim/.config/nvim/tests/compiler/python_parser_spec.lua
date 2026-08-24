@@ -8,6 +8,11 @@ describe('python_parser.parse_traceback_frame', function()
     assert.are.same({ filename = '/private/tmp/pytest.py', lnum = 3, text = '<module>' }, item)
   end)
 
+  it('parses a SyntaxError frame line (no ", in ..." context)', function()
+    local item = python_parser.parse_traceback_frame('  File "/private/tmp/syntax_err.py", line 1')
+    assert.are.same({ filename = '/private/tmp/syntax_err.py', lnum = 1 }, item)
+  end)
+
   it('returns nil for unrelated lines', function()
     assert.is_nil(python_parser.parse_traceback_frame('Traceback (most recent call last):'))
     assert.is_nil(python_parser.parse_traceback_frame('ValueError: boom'))
@@ -40,5 +45,38 @@ describe('python_parser.new_parser', function()
     local parser = python_parser.new_parser()
     parser:parse('hello world')
     assert.are.same({}, parser:get_result().diagnostics)
+  end)
+
+  it('reports a single frame for a real SyntaxError (no function context)', function()
+    -- Regression test: a bare `File "path", line N` with no ", in ..."
+    -- suffix, as produced by `python3 syntax_err.py` on unclosed brackets.
+    local parser = python_parser.new_parser()
+    for _, line in ipairs({
+      '  File "/private/tmp/syntax_err.py", line 1',
+      '    def foo(',
+      '           ^',
+      "SyntaxError: '(' was never closed",
+    }) do
+      parser:parse(line)
+    end
+    local diagnostics = parser:get_result().diagnostics
+    assert.are.equal(1, #diagnostics)
+    assert.are.equal('/private/tmp/syntax_err.py', diagnostics[1].filename)
+    assert.are.equal(1, diagnostics[1].lnum)
+  end)
+
+  it('reports a single frame for a real IndentationError', function()
+    local parser = python_parser.new_parser()
+    for _, line in ipairs({
+      '  File "/private/tmp/indent_err.py", line 2',
+      '    x = 1',
+      '    ^',
+      'IndentationError: expected an indented block after function definition on line 1',
+    }) do
+      parser:parse(line)
+    end
+    local diagnostics = parser:get_result().diagnostics
+    assert.are.equal(1, #diagnostics)
+    assert.are.equal(2, diagnostics[1].lnum)
   end)
 end)
