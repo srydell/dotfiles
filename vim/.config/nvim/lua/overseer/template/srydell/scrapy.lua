@@ -1,7 +1,6 @@
 return {
   name = 'scrapy',
   builder = function()
-    local python = require('srydell.compiler.helpers.python')
     return {
       cmd = { 'scrapy' },
       args = {
@@ -12,11 +11,8 @@ return {
       },
       components = {
         { 'srydell.on_start_save_all' },
-        {
-          'on_output_quickfix',
-          open = true,
-          errorformat = python.get_errorformat(),
-        },
+        { 'on_output_parse', parser = require('srydell.compiler.helpers.python_parser').new_parser() },
+        { 'on_result_diagnostics_quickfix', open = true },
         'default',
       },
     }

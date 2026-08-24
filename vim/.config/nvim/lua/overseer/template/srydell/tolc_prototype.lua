@@ -2,7 +2,6 @@ return {
   name = 'tolc_prototype',
   desc = 'Compile a python thingie with tolc',
   builder = function()
-    local cpp = require('srydell.compiler.helpers.cpp')
     local module = vim.fn.expand('%:p:t:r')
     return {
       cmd = { './build.sh' },
@@ -10,11 +9,8 @@ return {
       components = {
         { 'srydell.on_start_save_all' },
         { 'srydell.on_start_ensure_exists', dir = 'build' },
-        {
-          'on_output_quickfix',
-          open_on_match = true,
-          errorformat = cpp.get_errorformat(),
-        },
+        { 'on_output_parse', parser = require('srydell.compiler.helpers.cpp_parser').new_parser() },
+        { 'on_result_diagnostics_quickfix', open = true },
         'default',
       },
     }

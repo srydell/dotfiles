@@ -8,11 +8,8 @@ return {
       args = vim.list_extend({ path }, run_args),
       components = {
         { 'srydell.on_start_save_all' },
-        {
-          'on_output_quickfix',
-          open_on_match = true,
-          errorformat = [[%s: %f:%l:%m]],
-        },
+        { 'on_output_parse', parser = require('srydell.compiler.helpers.lua_parser').new_parser() },
+        { 'on_result_diagnostics_quickfix', open = true },
         'default',
       },
     }

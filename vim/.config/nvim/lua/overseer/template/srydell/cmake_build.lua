@@ -23,7 +23,12 @@ return {
         '--parallel',
       },
       components = {
-        { 'on_output_quickfix', open_on_match = true },
+        -- The underlying build (ninja/make invoking clang/gcc) emits
+        -- clang/gcc-shaped diagnostics, not CMake's own configure-time
+        -- messages -- reuse the C++ parser here rather than cmake_parser.lua
+        -- (which only understands "CMake Error/Warning at ..." lines).
+        { 'on_output_parse', parser = require('srydell.compiler.helpers.cpp_parser').new_parser() },
+        { 'on_result_diagnostics_quickfix', open = true },
         'default',
       },
     }

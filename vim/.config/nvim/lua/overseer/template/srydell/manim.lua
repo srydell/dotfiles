@@ -9,7 +9,6 @@ return {
     },
   },
   builder = function(params)
-    local python = require('srydell.compiler.helpers.python')
     -- E.g.
     -- manim -pql main.py DefaultTemplate
     return {
@@ -20,11 +19,8 @@ return {
       components = {
         { 'srydell.on_start_save_all' },
         { 'srydell.on_start_run_sh', cmd = '. ./venv/bin/activate' },
-        {
-          'on_output_quickfix',
-          open = true,
-          errorformat = python.get_errorformat(),
-        },
+        { 'on_output_parse', parser = require('srydell.compiler.helpers.python_parser').new_parser() },
+        { 'on_result_diagnostics_quickfix', open = true },
         'default',
       },
     }
