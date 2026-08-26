@@ -29,6 +29,7 @@ return {
         -- (which only understands "CMake Error/Warning at ..." lines).
         { 'on_output_parse', parser = require('srydell.compiler.helpers.cpp_parser').new_parser() },
         { 'on_result_diagnostics_quickfix', open = true },
+        { 'open_output', on_start = 'never', on_complete = 'success', direction = 'horizontal', focus = false },
         'default',
       },
     }

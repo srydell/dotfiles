@@ -22,6 +22,7 @@ return {
         { 'srydell.on_start_ensure_exists', dir = 'build/bin' },
         { 'on_output_parse', parser = require('srydell.compiler.helpers.cpp_parser').new_parser() },
         { 'on_result_diagnostics_quickfix', open = true },
+        { 'open_output', on_start = 'never', on_complete = 'success', direction = 'horizontal', focus = false },
         {
           'srydell.on_end_create_compile_flags_txt',
           flags = table.concat(cpp.get_perf_flags('clang'), '\n'),

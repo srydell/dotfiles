@@ -165,6 +165,11 @@ M.run = function()
     task:stop()
   end
 
+  -- Close any stale output window(s) left open from a previous run, so a
+  -- new run doesn't pile up windows alongside the one <leader>o will open
+  -- on completion.
+  require('srydell.compiler.output_window').close_all()
+
   local task = overseer.new_task({
     -- `task_name` is a stable identity for overseer bookkeeping (task list
     -- dedup, lualine's `my_overseer` status aggregation), independent of

@@ -163,8 +163,8 @@ function M.divide_and_sort_includes()
     return false
   end
 
-  local function append_include(text, node, suffix)
-    local include = { text = text, node = node, suffix = suffix }
+  local function append_include(text, node, suffix, extra_lines)
+    local include = { text = text, node = node, suffix = suffix, extra_lines = extra_lines }
     if node:type() == 'string_literal' then
       -- E.g. "myLib/stuff.h"
       -- or "local_stuff.h"
@@ -188,6 +188,12 @@ function M.divide_and_sort_includes()
     end
   end
 
+  -- Rows consumed as continuation lines of a multi-line trailing comment
+  -- (e.g. a `//` comment explaining an include that wraps onto the next
+  -- line). These are attached to the preceding include's extra_lines rather
+  -- than being treated as stray code between includes.
+  local consumed_rows = {}
+
   local has_alignment_header = false
   local function collect_include(node)
     if node:type() == 'preproc_include' then
@@ -208,7 +214,25 @@ function M.divide_and_sort_includes()
           -- explaining why an include exists. The directive's leading spacing
           -- is still normalized by the sorter.
           local suffix = line:sub(end_column + 1)
-          append_include(text, child, suffix)
+
+          -- A trailing `//` comment may continue onto the following lines
+          -- (e.g. indented to line up with the comment above). Consume those
+          -- lines here so they travel with this include instead of being
+          -- mistaken for code between includes.
+          local extra_lines = {}
+          local next_row = row + 1
+          while true do
+            local candidate = vim.api.nvim_buf_get_lines(0, next_row, next_row + 1, false)[1]
+            if candidate == nil or candidate:match('^%s*//') == nil then
+              break
+            end
+            table.insert(extra_lines, candidate)
+            consumed_rows[next_row] = true
+            locations.end_row = math.max(next_row, locations.end_row)
+            next_row = next_row + 1
+          end
+
+          append_include(text, child, suffix, extra_lines)
         end
       end
     end
@@ -229,9 +253,12 @@ function M.divide_and_sort_includes()
 
   -- If code is found between the includes
   -- -> give up
-  for _, line in ipairs(vim.api.nvim_buf_get_lines(0, locations.start_row, locations.end_row, false)) do
-    if line:match('^%s*$') == nil and line:find('^%s*#%s*include%s+') == nil then
-      return
+  for row = locations.start_row, locations.end_row - 1 do
+    if not consumed_rows[row] then
+      local line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ''
+      if line:match('^%s*$') == nil and line:find('^%s*#%s*include%s+') == nil then
+        return
+      end
     end
   end
 
@@ -253,6 +280,9 @@ function M.divide_and_sort_includes()
     end
     for _, include in ipairs(includes[category]) do
       table.insert(lines, '#include ' .. include.text .. include.suffix)
+      for _, extra_line in ipairs(include.extra_lines or {}) do
+        table.insert(lines, extra_line)
+      end
     end
   end
 
