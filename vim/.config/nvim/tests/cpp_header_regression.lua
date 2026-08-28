@@ -375,6 +375,30 @@ assert_lines({
   'Thing value;',
 })
 
+-- A trailing `//` comment that wraps onto indented continuation lines must
+-- stay attached to its include and must not be mistaken for code between
+-- includes (which would otherwise make the sorter give up and leave
+-- unsorted headers stacked at the top of the block).
+set_lines({
+  '#include <chrono>',
+  '#include <mutex>',
+  '#include "widget.h" // explains why widget.h is needed here,',
+  '                    // spanning more than one line',
+  '#include "gadget.h"',
+  '',
+  '#include <utility>',
+})
+ts_cpp.divide_and_sort_includes()
+assert_lines({
+  '#include "gadget.h"',
+  '#include "widget.h" // explains why widget.h is needed here,',
+  '                    // spanning more than one line',
+  '',
+  '#include <chrono>',
+  '#include <mutex>',
+  '#include <utility>',
+})
+
 -- Member calls and unknown bare identifiers are not function candidates.
 set_lines({
   'using namespace std;',
