@@ -43,7 +43,13 @@ return {
         lualine_a = {
           'branch',
         },
-        lualine_b = { { 'filename', path = 1 } },
+        lualine_b = {
+          {
+            'filename',
+            path = 1,
+            symbols = { unnamed = '' }, -- Don't show "[No Name]" for unsaved/empty buffers
+          },
+        },
         lualine_c = { get_compiler },
         lualine_x = {
           {
