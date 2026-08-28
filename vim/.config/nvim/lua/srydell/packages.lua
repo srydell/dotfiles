@@ -34,15 +34,21 @@ require('lazy').setup({
       { 'mason-org/mason.nvim', lazy = true },
       { 'mason-org/mason-lspconfig.nvim', lazy = true },
       { 'WhoIsSethDaniel/mason-tool-installer.nvim', lazy = true },
-
-      -- Useful status updates for LSP
-      { 'j-hui/fidget.nvim', event = 'LspAttach', opts = {} },
     },
   },
+
+  -- Status updates for LSP.
+  -- NOTE: In order for lazy loading, this has to be on the
+  --       top level of this list. Lazy eagerly loads any dependencies.
+  { 'j-hui/fidget.nvim', event = 'LspAttach', opts = {} },
 
   -- Some UI sugar
   {
     'stevearc/dressing.nvim',
+    -- Only needs to be ready before the first vim.ui.select/input call, not
+    -- before the very first frame - VeryLazy defers it a few ms without any
+    -- functional difference.
+    event = 'VeryLazy',
     opts = {
       select = {
         -- Set to false to disable the vim.ui.select implementation
@@ -90,8 +96,7 @@ require('lazy').setup({
   -- ft = 'helm' is important to not start yamlls
   { 'towolf/vim-helm', ft = 'helm' },
 
-  -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
+  { 'numToStr/Comment.nvim', event = 'VeryLazy', opts = {} },
 
   -- Java debugger
   { 'mfussenegger/nvim-jdtls' },

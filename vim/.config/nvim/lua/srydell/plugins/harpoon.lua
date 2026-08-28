@@ -5,6 +5,18 @@ return {
     'nvim-lua/plenary.nvim',
     'nvim-telescope/telescope.nvim',
   },
+  -- Purely keymap-driven (no filetype/event dependency), so defer loading
+  -- until one of these is actually pressed instead of paying its startup
+  -- cost (require + eagerly pulling in telescope submodules) every time.
+  keys = {
+    '<leader>fp',
+    '<leader>xx',
+    '<leader>xdF',
+    '<leader>xdf',
+    '<leader>xf',
+    ']f',
+    '[f',
+  },
   config = function()
     local harpoon = require('harpoon')
     harpoon:setup()
