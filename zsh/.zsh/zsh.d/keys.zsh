@@ -25,3 +25,29 @@ fi
 # unset DISPLAY
 
 # gpg-connect-agent updatestartuptty /bye > /dev/null
+
+# Edit the current command line in $EDITOR (built-in zsh widget).
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^x^x' edit-command-line
+
+# Capture the previous command's output (via the tmux pane's scrollback,
+# split on the prompt-marker line, which is one or more $ (or # if root))
+# and open it in nvim for review/editing. Anchored to a line consisting
+# solely of $/# so it doesn't false-match those characters in normal output.
+# Only works inside tmux, since that's what provides the scrollback capture.
+edit-last-command-output() {
+	if [[ "$TERM" == *tmux* ]]; then
+		tmux capture-pane -p -S - -E - -J | tac | awk '
+			found && !/^[$#]+[[:space:]]*$/ { print }
+			/^[$#]+[[:space:]]*$/ && !found { found=1; next }
+			/^[$#]+[[:space:]]*$/ && found { exit }
+		' | tac | nvim -
+	else
+		echo
+		print -Pn "%F{red}error: can't capture last command output outside of tmux%f"
+		zle accept-line
+	fi
+}
+zle -N edit-last-command-output
+bindkey '^x^o' edit-last-command-output

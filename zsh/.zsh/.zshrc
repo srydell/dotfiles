@@ -41,10 +41,6 @@ setopt PATH_DIRS        # Path search even on command names with slashes
 unsetopt CASE_GLOB      # Globbing case insensitively
 unsetopt MENU_COMPLETE  # Always display menu, don't directly insert
 
-if [ -f ~/.secrets ]; then
-	source ~/.secrets
-fi
-
 export MANPAGER='nvim +Man!'
 export MANWIDTH=999
 
@@ -72,3 +68,9 @@ export XDG_CONFIG_HOME=$HOME/.config
 
 # pip
 export PATH="$PATH:$HOME/.local/bin"
+
+# Machine-local overrides and secrets (untracked, lives directly in $HOME).
+# Sourced last so it can override anything set above.
+if [ -f ~/.zshrc.local ]; then
+	source ~/.zshrc.local
+fi
