@@ -5,7 +5,17 @@
 # or give an absolute path
 # eval $(keychain --eval --quiet --ignore-missing --agents gpg,ssh id_rsa "$LATEST_GPGKEY")
 if (( $+commands[keychain] )); then
-	eval "$(keychain --eval --quiet --ignore-missing id_rsa)"
+	# Skip re-running keychain (~170ms) when a valid agent socket is
+	# already inherited from the environment (e.g. a previous shell in
+	# this session already set one up). `ssh-add -l` exits 2 when it
+	# cannot reach the agent at all.
+	agent_ok=0
+	if [[ -n $SSH_AUTH_SOCK && -S $SSH_AUTH_SOCK ]]; then
+		ssh-add -l &>/dev/null
+		(( $? != 2 )) && agent_ok=1
+	fi
+	(( agent_ok )) || eval "$(keychain --eval --quiet --ignore-missing id_rsa)"
+	unset agent_ok
 fi
 # unset LATEST_GPGKEY
 

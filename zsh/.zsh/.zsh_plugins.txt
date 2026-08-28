@@ -1,4 +1,4 @@
-romkatv/powerlevel10k
+mafredri/zsh-async
 zsh-users/zsh-completions
 zsh-users/zsh-autosuggestions
 zsh-users/zsh-syntax-highlighting

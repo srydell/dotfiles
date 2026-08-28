@@ -9,24 +9,33 @@ elif [[ -x /usr/local/bin/brew ]]; then
 fi
 
 if [[ -n ${brew_command:-} ]]; then
-	eval "$("$brew_command" shellenv)"
-	brew_prefix=$("$brew_command" --prefix)
+	# Derive the Homebrew prefix from the binary's location instead of
+	# shelling out to `brew shellenv`/`brew --prefix` (each spawns a slow
+	# Ruby process). Homebrew always keeps `bin/brew` two levels below its
+	# prefix, and every formula is symlinked under `<prefix>/opt/<formula>`.
+	brew_prefix=${brew_command:h:h}
+
+	export HOMEBREW_PREFIX="$brew_prefix"
+	export HOMEBREW_CELLAR="$brew_prefix/Cellar"
+	export HOMEBREW_REPOSITORY="$brew_prefix"
+	export INFOPATH="$brew_prefix/share/info:${INFOPATH:-}"
+	path=("$brew_prefix/bin" "$brew_prefix/sbin" $path)
 
 	# Prefer Homebrew LLVM when installed, without adding nonexistent paths.
-	llvm_prefix=$("$brew_command" --prefix llvm 2>/dev/null)
+	llvm_prefix="$brew_prefix/opt/llvm"
 	if [[ -d $llvm_prefix ]]; then
 		path=("$llvm_prefix/bin" $path)
 		export LDFLAGS="-L$llvm_prefix/lib -Wl,-rpath,$llvm_prefix/lib${LDFLAGS:+ $LDFLAGS}"
 		export CPPFLAGS="-I$llvm_prefix/include -I$llvm_prefix/include/c++/v1${CPPFLAGS:+ $CPPFLAGS}"
 	fi
 
-	openjdk_prefix=$("$brew_command" --prefix openjdk 2>/dev/null)
+	openjdk_prefix="$brew_prefix/opt/openjdk"
 	if [[ -d $openjdk_prefix ]]; then
 		export JAVA_HOME="$openjdk_prefix/libexec/openjdk.jdk/Contents/Home"
 		path=("$openjdk_prefix/bin" $path)
 	fi
 
-	chruby_prefix=$("$brew_command" --prefix chruby 2>/dev/null)
+	chruby_prefix="$brew_prefix/opt/chruby"
 	if [[ -r $chruby_prefix/share/chruby/chruby.sh ]]; then
 		source "$chruby_prefix/share/chruby/chruby.sh"
 		source "$chruby_prefix/share/chruby/auto.sh"

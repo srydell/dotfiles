@@ -1,9 +1,3 @@
-# If instant prompt script is available, use it.
-# This makes the prompt available before all other config is fully loaded
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-	source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # Install plugins if not installed
 if [[ ! -d "$ZDOTDIR/antidote" ]]; then
 	# Install antidote
@@ -78,6 +72,3 @@ export XDG_CONFIG_HOME=$HOME/.config
 
 # pip
 export PATH="$PATH:$HOME/.local/bin"
-
-# To customize prompt, run `p10k configure` or edit ~/.zsh/.p10k.zsh.
-[[ -f ~/.zsh/.p10k.zsh ]] && source ~/.zsh/.p10k.zsh
