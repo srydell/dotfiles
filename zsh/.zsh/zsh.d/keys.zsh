@@ -32,17 +32,33 @@ zle -N edit-command-line
 bindkey '^x^x' edit-command-line
 
 # Capture the previous command's output (via the tmux pane's scrollback,
-# split on the prompt-marker line, which is one or more $ (or # if root))
-# and open it in nvim for review/editing. Anchored to a line consisting
-# solely of $/# so it doesn't false-match those characters in normal output.
+# split on the prompt-marker line, which is one or more $ (or # if root)
+# followed by a space and then whatever was typed on that line - a
+# terminal doesn't put the prompt on its own blank line, so anything typed
+# after the "$ " appears on the *same* captured line as the prompt).
+#
+# Our two-line PROMPT (see prompt.zsh) always renders as:
+#   <cwd/git info line>
+#   $ <command that was typed>
+# so the line right before a marker line always belongs to the *next*
+# prompt, not to the previous command's output, and must be excluded too.
+#
 # Only works inside tmux, since that's what provides the scrollback capture.
 edit-last-command-output() {
 	if [[ "$TERM" == *tmux* ]]; then
-		tmux capture-pane -p -S - -E - -J | tac | awk '
-			found && !/^[$#]+[[:space:]]*$/ { print }
-			/^[$#]+[[:space:]]*$/ && !found { found=1; next }
-			/^[$#]+[[:space:]]*$/ && found { exit }
-		' | tac | nvim -
+		# `tac` isn't available on macOS (BSD userland), so track the last
+		# two prompt-marker line numbers in a single forward pass instead of
+		# reversing the stream.
+		# `buftype=nofile` + `nomodified` mark this as a disposable scratch
+		# buffer, so a plain `:q` quits without needing `:q!` (there's
+		# nothing to save and nowhere to save it to anyway).
+		tmux capture-pane -p -S - -E - -J | awk '
+			/^[$#]+[[:space:]]/ { prev=cur; cur=NR }
+			{ lines[NR] = $0 }
+			END {
+				for (i = prev + 1; i <= cur - 2; i++) print lines[i]
+			}
+		' | nvim -c 'set buftype=nofile bufhidden=wipe nomodified' -
 	else
 		echo
 		print -Pn "%F{red}error: can't capture last command output outside of tmux%f"

@@ -15,6 +15,12 @@ if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
 fi
 source "${zsh_plugins}.zsh"
 
+# Use emacs keybindings even if our EDITOR is set to vi.
+# Must run before the zsh.d loop below: `bindkey -e` resets the *entire*
+# keymap to stock emacs bindings, which would clobber any custom `bindkey`
+# calls (e.g. keys.zsh) if it ran after them.
+bindkey -e
+
 # Load configs, platform specific files are in zsh.d/$(uname)
 for ZSH_FILE in ${ZDOTDIR:-$HOME}/zsh.d{/$(uname),}/*.zsh; do
 	source "${ZSH_FILE}"
@@ -22,8 +28,6 @@ done
 
 zstyle ':completion:*' menu select
 
-# Use emacs keybindings even if our EDITOR is set to vi
-bindkey -e
 # Expand commands on space
 bindkey " " magic-space
 # Accept autosuggest with <C-SPACE>
