@@ -23,3 +23,5 @@
         --abbrev-commit --
     ctags = !.git/hooks/ctags
     recap = !git log --all --oneline --no-merges --author=$(git config user.email)
+[commit]
+    verbose = true
