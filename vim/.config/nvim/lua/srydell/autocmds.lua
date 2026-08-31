@@ -13,3 +13,12 @@ vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
     vim.opt_local.undofile = false
   end,
 })
+
+-- Let 'q' close overseer task output windows
+vim.api.nvim_create_autocmd({ 'FileType' }, {
+  pattern = 'OverseerOutput',
+  group = srydell_misc_augroup,
+  callback = function(args)
+    vim.keymap.set('n', 'q', '<cmd>close<cr>', { buffer = args.buf, silent = true })
+  end,
+})

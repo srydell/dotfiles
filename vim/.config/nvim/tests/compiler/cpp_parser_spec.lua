@@ -100,6 +100,17 @@ describe('cpp_parser.match_directory_change', function()
   end)
 end)
 
+describe('cpp_parser.strip_ansi', function()
+  it('removes SGR color codes gcc emits when stdout is a tty', function()
+    local line = 'src/foo.cpp:12:5: \27[01;31m\27[Kerror: \27[m\27[Kbad'
+    assert.are.equal('src/foo.cpp:12:5: error: bad', cpp_parser.strip_ansi(line))
+  end)
+
+  it('leaves plain lines untouched', function()
+    assert.are.equal('src/foo.cpp:12:5: error: bad', cpp_parser.strip_ansi('src/foo.cpp:12:5: error: bad'))
+  end)
+end)
+
 describe('cpp_parser.new_parser', function()
   local function feed(parser, lines)
     for _, line in ipairs(lines) do
@@ -156,6 +167,24 @@ describe('cpp_parser.new_parser', function()
     assert.are.equal(1, #diagnostics)
   end)
 
+  it('reports a colorized diagnostic from a real gcc-under-pty (docker exec -t) build', function()
+    -- Regression test: gcc/clang enable colored diagnostics automatically
+    -- when stdout is a tty (which it is under `docker exec -t`), wrapping
+    -- "error:" in ANSI SGR codes. That used to make the diagnostic pattern
+    -- fail to match at all, silently dropping the error from quickfix.
+    local parser = cpp_parser.new_parser()
+    local diagnostics = feed(parser, {
+      "Waf: Entering directory `/Users/simryd/code/stuff/build/debug'",
+      '/Users/simryd/code/stuff/src/test/test_stuff.cpp:20:62: \27[01;31m\27[Kerror: '
+        .. '\27[m\27[Kmacro "BOOST_CHECK_EQUAL" requires 2 arguments, but only 1 given',
+    })
+    assert.are.equal(1, #diagnostics)
+    assert.are.equal('/Users/simryd/code/stuff/src/test/test_stuff.cpp', diagnostics[1].filename)
+    assert.are.equal(20, diagnostics[1].lnum)
+    assert.are.equal(62, diagnostics[1].col)
+    assert.are.equal('E', diagnostics[1].type)
+  end)
+
   it('reports zero diagnostics for the user-reported successful docker/waf build', function()
     -- Regression test: this exact output (a successful `docker run` build of
     -- 'all' targets) used to spuriously open the quickfix window because a
@@ -165,29 +194,15 @@ describe('cpp_parser.new_parser', function()
       'Building all targets',
       'Adding conan targets...',
       'Build commands will be stored in build/debug/compile_commands.json',
-      "Waf: Entering directory `/Users/simryd/code/dsf/build/debug'",
+      "Waf: Entering directory `/Users/simryd/code/stuff/build/debug'",
       'Adding conan targets...',
-      '[184/747] Compiling src/api/descriptor_table.cpp',
-      '[510/747] Compiling src/api/client/test/test_client.cpp',
-      '[512/747] Compiling src/api/client/test/test_sharq_client.cpp',
-      '[523/747] Compiling src/api/test/test_descriptor_table.cpp',
-      '[629/747] Compiling src/api/session.cpp',
-      '[630/747] Compiling src/api/api.cpp',
-      '[686/747] Compiling src/api/test/test_session.cpp',
-      '[687/747] Compiling src/api/test/test_api_impl.cpp',
-      '[733/747] Linking build/debug/lib/libdsfapi.so',
-      '[734/747] Linking build/debug/bin/unit_test_dsf_api_processor',
-      '[735/747] Linking build/debug/bin/unit_test_dsf_test_func',
-      '[736/747] Linking build/debug/lib/libdsf_bindings_jni.so',
-      '[737/747] Linking build/debug/bin/dsf_api_tests',
-      '[738/747] Linking build/debug/bin/dsfctl_tests',
-      '[739/747] Linking build/debug/bin/func_test_dsf',
-      '[740/747] Linking build/debug/bin/geniumperf',
-      '[741/747] Linking build/debug/bin/wod_verifier',
-      '[742/747] Linking build/debug/bin/dsf_hello_world_writer',
-      '[743/747] Linking build/debug/bin/dsf_hello_world_reader',
-      '[744/747] Linking build/debug/bin/unit_test_dsf_api',
-      "Waf: Leaving directory `/Users/simryd/code/dsf/build/debug'",
+      '[184/747] Compiling src/hi.cpp',
+      '[510/747] Compiling src/ho.cpp',
+      '[512/747] Compiling src/fi.cpp',
+      '[523/747] Compiling src/fo.cpp',
+      '[743/747] Linking build/debug/bin/stuff',
+      '[744/747] Linking build/debug/bin/buns',
+      "Waf: Leaving directory `/Users/simryd/code/stuff/build/debug'",
       'Test commands will be stored in build/debug/test_commands.json',
       "'build' finished successfully (53.320s)",
       '',

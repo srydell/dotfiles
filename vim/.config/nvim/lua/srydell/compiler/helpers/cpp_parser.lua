@@ -46,6 +46,19 @@ M.parse_linker_error = function(line)
   return item
 end
 
+-- GCC/clang auto-enable colored diagnostics (`-fdiagnostics-color=auto`)
+-- whenever stdout/stderr is a tty -- which it is here, since these tasks
+-- run through `docker exec -t`. That wraps the "error"/"warning"/"note"
+-- keyword (and sometimes quoted identifiers) in ANSI SGR escape codes, e.g.:
+--   file.cpp:12:5: \27[01;31m\27[Kerror: \27[m\27[Ksomething broke
+-- which silently breaks every pattern above (`%a+` can't match through an
+-- escape sequence), so the diagnostic is dropped entirely instead of just
+-- losing some formatting. Strip any ANSI CSI sequence (`ESC [ ... <letter>`)
+-- before doing anything else with a line.
+M.strip_ansi = function(line)
+  return (line:gsub('\27%[[%d;]*[%a]', ''))
+end
+
 -- GCC repeats "each undeclared identifier..." for every subsequent use of
 -- the same bad symbol. Recognizing (and skipping) this noise avoids
 -- reporting the same root cause 3 times over.
@@ -104,6 +117,7 @@ M.new_parser = function()
 
   return {
     parse = function(_, line)
+      line = M.strip_ansi(line)
       local change, dir = M.match_directory_change(line)
       if change == 'enter' then
         table.insert(dir_stack, dir)
