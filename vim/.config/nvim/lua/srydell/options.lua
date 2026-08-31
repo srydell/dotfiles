@@ -1,4 +1,10 @@
 local home = os.getenv('HOME')
+
+-- Detect when Neovim is invoked via `sudo` so we can avoid littering the
+-- filesystem with root-owned backup/swap/undo/shada files (which a regular
+-- user then can't clean up without also using sudo).
+local is_root = os.getenv('USER') == 'root'
+
 local data_dirs = {
   home .. '/.config/nvim/tmp/backup//',
   home .. '/.config/nvim/tmp/swap//',
@@ -16,13 +22,32 @@ vim.opt.encoding = 'utf-8'
 
 -- Make it easier to see tabs, newlines, and trailing spaces
 vim.opt.list = true
-vim.opt.listchars = { tab = '▸ ', eol = '¬', trail = '·' }
+vim.opt.listchars = {
+  tab = '▸ ',
+  eol = '¬',
+  trail = '·',
+  -- RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK (U+00BB) / LEFT-POINTING (U+00AB)
+  -- Show when a line extends beyond the window, or is a continuation of one.
+  extends = '»',
+  precedes = '«',
+  -- CIRCLED REVERSE SOLIDUS (U+29B8) so a non-breaking space is never mistaken for a regular one
+  nbsp = '⦸',
+}
 
 -- BOX DRAWINGS HEAVY VERTICAL (U+2503, UTF-8: E2 94 83)
 -- MIDDLE DOT (U+00B7, UTF-8: C2 B7)
 -- Draw the vertical border between vim splits as a continuous line
 -- Draw the character used to fill out the fold
-vim.opt.fillchars = { vert = '┃', fold = '·' }
+vim.opt.fillchars = {
+  vert = '┃',
+  fold = '·',
+  -- NO-BREAK SPACE (U+00A0) instead of the default '~' to suppress the
+  -- distracting column of tildes below the end of the buffer.
+  eob = ' ',
+  -- BOX DRAWINGS LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT (U+2571), used by
+  -- the internal diff engine to fill deleted/added lines.
+  diff = '╱',
+}
 
 -- Not as cool as syntax, but faster
 vim.opt.foldmethod = 'indent'
@@ -114,21 +139,31 @@ vim.opt.wildignore = {
   '*.png',
 }
 
--- Let vim store backup/swap/undo files in these directories
--- The double // will create files with whole path expanded.
-vim.opt.backupdir = home .. '/.config/nvim/tmp/backup//'
-vim.opt.directory = home .. '/.config/nvim/tmp/swap//'
-vim.opt.undodir = home .. '/.config/nvim/tmp/undo//'
+if is_root then
+  -- Don't create root-owned backup/swap/undo/shada files (e.g. when editing
+  -- via `sudo nvim`) since a regular user can't easily clean those up later.
+  vim.opt.backup = false
+  vim.opt.writebackup = false
+  vim.opt.swapfile = false
+  vim.opt.undofile = false
+  vim.opt.shadafile = 'NONE'
+else
+  -- Let vim store backup/swap/undo files in these directories
+  -- The double // will create files with whole path expanded.
+  vim.opt.backupdir = home .. '/.config/nvim/tmp/backup//'
+  vim.opt.directory = home .. '/.config/nvim/tmp/swap//'
+  vim.opt.undodir = home .. '/.config/nvim/tmp/undo//'
 
--- Delete old backup, backup current file
-vim.opt.backup = true
-vim.opt.writebackup = true
+  -- Delete old backup, backup current file
+  vim.opt.backup = true
+  vim.opt.writebackup = true
 
--- Persistent undo tree after exiting vim
-vim.opt.undofile = true
+  -- Persistent undo tree after exiting vim
+  vim.opt.undofile = true
 
--- How many levels are saved in each file
-vim.opt.undolevels = 100
+  -- How many levels are saved in each file
+  vim.opt.undolevels = 100
+end
 
 -- Better display for messages
 vim.opt.cmdheight = 2
@@ -147,3 +182,11 @@ vim.opt.hlsearch = false
 
 -- Don't give |ins-completion-menu| messages.
 vim.opt.shortmess:append('c')
+
+-- Quieten down other message noise:
+vim.opt.shortmess:append('A') -- ignore "swapfile already exists" messages
+vim.opt.shortmess:append('I') -- don't show the intro/splash screen
+vim.opt.shortmess:append('W') -- don't echo "[w]"/"written" when writing a file
+vim.opt.shortmess:append('a') -- use abbreviations in messages, e.g. "[RO]" instead of "[readonly]"
+vim.opt.shortmess:append('o') -- overwrite the previous file-written message when reading a new file
+vim.opt.shortmess:append('t') -- truncate file messages at the start if they don't fit
