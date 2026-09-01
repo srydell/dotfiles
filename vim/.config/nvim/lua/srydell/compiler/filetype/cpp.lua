@@ -13,6 +13,18 @@ local function docker_compiler(target, edit_function)
         task = 'docker run',
         command = { tool_path .. 'build_waf.sh', target },
       },
+      -- compile_commands.json is generated *inside* the container, so it
+      -- references container-only paths (conan cache under /root/.docker-dev,
+      -- and implicit gcc-toolset system headers clangd can't query since it
+      -- can't execute the container's cross g++ natively on macOS). Patch it
+      -- in-place (on the host, after the container step above finishes) so
+      -- clangd can resolve those headers. This also auto-runs
+      -- tools/sync_docker_sysroot.sh itself if it detects the mirrored
+      -- toolset is missing/stale (e.g. after a gcc-toolset upgrade), so no
+      -- manual step is needed. See tools/patch_compile_commands.py.
+      {
+        cmd = { 'python3', tool_path .. 'patch_compile_commands.py' },
+      },
     },
     edit_compiler_option = edit_function,
   }

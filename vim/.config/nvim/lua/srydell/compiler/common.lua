@@ -188,6 +188,7 @@ M.run = function()
   task:start()
 end
 
+
 -- For display in e.g. status line
 M.get_current_compiler_name = function()
   local compiler = get_current_compiler()

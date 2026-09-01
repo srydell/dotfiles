@@ -25,7 +25,7 @@
 --
 -- Optional environment variables:
 --
---   NVIM_DAP_CONTAINER   Container name or ID. Avoids the container picker.
+--   NVIM_DEV_CONTAINER   Container name or ID. Avoids the container picker.
 --   NVIM_DAP_REMOTE_ROOT Project root inside the container. Becomes the prompt
 --                        default; it does not need to equal the local path.
 --

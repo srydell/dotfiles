@@ -1,16 +1,13 @@
 -- Shared "find a running Docker container to talk to" helper.
 --
--- Extracted from srydell.plugins.debugging.docker_lldb so any feature that
--- needs to run something inside the project's dev container (the LLDB
--- adapter, and srydell.util.struct_layout's docker/pahole fallback) can reuse
--- the same container discovery, caching, and error reporting instead of
--- duplicating `docker ps`/`docker exec` plumbing.
---
--- NVIM_DAP_CONTAINER (despite the name, used by any caller here) still lets
+-- NVIM_DEV_CONTAINER (despite the name, used by any caller here) still lets
 -- you pin a container by name/ID and skip the picker.
 local M = {}
 
 local selected_container
+
+-- Shared with both the async and sync discovery paths below.
+local DOCKER_PS_ARGS = { 'docker', 'ps', '--format', '{{.ID}}\\t{{.Names}}\\t{{.Image}}' }
 
 function M.format_problem(problem, remedy, detail)
   local message = problem
@@ -45,7 +42,7 @@ function M.parse_containers(output)
 end
 
 local function choose_container(containers, title, callback)
-  local configured = vim.env.NVIM_DAP_CONTAINER
+  local configured = vim.env.NVIM_DEV_CONTAINER
   if configured and configured ~= '' then
     for _, container in ipairs(containers) do
       if container.id == configured or container.name == configured then
@@ -59,9 +56,9 @@ local function choose_container(containers, title, callback)
     end, containers)
     notify_error(
       title,
-      ("NVIM_DAP_CONTAINER is set to '%s', but that container is not running."):format(configured),
+      ("NVIM_DEV_CONTAINER is set to '%s', but that container is not running."):format(configured),
       table.concat({
-        'Start that container, or change/unset NVIM_DAP_CONTAINER.',
+        'Start that container, or change/unset NVIM_DEV_CONTAINER.',
         'Running containers:',
         table.concat(names, '\n'),
         'Verify with: docker ps',
@@ -124,7 +121,7 @@ function M.with_container(callback, opts)
     return
   end
 
-  vim.system({ 'docker', 'ps', '--format', '{{.ID}}\\t{{.Names}}\\t{{.Image}}' }, { text = true }, function(result)
+  vim.system(DOCKER_PS_ARGS, { text = true }, function(result)
     if result.code ~= 0 then
       notify_error(
         title,
@@ -166,6 +163,50 @@ function M.with_container(callback, opts)
       choose_container(containers, title, callback)
     end)
   end)
+end
+
+-- Synchronous counterpart of `with_container`, for callers that can't take a
+-- callback (e.g. overseer template builders, which must return a task
+-- definition immediately). Same NVIM_DEV_CONTAINER override and `docker ps`
+-- discovery, but no interactive picker for multiple containers -- there's no
+-- UI to prompt synchronously here, so that case is just reported as an error
+-- like every other failure: returns `nil, problem` instead of notifying.
+function M.find_container()
+  if vim.fn.executable('docker') ~= 1 then
+    return nil, 'The Docker CLI is not available in Neovim PATH.'
+  end
+
+  local result = vim.system(DOCKER_PS_ARGS, { text = true }):wait()
+  if result.code ~= 0 then
+    return nil,
+      'Docker is installed, but the active Docker context cannot list containers.\n' .. vim.trim(
+        result.stderr or 'unknown error'
+      )
+  end
+
+  local containers = M.parse_containers(result.stdout or '')
+  if #containers == 0 then
+    return nil, 'The active Docker context has no running containers. Start it, then verify with: docker ps'
+  end
+
+  local configured = vim.env.NVIM_DEV_CONTAINER
+  if configured and configured ~= '' then
+    for _, container in ipairs(containers) do
+      if container.id == configured or container.name == configured then
+        return configured
+      end
+    end
+    return nil, ("NVIM_DEV_CONTAINER is set to '%s', but that container is not running."):format(configured)
+  end
+
+  if #containers == 1 then
+    return containers[1].name
+  end
+
+  local names = vim.tbl_map(function(container)
+    return container.name
+  end, containers)
+  return nil, 'Multiple containers are running -- set NVIM_DEV_CONTAINER to pick one:\n' .. table.concat(names, '\n')
 end
 
 function M.reset()

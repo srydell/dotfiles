@@ -1,3 +1,18 @@
+-- Find which container to exec into: reuses srydell.util.docker_container's
+-- NVIM_DEV_CONTAINER override / single-container auto-detection (same
+-- `docker ps` discovery the LLDB adapter and struct_layout use), just via
+-- its synchronous variant since a template builder must return immediately.
+-- Caches the result into NVIM_DEV_CONTAINER so later steps in the same
+-- build (e.g. patch_compile_commands.py) see the same container without
+-- re-running `docker ps`.
+local function resolve_container()
+  local container, problem = require('srydell.util.docker_container').find_container()
+  if container then
+    vim.env.NVIM_DEV_CONTAINER = container
+  end
+  return container, problem
+end
+
 return {
   name = 'docker run',
   desc = 'Run a command within a running docker container.',
@@ -9,6 +24,13 @@ return {
     },
   },
   builder = function(params)
+    local container, problem = resolve_container()
+    if not container then
+      return {
+        cmd = { 'sh', '-c', 'echo "docker run: ' .. problem:gsub('"', '\\"') .. '" >&2; exit 1' },
+      }
+    end
+
     return {
       cmd = { 'docker' },
       args = {
@@ -16,7 +38,7 @@ return {
         '--workdir',
         vim.fn.getcwd(),
         '-t',
-        'docker-dev-rocky8-dev-linux-arm64-arm64',
+        container,
         'bash',
         unpack(params.command),
       },
