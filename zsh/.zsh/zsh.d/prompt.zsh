@@ -1,12 +1,22 @@
 # Simple, fast, native zsh prompt (replaces powerlevel10k).
 #
 # Layout:
-#   <cwd> <git branch> <status markers>       [duration of last command]
+#   <cwd>                                  <duration of last command> [branch●●]
 #   <one $ per nested shell level, or # if running as root>
 #
-# Status markers (only shown when non-empty, nothing at all on a clean,
-# up-to-date repo): ✖ conflict, ● unstaged changes, ⇡N/⇣N commits
-# ahead/behind upstream.
+# Timing + git segment are right-aligned on the *first* line (alongside cwd),
+# not the second (input) line where $RPROMPT would otherwise put them: since
+# PROMPT spans two lines, plain RPROMPT is drawn next to the last line. So
+# instead this saves the cursor, jumps to the right column with an absolute
+# cursor-position escape, prints the segment, then restores the cursor, all
+# before the newline into the second line. Nothing is rendered at all when
+# there's no timing to show and the cwd isn't inside a git repo (no empty
+# "[]" brackets, no stray leading space).
+#
+# Git segment (mimics wincent/wincent's style: https://github.com/wincent/wincent),
+# rendered as "[branch●●]" with one small colored dot per condition (nothing
+# at all shown for a clean repo with no dots to add):
+#   green ● staged changes, red ● unstaged changes, blue ● untracked files.
 #
 # - The git segment is computed in a background subshell (via process
 #   substitution + a `zle -F` fd watcher, not a persistent zsh-async/zpty
@@ -31,6 +41,7 @@ typeset -g _prompt_gruvbox_orange='#fe8019'
 typeset -g _prompt_gruvbox_aqua='#8ec07c'
 
 typeset -g _prompt_git_info=""
+typeset -gi _prompt_git_info_width=0
 typeset -g _prompt_duration=""
 typeset -g _prompt_has_run=0
 typeset -g _prompt_exit_code=0
@@ -40,6 +51,12 @@ typeset -F _prompt_cmd_start=0
 typeset -g _osc_prompt_start=$'\e]133;A\a' # FTCS_PROMPT_START
 typeset -g _osc_prompt_end=$'\e]133;B\a'   # FTCS_COMMAND_START
 typeset -g _osc_output_start=$'\e]133;C\a' # FTCS_COMMAND_EXECUTED
+
+# DECSC/DECRC (save/restore cursor) and CSI sequences used to right-align
+# the first-line segment below need a real ESC byte: a plain "..." string
+# leaves a literal backslash-e in zsh instead, so this must come from a
+# $'...'-quoted literal.
+typeset -g _term_esc=$'\e'
 
 # Formats $1 (elapsed seconds) into $_prompt_duration, e.g. "1d2h3m4s" or
 # "4.56s". Sets the global directly instead of `print`-ing + capturing via
@@ -90,18 +107,49 @@ _prompt_render() {
 	local nesting="" i
 	for (( i = 0; i < lvl; i++ )); do nesting+="\\$char"; done
 
-	PROMPT="%{${marker}${_osc_prompt_start}%}%F{$_prompt_gruvbox_blue}%~%f${_prompt_git_info}
+	# Build the right-hand segment for the first line: duration (if any),
+	# then the git indicator (if any), tracking its *plain* display width
+	# alongside it (color escapes like %F{...}/%f take up zero columns, so
+	# ${#...} on the colored text would overcount).
+	local rhs_content="" rhs_width=0
+	if [[ -n $_prompt_duration ]]; then
+		rhs_content+="%F{$_prompt_gruvbox_aqua}${_prompt_duration}%f"
+		(( rhs_width += ${#_prompt_duration} ))
+	fi
+	if (( _prompt_git_info_width > 0 )); then
+		if [[ -n $rhs_content ]]; then
+			rhs_content+=" "
+			(( rhs_width += 1 ))
+		fi
+		rhs_content+="$_prompt_git_info"
+		(( rhs_width += _prompt_git_info_width ))
+	fi
+
+	local rhs=""
+	if (( rhs_width > 0 && COLUMNS > rhs_width )); then
+		# %{...%} tells zle these escapes occupy zero columns, so its own
+		# cursor math for the first line (where the newline into the second
+		# line happens) is unaffected: DECSC/DECRC save/restore the cursor
+		# around an absolute column jump (CSI n G) to the right edge of the
+		# terminal, so this renders on the first line regardless of where
+		# RPROMPT would otherwise place it.
+		rhs="%{${_term_esc}7%}%{${_term_esc}[$(( COLUMNS - rhs_width + 1 ))G%}${rhs_content}%{${_term_esc}8%}"
+	fi
+
+	PROMPT="%{${marker}${_osc_prompt_start}%}%F{$_prompt_gruvbox_blue}%~%f${rhs}
 %F{$_prompt_gruvbox_orange}${nesting}%f %{${_osc_prompt_end}%}"
 
-	RPROMPT="%F{$_prompt_gruvbox_aqua}${_prompt_duration}%f"
+	RPROMPT=""
 }
 
 # Runs inside a background subshell (via process substitution), so blocking
 # git calls here never stall the interactive shell.
 #
-# Shows nothing at all beyond the branch name when the repo is clean and in
-# sync with its upstream. Otherwise shows a marker per condition:
-#   ✖ merge conflict   ● unstaged changes   ⇡N/⇣N commits ahead/behind
+# Prints "<plain-width>|[branch●●]" (wincent/wincent style) — the plain width
+# lets the renderer right-align this alongside the cwd without miscounting
+# the zero-width color escapes. One small colored dot per condition, nothing
+# at all (not even the branch) beyond a plain "return" for a non-git cwd:
+#   green ● staged changes   red ● unstaged changes   blue ● untracked files
 _prompt_git_info_worker() {
 	cd -q "$1" 2>/dev/null || return
 	local branch
@@ -112,27 +160,32 @@ _prompt_git_info_worker() {
 	flags=$(git status --porcelain --ignore-submodules 2>/dev/null | awk '
 		{
 			x = substr($0, 1, 1); y = substr($0, 2, 1)
-			if (x == "?" && y == "?") next
-			if (x == "U" || y == "U" || (x == "A" && y == "A") || (x == "D" && y == "D")) conflict = 1
+			if (x == "?" && y == "?") { untracked = 1; next }
+			if (x != " ") staged = 1
 			if (y != " ") unstaged = 1
 		}
-		END { printf "%d%d", unstaged, conflict }
+		END { printf "%d%d%d", staged, unstaged, untracked }
 	')
-	local unstaged=${flags:0:1} conflict=${flags:1:1}
+	local staged=${flags:0:1} unstaged=${flags:1:1} untracked=${flags:2:1}
 
-	local marks=""
-	(( conflict )) && marks+=" %F{$_prompt_gruvbox_red}✖%f"
-	(( unstaged )) && marks+=" %F{$_prompt_gruvbox_red}●%f"
-
-	local ahead_behind
-	ahead_behind=$(git rev-list --left-right --count 'HEAD...@{u}' 2>/dev/null)
-	if [[ -n $ahead_behind ]]; then
-		local ahead=${ahead_behind%%[[:space:]]*} behind=${ahead_behind##*[[:space:]]}
-		(( ahead )) && marks+=" %F{$_prompt_gruvbox_aqua}⇡${ahead}%f"
-		(( behind )) && marks+=" %F{$_prompt_gruvbox_aqua}⇣${behind}%f"
+	# Small bullet (•, U+2022) rather than the larger circle (●, U+25CF), so
+	# multiple adjacent dots don't visually overlap in most terminal fonts.
+	local dots="" dot_count=0
+	if (( staged )); then
+		dots+="%F{$_prompt_gruvbox_green}•%f"
+		(( dot_count++ ))
+	fi
+	if (( unstaged )); then
+		dots+="%F{$_prompt_gruvbox_red}•%f"
+		(( dot_count++ ))
+	fi
+	if (( untracked )); then
+		dots+="%F{$_prompt_gruvbox_blue}•%f"
+		(( dot_count++ ))
 	fi
 
-	print -n " %F{$_prompt_gruvbox_green}${branch}%f${marks}"
+	local width=$(( 2 + ${#branch} + dot_count )) # "[" + branch + dots + "]"
+	print -n "${width}|[${branch}${dots}]"
 }
 
 _prompt_async_callback() {
@@ -144,13 +197,20 @@ _prompt_async_callback() {
 	zle -F $fd
 	exec {fd}<&-
 	(( _prompt_git_fd == fd )) && _prompt_git_fd=0
-	_prompt_git_info=$info
+	if [[ -z $info ]]; then
+		_prompt_git_info_width=0
+		_prompt_git_info=""
+	else
+		_prompt_git_info_width=${info%%|*}
+		_prompt_git_info=${info#*|}
+	fi
 	_prompt_render
 	zle && zle reset-prompt
 }
 
 _prompt_clear_git_info_on_chpwd() {
 	_prompt_git_info=""
+	_prompt_git_info_width=0
 }
 
 _prompt_preexec() {
