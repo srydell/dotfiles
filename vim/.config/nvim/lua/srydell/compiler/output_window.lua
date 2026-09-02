@@ -17,4 +17,21 @@ M.close_all = function()
   return closed_any
 end
 
+-- Close every OverseerOutput window except `keep_winid`. This is the
+-- backstop for the single-window invariant: no matter which code path
+-- opened a new OverseerOutput window (the <leader>o toggle, M.run(), or
+-- some overseer component reusing/replacing a task buffer), any other
+-- lingering OverseerOutput window gets closed as soon as one becomes
+-- visible. See the BufWinEnter autocmd in srydell.autocmds.
+M.close_duplicates = function(keep_winid)
+  for _, winid in ipairs(vim.api.nvim_list_wins()) do
+    if winid ~= keep_winid then
+      local bufnr = vim.api.nvim_win_get_buf(winid)
+      if vim.bo[bufnr].filetype == 'OverseerOutput' then
+        vim.api.nvim_win_close(winid, false)
+      end
+    end
+  end
+end
+
 return M

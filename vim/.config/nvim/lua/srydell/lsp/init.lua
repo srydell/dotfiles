@@ -83,7 +83,6 @@ local on_attach = function(_, bufnr)
   vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
   opts.desc = 'Show references for declarator under cursor'
   vim.keymap.set('n', 'gr', require('telescope.builtin').lsp_references, opts)
-  -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
   opts.desc = 'Show documentation for what is under cursor'
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
 end

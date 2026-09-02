@@ -22,3 +22,14 @@ vim.api.nvim_create_autocmd({ 'FileType' }, {
     vim.keymap.set('n', 'q', '<cmd>close<cr>', { buffer = args.buf, silent = true })
   end,
 })
+
+-- Enforce that only one OverseerOutput window is ever open at a time.
+vim.api.nvim_create_autocmd({ 'BufWinEnter' }, {
+  group = srydell_misc_augroup,
+  callback = function(args)
+    if vim.bo[args.buf].filetype ~= 'OverseerOutput' then
+      return
+    end
+    require('srydell.compiler.output_window').close_duplicates(vim.api.nvim_get_current_win())
+  end,
+})
