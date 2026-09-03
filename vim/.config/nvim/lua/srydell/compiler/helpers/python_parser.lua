@@ -6,9 +6,10 @@
 -- The second (no ", in ...") shape is what SyntaxError/IndentationError
 -- produce, since they fail before any function context exists to name.
 -- The exception line itself (e.g. "ValueError: boom") has no filename/line
--- to key off, so - like the old errorformat - it is not reported as a
--- separate quickfix entry; the frame line(s) above it already point at the
--- offending code.
+-- to key off, so it is not reported as a separate quickfix entry. Instead,
+-- its message is appended to the last frame's text, since that message is
+-- often the only part of the traceback that says *why* it failed (e.g.
+-- "ModuleNotFoundError: No module named 'dgrammar'" vs. just "<module>").
 local parselib = require('overseer.parselib')
 
 local M = {}
@@ -33,14 +34,28 @@ M.parse_traceback_frame = function(line)
   return parse_frame_with_context(line) or parse_frame_without_context(line)
 end
 
+-- The final line of a traceback: an unindented "ExceptionName: message"
+-- (e.g. "ModuleNotFoundError: No module named 'dgrammar'"). Requires a
+-- message so it doesn't misfire on unrelated unindented lines.
+local parse_exception_line = parselib.make_parse_fn(
+  parselib.make_lua_match_fn('^([%w_.]+): (.+)$'),
+  { 'name', 'message' }
+)
+
 M.new_parser = function()
   local diagnostics = {}
   return {
     parse = function(_, line)
-      local item = M.parse_traceback_frame(line)
-      if item then
-        item.type = 'E'
-        table.insert(diagnostics, item)
+      local frame = M.parse_traceback_frame(line)
+      if frame then
+        frame.type = 'E'
+        table.insert(diagnostics, frame)
+        return
+      end
+      local exception = parse_exception_line(line)
+      if exception and #diagnostics > 0 then
+        local last = diagnostics[#diagnostics]
+        last.text = string.format('%s: %s: %s', last.text, exception.name, exception.message)
       end
     end,
     get_result = function()

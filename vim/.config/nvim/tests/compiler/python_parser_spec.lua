@@ -65,6 +65,26 @@ describe('python_parser.new_parser', function()
     assert.are.equal(1, diagnostics[1].lnum)
   end)
 
+  it('appends the exception message to the last frame (ModuleNotFoundError)', function()
+    -- Regression test: a single-frame traceback (e.g. a top-level import
+    -- failure) only says "<module>" without the message, we append the
+    -- "ExceptionName: message" line to the frame's text so the quickfix
+    -- entry shows *why* it failed.
+    local parser = python_parser.new_parser()
+    for _, line in ipairs({
+      'Traceback (most recent call last):',
+      '  File "/private/tmp/faster_restarts_example.py", line 24, in <module>',
+      '    import dgrammar',
+      "ModuleNotFoundError: No module named 'dgrammar'",
+    }) do
+      parser:parse(line)
+    end
+    local diagnostics = parser:get_result().diagnostics
+    assert.are.equal(1, #diagnostics)
+    assert.are.equal(24, diagnostics[1].lnum)
+    assert.are.equal("<module>: ModuleNotFoundError: No module named 'dgrammar'", diagnostics[1].text)
+  end)
+
   it('reports a single frame for a real IndentationError', function()
     local parser = python_parser.new_parser()
     for _, line in ipairs({
