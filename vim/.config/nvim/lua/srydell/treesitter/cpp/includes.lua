@@ -107,6 +107,54 @@ local function parse_cpp_preamble(lines)
   }
 end
 
+-- Find the contiguous block of #include/blank/comment-continuation lines
+-- that begins right after the file preamble (license comments and/or
+-- include guard). Returns the block's 0-indexed [start_row, end_row]
+-- (inclusive) or nil if the preamble isn't immediately followed by an
+-- include. This intentionally excludes any #include that appears later in
+-- the file separated by real code, e.g. a template implementation's trailing
+-- `#include "foo.hpp"` after the class body: that must be left untouched
+-- rather than pulled into the sorted block, and its surrounding code must
+-- not be mistaken for "code interleaved between includes".
+local function find_top_include_block(lines, preamble)
+  local start_row = preamble.after_define or preamble.after_comments or 0
+
+  -- Consume any trivia (blank lines, `//` and `/* */` license comments)
+  -- between the preamble and the first include, e.g. a license block that
+  -- follows the include guard's #ifndef/#define pair.
+  local block_comment = false
+  while lines[start_row + 1] ~= nil do
+    local is_trivia
+    is_trivia, block_comment = is_cpp_trivia_line(lines[start_row + 1], block_comment)
+    if not is_trivia then
+      break
+    end
+    start_row = start_row + 1
+  end
+
+  local end_row = start_row
+  local last_include_row
+  local row = start_row + 1
+  while lines[row] ~= nil do
+    if lines[row]:match('^%s*#%s*include%s+') then
+      last_include_row = row
+      end_row = row
+    elseif lines[row]:match('^%s*$') or lines[row]:match('^%s*//') then
+      end_row = row
+    else
+      break
+    end
+    row = row + 1
+  end
+
+  if last_include_row == nil then
+    return nil
+  end
+
+  -- Rows are 1-indexed in `lines`; convert to 0-indexed treesitter rows.
+  return { start_row = start_row, end_row = last_include_row - 1 }
+end
+
 -- Before: the file's #include block contains any mix of quoted/angle-bracket
 -- includes, possibly unsorted.
 -- After: the entire contiguous #include block is replaced in place with the
@@ -125,6 +173,16 @@ end
 --
 -- #include <system_includes>
 function M.divide_and_sort_includes()
+  local buf_lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  local preamble = parse_cpp_preamble(buf_lines)
+  local top_block = find_top_include_block(buf_lines, preamble)
+  -- No #include immediately follows the preamble: nothing to sort. In
+  -- particular, this leaves a lone trailing include (e.g. a template
+  -- implementation's `#include "foo.hpp"` after the class body) untouched.
+  if top_block == nil then
+    return
+  end
+
   local includes = { external = {}, system = {}, internal = {}, internal_same_dir = {}, internal_my_own = {} }
   local locations = { start_row = nil, end_row = nil }
 
@@ -199,40 +257,47 @@ function M.divide_and_sort_includes()
     if node:type() == 'preproc_include' then
       for child, name in node:iter_children() do
         if name ~= nil and name == 'path' then
-          local text = navigation.get_node_text(child, 0)
-          -- Alignment headers are often used as paired sentinels. Leave the
-          -- include block untouched rather than moving or deleting them.
-          if text:find('align_int8.h') ~= nil or text:find('align_restore.h') ~= nil then
-            has_alignment_header = true
-            return true
-          end
-
-          compare_location(child)
-          local row, _, _, end_column = vim.treesitter.get_node_range(child)
-          local line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ''
-          -- Preserve everything following the path, most importantly comments
-          -- explaining why an include exists. The directive's leading spacing
-          -- is still normalized by the sorter.
-          local suffix = line:sub(end_column + 1)
-
-          -- A trailing `//` comment may continue onto the following lines
-          -- (e.g. indented to line up with the comment above). Consume those
-          -- lines here so they travel with this include instead of being
-          -- mistaken for code between includes.
-          local extra_lines = {}
-          local next_row = row + 1
-          while true do
-            local candidate = vim.api.nvim_buf_get_lines(0, next_row, next_row + 1, false)[1]
-            if candidate == nil or candidate:match('^%s*//') == nil then
-              break
+          local include_row = navigation.get_row(child)
+          -- Ignore includes outside the top-of-file block, e.g. a template
+          -- implementation's trailing `#include "foo.hpp"` after the class
+          -- body. Only the contiguous block right after the preamble is
+          -- sorted; anything else is left exactly where it is.
+          if include_row >= top_block.start_row and include_row <= top_block.end_row then
+            local text = navigation.get_node_text(child, 0)
+            -- Alignment headers are often used as paired sentinels. Leave the
+            -- include block untouched rather than moving or deleting them.
+            if text:find('align_int8.h') ~= nil or text:find('align_restore.h') ~= nil then
+              has_alignment_header = true
+              return true
             end
-            table.insert(extra_lines, candidate)
-            consumed_rows[next_row] = true
-            locations.end_row = math.max(next_row, locations.end_row)
-            next_row = next_row + 1
-          end
 
-          append_include(text, child, suffix, extra_lines)
+            compare_location(child)
+            local row, _, _, end_column = vim.treesitter.get_node_range(child)
+            local line = vim.api.nvim_buf_get_lines(0, row, row + 1, false)[1] or ''
+            -- Preserve everything following the path, most importantly comments
+            -- explaining why an include exists. The directive's leading spacing
+            -- is still normalized by the sorter.
+            local suffix = line:sub(end_column + 1)
+
+            -- A trailing `//` comment may continue onto the following lines
+            -- (e.g. indented to line up with the comment above). Consume those
+            -- lines here so they travel with this include instead of being
+            -- mistaken for code between includes.
+            local extra_lines = {}
+            local next_row = row + 1
+            while true do
+              local candidate = vim.api.nvim_buf_get_lines(0, next_row, next_row + 1, false)[1]
+              if candidate == nil or candidate:match('^%s*//') == nil then
+                break
+              end
+              table.insert(extra_lines, candidate)
+              consumed_rows[next_row] = true
+              locations.end_row = math.max(next_row, locations.end_row)
+              next_row = next_row + 1
+            end
+
+            append_include(text, child, suffix, extra_lines)
+          end
         end
       end
     end

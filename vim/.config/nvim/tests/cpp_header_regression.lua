@@ -300,6 +300,106 @@ assert_lines({
   'std::vector<int> xs;',
 })
 
+-- A trailing #include after real code (e.g. a template implementation's
+-- `#include "foo.hpp"` following the class body) must not be swept into the
+-- distant top-of-file block: the huge stretch of real code in between must
+-- not make the sorter give up on the real block, and the trailing include
+-- must be left exactly where it is.
+set_lines({
+  '#ifndef WIDGET_HPP',
+  '#define WIDGET_HPP',
+  '/*',
+  ' * License header',
+  ' */',
+  '',
+  '#include "Iwidget.h"',
+  '#include "other.h"',
+  '',
+  '#include <limits>',
+  '#include <memory>',
+  '',
+  'class Widget {',
+  '  void f();',
+  '};',
+  '',
+  '#include "widget.hpp"',
+  '',
+  '#endif // WIDGET_HPP',
+})
+include_necessary_types()
+ts_cpp.divide_and_sort_includes()
+assert_lines({
+  '#ifndef WIDGET_HPP',
+  '#define WIDGET_HPP',
+  '/*',
+  ' * License header',
+  ' */',
+  '',
+  '#include "Iwidget.h"',
+  '#include "other.h"',
+  '',
+  '#include <limits>',
+  '#include <memory>',
+  '',
+  'class Widget {',
+  '  void f();',
+  '};',
+  '',
+  '#include "widget.hpp"',
+  '',
+  '#endif // WIDGET_HPP',
+})
+
+-- Same scenario, but the class now uses std::string: the inferred <string>
+-- header must land in the system group of the top block, not get stranded
+-- before it because the trailing "widget.hpp" include made the sorter give
+-- up.
+set_lines({
+  '#ifndef WIDGET_HPP',
+  '#define WIDGET_HPP',
+  '/*',
+  ' * License header',
+  ' */',
+  '',
+  '#include "Iwidget.h"',
+  '#include "other.h"',
+  '',
+  '#include <limits>',
+  '#include <memory>',
+  '',
+  'class Widget {',
+  '  std::string name;',
+  '};',
+  '',
+  '#include "widget.hpp"',
+  '',
+  '#endif // WIDGET_HPP',
+})
+include_necessary_types()
+ts_cpp.divide_and_sort_includes()
+assert_lines({
+  '#ifndef WIDGET_HPP',
+  '#define WIDGET_HPP',
+  '/*',
+  ' * License header',
+  ' */',
+  '',
+  '#include "Iwidget.h"',
+  '#include "other.h"',
+  '',
+  '#include <limits>',
+  '#include <memory>',
+  '#include <string>',
+  '',
+  'class Widget {',
+  '  std::string name;',
+  '};',
+  '',
+  '#include "widget.hpp"',
+  '',
+  '#endif // WIDGET_HPP',
+})
+
 -- Unqualified types and functions resolve through a visible using-directive.
 set_lines({
   'using namespace std;',
