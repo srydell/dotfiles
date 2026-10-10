@@ -27,7 +27,7 @@ local ms = ls.multi_snippet
 local k = require('luasnip.nodes.key_indexer').new_key
 
 local function isView()
-  local filename = vim.fn.expand('%:p')
+  local filename = vim.fn.expand('%:t:r')
   if string.find(filename, 'View') then
     return true
   end
@@ -52,7 +52,6 @@ struct %s: View {
   return %s()
 }
         ]],
-      filename,
       filename,
       filename
     )

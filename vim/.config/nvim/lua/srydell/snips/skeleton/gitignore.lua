@@ -43,7 +43,7 @@ local function skeleton()
 
   return s(
     { trig = 'skeleton', dscr = 'Skeleton snippet' },
-    fmta(
+    t(vim.split(
       string.format(
         [[
 # Ignore everything
@@ -64,8 +64,9 @@ tags
         table.concat(files, '\n'),
         table.concat(directories, '\n')
       ),
-      {}
-    )
+      '\n',
+      { plain = true }
+    ))
   )
 end
 

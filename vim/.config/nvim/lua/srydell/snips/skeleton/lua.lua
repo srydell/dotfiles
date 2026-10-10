@@ -203,11 +203,11 @@ local function get_srydell_compilers()
     { trig = '_skeleton', wordTrig = true, hidden = true, dscr = 'Skeleton snippet' },
     fmta(
       [==[
-        local function get_compilers()
-          return { { name = '<>', tasks = { '<>' } } }
+        local function get_compilers(ctx)
+          return { { name = '<>', tasks = { task = '<>' } } }
         end
 
-        return get_compilers()
+        return get_compilers
       ]==],
       {
         i(1, 'To show in status line'),

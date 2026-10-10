@@ -25,20 +25,34 @@ local function basic_include_guard(project_info)
   end
 
   local guard = util.get_include_guard(project_info)
+  if #project_info.path == 0 then
+    guard = util.get_include_guard({ name = vim.fn.expand('%:t'), path = {} })
+  end
+  local namespace = util.get_namespace(project_info)
+  for _, part in ipairs(vim.split(namespace, '::', { plain = true })) do
+    if not part:match('^[%a_][%w_]*$') then
+      namespace = ''
+      break
+    end
+  end
+  local namespace_open, namespace_close = '', ''
+  if namespace ~= '' then
+    namespace_open = 'namespace ' .. namespace .. ' {\n  '
+    namespace_close = '\n}'
+  end
   local snippet = string.format(
     [[#ifndef %s
 #define %s
 %s
-namespace %s {
-  <>
-}
+%s<>%s
 
 #endif // ifndef %s
     ]],
     guard,
     guard,
     license,
-    util.get_namespace(project_info),
+    namespace_open,
+    namespace_close,
     guard
   )
 

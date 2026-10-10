@@ -38,7 +38,7 @@ local function skeleton()
           if __name__ == '__main__':
               main()
       ]],
-      { i(0) }
+      { i(0, 'pass') }
     )
   )
 end
