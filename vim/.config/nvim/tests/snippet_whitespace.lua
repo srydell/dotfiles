@@ -57,7 +57,50 @@ local function check(snippet, indent, expected, selection)
   })
   local actual = vim.api.nvim_buf_get_lines(0, 0, -1, false)
   assert(vim.deep_equal(actual, expected), vim.inspect({ actual = actual, expected = expected }))
+  return table.concat(actual, '\n')
 end
+
+local copyctor = check(cpp.copyctor, '  ', { '  Widget(Widget const&) = default;' })
+local movector = check(cpp.movector, '  ', { '  Widget(Widget&&) noexcept = default;' })
+local copyassign = check(cpp.copyassign, '  ', { '  Widget& operator=(Widget const&) = default;' })
+local moveassign = check(cpp.moveassign, '  ', { '  Widget& operator=(Widget&&) noexcept = default;' })
+local nocopy = check(cpp.nocopy, '  ', {
+  '  Widget(Widget const&) = delete;',
+  '  Widget& operator=(Widget const&) = delete;',
+})
+local nomove = check(cpp.nomove, '  ', {
+  '  Widget(Widget&&) noexcept = delete;',
+  '  Widget& operator=(Widget&&) noexcept = delete;',
+})
+local source = table.concat({
+  'struct Widget { int value = 0; Widget() = default;',
+  copyctor,
+  movector,
+  copyassign,
+  moveassign,
+  '};',
+  'static_assert(__is_constructible(Widget, Widget const&));',
+  'static_assert(__is_assignable(Widget&, Widget const&));',
+  'static_assert(noexcept(Widget(static_cast<Widget&&>(Widget()))));',
+  'static_assert(noexcept(static_cast<Widget*>(nullptr)->operator=(Widget())));',
+  'struct NoCopy {',
+  nocopy:gsub('Widget', 'NoCopy'),
+  '};',
+  'static_assert(!__is_constructible(NoCopy, NoCopy const&));',
+  'static_assert(!__is_assignable(NoCopy&, NoCopy const&));',
+  'struct NoMove {',
+  nomove:gsub('Widget', 'NoMove'),
+  '};',
+  'static_assert(!__is_constructible(NoMove, NoMove&&));',
+  'static_assert(!__is_assignable(NoMove&, NoMove&&));',
+}, '\n')
+local compiler = vim
+  .system({ 'clang++', '-std=c++17', '-Wall', '-Wextra', '-Werror', '-fsyntax-only', '-x', 'c++', '-' }, {
+    stdin = source,
+    text = true,
+  })
+  :wait()
+assert(compiler.code == 0, compiler.stderr)
 
 check(cpp.ctor, '', { 'Widget() {', '  ', '}' })
 check(cpp.dtor, '  ', { '  ~Widget() {', '    ', '  }' })

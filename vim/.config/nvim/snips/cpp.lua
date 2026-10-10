@@ -25,7 +25,20 @@ local function get_surrounding_classname()
   return sn(nil, { i(1, 'Class') })
 end
 
+-- Default special members delegate member-wise operations to the compiler.
+local function special_member(trigger, description, template, moving)
+  local nodes = { d(1, get_surrounding_classname), rep(1) }
+  if moving then
+    table.insert(nodes, i(2, 'noexcept'))
+  end
+  return s({ trig = trigger, wordTrig = true, dscr = description }, fmta(template, nodes))
+end
+
 return {
+  special_member('copyctor', 'Default copy constructor', '<>(<> const&) = default;'),
+  special_member('movector', 'Default move constructor', '<>(<>&&) <> = default;', true),
+  special_member('copyassign', 'Default copy assignment', '<>& operator=(<> const&) = default;'),
+  special_member('moveassign', 'Default move assignment', '<>& operator=(<>&&) <> = default;', true),
   s(
     { trig = 'operator(%W+)', trigEngine = 'pattern', dscr = 'operator expansion' },
     fmta(
@@ -106,8 +119,8 @@ return {
     { trig = 'nocopy', wordTrig = true, dscr = 'No copy constructors' },
     fmta(
       [[
-        <>(<> &) = delete;
-        <> & operator=(<> &) = delete;
+        <>(<> const&) = delete;
+        <>& operator=(<> const&) = delete;
       ]],
       {
         d(1, get_surrounding_classname),
@@ -122,8 +135,8 @@ return {
     { trig = 'nomove', wordTrig = true, dscr = 'No move constructors' },
     fmta(
       [[
-        <>(<> &&) noexcept = delete;
-        <> & operator=(<> &&) noexcept = delete;
+        <>(<>&&) noexcept = delete;
+        <>& operator=(<>&&) noexcept = delete;
       ]],
       {
         d(1, get_surrounding_classname),
