@@ -28,8 +28,8 @@ return {
         -- messages -- reuse the C++ parser here rather than cmake_parser.lua
         -- (which only understands "CMake Error/Warning at ..." lines).
         { 'on_output_parse', parser = require('srydell.compiler.helpers.cpp_parser').new_parser() },
-        { 'on_result_diagnostics_quickfix', open = true },
-        { 'open_output', on_start = 'never', on_complete = 'success', direction = 'horizontal', focus = false },
+        { 'on_result_diagnostics_quickfix', open = false },
+        { 'open_output', on_start = 'never', on_complete = 'failure', direction = 'horizontal', focus = false },
         'default',
       },
     }

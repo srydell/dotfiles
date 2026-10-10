@@ -29,7 +29,11 @@ return {
             local exe = require('overseer').new_task({
               cmd = { params.executable },
               args = run_args,
-              components = { { 'on_output_quickfix', open = true }, 'default' },
+              components = {
+                { 'on_output_quickfix', open = false },
+                { 'open_output', on_start = 'never', on_complete = 'failure', direction = 'horizontal', focus = false },
+                'default',
+              },
             })
             exe:start()
           else

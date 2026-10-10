@@ -25,8 +25,8 @@ return {
         -- Pure-Lua diagnostic parsing (see cpp_parser.lua) instead of vim
         -- errorformat; only surfaces results once, at task completion.
         { 'on_output_parse', parser = require('srydell.compiler.helpers.cpp_parser').new_parser() },
-        { 'on_result_diagnostics_quickfix', open = true },
-        { 'open_output', on_start = 'never', on_complete = 'success', direction = 'horizontal', focus = false },
+        { 'on_result_diagnostics_quickfix', open = false },
+        { 'open_output', on_start = 'never', on_complete = 'failure', direction = 'horizontal', focus = false },
         { 'srydell.on_end_run_or_debug', executable = executable, will_do = params.will_do },
         {
           'srydell.on_end_create_compile_flags_txt',

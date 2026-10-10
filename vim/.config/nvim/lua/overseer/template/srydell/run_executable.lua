@@ -16,7 +16,11 @@ return {
         'if [ -x "$0" ]; then exec "$0" "$@"; else echo "Executable not found: $0"; exit 1; fi',
         params.executable,
       }, run_args),
-      components = { { 'on_output_quickfix', open = true }, 'default' },
+      components = {
+        { 'on_output_quickfix', open = false },
+        { 'open_output', on_start = 'never', on_complete = 'failure', direction = 'horizontal', focus = false },
+        'default',
+      },
     }
   end,
 }
