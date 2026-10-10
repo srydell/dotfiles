@@ -67,7 +67,7 @@ return {
         }
       ]],
       {
-        d(1, get_visual),
+        d(1, get_visual, {}, { user_args = { '  ' } }),
         i(2, 'std::exception const & e'),
         i(0),
       }
@@ -145,7 +145,7 @@ return {
       ]],
       {
         d(1, guess_class_name),
-        d(2, get_visual),
+        d(2, get_visual, {}, { user_args = { '  ' } }),
         i(0),
       }
     )
@@ -162,7 +162,7 @@ return {
       ]],
       {
         d(1, guess_class_name),
-        d(2, get_visual),
+        d(2, get_visual, {}, { user_args = { '  ' } }),
         i(0),
       }
     )
@@ -178,7 +178,7 @@ return {
       ]],
       {
         i(1, util.get_namespace(util.get_project())),
-        d(2, get_visual),
+        d(2, get_visual, {}, { user_args = { '  ' } }),
         i(0),
       }
     )
@@ -271,7 +271,7 @@ return {
       ]],
       {
         i(1, 'true'),
-        d(2, get_visual),
+        d(2, get_visual, {}, { user_args = { '  ' } }),
         i(0),
       }
     )
@@ -305,7 +305,7 @@ return {
       ]],
       {
         d(1, cpp_snips.get_for_loop_choices_for_snippet),
-        d(2, get_visual),
+        d(2, get_visual, {}, { user_args = { '  ' } }),
         i(0),
       }
     )
@@ -340,7 +340,7 @@ return {
             )
           ),
         }),
-        d(2, get_visual),
+        d(2, get_visual, {}, { user_args = { '  ' } }),
         i(0),
       }
     )

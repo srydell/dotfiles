@@ -75,11 +75,12 @@ assert(render('cpp', 'include/example.hpp'):find('#pragma once', 1, true))
 local header = render('cpp', 'standalone.h')
 assert(not header:find('namespace', 1, true))
 assert(header:find('#ifndef STANDALONE_H', 1, true))
+assert(header == '#ifndef STANDALONE_H\n#define STANDALONE_H\n\n\n#endif // ifndef STANDALONE_H')
 assert(not render('cpp', 'my-project/include/example.h'):find('namespace', 1, true))
 assert(render('cpp', 'dsf/src/util/example.h'):find('namespace dsf::util', 1, true))
 assert(render('cpp', 'dsf/src/util/test/test_example.cpp'):find('BOOST_AUTO_TEST_SUITE(example)', 1, true))
 assert(render('cpp', 'dsf/src/util/example.cpp'):find('namespace dsf::util', 1, true))
-assert(render('cpp', 'prototype/src/main.cpp'):find('int main()', 1, true))
+assert(render('cpp', 'prototype/src/main.cpp') == '#include <iostream>\n\nint main() {\n  \n}')
 assert(render('cpp', 'unknown/src/main.cpp') == nil)
 
 -- No external fetch during validation; exercise fallback and decoded metadata.

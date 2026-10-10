@@ -5,6 +5,7 @@ local ls = require('luasnip')
 local fmta = require('luasnip.extras.fmt').fmta
 -- local fmt = require('luasnip.extras.fmt').fmt
 local sn = ls.snippet_node
+local isn = ls.indent_snippet_node
 local i = ls.insert_node
 local c = ls.choice_node
 local extras = require('luasnip.extras')
@@ -319,12 +320,12 @@ M.get_definition_or_declaration = function()
   local definition = sn(
     nil,
     fmta(
-      [[ {
-        <>
-      }]],
+      ' {\n  <>\n}',
+      -- Keep the leading space before the brace; fmta must not dedent it.
       {
         i(1),
-      }
+      },
+      { dedent = false }
     )
   )
 
@@ -390,7 +391,7 @@ end
 M.get_enum_choice_snippet = function()
   local enum = cpp_ts.find_enum_from_type()
   if enum == nil then
-    return sn(
+    return isn(
       nil,
       fmta(
         [[
@@ -399,7 +400,8 @@ M.get_enum_choice_snippet = function()
           }
         ]],
         { i(1, '0'), i(2, 'return;') }
-      )
+      ),
+      '$PARENT_INDENT  '
     )
   end
 
@@ -421,7 +423,7 @@ case %s::%s: {
     table.insert(nodes, i(index, 'return;'))
   end
 
-  return sn(nil, fmta(table.concat(cases, '\n'), nodes))
+  return isn(nil, fmta(table.concat(cases, '\n'), nodes), '$PARENT_INDENT  ')
 end
 
 M.get_operator = function(_, snip)

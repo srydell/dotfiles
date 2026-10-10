@@ -42,17 +42,17 @@ local function basic_include_guard(project_info)
   end
   local snippet = string.format(
     [[#ifndef %s
-#define %s
-%s
-%s<>%s
+#define %s%s
 
-#endif // ifndef %s
+%s<>%s
+%s#endif // ifndef %s
     ]],
     guard,
     guard,
-    license,
+    license == '' and '' or '\n\n' .. vim.trim(license),
     namespace_open,
     namespace_close,
+    namespace == '' and '' or '\n',
     guard
   )
 
@@ -190,7 +190,6 @@ local function leetcode_fallback()
             std::cout <<<< "Expected: " <<<< 0 <<<< '\n';
             std::cout <<<< "-------------------------------------" <<<< '\n';
           }
-
         }
       ]],
       {

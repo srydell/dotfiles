@@ -146,7 +146,7 @@ return {
             )
           ),
         }),
-        d(2, get_visual),
+        d(2, get_visual, {}, { user_args = { '    ' } }),
         i(0),
       }
     )

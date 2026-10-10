@@ -49,13 +49,13 @@ return {
         post(<>, <>,
           [<>]() mutable {
             <><>
-        });
+          });
       ]],
       {
         i(1, 'ExecutorContext::Out'),
         i(2, 'm_executor'),
         i(3),
-        d(4, get_visual),
+        d(4, get_visual, {}, { user_args = { '    ' } }),
         i(0),
       }
     )

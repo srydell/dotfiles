@@ -23,7 +23,7 @@ return {
       ]],
       {
         i(1, 'true'),
-        d(2, get_visual),
+        d(2, get_visual, {}, { user_args = { '  ' } }),
         i(0),
       }
     )
@@ -212,7 +212,7 @@ return {
       ]],
       {
         i(1, 'statement'),
-        d(2, get_visual),
+        d(2, get_visual, {}, { user_args = { '  ' } }),
         i(0),
       }
     )
@@ -272,7 +272,7 @@ return {
         i(1, 'key'),
         i(2, 'value'),
         i(3),
-        d(4, get_visual),
+        d(4, get_visual, {}, { user_args = { '  ' } }),
         i(0),
       }
     )
