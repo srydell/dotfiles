@@ -22,12 +22,6 @@
 #   substitution + a `zle -F` fd watcher, not a persistent zsh-async/zpty
 #   worker) so the prompt is drawn instantly and never blocks on `git
 #   status`, even in huge repos, while avoiding zpty's job-control noise.
-# - OSC 133 "semantic prompt" escape sequences mark prompt/command/output
-#   boundaries (FTCS_PROMPT_START/COMMAND_START/COMMAND_EXECUTED/
-#   COMMAND_FINISHED) so terminals that understand them (iTerm2, kitty,
-#   WezTerm, VS Code, ...) can jump between commands, select just a
-#   command's output, and show exit-status gutter marks. See:
-#   https://gitlab.freedesktop.org/Per_Bothner/specifications/blob/master/proposals/semantic-prompts.md
 # - Colors match the gruvbox (dark) palette used for Neovim in
 #   vim/.config/nvim/lua/srydell/colorscheme.lua.
 setopt PROMPT_SUBST
@@ -47,10 +41,7 @@ typeset -g _prompt_has_run=0
 typeset -g _prompt_exit_code=0
 typeset -F _prompt_cmd_start=0
 
-# OSC 133 semantic-prompt markers.
-typeset -g _osc_prompt_start=$'\e]133;A\a' # FTCS_PROMPT_START
-typeset -g _osc_prompt_end=$'\e]133;B\a'   # FTCS_COMMAND_START
-typeset -g _osc_output_start=$'\e]133;C\a' # FTCS_COMMAND_EXECUTED
+
 
 # DECSC/DECRC (save/restore cursor) and CSI sequences used to right-align
 # the first-line segment below need a real ESC byte: a plain "..." string
@@ -89,9 +80,6 @@ _prompt_format_duration() {
 # `zle -F` callback — can race with zsh's background-job notifications and
 # corrupt the prompt line being drawn.
 _prompt_render() {
-	local marker=""
-	(( _prompt_has_run )) && marker=$'\e]133;D;'"${_prompt_exit_code}"$'\a'
-
 	# One $ per nested shell level (tmux itself starts a shell, so don't
 	# count that extra level while inside it); # instead when running as
 	# root. Built with a plain loop (no `$(...)` fork). Each char is
@@ -136,8 +124,8 @@ _prompt_render() {
 		rhs="%{${_term_esc}7%}%{${_term_esc}[$(( COLUMNS - rhs_width + 1 ))G%}${rhs_content}%{${_term_esc}8%}"
 	fi
 
-	PROMPT="%{${marker}${_osc_prompt_start}%}%F{$_prompt_gruvbox_blue}%~%f${rhs}
-%F{$_prompt_gruvbox_orange}${nesting}%f %{${_osc_prompt_end}%}"
+	PROMPT="%F{$_prompt_gruvbox_blue}%~%f${rhs}
+%F{$_prompt_gruvbox_orange}${nesting}%f "
 
 	RPROMPT=""
 }
@@ -216,7 +204,6 @@ _prompt_clear_git_info_on_chpwd() {
 _prompt_preexec() {
 	_prompt_cmd_start=$EPOCHREALTIME
 	_prompt_has_run=1
-	print -n "$_osc_output_start"
 }
 
 _prompt_precmd() {
