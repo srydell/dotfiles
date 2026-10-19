@@ -32,26 +32,63 @@ local function current_filetype()
   return vim.bo.filetype:match('^[^.]+') or ''
 end
 
-function M.url_for(filetype, word)
-  local encoded_word = url_encode(word)
+-- Returns the currently (charwise/linewise/blockwise) visually selected text,
+-- joining multiple lines with a space so it can be used as a search query.
+local function visual_selection()
+  -- Leave visual mode so the '< and '> marks reflect the active selection.
+  local esc = vim.api.nvim_replace_termcodes('<Esc>', true, false, true)
+  vim.api.nvim_feedkeys(esc, 'nx', false)
 
-  if filetype == 'cpp' then
-    return 'https://en.cppreference.com/index.php?search=' .. encoded_word .. '&title=Special%3ASearch&go='
+  local start_pos = vim.fn.getpos("'<")
+  local end_pos = vim.fn.getpos("'>")
+  local lines = vim.fn.getline(start_pos[2], end_pos[2])
+
+  if #lines == 0 then
+    return ''
   end
 
-  if filetype == 'cmake' then
+  lines[#lines] = string.sub(lines[#lines], 1, end_pos[3])
+  lines[1] = string.sub(lines[1], start_pos[3])
+
+  return table.concat(lines, ' ')
+end
+
+-- Map of filetype -> function(encoded_word) returning the docs search URL to open.
+local URL_FOR_FILETYPE = {
+  cpp = function(encoded_word)
+    return 'https://en.cppreference.com/index.php?search=' .. encoded_word .. '&title=Special%3ASearch&go='
+  end,
+
+  cmake = function(encoded_word)
     return 'https://cmake.org/cmake/help/v'
       .. cmake_version()
       .. '/search.html?q='
       .. encoded_word
       .. '&check_keywords=yes&area=default'
-  end
+  end,
 
-  if filetype == 'elixir' then
+  elixir = function(encoded_word)
     return 'https://hexdocs.pm/elixir/search.html?q=' .. encoded_word
+  end,
+
+  markdown = function(encoded_word)
+    return 'https://duckduckgo.com/?q=meaning+' .. encoded_word .. '&ia=qa'
+  end,
+}
+
+local function default_url(encoded_word, filetype)
+  return 'https://duckduckgo.com/?q=' .. url_encode(filetype) .. '+' .. encoded_word .. '&ia=qa'
+end
+
+function M.url_for(filetype, word)
+  local encoded_word = url_encode(word)
+  local url_builder = URL_FOR_FILETYPE[filetype]
+
+  if url_builder then
+    return url_builder(encoded_word)
   end
 
-  return 'https://duckduckgo.com/?q=' .. url_encode(filetype) .. '+' .. encoded_word .. '&ia=qa'
+  return default_url(encoded_word, filetype)
 end
 
 local function browser_command(url)
@@ -67,7 +104,14 @@ end
 
 function M.open()
   local filetype = current_filetype()
-  local word = vim.fn.expand('<cword>')
+  local mode = vim.fn.mode()
+  local word
+
+  if mode == 'v' or mode == 'V' or mode == '\22' then
+    word = visual_selection()
+  else
+    word = vim.fn.expand('<cword>')
+  end
 
   if filetype == 'vim' then
     vim.cmd.help(word)

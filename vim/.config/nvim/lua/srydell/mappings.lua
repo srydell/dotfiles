@@ -62,10 +62,10 @@ vim.keymap.set('n', '<leader>gp', ':Git push origin HEAD<CR>')
 -- Same as running :!git checkout %
 vim.keymap.set('n', '<leader>Gr', ':Gread<CR>')
 
--- Open appropriate help on the word under the cursor
+-- Open appropriate help on the word under the cursor, or the visual selection.
 -- Filetype dependent.
 -- Takes a browser
-vim.keymap.set('n', '<leader>h', require('srydell.help_docs').open, { silent = true })
+vim.keymap.set({ 'n', 'v' }, '<leader>h', require('srydell.help_docs').open, { silent = true })
 
 -- Prompt for a command to run in the nearest tmux pane ( [t]mux [c]ommand )
 vim.keymap.set('n', '<leader>tc', ':VimuxPromptCommand<CR>', { silent = true })
