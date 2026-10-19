@@ -13,6 +13,9 @@
 --      case-builder; verify their output is unchanged.
 --   5. find_enum_from_type() must not error when the reported LSP location
 --      does not exist in the target buffer.
+--   6. make_atomic() must wrap the whole namespaced type name (e.g.
+--      std::size_t, std::chrono::seconds), not just the trailing
+--      type_identifier, regardless of where in the name the cursor lands.
 local ts_cpp = require('srydell.treesitter.cpp')
 
 local function set_lines(lines)
@@ -211,6 +214,44 @@ do
 
   assert(ok, 'find_enum_from_type should not error on an out-of-range LSP location: ' .. tostring(result))
   assert(result == nil, 'find_enum_from_type should return nil when the reported location is out of range')
+end
+
+-- 6. make_atomic() must wrap the entire namespaced type when the cursor is
+-- on its trailing type_identifier (e.g. 'size_t' in 'std::size_t'), not just
+-- that identifier. This used to leave the existing 'std::' prefix outside
+-- the wrap, producing 'std::std::atomic<size_t>'.
+do
+  set_lines({ 'std::size_t value = 5;' })
+  -- Cursor on 'size_t'.
+  vim.api.nvim_win_set_cursor(0, { 1, 7 })
+  ts_cpp.make_atomic()
+  assert(
+    vim.api.nvim_get_current_line() == 'std::atomic<std::size_t> value = 5;',
+    'make_atomic on size_t should wrap the whole qualified name: ' .. vim.api.nvim_get_current_line()
+  )
+end
+
+do
+  set_lines({ 'std::chrono::seconds value = 5;' })
+  -- A doubly-nested qualified_identifier (std::chrono::seconds) must also be
+  -- wrapped in full.
+  vim.api.nvim_win_set_cursor(0, { 1, 16 })
+  ts_cpp.make_atomic()
+  assert(
+    vim.api.nvim_get_current_line() == 'std::atomic<std::chrono::seconds> value = 5;',
+    'make_atomic on a doubly-qualified type should wrap the whole name: ' .. vim.api.nvim_get_current_line()
+  )
+end
+
+do
+  set_lines({ 'int value = 5;' })
+  -- Unqualified primitive types must keep working as before.
+  vim.api.nvim_win_set_cursor(0, { 1, 1 })
+  ts_cpp.make_atomic()
+  assert(
+    vim.api.nvim_get_current_line() == 'std::atomic<int> value = 5;',
+    'make_atomic on an unqualified primitive type should be unaffected: ' .. vim.api.nvim_get_current_line()
+  )
 end
 
 print('cpp_treesitter_fixes_regression: ok')

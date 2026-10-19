@@ -103,10 +103,26 @@ end
 
 -- Make the type under the cursor atomic. I.e.
 -- int -> std::atomic<int>
+-- std::size_t -> std::atomic<std::size_t>
 -- If the node under the cursor is not a type, do nothing
 M.make_atomic = function()
   local function is_type(node)
-    return node:type() == 'primitive_type' or node:type() == 'type_identifier'
+    if node:type() == 'primitive_type' then
+      return true
+    end
+
+    if node:type() ~= 'type_identifier' and node:type() ~= 'qualified_identifier' then
+      return false
+    end
+
+    -- A namespaced type (e.g. std::size_t) is a bare type_identifier nested
+    -- inside one or more qualified_identifier nodes (one per '::'). Don't
+    -- stop at an inner type_identifier/qualified_identifier - keep climbing
+    -- until the outermost qualified_identifier, otherwise the existing
+    -- 'std::' prefix is left outside the wrap, producing
+    -- 'std::std::atomic<size_t>' instead of 'std::atomic<std::size_t>'.
+    local parent = node:parent()
+    return not (parent and parent:type() == 'qualified_identifier')
   end
 
   local type = navigation.search_up_until(navigation.get_node_at_cursor(), is_type)
