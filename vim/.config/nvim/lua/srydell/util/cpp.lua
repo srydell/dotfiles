@@ -1,3 +1,5 @@
+local util = require('srydell.util')
+
 local M = {}
 
 local function append_header_extensions(base)
@@ -98,6 +100,49 @@ M.get_alternative_file = function()
 
   -- Give up
   return nil
+end
+
+-- Find the project's include roots (src/include/source/inc) by walking up
+-- from the current file until one of those directory names is found, then
+-- collecting whichever of them exist as siblings under that project root.
+--
+-- E.g.
+-- current_file = /Users/me/proj/src/tool/test/test_tool.cpp
+-- Will find project root /Users/me/proj (parent of 'src'), then return
+-- { '/Users/me/proj/src' } since only 'src' exists there.
+M.get_include_roots = function()
+  local root_names = { 'src', 'include', 'source', 'inc' }
+  local dir = vim.fn.expand('%:p:h')
+  local project_root = nil
+
+  while true do
+    local basename = vim.fn.fnamemodify(dir, ':t')
+    if util.contains(root_names, basename) then
+      project_root = vim.fn.fnamemodify(dir, ':h')
+      break
+    end
+
+    local parent = vim.fn.fnamemodify(dir, ':h')
+    if parent == dir then
+      -- Reached filesystem root without finding a match
+      break
+    end
+    dir = parent
+  end
+
+  if project_root == nil then
+    return {}
+  end
+
+  local roots = {}
+  for _, name in ipairs(root_names) do
+    local candidate = project_root .. '/' .. name
+    if vim.fn.isdirectory(candidate) == 1 then
+      table.insert(roots, candidate)
+    end
+  end
+
+  return roots
 end
 
 M.get_alternative_include_guess = function()
