@@ -89,7 +89,7 @@ return {
 
     debug_map('b', toggle_breakpoint)
     debug_map('i', dap.step_into)
-    debug_map('l', set_log_breakpoint)
+    -- debug_map('l', set_log_breakpoint)
     debug_map('o', dap.step_out)
     debug_map('r', dap.run_last)
     debug_map('s', dap.step_over)
@@ -99,5 +99,6 @@ return {
     debug_map('u', dap.up)
     debug_map('d', dap.down)
     debug_map('x', terminate_debug_session)
+    debug_map('q', breakpoint_db.quickfix)
   end,
 }

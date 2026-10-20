@@ -91,6 +91,51 @@ function M.load()
   end
 end
 
+-- Load every saved breakpoint for the project into the quickfix list,
+-- regardless of whether the file is currently open in a buffer.
+function M.quickfix()
+  local settings = vim.fn.getcwd() .. '/.nvim'
+  local breakpoints_fp = settings .. '/breakpoints.json'
+
+  local fp = io.open(breakpoints_fp, 'r')
+  if not fp then
+    vim.notify('No breakpoints.json found for this project.', vim.log.levels.INFO)
+    return
+  end
+
+  local content = fp:read('*a')
+  fp:close()
+
+  if string.len(content) == 0 then
+    vim.notify('No breakpoints saved for this project.', vim.log.levels.INFO)
+    return
+  end
+
+  local bps = decode(content, breakpoints_fp)
+  if not bps then
+    return
+  end
+
+  local items = {}
+  for file_name, file_bps in pairs(bps) do
+    for _, bp in pairs(file_bps) do
+      table.insert(items, {
+        filename = file_name,
+        lnum = bp.line,
+        text = bp.logMessage or bp.condition or 'breakpoint',
+      })
+    end
+  end
+
+  if #items == 0 then
+    vim.notify('No breakpoints saved for this project.', vim.log.levels.INFO)
+    return
+  end
+
+  vim.fn.setqflist({}, ' ', { title = 'Breakpoints', items = items })
+  vim.cmd.copen()
+end
+
 M.setup = function()
   local autogroup = vim.api.nvim_create_augroup('dap-breakpoints', { clear = true })
 
