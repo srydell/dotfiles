@@ -87,10 +87,24 @@ local on_attach = function(_, bufnr)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
 end
 
-vim.lsp.config('*', {
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
+-- Used to call the bundled on_attach before the custom one specified above.
+-- This is since e.g. clangd system on_attach adds LspClangdSwitchSourceHeader and friends
+local function chain_bundled_on_attach(name)
+  local bundled_on_attach = vim.lsp.config[name] and vim.lsp.config[name].on_attach
+  return function(client, bufnr)
+    on_attach(client, bufnr)
+    if bundled_on_attach then
+      bundled_on_attach(client, bufnr)
+    end
+  end
+end
+
+for _, name in ipairs(lsp_servers) do
+  vim.lsp.config(name, {
+    capabilities = capabilities,
+    on_attach = chain_bundled_on_attach(name),
+  })
+end
 
 vim.lsp.config('clangd', {
   root_dir = function(bufnr, on_dir)
@@ -150,6 +164,7 @@ if sourcekit_cmd then
         },
       },
     }),
+    on_attach = chain_bundled_on_attach('sourcekit'),
     cmd = sourcekit_cmd,
     filetypes = { 'swift' },
     root_dir = sourcekit_root_dir,
