@@ -514,4 +514,21 @@ assert_lines({
   'int move = 0;',
 })
 
+-- Same-dir quoted includes (no `/`) and path-qualified quoted includes (with
+-- `/`) are a single sorted block: they interleave alphabetically rather than
+-- same-dir includes always preceding path-qualified ones.
+set_lines({
+  '#include "other/directory.h"',
+  '#include "zzz.h"',
+  '#include "aaa/inner.h"',
+  '#include "mid.h"',
+})
+ts_cpp.divide_and_sort_includes()
+assert_lines({
+  '#include "aaa/inner.h"',
+  '#include "mid.h"',
+  '#include "other/directory.h"',
+  '#include "zzz.h"',
+})
+
 print('cpp_header_regression: ok')

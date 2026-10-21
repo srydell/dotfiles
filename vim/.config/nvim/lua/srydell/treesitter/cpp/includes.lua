@@ -158,10 +158,10 @@ end
 -- Before: the file's #include block contains any mix of quoted/angle-bracket
 -- includes, possibly unsorted.
 -- After: the entire contiguous #include block is replaced in place with the
--- same includes grouped and sorted into (own header, same-dir, other
--- internal, external, system), each group alphabetized with a blank line
--- between the internal/external/system groups. Does nothing if code (not
--- just includes/blank lines) is interleaved between includes, or if an
+-- same includes grouped and sorted into (own header, internal, external,
+-- system), each group alphabetized with a blank line between the
+-- internal/external/system groups. Does nothing if code (not just
+-- includes/blank lines) is interleaved between includes, or if an
 -- alignment-sentinel header is present.
 -- Read the current includes
 -- Divide them and sort them internally in the following groups:
@@ -183,7 +183,7 @@ function M.divide_and_sort_includes()
     return
   end
 
-  local includes = { external = {}, system = {}, internal = {}, internal_same_dir = {}, internal_my_own = {} }
+  local includes = { external = {}, system = {}, internal = {}, internal_my_own = {} }
   local locations = { start_row = nil, end_row = nil }
 
   local function compare_location(node)
@@ -226,12 +226,8 @@ function M.divide_and_sort_includes()
     if node:type() == 'string_literal' then
       -- E.g. "myLib/stuff.h"
       -- or "local_stuff.h"
-      if text:find('/') == nil then
-        if is_header_to_this(text) then
-          table.insert(includes['internal_my_own'], include)
-        else
-          table.insert(includes['internal_same_dir'], include)
-        end
+      if text:find('/') == nil and is_header_to_this(text) then
+        table.insert(includes['internal_my_own'], include)
       else
         table.insert(includes['internal'], include)
       end
@@ -336,7 +332,7 @@ function M.divide_and_sort_includes()
 
   -- Create the new include lines
   local lines = {}
-  for _, category in ipairs({ 'internal_my_own', 'internal_same_dir', 'internal', 'external', 'system' }) do
+  for _, category in ipairs({ 'internal_my_own', 'internal', 'external', 'system' }) do
     -- Only add empty lines between { internal* } { external } { system }
     if category == 'external' or category == 'system' and #includes[category] > 0 then
       if #includes[category] > 0 then
