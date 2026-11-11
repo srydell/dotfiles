@@ -91,12 +91,13 @@ return {
     { trig = 'ctor', wordTrig = true, dscr = 'Create a constructor' },
     fmta(
       [[
-        <>(<>)<>
+        explicit <>(<>)<><>
       ]],
       {
         d(1, get_surrounding_classname),
         i(2),
-        d(3, cpp_snips.get_definition_or_declaration),
+        i(3),
+        d(4, cpp_snips.get_definition_or_declaration),
       }
     )
   ),

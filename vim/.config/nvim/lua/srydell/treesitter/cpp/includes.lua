@@ -32,6 +32,32 @@ local function is_cpp_trivia_line(line, block_comment)
   end
 end
 
+-- Patterns for the line opening an include guard. Each capture 1 is the text
+-- before the macro name and capture 2 is the macro name, so a rename can keep
+-- the original spacing. Trailing comments are allowed, anything else is not.
+local guard_open_patterns = {
+  '^(%s*#%s*ifndef%s+)([%w_]+)%s*$',
+  '^(%s*#%s*ifndef%s+)([%w_]+)%s*//.*$',
+  '^(%s*#%s*ifndef%s+)([%w_]+)%s*/%*.*$',
+  '^(%s*#%s*if%s*!%s*defined%s*%(%s*)([%w_]+)%s*%)%s*$',
+  '^(%s*#%s*if%s*!%s*defined%s*%(%s*)([%w_]+)%s*%)%s*//.*$',
+  '^(%s*#%s*if%s*!%s*defined%s*%(%s*)([%w_]+)%s*%)%s*/%*.*$',
+  '^(%s*#%s*if%s*!%s*defined%s+)([%w_]+)%s*$',
+  '^(%s*#%s*if%s*!%s*defined%s+)([%w_]+)%s*//.*$',
+  '^(%s*#%s*if%s*!%s*defined%s+)([%w_]+)%s*/%*.*$',
+}
+
+-- Return the prefix and macro name if line opens an include guard, i.e.
+-- `#ifndef X`, `#if !defined(X)` or `#if !defined X`.
+local function match_guard_open(line)
+  for _, pattern in ipairs(guard_open_patterns) do
+    local prefix, name = line:match(pattern)
+    if name ~= nil then
+      return prefix, name
+    end
+  end
+end
+
 -- Parse the file preamble once and share the result between include insertion
 -- and guard correction. A conventional guard may follow license comments and
 -- may contain whitespace or comments between #ifndef and #define.
@@ -52,7 +78,7 @@ local function parse_cpp_preamble(lines)
     after_comments = row - 1,
   }
 
-  local guard_name = lines[row] and lines[row]:match('^%s*#%s*ifndef%s+([%w_]+)%s*$')
+  local _, guard_name = match_guard_open(lines[row] or '')
   if guard_name == nil then
     return preamble
   end
@@ -69,7 +95,8 @@ local function parse_cpp_preamble(lines)
   end
 
   local defined_name, define_suffix = lines[define_row] and lines[define_row]:match('^%s*#%s*define%s+([%w_]+)%s*(.*)$')
-  if define_suffix ~= nil and define_suffix ~= '' and not define_suffix:match('^//') then
+  -- `#define X`, `#define X 1` and `#define X // comment` are all common
+  if define_suffix ~= nil and define_suffix ~= '1' and not define_suffix:match('^//') and not define_suffix:match('^/%*') then
     defined_name = nil
   end
   if defined_name ~= guard_name then
@@ -357,7 +384,7 @@ function M.divide_and_sort_includes()
 end
 
 -- Before: the file has a conventional `#ifndef X / #define X ... #endif //
--- X` include guard (possibly preceded by license comments).
+-- X` (or `#if !defined(X)`) include guard (possibly preceded by license comments).
 -- After: `X` is replaced everywhere it appears in the guard (ifndef, define,
 -- and the matching endif comment) with the project's canonical guard name.
 -- Does nothing if no conventional guard is found.
@@ -384,14 +411,22 @@ M.correct_include_guard = function()
   -- The pair and matching #endif were validated together. Preserve directive
   -- spacing and update a conventional closing comment when it names the old
   -- guard; unrelated comments remain untouched.
-  lines[preamble.ifndef_row] = lines[preamble.ifndef_row]:gsub('(#%s*ifndef%s+)[%w_]+', '%1' .. include_guard, 1)
+  local old_name = preamble.name
+  local prefix = match_guard_open(lines[preamble.ifndef_row])
+  lines[preamble.ifndef_row] = prefix
+    .. include_guard
+    .. lines[preamble.ifndef_row]:sub(#prefix + #old_name + 1)
   lines[preamble.define_row] = lines[preamble.define_row]:gsub('(#%s*define%s+)[%w_]+', '%1' .. include_guard, 1)
 
-  local old_name = vim.pesc(preamble.name)
-  lines[preamble.endif_row] =
-    lines[preamble.endif_row]:gsub('(//%s*)' .. old_name .. '(%s*)$', '%1' .. include_guard .. '%2', 1)
-  lines[preamble.endif_row] =
-    lines[preamble.endif_row]:gsub('(/%*%s*)' .. old_name .. '(%s*%*/%s*)$', '%1' .. include_guard .. '%2', 1)
+  -- Rename the old guard in the closing comment (`// X`, `/* X */` or
+  -- `// !defined(X)`), only matching it as a whole word.
+  local comment_start = lines[preamble.endif_row]:find('//', 1, true) or lines[preamble.endif_row]:find('/*', 1, true)
+  if comment_start ~= nil then
+    local code = lines[preamble.endif_row]:sub(1, comment_start - 1)
+    local comment = lines[preamble.endif_row]:sub(comment_start)
+    comment = comment:gsub('%f[%w_]' .. vim.pesc(old_name) .. '%f[^%w_]', (include_guard:gsub('%%', '%%%%')))
+    lines[preamble.endif_row] = code .. comment
+  end
 
   vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
 end

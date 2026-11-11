@@ -207,6 +207,43 @@ assert_lines({
   '#endif',
 })
 
+-- `#if !defined(X)` guards (and variants) are recognised: renamed, and new
+-- includes are placed inside them.
+vim.cmd('enew!')
+vim.cmd('silent! bwipeout! /tmp/proj/include/foo.hpp')
+for _, case in ipairs({
+  { '#if !defined(OLD_GUARD)', '#if !defined(PROJ_FOO_HPP)', '#endif // !defined(OLD_GUARD)', '#endif // !defined(PROJ_FOO_HPP)' },
+  { '#if ! defined( OLD_GUARD ) // x', '#if ! defined( PROJ_FOO_HPP ) // x', '#endif /* OLD_GUARD */', '#endif /* PROJ_FOO_HPP */' },
+  { '#if !defined OLD_GUARD', '#if !defined PROJ_FOO_HPP', '#endif // OLD_GUARD_X', '#endif // OLD_GUARD_X' },
+  { '#ifndef OLD_GUARD // guard', '#ifndef PROJ_FOO_HPP // guard', '#endif', '#endif' },
+}) do
+  vim.cmd('enew!')
+  vim.api.nvim_buf_set_name(0, '/tmp/proj/include/foo.hpp')
+  vim.bo.filetype = 'cpp'
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { case[1], '#define OLD_GUARD 1', 'std::vector<int> xs;', case[3] })
+  ts_cpp.correct_include_guard()
+  assert_lines({ case[2], '#define PROJ_FOO_HPP 1', 'std::vector<int> xs;', case[4] })
+  vim.cmd('enew!')
+  vim.cmd('silent! bwipeout! /tmp/proj/include/foo.hpp')
+end
+
+set_lines({
+  '#if !defined(FOO_HPP)',
+  '#define FOO_HPP',
+  '#include <string>',
+  'std::vector<int> xs;',
+  '#endif',
+})
+include_necessary_types()
+assert_lines({
+  '#if !defined(FOO_HPP)',
+  '#define FOO_HPP',
+  '#include <vector>',
+  '#include <string>',
+  'std::vector<int> xs;',
+  '#endif',
+})
+
 -- #pragma once is another file preamble marker and stays before inferred
 -- includes, including when no blank line follows it.
 set_lines({
