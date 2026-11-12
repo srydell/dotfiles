@@ -2,14 +2,13 @@ return {
   'mfussenegger/nvim-dap',
   event = 'VeryLazy',
   dependencies = {
-    { 'nvim-neotest/nvim-nio', main = 'nio' },
-    'rcarriga/nvim-dap-ui',
+    'igorlfs/nvim-dap-view',
     'mfussenegger/nvim-dap-python',
   },
   config = function()
     local dap = require('dap')
     local breakpoint_db = require('srydell.plugins.debugging.breakpoint_db')
-    local has_dapui, dapui = pcall(require, 'dapui')
+    local has_dapview = pcall(require, 'dap-view')
 
     -- language specific adapters
     local dap_python = require('srydell.plugins.debugging.python')
@@ -18,12 +17,11 @@ return {
     local dap_bash = require('srydell.plugins.debugging.bash')
 
     -- UI
-    if has_dapui then
-      local my_dapui = require('srydell.plugins.debugging.dapui')
-      my_dapui.setup()
+    if has_dapview then
+      require('srydell.plugins.debugging.dapview').setup()
     else
       vim.schedule(function()
-        vim.notify('nvim-dap-ui is unavailable; debug UI mappings are disabled', vim.log.levels.WARN)
+        vim.notify('nvim-dap-view is unavailable; debug UI mappings are disabled', vim.log.levels.WARN)
       end)
     end
 
@@ -82,8 +80,8 @@ return {
       if package.loaded.xcodebuild then
         require('xcodebuild.actions').cancel()
       end
-      if has_dapui then
-        dapui.close()
+      if has_dapview then
+        require('dap-view').close()
       end
     end
 
@@ -93,8 +91,10 @@ return {
     debug_map('o', dap.step_out)
     debug_map('r', dap.run_last)
     debug_map('s', dap.step_over)
-    if has_dapui then
-      debug_map('t', dapui.toggle)
+    if has_dapview then
+      debug_map('t', require('dap-view').toggle)
+      debug_map('h', require('dap-view').hover)
+      debug_map('w', require('dap-view').add_expr)
     end
     debug_map('u', dap.up)
     debug_map('d', dap.down)

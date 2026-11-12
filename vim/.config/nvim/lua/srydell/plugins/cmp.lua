@@ -9,7 +9,7 @@ return {
   opts = function()
     return {
       enabled = function()
-        local is_dap_buffer = vim.tbl_contains({ 'dap-repl', 'dapui_watches', 'dapui_hover' }, vim.bo.filetype)
+        local is_dap_buffer = vim.tbl_contains({ 'dap-repl' }, vim.bo.filetype)
         local dap_req = vim.api.nvim_get_option_value('buftype', {}) ~= 'prompt' or is_dap_buffer
         local modifiable = vim.api.nvim_get_option_value('modifiable', {})
         return dap_req and modifiable
@@ -117,8 +117,6 @@ return {
           codecompanion = { 'codecompanion' },
           codecompanion_input = { 'codecompanion' },
           ['dap-repl'] = { 'dap' },
-          dapui_watches = { 'dap' },
-          dapui_hover = { 'dap' },
         },
         providers = {
           copilot = {

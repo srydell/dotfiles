@@ -29,7 +29,6 @@ assert_sources('lua', { 'lazydev', 'lsp', 'copilot', 'snippets', 'buffer', 'path
 assert_sources('python', { 'lsp', 'copilot', 'snippets', 'buffer', 'path' })
 assert_sources('gitcommit', { 'buffer' })
 assert_sources('dap-repl', { 'dap' })
-assert_sources('dapui_watches', { 'dap' })
 assert_sources('codecompanion', { 'codecompanion' })
 assert_sources('codecompanion_input', { 'codecompanion' })
 
