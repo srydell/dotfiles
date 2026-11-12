@@ -54,7 +54,8 @@ function M.store()
   fp:close()
 end
 
-function M.load()
+-- Restore the saved breakpoints for one buffer (all listed buffers if nil)
+function M.load(target_buf)
   local breakpoints = require('dap.breakpoints')
   local settings = vim.fn.getcwd() .. '/.nvim'
 
@@ -75,10 +76,11 @@ function M.load()
     return
   end
 
-  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+  local bufs = target_buf and { target_buf } or vim.api.nvim_list_bufs()
+  for _, buf in ipairs(bufs) do
     local file_name = vim.api.nvim_buf_get_name(buf)
 
-    if bps[file_name] then
+    if vim.api.nvim_buf_is_loaded(buf) and bps[file_name] then
       for _, bp in pairs(bps[file_name]) do
         local opts = {
           condition = bp.condition,
@@ -139,14 +141,16 @@ end
 M.setup = function()
   local autogroup = vim.api.nvim_create_augroup('dap-breakpoints', { clear = true })
 
-  vim.api.nvim_create_autocmd({ 'VimEnter' }, {
+  -- Files opened after startup
+  vim.api.nvim_create_autocmd('BufReadPost', {
     group = autogroup,
-    pattern = '*',
-    once = true,
-    callback = function()
-      vim.defer_fn(M.load, 500)
+    callback = function(args)
+      M.load(args.buf)
     end,
   })
+
+  -- Buffers that were already open before this setup ran
+  M.load()
 end
 
 return M
