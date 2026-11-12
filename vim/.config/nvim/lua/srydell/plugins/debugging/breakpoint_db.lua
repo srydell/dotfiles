@@ -54,6 +54,29 @@ function M.store()
   fp:close()
 end
 
+-- Remove every breakpoint in the project, including saved ones in unopened files
+function M.clear()
+  if vim.fn.confirm('Clear all breakpoints in this project?', '&Yes\n&No', 2) ~= 1 then
+    return
+  end
+
+  require('dap').clear_breakpoints()
+
+  local settings = vim.fn.getcwd() .. '/.nvim'
+  local breakpoints_fp = settings .. '/breakpoints.json'
+  if vim.fn.filereadable(breakpoints_fp) ~= 1 then
+    return
+  end
+
+  local fp = io.open(breakpoints_fp, 'w')
+  if not fp then
+    notify_problem('Could not open the breakpoint file for writing.', breakpoints_fp)
+    return
+  end
+  fp:write('{}')
+  fp:close()
+end
+
 -- Restore the saved breakpoints for one buffer (all listed buffers if nil)
 function M.load(target_buf)
   local breakpoints = require('dap.breakpoints')

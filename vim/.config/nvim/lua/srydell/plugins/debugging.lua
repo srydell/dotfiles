@@ -100,5 +100,6 @@ return {
     debug_map('d', dap.down)
     debug_map('x', terminate_debug_session)
     debug_map('q', breakpoint_db.quickfix)
+    vim.keymap.set('n', '<leader>bc', breakpoint_db.clear)
   end,
 }
